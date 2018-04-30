@@ -1,0 +1,3 @@
+[submodule "go-sdk/src/github.com/ninchat/ninchat-go"]
+	path = go-sdk/src/github.com/ninchat/ninchat-go
+	url = https://github.com/ninchat/ninchat-go.git
