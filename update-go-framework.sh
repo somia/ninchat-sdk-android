@@ -7,7 +7,7 @@
 
 echo "Rebuilding Go SDK framework.."
 
-libdir="`pwd`"
+libdir="`pwd`/app/libs"
 mygopath="$GOPATH:`pwd`/go-sdk"
 gocodedir="go-sdk/src/github.com/ninchat/ninchat-go/mobile"
 
@@ -18,7 +18,7 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Running gomobile tool.."
-GOPATH=$mygopath gomobile bind -target android -o $libdir/client.aar
+GOPATH=$mygopath gomobile bind -target android -javapkg com.ninchat -o $libdir/ninchat-client.aar
 if [ $? -ne 0 ]; then
     echo "gomobile cmd failed, aborting."
     exit 1
