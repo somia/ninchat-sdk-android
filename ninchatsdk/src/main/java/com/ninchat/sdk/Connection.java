@@ -1,7 +1,5 @@
 package com.ninchat.sdk;
 
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.ninchat.client.CloseHandler;
@@ -14,17 +12,8 @@ import com.ninchat.client.Session;
 import com.ninchat.client.SessionEventHandler;
 import com.ninchat.client.Strings;
 
-public class ChatTestActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat_test);
-
-        test_connection();
-    }
-
-    public void test_connection() {
+public class Connection {
+    public static void test() {
         Strings messageTypes = new Strings();
         messageTypes.append("ninchat.com/*");
 
