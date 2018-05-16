@@ -13,6 +13,10 @@ import com.ninchat.client.SessionEventHandler;
 import com.ninchat.client.Strings;
 
 public class Connection {
+
+    /**
+     * Test connection by creating a client session and trying to send a message.
+     */
     public static void test() {
         Strings messageTypes = new Strings();
         messageTypes.append("ninchat.com/*");
