@@ -1,2 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ninchat.sdk" />
+    package="com.ninchat.sdk">
+    <application>
+        <activity android:name=".ChatTestActivity" />
+    </application>
+</manifest>
