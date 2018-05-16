@@ -7,7 +7,7 @@
 
 echo "Rebuilding Go SDK framework.."
 
-libdir="`pwd`/app/libs"
+libdir="`pwd`/ninchatsdk/libs"
 mygopath="$GOPATH:`pwd`/go-sdk"
 gocodedir="go-sdk/src/github.com/ninchat/ninchat-go/mobile"
 
