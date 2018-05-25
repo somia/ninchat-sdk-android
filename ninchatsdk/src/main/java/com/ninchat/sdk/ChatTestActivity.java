@@ -29,6 +29,15 @@ public class ChatTestActivity extends AppCompatActivity {
         test();
     }
 
+    private void doLog(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                log.append(message);
+            }
+        });
+    }
+
     private void test() {
         Strings messageTypes = new Strings();
         messageTypes.append("ninchat.com/*");
@@ -40,31 +49,31 @@ public class ChatTestActivity extends AppCompatActivity {
         session.setOnSessionEvent(new SessionEventHandler() {
             @Override
             public void onSessionEvent(Props params) {
-                log.append("\nsession_event: " + params.toString());
+                doLog("\nsession_event: " + params.toString());
             }
         });
         session.setOnEvent(new EventHandler() {
             @Override
             public void onEvent(Props params, Payload payload, boolean lastReply) {
-                log.append("\nevent: " + params.toString());
+                doLog("\nevent: " + params.toString());
             }
         });
         session.setOnClose(new CloseHandler() {
             @Override
             public void onClose() {
-                log.append("\nsession closed");
+                doLog("\nsession closed");
             }
         });
         session.setOnConnState(new ConnStateHandler() {
             @Override
             public void onConnState(String state) {
-                log.append("\nconnection state: " + state);
+                doLog("\nconnection state: " + state);
             }
         });
         session.setOnLog(new LogHandler() {
             @Override
             public void onLog(String msg) {
-                log.append("\nclient: " + msg);
+                doLog("\nclient: " + msg);
             }
         });
 
