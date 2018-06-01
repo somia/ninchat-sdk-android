@@ -1,6 +1,6 @@
 package com.ninchat.sdk;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -15,7 +15,7 @@ import com.ninchat.client.SessionEventHandler;
 import com.ninchat.client.Strings;
 
 
-public class ChatTestActivity extends AppCompatActivity {
+public class ChatTestActivity extends Activity {
 
     private TextView log;
 
