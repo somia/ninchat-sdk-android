@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/ninchat-sdk-android.iml" filepath="$PROJECT_DIR$/ninchat-sdk-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/ninchatsdk/ninchatsdk.iml" filepath="$PROJECT_DIR$/ninchatsdk/ninchatsdk.iml" />
     </modules>

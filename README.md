@@ -1,5 +1,9 @@
 # Mobile Ninchat SDK for Android
 
+## Prerequisites
+
+You need to have Go installed to build the library. Furthermore, you need to install gomobile and websocket too.
+
 ## Updating client libraries
 
 Go client libraries can be updated with the following shell scriptin the project root:
@@ -8,18 +12,15 @@ Go client libraries can be updated with the following shell scriptin the project
 
 ## Building SDK .aar
 
-SDK resides in ninchatsdk module. All the aar artifacts can be built with the gradle task :ninchatsdk:assemble
-                                                                                            as follows:
+SDK resides in ninchatsdk module. All the aar artifacts can be built with the gradle task assemble as follows:
 
-    $ ./gradlew :ninchatsdk:assemble
+    $ ./gradlew assemble
 
 After building artifacts can be then found in (project root)/ninchatsdk/build/outputs/aar folder.
 
 ## Test application
 
-Project itself contains a test application. You can run it from Android Studio or install it with gradle:
-
-    $ ./gradlew installDebug
+The test application can be found from the ninchat-sdk-android-testclient project on Github.
 
 ## Usage
 
@@ -40,4 +41,4 @@ Go client connection can be tested with a static method in Connection class:
 ## Contact
 If you have any questions, contact:
 
-Timo Hintsa / Qvik timo@qvik.fi
+Jussi Pekonen / Qvik jussi.pekonen@qvik.fi
