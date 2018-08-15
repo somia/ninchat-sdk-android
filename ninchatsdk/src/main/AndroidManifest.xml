@@ -2,6 +2,6 @@
     package="com.ninchat.sdk">
     <uses-permission android:name="android.permission.INTERNET" />
     <application>
-        <activity android:name=".ChatTestActivity" />
+        <activity android:name=".ChatTestActivity" android:theme="@style/NinchatTheme" />
     </application>
 </manifest>
