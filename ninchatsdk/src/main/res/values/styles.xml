@@ -2,10 +2,20 @@
 <resources>
     <style name="NinchatTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/ninchat_primary</item>
-        <item name="android:statusBarColor">@color/ninchat_primary</item>
+        <item name="colorPrimary">@color/ninchat_colorPrimary</item>
+        <item name="android:statusBarColor">@color/ninchat_colorPrimary</item>
         <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>-->
+        <item name="actionBarStyle">@style/NinchatTheme.ActionBar.Logo</item>
+        <item name="android:actionBarStyle">@style/NinchatTheme.ActionBar.Logo</item>
     </style>
 
+    <style name="NinchatTheme.ActionBar.Logo" parent="Widget.AppCompat.Light.ActionBar.Solid">
+        <item name="icon">@drawable/ninchat_logo</item>
+        <item name="android:icon">@drawable/ninchat_logo</item>
+        <item name="logo">@drawable/ninchat_logo</item>
+        <item name="android:logo">@drawable/ninchat_logo</item>
+        <item name="displayOptions">useLogo|showHome|showTitle</item>
+        <item name="android:displayOptions">useLogo|showHome|showTitle</item>
+    </style>
 </resources>

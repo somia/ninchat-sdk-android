@@ -1,6 +1,5 @@
-package com.ninchat.sdk;
+package com.ninchat.sdk.activities;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -13,19 +12,22 @@ import com.ninchat.client.Props;
 import com.ninchat.client.Session;
 import com.ninchat.client.SessionEventHandler;
 import com.ninchat.client.Strings;
+import com.ninchat.sdk.R;
 
 
-public class ChatTestActivity extends AppCompatActivity {
+public class ChatTestActivity extends BaseActivity {
 
     private TextView log;
 
     @Override
+    protected int getLayoutRes() {
+        return R.layout.activity_chat_test;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat_test);
-
         log = findViewById(R.id.log);
-
         test();
     }
 
