@@ -24,10 +24,13 @@ The test application can be found from the ninchat-sdk-android-testclient projec
 
 ## Usage
 
-A simple test Activity can be created by extending ChatTestActivity:
+The SDK is started by calling the static `start` method of the `NinchatSession` class with the activity as the argument:
 
-    import com.ninchat.sdk.activities.ChatTestActivity;
-    public class MainActivity extends ChatTestActivity {}
+    import com.ninchat.sdk.NinchatSession;
+    ...
+    NinchatSession.start(activity);
+
+At the moment the SDK opens up an activity that tests the connection to the Ninchat server.
 
 Go client connection can be tested with a static method in Connection class:
 
