@@ -15,13 +15,13 @@ import com.ninchat.client.Strings;
 import com.ninchat.sdk.R;
 
 
-public class ChatTestActivity extends BaseActivity {
+public class NinchatActivity extends BaseActivity {
 
     private TextView log;
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.activity_chat_test;
+        return R.layout.activity_ninchat;
     }
 
     @Override
