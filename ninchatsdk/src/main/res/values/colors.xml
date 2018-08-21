@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ninchat_colorPrimary">#000</color>
+    <color name="ninchat_colorAccent">#37A1FC</color>
+    <color name="ninchat_start_header_background">#444</color>
+    <color name="ninchat_start_text">#fff</color>
 </resources>

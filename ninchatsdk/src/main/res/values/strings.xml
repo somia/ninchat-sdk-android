@@ -1,3 +1,8 @@
 <resources>
     <string name="ninchat_contact_us">Contact us</string>
+
+    <string name="ninchat_start_title">Welcome to Ninchat customer care.</string>
+    <string name="ninchat_start_description">Click a topic for more info or start chatting.</string>
+    <string name="ninchat_blog_link">Ninchat blog</string>
+    <string name="ninchat_start_chat">Start chat</string>
 </resources>
