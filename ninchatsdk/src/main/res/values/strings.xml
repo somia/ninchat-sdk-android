@@ -11,6 +11,8 @@
     <string name="ninchat_queue_description">We will help you in a moment.</string>
     <string name="ninchat_queue_message">Did you know that Ninchat works on any website and mobile site, Facebook page, blog and mobile apps!</string>
 
+    <string name="ninchat_chat_enter_message">Enter your message</string>
+
     <string name="ninchat_review_title">How was our customer service?</string>
     <string name="ninchat_review_description">Give a rating - select a smiley</string>
     <string name="ninchat_review_happy">Good</string>

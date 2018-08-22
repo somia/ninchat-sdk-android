@@ -12,7 +12,10 @@
         <activity
             android:name=".activities.NinchatQueueActivity"
             android:label="@string/ninchat_contact_us"
-            android:parentActivityName=".activities.NinchatActivity"
+            android:theme="@style/NinchatTheme" />
+        <activity
+            android:name=".activities.NinchatChatActivity"
+            android:label="@string/ninchat_contact_us"
             android:theme="@style/NinchatTheme" />
         <activity
             android:name=".activities.NinchatReviewActivity"
