@@ -1,13 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ninchat.sdk">
+
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application>
-        <activity android:name=".activities.NinchatActivity"
-            android:theme="@style/NinchatTheme"
-            android:label="@string/ninchat_contact_us" />
-        <activity android:name=".activities.NinchatQueueActivity"
-            android:theme="@style/NinchatTheme.Back"
+        <activity
+            android:name=".activities.NinchatActivity"
             android:label="@string/ninchat_contact_us"
-            android:parentActivityName=".activities.NinchatActivity"/>
+            android:theme="@style/NinchatTheme" />
+        <activity
+            android:name=".activities.NinchatQueueActivity"
+            android:label="@string/ninchat_contact_us"
+            android:parentActivityName=".activities.NinchatActivity"
+            android:theme="@style/NinchatTheme.Back" />
+        <activity
+            android:name=".activities.NinchatReviewActivity"
+            android:label="@string/ninchat_contact_us"
+            android:theme="@style/NinchatTheme.Back" />
     </application>
+
 </manifest>

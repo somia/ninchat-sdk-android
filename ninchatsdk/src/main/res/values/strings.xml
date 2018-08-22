@@ -5,8 +5,16 @@
     <string name="ninchat_start_description">Click a topic for more info or start chatting.</string>
     <string name="ninchat_blog_link">Ninchat blog</string>
     <string name="ninchat_start_chat">Start chat</string>
+
     <string name="ninchat_queueing">Queueing</string>
     <string name="ninchat_queue_title">Just a moment.</string>
     <string name="ninchat_queue_description">We will help you in a moment.</string>
     <string name="ninchat_queue_message">Did you know that Ninchat works on any website and mobile site, Facebook page, blog and mobile apps!</string>
+
+    <string name="ninchat_review_title">How was our customer service?</string>
+    <string name="ninchat_review_description">Give a rating - select a smiley</string>
+    <string name="ninchat_review_happy">Good</string>
+    <string name="ninchat_review_neutral">Okay</string>
+    <string name="ninchat_review_sad">Poor</string>
+    <string name="ninchat_review_skip">Skip</string>
 </resources>
