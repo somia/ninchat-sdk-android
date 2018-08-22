@@ -6,7 +6,8 @@
             android:theme="@style/NinchatTheme"
             android:label="@string/ninchat_contact_us" />
         <activity android:name=".activities.NinchatQueueActivity"
-            android:theme="@style/NinchatTheme"
-            android:label="@string/ninchat_contact_us" />
+            android:theme="@style/NinchatTheme.Back"
+            android:label="@string/ninchat_contact_us"
+            android:parentActivityName=".activities.NinchatActivity"/>
     </application>
 </manifest>
