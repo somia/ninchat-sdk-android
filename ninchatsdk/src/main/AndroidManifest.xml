@@ -5,5 +5,8 @@
         <activity android:name=".activities.NinchatActivity"
             android:theme="@style/NinchatTheme"
             android:label="@string/ninchat_contact_us" />
+        <activity android:name=".activities.NinchatQueueActivity"
+            android:theme="@style/NinchatTheme"
+            android:label="@string/ninchat_contact_us" />
     </application>
 </manifest>

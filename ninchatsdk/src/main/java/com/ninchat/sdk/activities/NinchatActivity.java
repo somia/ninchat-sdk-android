@@ -20,7 +20,7 @@ public class NinchatActivity extends BaseActivity {
     }
 
     public void onStartButtonClick(final View view) {
-        Toast.makeText(this, "onStartButtonClick", Toast.LENGTH_SHORT).show();
+        startActivityForResult(new Intent(this, NinchatQueueActivity.class), NinchatQueueActivity.REQUEST_CODE);
     }
 
 }
