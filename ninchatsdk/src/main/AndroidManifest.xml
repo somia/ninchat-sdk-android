@@ -13,11 +13,11 @@
             android:name=".activities.NinchatQueueActivity"
             android:label="@string/ninchat_contact_us"
             android:parentActivityName=".activities.NinchatActivity"
-            android:theme="@style/NinchatTheme.Back" />
+            android:theme="@style/NinchatTheme" />
         <activity
             android:name=".activities.NinchatReviewActivity"
             android:label="@string/ninchat_contact_us"
-            android:theme="@style/NinchatTheme.Back" />
+            android:theme="@style/NinchatTheme" />
     </application>
 
 </manifest>
