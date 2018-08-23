@@ -1,5 +1,6 @@
 package com.ninchat.sdk.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
@@ -22,4 +23,12 @@ public class NinchatActivity extends BaseActivity {
         startActivityForResult(new Intent(this, NinchatQueueActivity.class), NinchatQueueActivity.REQUEST_CODE);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == NinchatQueueActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            setResult(Activity.RESULT_OK, data);
+            finish();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }
