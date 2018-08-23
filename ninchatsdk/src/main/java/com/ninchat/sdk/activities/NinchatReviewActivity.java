@@ -2,7 +2,7 @@ package com.ninchat.sdk.activities;
 
 import com.ninchat.sdk.R;
 
-public class NinchatReviewActivity extends BaseActivity {
+public final class NinchatReviewActivity extends BaseActivity {
 
     static final int REQUEST_CODE = NinchatReviewActivity.class.hashCode() & 0xffff;
 

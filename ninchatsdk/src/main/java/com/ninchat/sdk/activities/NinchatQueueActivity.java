@@ -5,7 +5,7 @@ import com.ninchat.sdk.R;
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
  */
-public class NinchatQueueActivity extends BaseActivity {
+public final class NinchatQueueActivity extends BaseActivity {
 
     static final int REQUEST_CODE = NinchatQueueActivity.class.hashCode() & 0xffff;
 

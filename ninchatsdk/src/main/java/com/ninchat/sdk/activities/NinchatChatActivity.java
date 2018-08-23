@@ -11,7 +11,7 @@ import com.ninchat.sdk.adapters.ChatMessageRecyclerViewAdapter;
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
  */
-public class NinchatChatActivity extends BaseActivity {
+public final class NinchatChatActivity extends BaseActivity {
 
     static int REQUEST_CODE = NinchatChatActivity.class.hashCode() & 0xffff;
 

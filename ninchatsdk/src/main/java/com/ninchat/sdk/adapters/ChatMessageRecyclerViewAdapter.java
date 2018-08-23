@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
  */
-public class ChatMessageRecyclerViewAdapter extends RecyclerView.Adapter<ChatMessageRecyclerViewAdapter.ChatMessageViewHolder> {
+public final class ChatMessageRecyclerViewAdapter extends RecyclerView.Adapter<ChatMessageRecyclerViewAdapter.ChatMessageViewHolder> {
 
     public class ChatMessageViewHolder extends RecyclerView.ViewHolder {
 

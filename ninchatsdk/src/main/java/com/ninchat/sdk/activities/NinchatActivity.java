@@ -9,7 +9,7 @@ import android.view.View;
 import com.ninchat.sdk.R;
 
 
-public class NinchatActivity extends BaseActivity {
+public final class NinchatActivity extends BaseActivity {
 
     protected static final String CONFIGURATION_KEY = "configurationKey";
     protected static final String SITE_SECRET = "siteSecret";
