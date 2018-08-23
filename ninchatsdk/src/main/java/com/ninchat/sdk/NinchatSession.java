@@ -12,11 +12,19 @@ public final class NinchatSession {
 
     public static final int NINCHAT_SESSION_REQUEST_CODE = NinchatSession.class.hashCode() & 0xffff;
 
-    public static void start(final Activity activity) {
-        start(activity, NINCHAT_SESSION_REQUEST_CODE);
+    public static void start(final Activity activity, final String configurationKey) {
+        start(activity, NINCHAT_SESSION_REQUEST_CODE, configurationKey, null);
     }
 
-    public static void start(final Activity activity, final int requestCode) {
-        activity.startActivityForResult(new Intent(activity, NinchatActivity.class), requestCode);
+    public static void start(final Activity activity, final String configurationKey, final String siteSecret) {
+        start(activity, NINCHAT_SESSION_REQUEST_CODE, configurationKey, siteSecret);
+    }
+
+    public static void start(final Activity activity, final int requestCode, final String configurationKey) {
+        start(activity, requestCode, configurationKey, null);
+    }
+
+    public static void start(final Activity activity, final int requestCode, final String configurationKey, final String siteSecret) {
+        activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, configurationKey, siteSecret), requestCode);
     }
 }
