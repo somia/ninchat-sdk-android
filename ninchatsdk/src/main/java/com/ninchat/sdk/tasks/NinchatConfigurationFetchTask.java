@@ -2,6 +2,8 @@ package com.ninchat.sdk.tasks;
 
 import android.os.AsyncTask;
 
+import com.ninchat.sdk.NinchatSessionManager;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,20 +18,15 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, String> {
 
-    public interface Listener {
-        void success(final String config);
-        void failure(final Exception error);
-    }
-
-    public static void start(final Listener listener, final String configurationUrl) {
+    public static void start(final NinchatSessionManager.ConfigurationFetchListener listener, final String configurationUrl) {
         new NinchatConfigurationFetchTask(listener, configurationUrl).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    protected WeakReference<NinchatSessionManager.ConfigurationFetchListener> listenerWeakReference;
     protected String configurationUrl;
-    protected WeakReference<Listener> listenerWeakReference;
     protected Exception error;
 
-    protected NinchatConfigurationFetchTask(final Listener listener, final String configurationUrl) {
+    protected NinchatConfigurationFetchTask(final NinchatSessionManager.ConfigurationFetchListener listener, final String configurationUrl) {
         this.listenerWeakReference = new WeakReference<>(listener);
         this.configurationUrl = configurationUrl;
     }
@@ -50,12 +47,27 @@ public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, S
             this.error = e;
             return null;
         }
+        int responseCode;
+        String responseMessage;
+        try {
+            responseCode = connection.getResponseCode();
+            responseMessage = connection.getResponseMessage();
+        } catch (final IOException e) {
+            this.error = e;
+            connection.disconnect();
+            return null;
+        }
+        if (responseCode < 200 || responseCode > 300) {
+            this.error = new Exception(configurationUrl + " " + responseMessage);
+            connection.disconnect();
+            return null;
+        }
         InputStream inputStream;
         try {
             inputStream = new BufferedInputStream(connection.getInputStream());
         } catch (final IOException e) {
-            connection.disconnect();
             this.error = e;
+            connection.disconnect();
             return null;
         }
         final StringBuilder jsonDataBuilder = new StringBuilder();
@@ -69,8 +81,8 @@ public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, S
                 numberOfBytes = inputStream.read(buffer);
             }
         } catch (final IOException e) {
-            connection.disconnect();
             this.error = e;
+            connection.disconnect();
             return null;
         }
         connection.disconnect();
@@ -79,13 +91,14 @@ public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, S
     }
 
     @Override
-    protected void onPostExecute(final String config) {
-        final Listener listener = listenerWeakReference.get();
+    protected void onPostExecute(final String data) {
+        NinchatSessionManager.setConfiguration(data);
+        final NinchatSessionManager.ConfigurationFetchListener listener = listenerWeakReference.get();
         if (listener != null) {
-            if (config != null) {
-                listener.success(config);
-            } else {
+            if (data == null) {
                 listener.failure(error);
+            } else {
+                listener.success();
             }
         }
     }

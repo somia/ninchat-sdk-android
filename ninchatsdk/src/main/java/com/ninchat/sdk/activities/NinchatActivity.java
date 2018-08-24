@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
+import android.widget.Toast;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
@@ -25,9 +26,24 @@ public final class NinchatActivity extends BaseActivity {
         return R.layout.activity_ninchat;
     }
 
+    protected String configurationKey;
+
+    protected NinchatSessionManager.ConfigurationFetchListener configurationFetchListener = new NinchatSessionManager.ConfigurationFetchListener() {
+        @Override
+        public void success() {
+
+        }
+
+        @Override
+        public void failure(final Exception error) {
+            Toast.makeText(NinchatActivity.this, getString(R.string.ninchat_configuration_fetch_error) + " " + error.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    };
+
     @Override
     protected void handleOnCreateIntent(Intent intent) {
-        NinchatSessionManager.fetchConfig(this, intent.getStringExtra(CONFIGURATION_KEY));
+        configurationKey = intent.getStringExtra(CONFIGURATION_KEY);
+        NinchatSessionManager.fetchConfig(getResources(), configurationFetchListener, configurationKey);
     }
 
     public void onBlogLinkClick(final View view) {
