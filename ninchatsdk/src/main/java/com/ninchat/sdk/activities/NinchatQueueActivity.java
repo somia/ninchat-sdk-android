@@ -1,5 +1,8 @@
 package com.ninchat.sdk.activities;
 
+import android.content.Context;
+import android.content.Intent;
+
 import com.ninchat.sdk.R;
 
 /**
@@ -9,8 +12,13 @@ public final class NinchatQueueActivity extends BaseActivity {
 
     static final int REQUEST_CODE = NinchatQueueActivity.class.hashCode() & 0xffff;
 
+    static Intent getLaunchIntent(final Context context) {
+        return new Intent(context, NinchatQueueActivity.class);
+    }
+
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_ninchat_queue;
     }
+
 }

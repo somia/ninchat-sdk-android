@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="__ninchat_server">https://api.luupi.net</string>
+    <string name="__ninchat_config_endpoint">/config/%s</string>
+</resources>

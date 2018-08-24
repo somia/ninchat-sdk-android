@@ -1,11 +1,11 @@
 package com.ninchat.sdk.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
 
+import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 
 
@@ -25,13 +25,17 @@ public final class NinchatActivity extends BaseActivity {
         return R.layout.activity_ninchat;
     }
 
+    @Override
+    protected void handleOnCreateIntent(Intent intent) {
+        NinchatSessionManager.fetchConfig(this, intent.getStringExtra(CONFIGURATION_KEY));
+    }
 
     public void onBlogLinkClick(final View view) {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://blog.ninchat.com")));
     }
 
     public void onStartButtonClick(final View view) {
-        startActivityForResult(new Intent(this, NinchatQueueActivity.class), NinchatQueueActivity.REQUEST_CODE);
+        startActivityForResult(NinchatQueueActivity.getLaunchIntent(this), NinchatQueueActivity.REQUEST_CODE);
     }
 
     @Override

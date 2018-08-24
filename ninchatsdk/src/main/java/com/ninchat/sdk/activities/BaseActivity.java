@@ -17,11 +17,19 @@ abstract class BaseActivity extends Activity {
 
     abstract protected @LayoutRes int getLayoutRes();
 
+    protected void handleOnCreateIntent(final Intent intent) {
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(getLayoutRes());
+
+        final Intent intent = getIntent();
+        if (intent != null) {
+            handleOnCreateIntent(intent);
+        }
     }
 
     @Override
