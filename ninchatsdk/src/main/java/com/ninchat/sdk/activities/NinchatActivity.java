@@ -36,8 +36,8 @@ public final class NinchatActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NinchatQueueActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            setResult(Activity.RESULT_OK, data);
+        if (requestCode == NinchatQueueActivity.REQUEST_CODE && resultCode == RESULT_OK) {
+            setResult(RESULT_OK, data);
             finish();
         }
         super.onActivityResult(requestCode, resultCode, data);

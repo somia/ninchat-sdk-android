@@ -34,8 +34,8 @@ abstract class BaseActivity extends Activity {
         return null;
     }
 
-    public void onCloseClick(final MenuItem menuItem) {
-        setResult(Activity.RESULT_CANCELED, getOnCloseData());
+    public final void onCloseClick(final MenuItem menuItem) {
+        setResult(RESULT_CANCELED, getOnCloseData());
         finish();
     }
 }

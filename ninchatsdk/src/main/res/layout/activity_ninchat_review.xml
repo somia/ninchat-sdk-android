@@ -41,7 +41,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
+                android:layout_marginEnd="10dp"
+                android:onClick="onGoodClick">
 
                 <ImageView
                     android:layout_width="70dp"
@@ -67,7 +68,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
+                android:layout_marginEnd="10dp"
+                android:onClick="onFairClick">
 
                 <ImageView
                     android:layout_width="70dp"
@@ -93,7 +95,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
+                android:layout_marginEnd="10dp"
+                android:onClick="onPoorClick">
 
                 <ImageView
                     android:layout_width="70dp"
@@ -126,6 +129,7 @@
         android:textColor="@color/ninchat_colorAccent"
         android:layout_marginBottom="120dp"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+        android:onClick="onSkipClick"/>
 
 </RelativeLayout>

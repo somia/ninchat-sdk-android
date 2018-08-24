@@ -16,7 +16,7 @@ public final class NinchatSession {
             public static final String RATING = "rating";
         }
 
-        public static final class Constants {
+        public static final class Rating {
             public static final int GOOD = 1;
             public static final int FAIR = 0;
             public static final int POOR = -1;
