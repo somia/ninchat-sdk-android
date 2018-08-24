@@ -28,18 +28,22 @@ public final class NinchatSession {
     public static final int NINCHAT_SESSION_REQUEST_CODE = NinchatSession.class.hashCode() & 0xffff;
 
     public static void start(final Activity activity, final String configurationKey) {
-        start(activity, NINCHAT_SESSION_REQUEST_CODE, configurationKey, null);
+        start(activity, NINCHAT_SESSION_REQUEST_CODE, configurationKey, null, false);
     }
 
     public static void start(final Activity activity, final String configurationKey, final String siteSecret) {
-        start(activity, NINCHAT_SESSION_REQUEST_CODE, configurationKey, siteSecret);
+        start(activity, NINCHAT_SESSION_REQUEST_CODE, configurationKey, siteSecret, false);
     }
 
     public static void start(final Activity activity, final int requestCode, final String configurationKey) {
-        start(activity, requestCode, configurationKey, null);
+        start(activity, requestCode, configurationKey, null, false);
     }
 
     public static void start(final Activity activity, final int requestCode, final String configurationKey, final String siteSecret) {
-        activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, configurationKey, siteSecret), requestCode);
+        start(activity, requestCode, configurationKey, siteSecret, false);
+    }
+
+    public static void start(final Activity activity, final int requestCode, final String configurationKey, final String siteSecret, final boolean showLauncher) {
+        activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, configurationKey, siteSecret, showLauncher), requestCode);
     }
 }

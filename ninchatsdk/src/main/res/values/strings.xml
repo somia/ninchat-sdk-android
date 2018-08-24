@@ -6,7 +6,7 @@
     <string name="ninchat_start_description">Click a topic for more info or start chatting.</string>
     <string name="ninchat_blog_link">Ninchat blog</string>
     <string name="ninchat_start_chat">Start chat</string>
-    <string name="ninchat_configuration_fetch_error">Failed to fetch the configuration.</string>
+    <string name="ninchat_configuration_fetch_error">Failed to fetch the configuration. %s</string>
 
     <string name="ninchat_queueing">Queueing</string>
     <string name="ninchat_queue_title">Just a moment.</string>

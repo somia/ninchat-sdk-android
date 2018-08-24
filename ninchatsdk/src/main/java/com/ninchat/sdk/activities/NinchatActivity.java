@@ -14,11 +14,13 @@ public final class NinchatActivity extends BaseActivity {
 
     protected static final String CONFIGURATION_KEY = "configurationKey";
     protected static final String SITE_SECRET = "siteSecret";
+    protected static final String SHOW_LAUNCHER = "showLauncher";
 
-    public static Intent getLaunchIntent(final Context context, final String configurationKey, final String siteSecret) {
+    public static Intent getLaunchIntent(final Context context, final String configurationKey, final String siteSecret, final boolean showLauncher) {
         return new Intent(context, NinchatActivity.class)
                 .putExtra(CONFIGURATION_KEY, configurationKey)
-                .putExtra(SITE_SECRET, siteSecret);
+                .putExtra(SITE_SECRET, siteSecret)
+                .putExtra(SHOW_LAUNCHER, showLauncher);
     }
 
     @Override
@@ -26,24 +28,28 @@ public final class NinchatActivity extends BaseActivity {
         return R.layout.activity_ninchat;
     }
 
-    protected String configurationKey;
-
     protected NinchatSessionManager.ConfigurationFetchListener configurationFetchListener = new NinchatSessionManager.ConfigurationFetchListener() {
         @Override
         public void success() {
-
         }
 
         @Override
         public void failure(final Exception error) {
-            Toast.makeText(NinchatActivity.this, getString(R.string.ninchat_configuration_fetch_error) + " " + error.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(NinchatActivity.this, getString(R.string.ninchat_configuration_fetch_error, error.getMessage()), Toast.LENGTH_LONG).show();
         }
     };
 
+    protected boolean showLauncher = true;
+
     @Override
     protected void handleOnCreateIntent(Intent intent) {
-        configurationKey = intent.getStringExtra(CONFIGURATION_KEY);
-        NinchatSessionManager.fetchConfig(getResources(), configurationFetchListener, configurationKey);
+        final String configurationKey = intent.getStringExtra(CONFIGURATION_KEY);
+        showLauncher = intent.getBooleanExtra(SHOW_LAUNCHER, true);
+        if (showLauncher) {
+            NinchatSessionManager.fetchConfig(getResources(), configurationFetchListener, configurationKey);
+        } else {
+            openQueueActivity(configurationKey);
+        }
     }
 
     public void onBlogLinkClick(final View view) {
@@ -51,14 +57,20 @@ public final class NinchatActivity extends BaseActivity {
     }
 
     public void onStartButtonClick(final View view) {
-        startActivityForResult(NinchatQueueActivity.getLaunchIntent(this), NinchatQueueActivity.REQUEST_CODE);
+       openQueueActivity(null);
+    }
+
+    private void openQueueActivity(final String configurationKey) {
+        startActivityForResult(NinchatQueueActivity.getLaunchIntent(this, configurationKey), NinchatQueueActivity.REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NinchatQueueActivity.REQUEST_CODE && resultCode == RESULT_OK) {
-            setResult(RESULT_OK, data);
-            finish();
+        if (requestCode == NinchatQueueActivity.REQUEST_CODE) {
+            if (resultCode == RESULT_OK || !showLauncher) {
+                setResult(resultCode, data);
+                finish();
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
