@@ -10,6 +10,21 @@ import com.ninchat.sdk.activities.NinchatActivity;
  */
 public final class NinchatSession {
 
+    public static final class Analytics {
+
+        public static final class Keys {
+            public static final String RATING = "rating";
+        }
+
+        public static final class Constants {
+            public static final int GOOD = 1;
+            public static final int FAIR = 0;
+            public static final int POOR = -1;
+            public static final int NO_ANSWER = -2;
+        }
+
+    }
+
     public static final int NINCHAT_SESSION_REQUEST_CODE = NinchatSession.class.hashCode() & 0xffff;
 
     public static void start(final Activity activity, final String configurationKey) {
