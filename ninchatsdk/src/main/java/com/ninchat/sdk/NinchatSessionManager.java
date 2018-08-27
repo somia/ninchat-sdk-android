@@ -19,11 +19,12 @@ public final class NinchatSessionManager {
 
     protected static JSONObject configuration;
 
-    public static void setConfiguration(final String config) {
+    public static void setConfiguration(final String config) throws JSONException {
         try {
             configuration = new JSONObject(config);
         } catch (final JSONException e) {
             configuration = null;
+            throw e;
         }
     }
 

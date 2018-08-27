@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 
 import com.ninchat.sdk.NinchatSessionManager;
 
+import org.json.JSONException;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,15 +18,16 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 23/08/2018.
  */
-public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, String> {
+public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, Exception> {
 
     public static void start(final NinchatSessionManager.ConfigurationFetchListener listener, final String configurationUrl) {
         new NinchatConfigurationFetchTask(listener, configurationUrl).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    protected static final int TIMEOUT = 15000;
+
     protected WeakReference<NinchatSessionManager.ConfigurationFetchListener> listenerWeakReference;
     protected String configurationUrl;
-    protected Exception error;
 
     protected NinchatConfigurationFetchTask(final NinchatSessionManager.ConfigurationFetchListener listener, final String configurationUrl) {
         this.listenerWeakReference = new WeakReference<>(listener);
@@ -32,43 +35,40 @@ public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, S
     }
 
     @Override
-    protected String doInBackground(Void... voids) {
+    protected Exception doInBackground(Void... voids) {
         URL url;
         try {
             url = new URL(configurationUrl);
         } catch (final MalformedURLException e) {
-            this.error = e;
-            return null;
+            return e;
         }
         HttpsURLConnection connection;
         try {
             connection = (HttpsURLConnection) url.openConnection();
         } catch (final IOException e) {
-            this.error = e;
-            return null;
+            return e;
         }
+        connection.setConnectTimeout(TIMEOUT);
+        connection.setReadTimeout(TIMEOUT);
         int responseCode;
         String responseMessage;
         try {
             responseCode = connection.getResponseCode();
             responseMessage = connection.getResponseMessage();
         } catch (final IOException e) {
-            this.error = e;
             connection.disconnect();
-            return null;
+            return e;
         }
-        if (responseCode < 200 || responseCode > 300) {
-            this.error = new Exception(configurationUrl + " " + responseMessage);
+        if (responseCode != HttpsURLConnection.HTTP_OK) {
             connection.disconnect();
-            return null;
+            return new Exception(configurationUrl + " " + responseMessage);
         }
         InputStream inputStream;
         try {
             inputStream = new BufferedInputStream(connection.getInputStream());
         } catch (final IOException e) {
-            this.error = e;
             connection.disconnect();
-            return null;
+            return e;
         }
         final StringBuilder jsonDataBuilder = new StringBuilder();
         final byte[] buffer = new byte[1024];
@@ -81,21 +81,24 @@ public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, S
                 numberOfBytes = inputStream.read(buffer);
             }
         } catch (final IOException e) {
-            this.error = e;
             connection.disconnect();
-            return null;
+            return e;
         }
         connection.disconnect();
         jsonDataBuilder.trimToSize();
-        return jsonDataBuilder.toString();
+        try {
+            NinchatSessionManager.setConfiguration(jsonDataBuilder.toString());
+        } catch (final JSONException e) {
+            return e;
+        }
+        return null;
     }
 
     @Override
-    protected void onPostExecute(final String data) {
-        NinchatSessionManager.setConfiguration(data);
+    protected void onPostExecute(final Exception error) {
         final NinchatSessionManager.ConfigurationFetchListener listener = listenerWeakReference.get();
         if (listener != null) {
-            if (data == null) {
+            if (error != null) {
                 listener.failure(error);
             } else {
                 listener.success();
