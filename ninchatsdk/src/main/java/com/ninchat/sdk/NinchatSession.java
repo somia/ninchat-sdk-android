@@ -1,7 +1,6 @@
 package com.ninchat.sdk;
 
 import android.app.Activity;
-import android.content.Intent;
 
 import com.ninchat.sdk.activities.NinchatActivity;
 
@@ -44,6 +43,7 @@ public final class NinchatSession {
     }
 
     public static void start(final Activity activity, final int requestCode, final String configurationKey, final String siteSecret, final boolean showLauncher) {
-        activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, configurationKey, siteSecret, showLauncher), requestCode);
+        activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, showLauncher), requestCode);
+        NinchatSessionManager.init(activity, configurationKey, siteSecret);
     }
 }

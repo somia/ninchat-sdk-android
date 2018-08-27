@@ -1,6 +1,6 @@
 package com.ninchat.sdk;
 
-import android.content.res.Resources;
+import android.app.Activity;
 
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
 
@@ -12,23 +12,33 @@ import org.json.JSONObject;
  */
 public final class NinchatSessionManager {
 
-    public interface ConfigurationFetchListener {
-        void success();
-        void failure(final Exception error);
+    static void init(final Activity activity, final String configurationKey, final String siteSecret) {
+        instance = new NinchatSessionManager(siteSecret);
+        NinchatConfigurationFetchTask.start(activity.getApplicationContext(), activity.getResources().getString(R.string.__ninchat_server) + activity.getResources().getString(R.string.__ninchat_config_endpoint, configurationKey));
     }
 
-    protected static JSONObject configuration;
+    public static final String CONFIGURATION_FETCH_ERROR = "configurationFetchError";
+    public static final String CONFIGURATION_FETCH_ERROR_REASON = "configurationFetchErrorReason";
 
-    public static void setConfiguration(final String config) throws JSONException {
+    protected NinchatSessionManager(final String siteSecret) {
+        this.siteSecret = siteSecret;
+    }
+
+    public static NinchatSessionManager getInstance() {
+        return instance;
+    }
+
+    protected static NinchatSessionManager instance;
+
+    protected String siteSecret;
+    protected JSONObject configuration;
+
+    public void setConfiguration(final String config) throws JSONException {
         try {
             configuration = new JSONObject(config);
         } catch (final JSONException e) {
             configuration = null;
             throw e;
         }
-    }
-
-    public static void fetchConfig(final Resources resources, final ConfigurationFetchListener listener, final String configurationKey) {
-        NinchatConfigurationFetchTask.start(listener,resources.getString(R.string.__ninchat_server) + resources.getString(R.string.__ninchat_config_endpoint, configurationKey));
     }
 }

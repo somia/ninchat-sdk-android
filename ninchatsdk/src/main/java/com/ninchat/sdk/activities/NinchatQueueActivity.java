@@ -1,7 +1,12 @@
 package com.ninchat.sdk.activities;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import com.ninchat.sdk.NinchatSessionManager;
@@ -14,11 +19,8 @@ public final class NinchatQueueActivity extends BaseActivity {
 
     static final int REQUEST_CODE = NinchatQueueActivity.class.hashCode() & 0xffff;
 
-    protected static final String CONFIGURATION_KEY = "configurationKey";
-
-    static Intent getLaunchIntent(final Context context, final String configurationKey) {
-        return new Intent(context, NinchatQueueActivity.class)
-                .putExtra(CONFIGURATION_KEY, configurationKey);
+    static Intent getLaunchIntent(final Context context) {
+        return new Intent(context, NinchatQueueActivity.class);
     }
 
     @Override
@@ -26,22 +28,20 @@ public final class NinchatQueueActivity extends BaseActivity {
         return R.layout.activity_ninchat_queue;
     }
 
-    protected NinchatSessionManager.ConfigurationFetchListener configurationFetchListener = new NinchatSessionManager.ConfigurationFetchListener() {
+    private BroadcastReceiver configurationFetchStatusBroadcastReceiver = new BroadcastReceiver() {
         @Override
-        public void success() {
-        }
-
-        @Override
-        public void failure(final Exception error) {
-            Toast.makeText(NinchatQueueActivity.this, getString(R.string.ninchat_configuration_fetch_error, error.getMessage()), Toast.LENGTH_LONG).show();;
+        public void onReceive(final Context context, final Intent intent) {
+            final String action = intent.getAction();
+            if (action != null && action.equals(NinchatSessionManager.CONFIGURATION_FETCH_ERROR)) {
+                final Exception error = (Exception) intent.getSerializableExtra(NinchatSessionManager.CONFIGURATION_FETCH_ERROR_REASON);
+                Toast.makeText(NinchatQueueActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+            }
         }
     };
 
     @Override
-    protected void handleOnCreateIntent(Intent intent) {
-        final String configurationKey = intent.getStringExtra(CONFIGURATION_KEY);
-        if (configurationKey != null) {
-            NinchatSessionManager.fetchConfig(getResources(), configurationFetchListener, configurationKey);
-        }
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        LocalBroadcastManager.getInstance(this).registerReceiver(configurationFetchStatusBroadcastReceiver, new IntentFilter(NinchatSessionManager.CONFIGURATION_FETCH_ERROR));
     }
 }

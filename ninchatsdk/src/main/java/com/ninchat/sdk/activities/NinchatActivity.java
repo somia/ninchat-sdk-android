@@ -1,8 +1,13 @@
 package com.ninchat.sdk.activities;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.widget.Toast;
 
@@ -12,14 +17,10 @@ import com.ninchat.sdk.R;
 
 public final class NinchatActivity extends BaseActivity {
 
-    protected static final String CONFIGURATION_KEY = "configurationKey";
-    protected static final String SITE_SECRET = "siteSecret";
     protected static final String SHOW_LAUNCHER = "showLauncher";
 
-    public static Intent getLaunchIntent(final Context context, final String configurationKey, final String siteSecret, final boolean showLauncher) {
+    public static Intent getLaunchIntent(final Context context, final boolean showLauncher) {
         return new Intent(context, NinchatActivity.class)
-                .putExtra(CONFIGURATION_KEY, configurationKey)
-                .putExtra(SITE_SECRET, siteSecret)
                 .putExtra(SHOW_LAUNCHER, showLauncher);
     }
 
@@ -28,28 +29,37 @@ public final class NinchatActivity extends BaseActivity {
         return R.layout.activity_ninchat;
     }
 
-    protected NinchatSessionManager.ConfigurationFetchListener configurationFetchListener = new NinchatSessionManager.ConfigurationFetchListener() {
-        @Override
-        public void success() {
-        }
-
-        @Override
-        public void failure(final Exception error) {
-            Toast.makeText(NinchatActivity.this, getString(R.string.ninchat_configuration_fetch_error, error.getMessage()), Toast.LENGTH_LONG).show();
-        }
-    };
-
     protected boolean showLauncher = true;
 
     @Override
     protected void handleOnCreateIntent(Intent intent) {
-        final String configurationKey = intent.getStringExtra(CONFIGURATION_KEY);
         showLauncher = intent.getBooleanExtra(SHOW_LAUNCHER, true);
-        if (showLauncher) {
-            NinchatSessionManager.fetchConfig(getResources(), configurationFetchListener, configurationKey);
-        } else {
-            openQueueActivity(configurationKey);
+        if (!showLauncher) {
+            openQueueActivity();
         }
+    }
+
+    private BroadcastReceiver configurationFetchStatusBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            final String action = intent.getAction();
+            if (action != null && action.equals(NinchatSessionManager.CONFIGURATION_FETCH_ERROR)) {
+                final Exception error = (Exception) intent.getSerializableExtra(NinchatSessionManager.CONFIGURATION_FETCH_ERROR_REASON);
+                Toast.makeText(NinchatActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    };
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        LocalBroadcastManager.getInstance(this).registerReceiver(configurationFetchStatusBroadcastReceiver, new IntentFilter(NinchatSessionManager.CONFIGURATION_FETCH_ERROR));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(configurationFetchStatusBroadcastReceiver);
     }
 
     public void onBlogLinkClick(final View view) {
@@ -57,11 +67,11 @@ public final class NinchatActivity extends BaseActivity {
     }
 
     public void onStartButtonClick(final View view) {
-       openQueueActivity(null);
+       openQueueActivity();
     }
 
-    private void openQueueActivity(final String configurationKey) {
-        startActivityForResult(NinchatQueueActivity.getLaunchIntent(this, configurationKey), NinchatQueueActivity.REQUEST_CODE);
+    private void openQueueActivity() {
+        startActivityForResult(NinchatQueueActivity.getLaunchIntent(this), NinchatQueueActivity.REQUEST_CODE);
     }
 
     @Override

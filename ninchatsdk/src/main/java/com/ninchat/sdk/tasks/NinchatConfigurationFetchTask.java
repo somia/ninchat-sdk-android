@@ -1,6 +1,10 @@
 package com.ninchat.sdk.tasks;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.ninchat.sdk.NinchatSessionManager;
 
@@ -20,17 +24,18 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, Exception> {
 
-    public static void start(final NinchatSessionManager.ConfigurationFetchListener listener, final String configurationUrl) {
-        new NinchatConfigurationFetchTask(listener, configurationUrl).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    public static void start(final Context context, final String configurationUrl) {
+        new NinchatConfigurationFetchTask(context, configurationUrl).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    protected static final int TIMEOUT = 15000;
+    protected static final String TAG = NinchatConfigurationFetchTask.class.getSimpleName();
+    protected static final int TIMEOUT = 10000;
 
-    protected WeakReference<NinchatSessionManager.ConfigurationFetchListener> listenerWeakReference;
+    protected WeakReference<Context> contextWeakReference;
     protected String configurationUrl;
 
-    protected NinchatConfigurationFetchTask(final NinchatSessionManager.ConfigurationFetchListener listener, final String configurationUrl) {
-        this.listenerWeakReference = new WeakReference<>(listener);
+    protected NinchatConfigurationFetchTask(final Context context, final String configurationUrl) {
+        this.contextWeakReference = new WeakReference<>(context);
         this.configurationUrl = configurationUrl;
     }
 
@@ -40,12 +45,14 @@ public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, E
         try {
             url = new URL(configurationUrl);
         } catch (final MalformedURLException e) {
+            Log.e(TAG, "URL error", e);
             return e;
         }
         HttpsURLConnection connection;
         try {
             connection = (HttpsURLConnection) url.openConnection();
         } catch (final IOException e) {
+            Log.e(TAG, "Connection error", e);
             return e;
         }
         connection.setConnectTimeout(TIMEOUT);
@@ -57,6 +64,7 @@ public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, E
             responseMessage = connection.getResponseMessage();
         } catch (final IOException e) {
             connection.disconnect();
+            Log.e(TAG, "Connection error", e);
             return e;
         }
         if (responseCode != HttpsURLConnection.HTTP_OK) {
@@ -68,6 +76,7 @@ public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, E
             inputStream = new BufferedInputStream(connection.getInputStream());
         } catch (final IOException e) {
             connection.disconnect();
+            Log.e(TAG, "Connection error", e);
             return e;
         }
         final StringBuilder jsonDataBuilder = new StringBuilder();
@@ -82,13 +91,15 @@ public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, E
             }
         } catch (final IOException e) {
             connection.disconnect();
+            Log.e(TAG, "Connection error", e);
             return e;
         }
         connection.disconnect();
         jsonDataBuilder.trimToSize();
         try {
-            NinchatSessionManager.setConfiguration(jsonDataBuilder.toString());
+            NinchatSessionManager.getInstance().setConfiguration(jsonDataBuilder.toString());
         } catch (final JSONException e) {
+            Log.e(TAG, "Configuration parsing error", e);
             return e;
         }
         return null;
@@ -96,13 +107,11 @@ public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, E
 
     @Override
     protected void onPostExecute(final Exception error) {
-        final NinchatSessionManager.ConfigurationFetchListener listener = listenerWeakReference.get();
-        if (listener != null) {
-            if (error != null) {
-                listener.failure(error);
-            } else {
-                listener.success();
-            }
+        final Context context = contextWeakReference.get();
+        if (context != null && error != null) {
+            LocalBroadcastManager.getInstance(context)
+                    .sendBroadcast(new Intent(NinchatSessionManager.CONFIGURATION_FETCH_ERROR)
+                            .putExtra(NinchatSessionManager.CONFIGURATION_FETCH_ERROR_REASON, error));
         }
     }
 
