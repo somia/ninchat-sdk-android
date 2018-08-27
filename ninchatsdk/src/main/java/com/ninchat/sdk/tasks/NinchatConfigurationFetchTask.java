@@ -1,9 +1,6 @@
 package com.ninchat.sdk.tasks;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.ninchat.sdk.NinchatSessionManager;
@@ -13,7 +10,6 @@ import org.json.JSONException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -24,23 +20,22 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, Exception> {
 
-    public static void start(final Context context, final String configurationUrl) {
-        new NinchatConfigurationFetchTask(context, configurationUrl).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    public static void start(final String configurationKey) {
+        new NinchatConfigurationFetchTask(configurationKey).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     protected static final String TAG = NinchatConfigurationFetchTask.class.getSimpleName();
     protected static final int TIMEOUT = 10000;
 
-    protected WeakReference<Context> contextWeakReference;
-    protected String configurationUrl;
+    protected String configurationKey;
 
-    protected NinchatConfigurationFetchTask(final Context context, final String configurationUrl) {
-        this.contextWeakReference = new WeakReference<>(context);
-        this.configurationUrl = configurationUrl;
+    protected NinchatConfigurationFetchTask(final String configurationKey) {
+        this.configurationKey = configurationKey;
     }
 
     @Override
     protected Exception doInBackground(Void... voids) {
+        final String configurationUrl = "https://" + NinchatSessionManager.getServer() + "/config/" + configurationKey;
         URL url;
         try {
             url = new URL(configurationUrl);
@@ -107,11 +102,8 @@ public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, E
 
     @Override
     protected void onPostExecute(final Exception error) {
-        final Context context = contextWeakReference.get();
-        if (context != null && error != null) {
-            LocalBroadcastManager.getInstance(context)
-                    .sendBroadcast(new Intent(NinchatSessionManager.CONFIGURATION_FETCH_ERROR)
-                            .putExtra(NinchatSessionManager.CONFIGURATION_FETCH_ERROR_REASON, error));
+        if (error != null) {
+            NinchatSessionManager.getInstance().sessionError(error);
         }
     }
 

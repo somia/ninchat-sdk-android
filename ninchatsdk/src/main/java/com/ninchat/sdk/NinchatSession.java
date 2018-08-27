@@ -44,6 +44,6 @@ public final class NinchatSession {
 
     public static void start(final Activity activity, final int requestCode, final String configurationKey, final String siteSecret, final boolean showLauncher) {
         activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, showLauncher), requestCode);
-        NinchatSessionManager.init(activity, configurationKey, siteSecret);
+        NinchatSessionManager.init(activity.getApplicationContext(), configurationKey, siteSecret);
     }
 }
