@@ -4,23 +4,42 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/message_list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        tools:listitem="@layout/item_chat_message"/>
-
     <LinearLayout
+        android:id="@+id/send_message_container"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
 
         <EditText
+            android:id="@+id/message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/ninchat_chat_enter_message"
             android:textColorHint="@color/ninchat_colorAccent"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Send"
+                android:textSize="15sp"
+                android:textColor="@color/ninchat_colorAccent"
+                android:onClick="onSendClick"
+                android:layout_alignParentEnd="true"/>
+        </RelativeLayout>
     </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/message_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_above="@id/send_message_container"
+        android:layout_alignParentTop="true"
+        tools:listitem="@layout/item_chat_message"/>
 
 </RelativeLayout>

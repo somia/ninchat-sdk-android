@@ -18,7 +18,7 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 23/08/2018.
  */
-public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, Exception> {
+public final class NinchatConfigurationFetchTask extends BaseTask {
 
     public static void start(final String configurationKey) {
         new NinchatConfigurationFetchTask(configurationKey).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -98,13 +98,6 @@ public final class NinchatConfigurationFetchTask extends AsyncTask<Void, Void, E
             return e;
         }
         return null;
-    }
-
-    @Override
-    protected void onPostExecute(final Exception error) {
-        if (error != null) {
-            NinchatSessionManager.getInstance().sessionError(error);
-        }
     }
 
     private void clearBuffer(final byte[] buffer) {

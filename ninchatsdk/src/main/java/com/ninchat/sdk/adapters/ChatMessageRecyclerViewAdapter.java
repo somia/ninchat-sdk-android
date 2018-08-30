@@ -2,9 +2,11 @@ package com.ninchat.sdk.adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.ninchat.sdk.R;
 
@@ -23,19 +25,26 @@ public final class ChatMessageRecyclerViewAdapter extends RecyclerView.Adapter<C
             super(itemView);
         }
 
-        void bind(final Object data) {
+        void bind(final Pair<String, Boolean> data) {
+            itemView.findViewById(R.id.start_margin).setVisibility(data.second ? View.VISIBLE : View.GONE);
+            itemView.findViewById(R.id.end_margin).setVisibility(data.second ? View.GONE : View.VISIBLE);
+            if (data.second) {
+                itemView.findViewById(R.id.message_container).setBackgroundResource(R.color.ninchat_start_header_background);
+            }
+            final TextView message = itemView.findViewById(R.id.message_content);
+            message.setText(data.first);
         }
     }
 
-    private List<Object> data;
+    private List<Pair<String, Boolean>> data;
 
     public ChatMessageRecyclerViewAdapter() {
         this.data = new ArrayList<>();
     }
 
-    public void add(final Object data) {
-        this.data.add(data);
-        notifyItemInserted(this.data.size());
+    public void add(final String data, final boolean isRemoteMessage) {
+        this.data.add(new Pair<>(data, isRemoteMessage));
+        notifyItemInserted(this.data.size()-1);
     }
 
     @Override
