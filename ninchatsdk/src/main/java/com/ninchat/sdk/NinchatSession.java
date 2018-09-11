@@ -1,6 +1,7 @@
 package com.ninchat.sdk;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.ninchat.sdk.activities.NinchatActivity;
 
@@ -24,26 +25,26 @@ public final class NinchatSession {
 
     }
 
+    public static final class Broadcast {
+        public static final String QUEUES_UPDATED = BuildConfig.APPLICATION_ID + ".QUEUES_UPDATED";
+    }
+
+    public NinchatSession(final Context applicationContext, final String configurationKey, final String siteSecret) {
+        NinchatSessionManager.init(applicationContext, configurationKey, siteSecret);
+    }
+
     public static final int NINCHAT_SESSION_REQUEST_CODE = NinchatSession.class.hashCode() & 0xffff;
 
-    public static void start(final Activity activity, final String configurationKey) {
-        start(activity, NINCHAT_SESSION_REQUEST_CODE, configurationKey, null, false);
+    public void start(final Activity activity) {
+        start(activity, NINCHAT_SESSION_REQUEST_CODE);
     }
 
-    public static void start(final Activity activity, final String configurationKey, final String siteSecret) {
-        start(activity, NINCHAT_SESSION_REQUEST_CODE, configurationKey, siteSecret, false);
+    public void start(final Activity activity, final int requestCode) {
+        start(activity, requestCode, null);
     }
 
-    public static void start(final Activity activity, final int requestCode, final String configurationKey) {
-        start(activity, requestCode, configurationKey, null, false);
+    public void start(final Activity activity, final int requestCode, final String queueId) {
+        activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, queueId), requestCode);
     }
 
-    public static void start(final Activity activity, final int requestCode, final String configurationKey, final String siteSecret) {
-        start(activity, requestCode, configurationKey, siteSecret, false);
-    }
-
-    public static void start(final Activity activity, final int requestCode, final String configurationKey, final String siteSecret, final boolean showLauncher) {
-        activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, showLauncher), requestCode);
-        NinchatSessionManager.init(activity.getApplicationContext(), configurationKey, siteSecret);
-    }
 }

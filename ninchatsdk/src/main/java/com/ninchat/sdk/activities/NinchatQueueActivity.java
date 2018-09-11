@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 
@@ -18,8 +19,10 @@ public final class NinchatQueueActivity extends BaseActivity {
 
     static final int REQUEST_CODE = NinchatQueueActivity.class.hashCode() & 0xffff;
 
-    static Intent getLaunchIntent(final Context context) {
-        return new Intent(context, NinchatQueueActivity.class);
+    protected final static String QUEUE_ID = "queueId";
+
+    static Intent getLaunchIntent(final Context context, final String queueId) {
+        return new Intent(context, NinchatQueueActivity.class).putExtra(QUEUE_ID, queueId);
     }
 
     @Override
@@ -45,42 +48,24 @@ public final class NinchatQueueActivity extends BaseActivity {
         }
     };
 
-    protected BroadcastReceiver queuesFoundBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (NinchatSessionManager.Broadcast.QUEUES_FOUND.equals(action)) {
-                joinQueue();
-            }
-        }
-    };
+    private String queueId;
 
-    private void joinQueue() {
-        NinchatSessionManager.joinQueue();
+    @Override
+    protected void handleOnCreateIntent(Intent intent) {
+        super.handleOnCreateIntent(intent);
+        queueId = intent.getStringExtra(QUEUE_ID);
     }
-
-    private boolean hasQueues = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.registerReceiver(channelJoinedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_JOINED));
-        hasQueues = NinchatSessionManager.getInstance().hasQueues();
-        if (!hasQueues) {
-            localBroadcastManager.registerReceiver(queuesFoundBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.QUEUES_FOUND));
-        } else {
-            joinQueue();
-        }
+        LocalBroadcastManager.getInstance(this).registerReceiver(channelJoinedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_JOINED));
+        NinchatSessionManager.joinQueue(queueId);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.unregisterReceiver(channelJoinedBroadcastReceiver);
-        if (!hasQueues) {
-            localBroadcastManager.unregisterReceiver(queuesFoundBroadcastReceiver);
-        }
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(channelJoinedBroadcastReceiver);
     }
 }

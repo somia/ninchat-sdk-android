@@ -39,7 +39,6 @@ import java.util.Map;
 public final class NinchatSessionManager implements SessionEventHandler, EventHandler, CloseHandler, ConnStateHandler, LogHandler {
 
     public static final class Broadcast {
-        public static final String QUEUES_FOUND = BuildConfig.APPLICATION_ID + ".queuesFound";
         public static final String CHANNEL_JOINED = BuildConfig.APPLICATION_ID + ".channelJoined";
         public static final String CHANNEL_CLOSED = BuildConfig.APPLICATION_ID + ".channelClosed";
         public static final String NEW_MESSAGE = BuildConfig.APPLICATION_ID + ".newMessage";
@@ -59,7 +58,7 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
         return instance;
     }
 
-    public static void joinQueue() {
+    public static void joinQueue(final String queueId) {
         NinchatJoinQueueTask.start(instance.queues.get(0).getId());
     }
 
@@ -193,7 +192,7 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
         }
         final Context context = contextWeakReference.get();
         if (context != null && queues.size() > 0) {
-            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.QUEUES_FOUND));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSession.Broadcast.QUEUES_UPDATED));
         }
     }
 
@@ -303,6 +302,9 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
 
     public void close() {
         session.close();
+    }
+
+    public void fetchQueues() {
     }
 
     @Override
