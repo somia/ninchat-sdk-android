@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <Button
+        android:id="@+id/queue_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        tools:text="Queue"
+        android:background="@drawable/ninchat_rounded_button"
+        android:backgroundTint="@color/ninchat_colorAccent"
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>

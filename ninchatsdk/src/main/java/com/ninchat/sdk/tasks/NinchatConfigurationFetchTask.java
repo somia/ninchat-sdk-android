@@ -36,6 +36,7 @@ public final class NinchatConfigurationFetchTask extends BaseTask {
     @Override
     protected Exception doInBackground(Void... voids) {
         final String configurationUrl = "https://" + NinchatSessionManager.getServer() + "/config/" + configurationKey;
+        Log.i(TAG, "Fetching configuration...");
         URL url;
         try {
             url = new URL(configurationUrl);

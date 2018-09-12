@@ -1,5 +1,6 @@
 package com.ninchat.sdk;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -18,6 +19,7 @@ import com.ninchat.client.Props;
 import com.ninchat.client.Session;
 import com.ninchat.client.SessionEventHandler;
 import com.ninchat.client.Strings;
+import com.ninchat.sdk.adapters.QueueListAdapter;
 import com.ninchat.sdk.models.NinchatQueue;
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
 import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
@@ -59,7 +61,7 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
     }
 
     public static void joinQueue(final String queueId) {
-        NinchatJoinQueueTask.start(instance.queues.get(0).getId());
+        NinchatJoinQueueTask.start(queueId);
     }
 
     protected static NinchatSessionManager instance;
@@ -70,7 +72,7 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
         this.siteSecret = siteSecret;
         this.configuration = null;
         this.session = null;
-        this.queues = new ArrayList<>();
+        this.queueListAdapter = new QueueListAdapter();
     }
 
     protected WeakReference<Context> contextWeakReference;
@@ -78,12 +80,14 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
 
     protected JSONObject configuration;
     protected Session session;
-    protected List<NinchatQueue> queues;
+    protected QueueListAdapter queueListAdapter;
     protected String channelId;
 
     public void setConfiguration(final String config) throws JSONException {
         try {
+            Log.v(TAG, "Got configuration: " + config);
             this.configuration = new JSONObject(config);
+            Log.i(TAG, "Configuration fetched successfully!");
         } catch (final JSONException e) {
             this.configuration = null;
             throw e;
@@ -116,8 +120,13 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
         return session;
     }
 
+    public QueueListAdapter getQueueListAdapter(final Activity activity) {
+        queueListAdapter.setActivity(activity);
+        return queueListAdapter;
+    }
+
     public boolean hasQueues() {
-        return queues.size() > 0;
+        return queueListAdapter.getQueues().size() > 0;
     }
 
     private class QueuePropVisitor implements PropVisitor {
@@ -151,7 +160,6 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
     }
 
     private void parseQueues(final Props params) {
-        queues.clear();
         Props remoteQueues;
         try {
             remoteQueues = params.getObject("realm_queues");
@@ -188,10 +196,10 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
                 sessionError(e);
                 return;
             }
-            queues.add(new NinchatQueue(queueId, name));
+            queueListAdapter.addQueue(new NinchatQueue(queueId, name));
         }
         final Context context = contextWeakReference.get();
-        if (context != null && queues.size() > 0) {
+        if (context != null && hasQueues()) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSession.Broadcast.QUEUES_UPDATED));
         }
     }
@@ -302,9 +310,6 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
 
     public void close() {
         session.close();
-    }
-
-    public void fetchQueues() {
     }
 
     @Override

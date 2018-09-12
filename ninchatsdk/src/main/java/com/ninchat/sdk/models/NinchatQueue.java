@@ -16,4 +16,8 @@ public final class NinchatQueue {
     public String getId() {
         return id;
     }
+
+    public String getName() {
+        return name;
+    }
 }

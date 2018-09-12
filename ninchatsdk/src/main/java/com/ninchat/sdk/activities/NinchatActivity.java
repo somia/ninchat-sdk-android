@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.ninchat.sdk.NinchatSession;
@@ -44,8 +45,7 @@ public final class NinchatActivity extends BaseActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (NinchatSession.Broadcast.QUEUES_UPDATED.equals(action)) {
-                // Enable the button
-                findViewById(R.id.start_button).setEnabled(true);
+                findViewById(R.id.queue_progress).setVisibility(View.GONE);
             }
         }
     };
@@ -54,6 +54,11 @@ public final class NinchatActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LocalBroadcastManager.getInstance(this).registerReceiver(queuesUpdatedReceiver, new IntentFilter(NinchatSession.Broadcast.QUEUES_UPDATED));
+        if (NinchatSessionManager.getInstance().hasQueues()) {
+            findViewById(R.id.queue_progress).setVisibility(View.GONE);
+        }
+        final RecyclerView queueList = findViewById(R.id.queue_list);
+        queueList.setAdapter(NinchatSessionManager.getInstance().getQueueListAdapter(this));
     }
 
     @Override
@@ -66,17 +71,13 @@ public final class NinchatActivity extends BaseActivity {
         startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://blog.ninchat.com")));
     }
 
-    public void onStartButtonClick(final View view) {
-        openQueueActivity();
-    }
-
     private void openQueueActivity() {
         startActivityForResult(NinchatQueueActivity.getLaunchIntent(this, queueId), NinchatQueueActivity.REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NinchatQueueActivity.REQUEST_CODE) {
+        if (requestCode == NinchatQueueActivity.REQUEST_CODE || requestCode == NinchatSession.NINCHAT_SESSION_REQUEST_CODE) {
             if (resultCode == RESULT_OK || queueId != null) {
                 setResult(resultCode, data);
                 finish();
