@@ -24,6 +24,7 @@ import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
 import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
 import com.ninchat.sdk.tasks.NinchatListQueuesTask;
 import com.ninchat.sdk.tasks.NinchatOpenSessionTask;
+import com.ninchat.sdk.tasks.NinchatSendMessageTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -280,23 +281,7 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
     }
 
     public void sendMessage(final String message) {
-        final JSONObject data = new JSONObject();
-        try {
-            data.put("text", message);
-        } catch (final JSONException e) {
-            return;
-        }
-        final Props params = new Props();
-        params.setString("action", "send_message");
-        params.setString("message_type", "ninchat.com/text");
-        params.setString("channel_id", channelId);
-        final Payload payload = new Payload();
-        payload.append(data.toString().getBytes());
-        try {
-            session.send(params, payload);
-        } catch (final Exception e) {
-            // Ignore
-        }
+        NinchatSendMessageTask.start(message, channelId);
     }
 
     public String getRealmId() {
