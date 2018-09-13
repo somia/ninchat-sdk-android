@@ -14,10 +14,10 @@ import android.view.View;
 import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.adapters.QueueListAdapter;
+import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 
 
-public final class NinchatActivity extends BaseActivity {
+public final class NinchatActivity extends NinchatBaseActivity {
 
     protected static final String QUEUE_ID = "queueId";
 
@@ -59,9 +59,9 @@ public final class NinchatActivity extends BaseActivity {
             findViewById(R.id.queue_progress).setVisibility(View.GONE);
         }
         final RecyclerView queueList = findViewById(R.id.queue_list);
-        final QueueListAdapter queueListAdapter = NinchatSessionManager.getInstance().getQueueListAdapter();
-        queueListAdapter.setActivity(this);
-        queueList.setAdapter(queueListAdapter);
+        final NinchatQueueListAdapter ninchatQueueListAdapter = NinchatSessionManager.getInstance().getNinchatQueueListAdapter();
+        ninchatQueueListAdapter.setActivity(this);
+        queueList.setAdapter(ninchatQueueListAdapter);
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.ninchat.sdk.NinchatSessionManager;
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 29/08/2018.
  */
-public final class NinchatJoinQueueTask extends BaseTask {
+public final class NinchatJoinQueueTask extends NinchatBaseTask {
 
     public static void start(final String queueId) {
         new NinchatJoinQueueTask(queueId).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

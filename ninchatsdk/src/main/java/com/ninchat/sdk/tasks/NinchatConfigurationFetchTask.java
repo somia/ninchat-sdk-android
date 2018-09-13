@@ -18,7 +18,7 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 23/08/2018.
  */
-public final class NinchatConfigurationFetchTask extends BaseTask {
+public final class NinchatConfigurationFetchTask extends NinchatBaseTask {
 
     public static void start(final String configurationKey) {
         new NinchatConfigurationFetchTask(configurationKey).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

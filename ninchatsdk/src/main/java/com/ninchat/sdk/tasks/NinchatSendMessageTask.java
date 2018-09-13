@@ -9,7 +9,7 @@ import com.ninchat.sdk.NinchatSessionManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public final class NinchatSendMessageTask extends BaseTask {
+public final class NinchatSendMessageTask extends NinchatBaseTask {
 
     public static void start(final String message, final String channelId) {
         new NinchatSendMessageTask(message, channelId).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

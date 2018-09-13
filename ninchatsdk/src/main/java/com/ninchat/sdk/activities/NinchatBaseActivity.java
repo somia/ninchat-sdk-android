@@ -13,7 +13,7 @@ import com.ninchat.sdk.R;
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 17/08/2018.
  */
-abstract class BaseActivity extends Activity {
+abstract class NinchatBaseActivity extends Activity {
 
     abstract protected @LayoutRes int getLayoutRes();
 

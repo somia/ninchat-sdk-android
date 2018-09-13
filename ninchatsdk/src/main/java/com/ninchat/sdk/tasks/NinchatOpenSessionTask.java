@@ -11,7 +11,7 @@ import com.ninchat.sdk.NinchatSessionManager;
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 27/08/2018.
  */
-public final class NinchatOpenSessionTask extends BaseTask {
+public final class NinchatOpenSessionTask extends NinchatBaseTask {
 
     public static void start(final String siteSecret) {
         new NinchatOpenSessionTask(siteSecret).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

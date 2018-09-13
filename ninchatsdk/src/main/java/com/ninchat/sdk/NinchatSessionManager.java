@@ -18,7 +18,7 @@ import com.ninchat.client.Props;
 import com.ninchat.client.Session;
 import com.ninchat.client.SessionEventHandler;
 import com.ninchat.client.Strings;
-import com.ninchat.sdk.adapters.QueueListAdapter;
+import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 import com.ninchat.sdk.models.NinchatQueue;
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
 import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
@@ -30,7 +30,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +71,7 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
         this.siteSecret = siteSecret;
         this.configuration = null;
         this.session = null;
-        this.queueListAdapter = new QueueListAdapter();
+        this.ninchatQueueListAdapter = new NinchatQueueListAdapter();
     }
 
     protected WeakReference<Context> contextWeakReference;
@@ -80,7 +79,7 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
 
     protected JSONObject configuration;
     protected Session session;
-    protected QueueListAdapter queueListAdapter;
+    protected NinchatQueueListAdapter ninchatQueueListAdapter;
     protected String channelId;
 
     public void setConfiguration(final String config) throws JSONException {
@@ -120,16 +119,16 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
         return session;
     }
 
-    public QueueListAdapter getQueueListAdapter() {
-        return queueListAdapter;
+    public NinchatQueueListAdapter getNinchatQueueListAdapter() {
+        return ninchatQueueListAdapter;
     }
 
     public List<NinchatQueue> getQueues() {
-        return queueListAdapter.getQueues();
+        return ninchatQueueListAdapter.getQueues();
     }
 
     public boolean hasQueues() {
-        return queueListAdapter.getQueues().size() > 0;
+        return ninchatQueueListAdapter.getQueues().size() > 0;
     }
 
     private class QueuePropVisitor implements PropVisitor {
@@ -199,7 +198,7 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
                 sessionError(e);
                 return;
             }
-            queueListAdapter.addQueue(new NinchatQueue(queueId, name));
+            ninchatQueueListAdapter.addQueue(new NinchatQueue(queueId, name));
         }
         final Context context = contextWeakReference.get();
         if (context != null && hasQueues()) {

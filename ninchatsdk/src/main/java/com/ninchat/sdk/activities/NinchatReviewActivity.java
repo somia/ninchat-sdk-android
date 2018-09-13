@@ -1,14 +1,19 @@
 package com.ninchat.sdk.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 
 import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.R;
 
-public final class NinchatReviewActivity extends BaseActivity {
+public final class NinchatReviewActivity extends NinchatBaseActivity {
 
     static final int REQUEST_CODE = NinchatReviewActivity.class.hashCode() & 0xffff;
+
+    static Intent getLaunchIntent(final Context context) {
+        return new Intent(context, NinchatReviewActivity.class);
+    }
 
     @Override
     protected int getLayoutRes() {

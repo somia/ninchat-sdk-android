@@ -19,14 +19,14 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class QueueListAdapter extends RecyclerView.Adapter<QueueListAdapter.QueueViewHolder> {
+public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQueueListAdapter.NinchatQueueViewHolder> {
 
-    public final class QueueViewHolder extends RecyclerView.ViewHolder {
-        public QueueViewHolder(View itemView) {
+    final class NinchatQueueViewHolder extends RecyclerView.ViewHolder {
+        NinchatQueueViewHolder(View itemView) {
             super(itemView);
         }
 
-        public void bind(final NinchatQueue queue) {
+        void bind(final NinchatQueue queue) {
             final Button button = itemView.findViewById(R.id.queue_name);
             button.setText(queue.getName());
             button.setOnClickListener(new View.OnClickListener() {
@@ -54,12 +54,12 @@ public final class QueueListAdapter extends RecyclerView.Adapter<QueueListAdapte
 
     @NonNull
     @Override
-    public QueueViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new QueueViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_queue, parent, false));
+    public NinchatQueueViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new NinchatQueueViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_queue, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull QueueViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull NinchatQueueViewHolder holder, int position) {
         holder.bind(queues.get(position));
     }
 

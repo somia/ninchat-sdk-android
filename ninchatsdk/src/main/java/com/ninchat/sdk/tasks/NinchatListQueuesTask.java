@@ -9,7 +9,7 @@ import com.ninchat.sdk.NinchatSessionManager;
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 27/08/2018.
  */
-public final class NinchatListQueuesTask extends BaseTask {
+public final class NinchatListQueuesTask extends NinchatBaseTask {
 
     public static void start() {
         new NinchatListQueuesTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

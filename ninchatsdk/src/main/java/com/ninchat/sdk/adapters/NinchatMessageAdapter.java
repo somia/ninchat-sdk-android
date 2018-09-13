@@ -17,11 +17,11 @@ import java.util.List;
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
  */
-public final class ChatMessageRecyclerViewAdapter extends RecyclerView.Adapter<ChatMessageRecyclerViewAdapter.ChatMessageViewHolder> {
+public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMessageAdapter.NinchatMessageViewHolder> {
 
-    public class ChatMessageViewHolder extends RecyclerView.ViewHolder {
+    public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
 
-        public ChatMessageViewHolder(View itemView) {
+        public NinchatMessageViewHolder(View itemView) {
             super(itemView);
         }
 
@@ -38,7 +38,7 @@ public final class ChatMessageRecyclerViewAdapter extends RecyclerView.Adapter<C
 
     private List<Pair<String, Boolean>> data;
 
-    public ChatMessageRecyclerViewAdapter() {
+    public NinchatMessageAdapter() {
         this.data = new ArrayList<>();
     }
 
@@ -54,12 +54,12 @@ public final class ChatMessageRecyclerViewAdapter extends RecyclerView.Adapter<C
 
     @NonNull
     @Override
-    public ChatMessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ChatMessageViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_message, parent, false));
+    public NinchatMessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new NinchatMessageViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_message, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChatMessageViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull NinchatMessageViewHolder holder, int position) {
         holder.bind(data.get(position));
     }
 }

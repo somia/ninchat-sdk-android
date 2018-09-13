@@ -15,16 +15,16 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.adapters.ChatMessageRecyclerViewAdapter;
+import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
  */
-public final class NinchatChatActivity extends BaseActivity {
+public final class NinchatChatActivity extends NinchatBaseActivity {
 
     static int REQUEST_CODE = NinchatChatActivity.class.hashCode() & 0xffff;
 
-    private ChatMessageRecyclerViewAdapter messageAdapter;
+    private NinchatMessageAdapter messageAdapter;
     private boolean lastMessageWasRemote = false;
     private String lastSentMessage = null;
 
@@ -74,7 +74,7 @@ public final class NinchatChatActivity extends BaseActivity {
         localBroadcastManager.registerReceiver(channelClosedReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_CLOSED));
         localBroadcastManager.registerReceiver(messageReceiver, new IntentFilter(NinchatSessionManager.Broadcast.NEW_MESSAGE));
         final RecyclerView messages = findViewById(R.id.message_list);
-        messageAdapter = new ChatMessageRecyclerViewAdapter();
+        messageAdapter = new NinchatMessageAdapter();
         messages.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         messages.setAdapter(messageAdapter);
     }
