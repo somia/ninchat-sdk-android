@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 24/08/2018.
  */
-public final class NinchatSessionManager implements SessionEventHandler, EventHandler, CloseHandler, ConnStateHandler, LogHandler {
+public final class NinchatSessionManager {
 
     public static final class Broadcast {
         public static final String CHANNEL_JOINED = BuildConfig.APPLICATION_ID + ".channelJoined";
@@ -108,11 +108,62 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
 
     public void setSession(final Session session) {
         this.session = session;
-        this.session.setOnSessionEvent(this);
-        this.session.setOnEvent(this);
-        this.session.setOnClose(this);
-        this.session.setOnConnState(this);
-        this.session.setOnLog(this);
+        this.session.setOnSessionEvent(new SessionEventHandler() {
+            @Override
+            public void onSessionEvent(Props params) {
+                try {
+                    Log.v(TAG, "onSessionEvent: " + params.string());
+                    final String event = params.getString("event");
+                    if (event.equals("session_created")) {
+                        NinchatListQueuesTask.start();
+                    }
+                } catch (final Exception e) {
+                    Log.e(TAG, "Failed to get the event from " + params.string(), e);
+                }
+            }
+        });
+        this.session.setOnEvent(new EventHandler() {
+            @Override
+            public void onEvent(Props params, Payload payload, boolean lastReply) {
+                Log.v(TAG, "onEvent: " + params.string() + ", " + payload.string() + ", " + lastReply);
+                try {
+                    final String event = params.getString("event");
+                    if (event.equals("realm_queues_found")) {
+                        NinchatSessionManager.getInstance().parseQueues(params);
+                    } else if (event.equals("queue_updated")) {
+                        //NinchatSessionManager.getInstance().queueUpdated(params);
+                    } else if (event.equals("audience_enqueued")) {
+                        //NinchatSessionManager.getInstance().audienceEnqueued(params);
+                    } else if (event.equals("channel_joined")) {
+                        NinchatSessionManager.getInstance().channelJoined(params);
+                    } else if (event.equals("channel_updated")) {
+                        NinchatSessionManager.getInstance().channelUpdated(params);
+                    } else if (event.equals("message_received")) {
+                        NinchatSessionManager.getInstance().messageReceived(params, payload);
+                    }
+                } catch (final Exception e) {
+                    Log.e(TAG, "Failed to get the event from " + params.string(), e);
+                }
+            }
+        });
+        this.session.setOnClose(new CloseHandler() {
+            @Override
+            public void onClose() {
+                Log.v(TAG, "onClose");
+            }
+        });
+        this.session.setOnConnState(new ConnStateHandler() {
+            @Override
+            public void onConnState(String state) {
+                Log.v(TAG, "onConnState: " + state);
+            }
+        });
+        this.session.setOnLog(new LogHandler() {
+            @Override
+            public void onLog(String msg) {
+                Log.v(TAG, "onLog: " + msg);
+            }
+        });
     }
 
     public Session getSession() {
@@ -309,54 +360,4 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
         session.close();
     }
 
-    @Override
-    public void onSessionEvent(Props params) {
-        try {
-            Log.v(TAG, "onSessionEvent: " + params.string());
-            final String event = params.getString("event");
-            if (event.equals("session_created")) {
-                NinchatListQueuesTask.start();
-            }
-        } catch (final Exception e) {
-            Log.e(TAG, "Failed to get the event from " + params.string(), e);
-        }
-    }
-
-    @Override
-    public void onEvent(Props params, Payload payload, boolean lastReply) {
-        Log.v(TAG, "onEvent: " + params.string() + ", " + payload.string() + ", " + lastReply);
-        try {
-            final String event = params.getString("event");
-            if (event.equals("realm_queues_found")) {
-                parseQueues(params);
-            } else if (event.equals("queue_updated")) {
-                //queueUpdated(params);
-            } else if (event.equals("audience_enqueued")) {
-                //audienceEnqueued(params);
-            } else if (event.equals("channel_joined")) {
-                channelJoined(params);
-            } else if (event.equals("channel_updated")) {
-                channelUpdated(params);
-            } else if (event.equals("message_received")) {
-                messageReceived(params, payload);
-            }
-        } catch (final Exception e) {
-            Log.e(TAG, "Failed to get the event from " + params.string(), e);
-        }
-    }
-
-    @Override
-    public void onClose() {
-        Log.v(TAG, "onClose");
-    }
-
-    @Override
-    public void onConnState(String state) {
-        Log.v(TAG, "onConnState: " + state);
-    }
-
-    @Override
-    public void onLog(String msg) {
-        Log.v(TAG, "onLog: " + msg);
-    }
 }
