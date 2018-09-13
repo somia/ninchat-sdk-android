@@ -294,6 +294,17 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
         return null;
     }
 
+    public boolean showRating() {
+        if (configuration != null) {
+            try {
+                return configuration.getJSONObject("default").getBoolean("audienceRating");
+            } catch (final JSONException e) {
+                return false;
+            }
+        }
+        return false;
+    }
+
     public void close() {
         session.close();
     }

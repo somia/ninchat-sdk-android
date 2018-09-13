@@ -33,13 +33,32 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         return R.layout.activity_ninchat_chat;
     }
 
+    protected void quit(Intent data) {
+        if (data == null) {
+            data = new Intent();
+        }
+        NinchatChatActivity.this.setResult(RESULT_OK, data);
+        finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == NinchatReviewActivity.REQUEST_CODE) {
+            quit(data);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     protected BroadcastReceiver channelClosedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (NinchatSessionManager.Broadcast.CHANNEL_CLOSED.equals(action)) {
-                NinchatChatActivity.this.setResult(RESULT_OK);
-                finish();
+                if (NinchatSessionManager.getInstance().showRating()) {
+                    startActivityForResult(NinchatReviewActivity.getLaunchIntent(NinchatChatActivity.this), NinchatReviewActivity.REQUEST_CODE);
+                } else {
+                    quit(null);
+                }
             }
         }
     };
