@@ -2,10 +2,11 @@ package com.ninchat.sdk;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 
 import com.ninchat.sdk.activities.NinchatActivity;
-import com.ninchat.sdk.adapters.QueueListAdapter;
+import com.ninchat.sdk.models.NinchatQueue;
+
+import java.util.List;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 17/08/2018.
@@ -45,6 +46,10 @@ public final class NinchatSession {
         start(activity, requestCode, null);
     }
 
+    public void start(final Activity activity, final String queueId) {
+        start(activity, NINCHAT_SESSION_REQUEST_CODE, queueId);
+    }
+
     public void start(final Activity activity, final int requestCode, final String queueId) {
         activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, queueId), requestCode);
     }
@@ -53,8 +58,8 @@ public final class NinchatSession {
         NinchatSessionManager.getInstance().close();
     }
 
-    public RecyclerView.Adapter<QueueListAdapter.QueueViewHolder> getQueueAdapter(final Activity activity) {
-        return NinchatSessionManager.getInstance().getQueueListAdapter(activity);
+    public List<NinchatQueue> getQueues() {
+        return NinchatSessionManager.getInstance().getQueues();
     }
 
 }

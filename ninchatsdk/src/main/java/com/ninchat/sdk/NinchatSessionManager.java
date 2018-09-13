@@ -1,6 +1,5 @@
 package com.ninchat.sdk;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -120,9 +119,12 @@ public final class NinchatSessionManager implements SessionEventHandler, EventHa
         return session;
     }
 
-    public QueueListAdapter getQueueListAdapter(final Activity activity) {
-        queueListAdapter.setActivity(activity);
+    public QueueListAdapter getQueueListAdapter() {
         return queueListAdapter;
+    }
+
+    public List<NinchatQueue> getQueues() {
+        return queueListAdapter.getQueues();
     }
 
     public boolean hasQueues() {

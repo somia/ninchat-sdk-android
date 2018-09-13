@@ -13,7 +13,6 @@ import android.widget.Button;
 import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatActivity;
-import com.ninchat.sdk.activities.NinchatQueueActivity;
 import com.ninchat.sdk.models.NinchatQueue;
 
 import java.lang.ref.WeakReference;
@@ -43,14 +42,14 @@ public final class QueueListAdapter extends RecyclerView.Adapter<QueueListAdapte
     }
 
     protected List<NinchatQueue> queues = new ArrayList<>();
-    protected WeakReference<Activity> activityWeakReference = new WeakReference<>(null);
-
-    public List<NinchatQueue> getQueues() {
-        return queues;
-    }
+    protected WeakReference<Activity> activityWeakReference;
 
     public void setActivity(final Activity activity) {
         this.activityWeakReference = new WeakReference<>(activity);
+    }
+
+    public List<NinchatQueue> getQueues() {
+        return queues;
     }
 
     @NonNull
@@ -70,7 +69,7 @@ public final class QueueListAdapter extends RecyclerView.Adapter<QueueListAdapte
     }
 
     public void addQueue(final NinchatQueue queue) {
-        queues.add(queue);
+        this.queues.add(queue);
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
