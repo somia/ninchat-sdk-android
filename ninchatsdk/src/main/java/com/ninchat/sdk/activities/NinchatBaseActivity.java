@@ -46,4 +46,9 @@ abstract class NinchatBaseActivity extends Activity {
         setResult(RESULT_CANCELED, getOnCloseData());
         finish();
     }
+
+    @Override
+    public void onBackPressed() {
+        // Ignore back press, let's not navigate back
+    }
 }

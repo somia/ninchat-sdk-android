@@ -46,7 +46,9 @@ public final class NinchatActivity extends NinchatBaseActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (NinchatSession.Broadcast.QUEUES_UPDATED.equals(action)) {
-                findViewById(R.id.queue_progress).setVisibility(View.GONE);
+                final RecyclerView queueList = findViewById(R.id.queue_list);
+                final NinchatQueueListAdapter ninchatQueueListAdapter = NinchatSessionManager.getInstance().getNinchatQueueListAdapter(NinchatActivity.this);
+                queueList.setAdapter(ninchatQueueListAdapter);
             }
         }
     };
@@ -55,12 +57,12 @@ public final class NinchatActivity extends NinchatBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LocalBroadcastManager.getInstance(this).registerReceiver(queuesUpdatedReceiver, new IntentFilter(NinchatSession.Broadcast.QUEUES_UPDATED));
-        if (NinchatSessionManager.getInstance().hasQueues()) {
-            findViewById(R.id.queue_progress).setVisibility(View.GONE);
+        final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
+        if (sessionManager != null) {
+            final RecyclerView queueList = findViewById(R.id.queue_list);
+            final NinchatQueueListAdapter ninchatQueueListAdapter = sessionManager.getNinchatQueueListAdapter(this);
+            queueList.setAdapter(ninchatQueueListAdapter);
         }
-        final RecyclerView queueList = findViewById(R.id.queue_list);
-        final NinchatQueueListAdapter ninchatQueueListAdapter = NinchatSessionManager.getInstance().getNinchatQueueListAdapter(this);
-        queueList.setAdapter(ninchatQueueListAdapter);
     }
 
     @Override

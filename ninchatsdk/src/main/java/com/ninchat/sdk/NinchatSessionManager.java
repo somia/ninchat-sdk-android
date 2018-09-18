@@ -13,6 +13,7 @@ import com.ninchat.client.CloseHandler;
 import com.ninchat.client.ConnStateHandler;
 import com.ninchat.client.EventHandler;
 import com.ninchat.client.LogHandler;
+import com.ninchat.client.Objects;
 import com.ninchat.client.Payload;
 import com.ninchat.client.PropVisitor;
 import com.ninchat.client.Props;
@@ -21,10 +22,12 @@ import com.ninchat.client.SessionEventHandler;
 import com.ninchat.client.Strings;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 import com.ninchat.sdk.models.NinchatQueue;
+import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
 import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
 import com.ninchat.sdk.tasks.NinchatListQueuesTask;
 import com.ninchat.sdk.tasks.NinchatOpenSessionTask;
+import com.ninchat.sdk.tasks.NinchatSendBeginIceTask;
 import com.ninchat.sdk.tasks.NinchatSendMessageTask;
 
 import org.json.JSONException;
@@ -46,6 +49,31 @@ public final class NinchatSessionManager {
         public static final String CHANNEL_CLOSED = BuildConfig.APPLICATION_ID + ".channelClosed";
         public static final String NEW_MESSAGE = BuildConfig.APPLICATION_ID + ".newMessage";
         public static final String MESSAGE_CONTENT = NEW_MESSAGE + ".content";
+        public static final String WEBRTC_MESSAGE = BuildConfig.APPLICATION_ID + ".webRTCMessage";
+        public static final String WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type";
+        public static final String WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content";
+    }
+
+    public static final class MessageTypes {
+        public static final String TEXT = "ninchat.com/text";
+        public static final String WEBRTC_PREFIX = "ninchat.com/rtc/";
+        public static final String ICE_CANDIDATE = WEBRTC_PREFIX + "ice-candidate";
+        public static final String ANSWER = WEBRTC_PREFIX + "answer";
+        public static final String OFFER = WEBRTC_PREFIX + "offer";
+        public static final String CALL = WEBRTC_PREFIX + "call";
+        public static final String PICK_UP = WEBRTC_PREFIX + "pick-up";
+        public static final String HANG_UP = WEBRTC_PREFIX + "hang-up";
+        public static final String WEBRTC_SERVERS_PARSED = WEBRTC_PREFIX + "serversParsed";
+
+        static final List<String> WEBRTC_MESSAGE_TYPES = new ArrayList<>();
+        static {
+            WEBRTC_MESSAGE_TYPES.add(ICE_CANDIDATE);
+            WEBRTC_MESSAGE_TYPES.add(ANSWER);
+            WEBRTC_MESSAGE_TYPES.add(OFFER);
+            WEBRTC_MESSAGE_TYPES.add(CALL);
+            WEBRTC_MESSAGE_TYPES.add(PICK_UP);
+            WEBRTC_MESSAGE_TYPES.add(HANG_UP);
+        }
     }
 
     static void init(final Context context, final String configurationKey, final String siteSecret) {
@@ -59,6 +87,10 @@ public final class NinchatSessionManager {
 
     public static NinchatSessionManager getInstance() {
         return instance;
+    }
+
+    public Context getContext() {
+        return contextWeakReference.get();
     }
 
     public static void joinQueue(final String queueId) {
@@ -85,6 +117,8 @@ public final class NinchatSessionManager {
     protected List<NinchatQueue> queues;
     protected NinchatQueueListAdapter ninchatQueueListAdapter;
     protected String channelId;
+    protected List<NinchatWebRTCServerInfo> stunServers;
+    protected List<NinchatWebRTCServerInfo> turnServers;
 
     public void setConfiguration(final String config) throws JSONException {
         try {
@@ -144,6 +178,8 @@ public final class NinchatSessionManager {
                         NinchatSessionManager.getInstance().channelUpdated(params);
                     } else if (event.equals("message_received")) {
                         NinchatSessionManager.getInstance().messageReceived(params, payload);
+                    } else if (event.equals("ice_begun")) {
+                        NinchatSessionManager.getInstance().iceBegun(params);
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);
@@ -189,6 +225,14 @@ public final class NinchatSessionManager {
         return queues.size() > 0;
     }
 
+    public List<NinchatWebRTCServerInfo> getStunServers() {
+        return stunServers;
+    }
+
+    public List<NinchatWebRTCServerInfo> getTurnServers() {
+        return turnServers;
+    }
+
     private class QueuePropVisitor implements PropVisitor {
 
         private Map<String, Object> properties = new HashMap<>();
@@ -216,6 +260,11 @@ public final class NinchatSessionManager {
         @Override
         public void visitStringArray(String p0, Strings p1) throws Exception {
             properties.put(p0, p1);
+        }
+
+        @Override
+        public void visitObjectArray(String p0, Objects p1) throws Exception {
+
         }
     }
 
@@ -325,10 +374,24 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             return;
         }
-        if (!messageType.equals("ninchat.com/text")) {
+        final Context context = contextWeakReference.get();
+        if (context == null) {
             return;
         }
-        final Context context = contextWeakReference.get();
+        if (MessageTypes.WEBRTC_MESSAGE_TYPES.contains(messageType)) {
+            final StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < payload.length(); ++i) {
+                builder.append(new String(payload.get(i)));
+            }
+            LocalBroadcastManager.getInstance(context)
+                    .sendBroadcast(new Intent(Broadcast.WEBRTC_MESSAGE)
+                            .putExtra(Broadcast.WEBRTC_MESSAGE_TYPE, messageType)
+                            .putExtra(Broadcast.WEBRTC_MESSAGE_CONTENT, builder.toString()));
+            return;
+        }
+        if (!messageType.equals(MessageTypes.TEXT)) {
+            return;
+        }
         for (int i = 0; i < payload.length(); ++i) {
             try {
                 final JSONObject message = new JSONObject(new String(payload.get(i)));
@@ -341,8 +404,84 @@ public final class NinchatSessionManager {
         }
     }
 
+    private void iceBegun(final Props params) {
+        Objects stunServers;
+        try {
+            stunServers = params.getObjectArray("stun_servers");
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        try {
+            if (this.stunServers == null) {
+                this.stunServers = new ArrayList<>();
+            }
+            this.stunServers.clear();
+            for (int i = 0; i < stunServers.length(); ++i) {
+                final Props stunServerProps = stunServers.get(i);
+                final Strings urls = stunServerProps.getStringArray("urls");
+                for (int j = 0; j < urls.length(); ++j) {
+                    this.stunServers.add(new NinchatWebRTCServerInfo(urls.get(j)));
+                }
+            }
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        Objects turnServers;
+        try {
+            turnServers = params.getObjectArray("turn_servers");
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        try {
+            if (this.turnServers == null) {
+                this.turnServers = new ArrayList<>();
+            }
+            this.turnServers.clear();
+            for (int i = 0; i < turnServers.length(); ++i) {
+                final Props turnServerProps = turnServers.get(i);
+                final String username = turnServerProps.getString("username");
+                final String credential = turnServerProps.getString("credential");
+                final Strings urls = turnServerProps.getStringArray("urls");
+                for (int j = 0; j < urls.length(); ++j) {
+                    this.turnServers.add(new NinchatWebRTCServerInfo(urls.get(j), username, credential));
+                }
+            }
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        final Context context = contextWeakReference.get();
+        if (context != null) {
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.WEBRTC_MESSAGE)
+                    .putExtra(Broadcast.WEBRTC_MESSAGE_TYPE, MessageTypes.WEBRTC_SERVERS_PARSED));
+        }
+    }
+
     public void sendMessage(final String message) {
-        NinchatSendMessageTask.start(message, channelId);
+        try {
+            final JSONObject data = new JSONObject();
+            data.put("text", message);
+            NinchatSendMessageTask.start(MessageTypes.TEXT, data.toString(), channelId);
+        } catch (final JSONException e) {
+            sessionError(e);
+        }
+    }
+
+    public void sendWebRTCCallAnswer(final boolean answer) {
+        try {
+            final JSONObject data = new JSONObject();
+            data.put("answer", answer);
+            NinchatSendMessageTask.start(MessageTypes.PICK_UP, data.toString(), channelId);
+        } catch (final JSONException e) {
+            sessionError(e);
+        }
+    }
+
+    public void sendWebRTCBeginIce() {
+        NinchatSendBeginIceTask.start();
     }
 
     public String getRealmId() {
@@ -368,7 +507,9 @@ public final class NinchatSessionManager {
     }
 
     public void close() {
-        session.close();
+        if (session != null) {
+            session.close();
+        }
     }
 
 }

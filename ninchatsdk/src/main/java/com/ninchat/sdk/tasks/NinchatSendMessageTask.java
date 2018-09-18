@@ -11,32 +11,31 @@ import org.json.JSONObject;
 
 public final class NinchatSendMessageTask extends NinchatBaseTask {
 
-    public static void start(final String message, final String channelId) {
-        new NinchatSendMessageTask(message, channelId).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    public static void start(final String messageType, final String message, final String channelId) {
+        new NinchatSendMessageTask(messageType, message, channelId).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    private String messageType;
     private String message;
     private String channelId;
 
-    protected NinchatSendMessageTask(final String message, final String channelId) {
+    protected NinchatSendMessageTask(final String messageType, final String message, final String channelId) {
+        this.messageType = messageType;
         this.message = message;
         this.channelId = channelId;
     }
 
     @Override
     protected Exception doInBackground(Void... voids) {
-        final JSONObject data = new JSONObject();
-        try {
-            data.put("text", message);
-        } catch (final JSONException e) {
-            return e;
-        }
         final Props params = new Props();
         params.setString("action", "send_message");
-        params.setString("message_type", "ninchat.com/text");
+        params.setString("message_type", messageType);
         params.setString("channel_id", channelId);
+        if (messageType.startsWith(NinchatSessionManager.MessageTypes.WEBRTC_PREFIX)) {
+            params.setInt("message_ttl", 10);
+        }
         final Payload payload = new Payload();
-        payload.append(data.toString().getBytes());
+        payload.append(message.getBytes());
         try {
             NinchatSessionManager.getInstance().getSession().send(params, payload);
         } catch (final Exception e) {

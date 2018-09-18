@@ -4,6 +4,37 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <RelativeLayout
+        android:id="@+id/videoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="256dp"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <android.opengl.GLSurfaceView
+            android:id="@+id/remoteVideo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true" />
+        
+        <android.opengl.GLSurfaceView
+            android:id="@+id/localVideo"
+            android:layout_width="120dp"
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/message_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_above="@id/send_message_container"
+        android:layout_below="@id/videoContainer"
+        android:layout_alignWithParentIfMissing="true"
+        tools:listitem="@layout/item_chat_message"/>
+
     <LinearLayout
         android:id="@+id/send_message_container"
         android:orientation="vertical"
@@ -33,13 +64,5 @@
                 android:layout_alignParentEnd="true"/>
         </RelativeLayout>
     </LinearLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/message_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_above="@id/send_message_container"
-        android:layout_alignParentTop="true"
-        tools:listitem="@layout/item_chat_message"/>
 
 </RelativeLayout>

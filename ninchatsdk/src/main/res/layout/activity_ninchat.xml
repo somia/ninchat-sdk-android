@@ -72,16 +72,6 @@
 
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/queue_progress"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="30dp"
-        android:indeterminateTint="@color/ninchat_colorAccent"
-        android:layout_gravity="center_horizontal"
-        android:visibility="visible"
-        />
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/queue_list"
         android:layout_width="match_parent"
