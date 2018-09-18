@@ -16,11 +16,11 @@ import com.ninchat.sdk.R;
  */
 public final class NinchatQueueActivity extends NinchatBaseActivity {
 
-    static final int REQUEST_CODE = NinchatQueueActivity.class.hashCode() & 0xffff;
+    public static final int REQUEST_CODE = NinchatQueueActivity.class.hashCode() & 0xffff;
 
     protected final static String QUEUE_ID = "queueId";
 
-    static Intent getLaunchIntent(final Context context, final String queueId) {
+    public static Intent getLaunchIntent(final Context context, final String queueId) {
         return new Intent(context, NinchatQueueActivity.class).putExtra(QUEUE_ID, queueId);
     }
 

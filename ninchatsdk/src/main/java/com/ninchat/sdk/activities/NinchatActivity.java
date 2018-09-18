@@ -59,8 +59,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
             findViewById(R.id.queue_progress).setVisibility(View.GONE);
         }
         final RecyclerView queueList = findViewById(R.id.queue_list);
-        final NinchatQueueListAdapter ninchatQueueListAdapter = NinchatSessionManager.getInstance().getNinchatQueueListAdapter();
-        ninchatQueueListAdapter.setActivity(this);
+        final NinchatQueueListAdapter ninchatQueueListAdapter = NinchatSessionManager.getInstance().getNinchatQueueListAdapter(this);
         queueList.setAdapter(ninchatQueueListAdapter);
     }
 
@@ -80,7 +79,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NinchatQueueActivity.REQUEST_CODE || requestCode == NinchatSession.NINCHAT_SESSION_REQUEST_CODE) {
+        if (requestCode == NinchatQueueActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK || queueId != null) {
                 setResult(resultCode, data);
                 finish();

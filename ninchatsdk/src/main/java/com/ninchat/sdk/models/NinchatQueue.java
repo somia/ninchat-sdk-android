@@ -5,7 +5,7 @@ package com.ninchat.sdk.models;
  */
 public final class NinchatQueue {
 
-    public NinchatQueue(String id, String name) {
+    public NinchatQueue(final String id, final String name) {
         this.id = id;
         this.name = name;
     }

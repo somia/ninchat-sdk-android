@@ -10,9 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.activities.NinchatActivity;
+import com.ninchat.sdk.activities.NinchatQueueActivity;
 import com.ninchat.sdk.models.NinchatQueue;
 
 import java.lang.ref.WeakReference;
@@ -22,7 +21,8 @@ import java.util.List;
 public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQueueListAdapter.NinchatQueueViewHolder> {
 
     final class NinchatQueueViewHolder extends RecyclerView.ViewHolder {
-        NinchatQueueViewHolder(View itemView) {
+
+        NinchatQueueViewHolder(final View itemView) {
             super(itemView);
         }
 
@@ -34,7 +34,7 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
                 public void onClick(View v) {
                     final Activity activity = activityWeakReference.get();
                     if (activity != null) {
-                        activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, queue.getId()),  NinchatSession.NINCHAT_SESSION_REQUEST_CODE);
+                        activity.startActivityForResult(NinchatQueueActivity.getLaunchIntent(activity, queue.getId()),  NinchatQueueActivity.REQUEST_CODE);
                     }
                 }
             });
@@ -44,12 +44,9 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
     protected List<NinchatQueue> queues = new ArrayList<>();
     protected WeakReference<Activity> activityWeakReference;
 
-    public void setActivity(final Activity activity) {
+    public NinchatQueueListAdapter(final Activity activity, final List<NinchatQueue> queues) {
         this.activityWeakReference = new WeakReference<>(activity);
-    }
-
-    public List<NinchatQueue> getQueues() {
-        return queues;
+        this.queues.addAll(queues);
     }
 
     @NonNull

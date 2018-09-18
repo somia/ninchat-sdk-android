@@ -1,5 +1,6 @@
 package com.ninchat.sdk;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -30,6 +31,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,7 +73,8 @@ public final class NinchatSessionManager {
         this.siteSecret = siteSecret;
         this.configuration = null;
         this.session = null;
-        this.ninchatQueueListAdapter = new NinchatQueueListAdapter();
+        this.queues = new ArrayList<>();
+        this.ninchatQueueListAdapter = null;
     }
 
     protected WeakReference<Context> contextWeakReference;
@@ -79,6 +82,7 @@ public final class NinchatSessionManager {
 
     protected JSONObject configuration;
     protected Session session;
+    protected List<NinchatQueue> queues;
     protected NinchatQueueListAdapter ninchatQueueListAdapter;
     protected String channelId;
 
@@ -170,16 +174,19 @@ public final class NinchatSessionManager {
         return session;
     }
 
-    public NinchatQueueListAdapter getNinchatQueueListAdapter() {
+    public NinchatQueueListAdapter getNinchatQueueListAdapter(final Activity activity) {
+        if (ninchatQueueListAdapter == null) {
+            ninchatQueueListAdapter = new NinchatQueueListAdapter(activity, queues);
+        }
         return ninchatQueueListAdapter;
     }
 
     public List<NinchatQueue> getQueues() {
-        return ninchatQueueListAdapter.getQueues();
+        return queues;
     }
 
     public boolean hasQueues() {
-        return ninchatQueueListAdapter.getQueues().size() > 0;
+        return queues.size() > 0;
     }
 
     private class QueuePropVisitor implements PropVisitor {
@@ -249,7 +256,11 @@ public final class NinchatSessionManager {
                 sessionError(e);
                 return;
             }
-            ninchatQueueListAdapter.addQueue(new NinchatQueue(queueId, name));
+            final NinchatQueue ninchatQueue = new NinchatQueue(queueId, name);
+            queues.add(ninchatQueue);
+            if (ninchatQueueListAdapter != null) {
+                ninchatQueueListAdapter.addQueue(ninchatQueue);
+            }
         }
         final Context context = contextWeakReference.get();
         if (context != null && hasQueues()) {
