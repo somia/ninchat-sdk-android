@@ -29,7 +29,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             itemView.findViewById(R.id.start_margin).setVisibility(data.second ? View.VISIBLE : View.GONE);
             itemView.findViewById(R.id.end_margin).setVisibility(data.second ? View.GONE : View.VISIBLE);
             if (data.second) {
-                itemView.findViewById(R.id.message_container).setBackgroundResource(R.color.ninchat_start_header_background);
+                itemView.findViewById(R.id.message_container).setBackgroundResource(R.color.ninchat_activity_bottom_matter_background);
             }
             final TextView message = itemView.findViewById(R.id.message_content);
             message.setText(data.first);

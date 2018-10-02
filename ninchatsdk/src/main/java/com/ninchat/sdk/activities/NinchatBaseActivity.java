@@ -7,6 +7,7 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.ninchat.sdk.R;
 
@@ -17,34 +18,10 @@ abstract class NinchatBaseActivity extends Activity {
 
     abstract protected @LayoutRes int getLayoutRes();
 
-    protected void handleOnCreateIntent(final Intent intent) {
-    }
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(getLayoutRes());
-
-        final Intent intent = getIntent();
-        if (intent != null) {
-            handleOnCreateIntent(intent);
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return true;
-    }
-
-    protected Intent getOnCloseData() {
-        return null;
-    }
-
-    public final void onCloseClick(final MenuItem menuItem) {
-        setResult(RESULT_CANCELED, getOnCloseData());
-        finish();
     }
 
     @Override

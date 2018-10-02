@@ -3,9 +3,12 @@ package com.ninchat.sdk;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -46,6 +49,7 @@ public final class NinchatSessionManager {
 
     public static final class Broadcast {
         public static final String CHANNEL_JOINED = BuildConfig.APPLICATION_ID + ".channelJoined";
+        public static final String CHANNEL_UPDATED = BuildConfig.APPLICATION_ID + ".channelUpdated";
         public static final String CHANNEL_CLOSED = BuildConfig.APPLICATION_ID + ".channelClosed";
         public static final String NEW_MESSAGE = BuildConfig.APPLICATION_ID + ".newMessage";
         public static final String MESSAGE_CONTENT = NEW_MESSAGE + ".content";
@@ -129,6 +133,11 @@ public final class NinchatSessionManager {
             this.configuration = null;
             throw e;
         }
+        final Context context = contextWeakReference.get();
+        if (context != null && configuration != null) {
+            LocalBroadcastManager.getInstance(context)
+                    .sendBroadcast(new Intent(NinchatSession.Broadcast.CONFIGURATION_FETCHED));
+        }
         NinchatOpenSessionTask.start(siteSecret);
     }
 
@@ -168,10 +177,8 @@ public final class NinchatSessionManager {
                     final String event = params.getString("event");
                     if (event.equals("realm_queues_found")) {
                         NinchatSessionManager.getInstance().parseQueues(params);
-                    } else if (event.equals("queue_updated")) {
-                        //NinchatSessionManager.getInstance().queueUpdated(params);
-                    } else if (event.equals("audience_enqueued")) {
-                        //NinchatSessionManager.getInstance().audienceEnqueued(params);
+                    } else if (event.equals("queue_updated") || event.equals("audience_enqueued")) {
+                        NinchatSessionManager.getInstance().queueUpdated(params);
                     } else if (event.equals("channel_joined")) {
                         NinchatSessionManager.getInstance().channelJoined(params);
                     } else if (event.equals("channel_updated")) {
@@ -317,7 +324,39 @@ public final class NinchatSessionManager {
         }
     }
 
-    private void queueUpdated(final Props params) {}
+    private NinchatQueue getQueue(final String queueId) {
+        for (NinchatQueue queue : queues) {
+            if (queue.getId().equals(queueId)) {
+                return queue;
+            }
+        }
+        return null;
+    }
+
+    private void queueUpdated(final Props params) {
+        String queueId;
+        try {
+            queueId = params.getString("queue_id");
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        long position;
+        try {
+            position = params.getInt("queue_position");
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        final NinchatQueue queue = getQueue(queueId);
+        if (queue != null) {
+            queue.setPosition(position);
+        }
+        final Context context = contextWeakReference.get();
+        if (context != null) {
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.CHANNEL_UPDATED));
+        }
+    }
 
     private void channelJoined(final Props params) {
         try {
@@ -484,15 +523,117 @@ public final class NinchatSessionManager {
         NinchatSendBeginIceTask.start();
     }
 
-    public String getRealmId() {
+    private JSONObject getDefault() throws JSONException {
         if (configuration != null) {
-            try {
-                return configuration.getJSONObject("default").getString("audienceRealmId");
-            } catch (final JSONException e) {
-                return null;
-            }
+            return configuration.getJSONObject("default");
         }
         return null;
+    }
+
+    public String getRealmId() {
+        try {
+            return getDefault().getString("audienceRealmId");
+        } catch (final Exception e) {
+            return null;
+        }
+    }
+
+    private Spanned toSpanned(final String text) {
+        return text == null ? null :
+                Build.VERSION.SDK_INT == Build.VERSION_CODES.N ? Html.fromHtml(text, 0) : Html.fromHtml(text);
+    }
+
+    public Spanned getWelcome() {
+        final String key = "welcome";
+        String welcomeText = key;
+        try {
+                welcomeText = getDefault().getString(key);
+        } catch (final Exception e) {
+        }
+        return toSpanned(welcomeText);
+    }
+
+    public String getNoQueues() {
+        final String key = "noQueuesText";
+        try {
+            return getDefault().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
+    private JSONObject getTranslations() throws JSONException, NullPointerException {
+        return getDefault().getJSONObject("translations");
+    }
+
+    public boolean showNoThanksButton() {
+        final String key = "noThanksButton";
+        try {
+            return getDefault().getBoolean(key);
+        } catch (final Exception e) {
+            return true;
+        }
+    }
+
+    public String getCloseWindow() {
+        final String key = "Close window";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
+    public Spanned getMOTD() {
+        final String key = "motd";
+        String motd = key;
+        try {
+            motd = getDefault().getString(key);
+        } catch (final Exception e) {
+        }
+        return toSpanned(motd);
+    }
+
+    public String getQueueName(final String name) {
+        final String key = "Join audience queue {{audienceQueue.queue_attrs.name}}";
+        try {
+            return getTranslations().getString(key).replaceFirst("\\{\\{([^}]*?)\\}\\}", name);
+        } catch (final Exception e) {
+            return key.replaceFirst("\\{\\{([^}]*?)\\}\\}", name);
+        }
+    }
+
+    public Spanned getQueueStatus(final String queueId) {
+        NinchatQueue selectedQueue = getQueue(queueId);
+        if (selectedQueue == null) {
+            return null;
+        }
+        final long position = selectedQueue.getPosition();
+        final String key = position == 1
+                ? "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are next."
+                : "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are at position {{audienceQueue.queue_position}}.";
+        String queueStatus = key;
+        try {
+            queueStatus = getTranslations().getString(key);
+        } catch (final Exception e) {
+        }
+        final String[] splits = queueStatus.split("\\{\\{");
+        Log.e("JUSSI", "" + splits.length);
+        if (splits.length > 2) {
+            queueStatus = queueStatus.replaceFirst("\\{\\{([^}]*?)\\}\\}", selectedQueue.getName());
+        }
+        queueStatus = queueStatus.replaceFirst("\\{\\{([^}]*?)\\}\\}", String.valueOf(position));
+        return toSpanned(queueStatus);
+    }
+
+    public Spanned getQueueMessage() {
+        final String key = "inQueueText";
+        String queueMessage = null;
+        try {
+            queueMessage = getDefault().getString(key);
+        } catch (final Exception e) {
+        }
+        return toSpanned(queueMessage);
     }
 
     public boolean showRating() {

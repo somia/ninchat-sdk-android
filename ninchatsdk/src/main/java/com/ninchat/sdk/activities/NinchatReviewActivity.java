@@ -36,11 +36,6 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
         close(NinchatSession.Analytics.Rating.NO_ANSWER);
     }
 
-    @Override
-    protected Intent getOnCloseData() {
-        return getResultIntent(NinchatSession.Analytics.Rating.NO_ANSWER);
-    }
-
     private void close(final int rating) {
         setResult(RESULT_OK, getResultIntent(rating));
         finish();

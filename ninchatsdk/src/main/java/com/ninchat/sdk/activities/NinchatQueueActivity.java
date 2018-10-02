@@ -7,6 +7,13 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
@@ -47,24 +54,48 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         }
     };
 
+    protected BroadcastReceiver channelUpdatedBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (NinchatSessionManager.Broadcast.CHANNEL_UPDATED.equals(action)) {
+                updateQueueStatus();
+            }
+        }
+    };
+
     private String queueId;
 
-    @Override
-    protected void handleOnCreateIntent(Intent intent) {
-        super.handleOnCreateIntent(intent);
-        queueId = intent.getStringExtra(QUEUE_ID);
+    private void updateQueueStatus() {
+        final TextView queueStatus = findViewById(R.id.ninchat_queue_activity_queue_status);
+        queueStatus.setText(NinchatSessionManager.getInstance().getQueueStatus(queueId));
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LocalBroadcastManager.getInstance(this).registerReceiver(channelJoinedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_JOINED));
+        final Intent intent = getIntent();
+        if (intent != null) {
+            queueId = intent.getStringExtra(QUEUE_ID);
+        }
+        final RotateAnimation animation = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        animation.setInterpolator(new LinearInterpolator());
+        animation.setRepeatCount(Animation.INFINITE);
+        animation.setDuration(3000);
+        findViewById(R.id.ninchat_queue_activity_progress).setAnimation(animation);
+        final TextView message = findViewById(R.id.ninchat_queue_activity_queue_message);
+        message.setText(NinchatSessionManager.getInstance().getQueueMessage());
+        final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+        broadcastManager.registerReceiver(channelJoinedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_JOINED));
+        broadcastManager.registerReceiver(channelUpdatedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_UPDATED));
         NinchatSessionManager.joinQueue(queueId);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(channelJoinedBroadcastReceiver);
+        final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+        broadcastManager.unregisterReceiver(channelJoinedBroadcastReceiver);
+        broadcastManager.unregisterReceiver(channelUpdatedBroadcastReceiver);
     }
 }

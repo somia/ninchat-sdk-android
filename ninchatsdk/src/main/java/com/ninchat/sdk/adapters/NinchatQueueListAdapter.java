@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatQueueActivity;
 import com.ninchat.sdk.models.NinchatQueue;
@@ -28,7 +29,7 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
 
         void bind(final NinchatQueue queue) {
             final Button button = itemView.findViewById(R.id.queue_name);
-            button.setText(queue.getName());
+            button.setText(NinchatSessionManager.getInstance().getQueueName(queue.getName()));
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
