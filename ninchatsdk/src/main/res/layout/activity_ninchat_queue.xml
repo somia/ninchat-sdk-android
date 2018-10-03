@@ -1,55 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/ninchat_activity_bottom_matter_background"
     tools:context=".activities.NinchatQueueActivity">
 
     <LinearLayout
-        android:id="@+id/ninchat_queue_activity_top_matter"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:paddingTop="@dimen/ninchat_queue_activity_top_matter_top_margin"
-        android:paddingBottom="@dimen/ninchat_queue_activity_top_matter_bottom_margin">
-        
-        <ImageView
-            android:id="@+id/ninchat_queue_activity_progress"
-            android:layout_width="@dimen/ninchat_queue_activity_progress_size"
-            android:layout_height="@dimen/ninchat_queue_activity_progress_size"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/ninchat_progress"
-            android:adjustViewBounds="true"/>
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/ninchat_queue_activity_queue_status"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/ninchat_queue_activity_top_matter"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/ninchat_queue_activity_queue_status_top_margin"
-            tools:text="Queue status"
-            android:layout_gravity="center_horizontal"/>
+            android:orientation="vertical"
+            android:paddingTop="@dimen/ninchat_queue_activity_top_matter_top_margin"
+            android:paddingBottom="@dimen/ninchat_queue_activity_top_matter_bottom_margin"
+            android:background="@android:color/white">
+
+            <ImageView
+                android:id="@+id/ninchat_queue_activity_progress"
+                android:layout_width="@dimen/ninchat_queue_activity_progress_size"
+                android:layout_height="@dimen/ninchat_queue_activity_progress_size"
+                android:layout_gravity="center_horizontal"
+                android:adjustViewBounds="true"
+                android:src="@drawable/ninchat_progress" />
+
+            <TextView
+                android:id="@+id/ninchat_queue_activity_queue_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/ninchat_queue_activity_queue_status_top_margin"
+                tools:text="Queue status" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/ninchat_queue_activity_bottom_matter_padding">
+
+            <TextView
+                android:id="@+id/ninchat_queue_activity_queue_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true"
+                android:textAlignment="center"
+                tools:text="In queue message" />
+
+        </RelativeLayout>
 
     </LinearLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/ninchat_queue_activity_bottom_matter_padding"
-        android:layout_below="@id/ninchat_queue_activity_top_matter"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:background="@color/ninchat_activity_bottom_matter_background">
-
-        <TextView
-            android:id="@+id/ninchat_queue_activity_queue_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:text="In queue message"
-            android:textAlignment="center"
-            android:layout_centerHorizontal="true"/>
-
-    </RelativeLayout>
-
-</RelativeLayout>
+</ScrollView>

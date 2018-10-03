@@ -10,19 +10,15 @@
     <application>
         <activity
             android:name=".activities.NinchatActivity"
-            android:label="@string/ninchat_contact_us"
             android:theme="@style/NinchatTheme" />
         <activity
             android:name=".activities.NinchatQueueActivity"
-            android:label="@string/ninchat_contact_us"
             android:theme="@style/NinchatTheme" />
         <activity
             android:name=".activities.NinchatChatActivity"
-            android:label="@string/ninchat_contact_us"
             android:theme="@style/NinchatTheme" />
         <activity
             android:name=".activities.NinchatReviewActivity"
-            android:label="@string/ninchat_contact_us"
             android:theme="@style/NinchatTheme" />
     </application>
 

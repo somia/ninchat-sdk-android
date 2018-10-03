@@ -10,8 +10,6 @@
         android:id="@+id/queue_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="@dimen/ninchat_button_horizontal_padding"
-        android:paddingEnd="@dimen/ninchat_button_horizontal_padding"
         tools:text="Queue name that is far too long to fit in one line"
         android:layout_centerInParent="true"/>
 

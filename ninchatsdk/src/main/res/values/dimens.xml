@@ -18,4 +18,18 @@
     <dimen name="ninchat_queue_activity_queue_status_top_margin">40dp</dimen>
     <dimen name="ninchat_queue_activity_top_matter_bottom_margin">77dp</dimen>
     <dimen name="ninchat_queue_activity_bottom_matter_padding">38dp</dimen>
+
+    <dimen name="ninchat_chat_activity_close_button_top_margin">10dp</dimen>
+    <dimen name="ninchat_chat_activity_close_button_end_margin">10dp</dimen>
+    <dimen name="ninchat_chat_activity_chat_started_bottom_margin">26dp</dimen>
+    <dimen name="ninchat_chat_activity_message_title_height">30dp</dimen>
+    <dimen name="ninchat_chat_activity_message_title_top_margin">20dp</dimen>
+    <dimen name="ninchat_chat_activity_message_bubble_corner_radius">15dp</dimen>
+    <dimen name="ninchat_chat_activity_message_bubble_padding_vertical">12dp</dimen>
+    <dimen name="ninchat_chat_activity_message_bubble_padding_horizontal">16dp</dimen>
+    <dimen name="ninchat_chat_activity_chat_ended_top_margin">26dp</dimen>
+    <dimen name="ninchat_chat_activity_message_margin">5dp</dimen>
+    <dimen name="ninchat_chat_activity_action_bar_padding">10dp</dimen>
+    <dimen name="ninchat_chat_activity_action_bar_height">35dp</dimen>
+    <dimen name="ninchat_chat_activity_action_icon_size">24dp</dimen>
 </resources>

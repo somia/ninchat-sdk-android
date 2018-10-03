@@ -53,6 +53,7 @@ public final class NinchatSessionManager {
         public static final String CHANNEL_CLOSED = BuildConfig.APPLICATION_ID + ".channelClosed";
         public static final String NEW_MESSAGE = BuildConfig.APPLICATION_ID + ".newMessage";
         public static final String MESSAGE_CONTENT = NEW_MESSAGE + ".content";
+        public static final String MESSAGE_SENDER = NEW_MESSAGE + ".sender";
         public static final String WEBRTC_MESSAGE = BuildConfig.APPLICATION_ID + ".webRTCMessage";
         public static final String WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type";
         public static final String WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content";
@@ -431,12 +432,18 @@ public final class NinchatSessionManager {
         if (!messageType.equals(MessageTypes.TEXT)) {
             return;
         }
+        String sender = null;
+        try {
+            sender = params.getString("message_user_name");
+        } catch (final Exception e) {
+        }
         for (int i = 0; i < payload.length(); ++i) {
             try {
                 final JSONObject message = new JSONObject(new String(payload.get(i)));
                 LocalBroadcastManager.getInstance(context)
                         .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
-                                .putExtra(Broadcast.MESSAGE_CONTENT, message.getString("text")));
+                                .putExtra(Broadcast.MESSAGE_CONTENT, message.getString("text"))
+                                .putExtra(Broadcast.MESSAGE_SENDER, sender));
             } catch (final JSONException e) {
                 // Ignore
             }
@@ -540,7 +547,7 @@ public final class NinchatSessionManager {
 
     private Spanned toSpanned(final String text) {
         return text == null ? null :
-                Build.VERSION.SDK_INT == Build.VERSION_CODES.N ? Html.fromHtml(text, 0) : Html.fromHtml(text);
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(text, 0) : Html.fromHtml(text);
     }
 
     public Spanned getWelcome() {
@@ -577,6 +584,78 @@ public final class NinchatSessionManager {
 
     public String getCloseWindow() {
         final String key = "Close window";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
+    public String getUserName() {
+        final String key = "userName";
+        try {
+            return getDefault().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
+    public String getSendButtonText() {
+        final String key = "sendButtonText";
+        try {
+            return getDefault().getString(key);
+        } catch (final Exception e) {
+            return null;
+        }
+    }
+
+    public boolean isAttachmentsEnabled() {
+        final String key = "supportFiles";
+        try {
+            return getDefault().getBoolean(key);
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isVideoEnabled() {
+        final String key = "supportVideo";
+        try {
+            return getDefault().getBoolean(key);
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
+    public String getChatStarted() {
+        final String key = "Audience in queue {{queue}} accepted.";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
+    public String getChatEnded() {
+        final String key = "Conversation ended";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
+    public String getCloseChat() {
+        final String key = "Close chat";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
+    public String getEnterMessage() {
+        final String key = "Enter your message";
         try {
             return getTranslations().getString(key);
         } catch (final Exception e) {

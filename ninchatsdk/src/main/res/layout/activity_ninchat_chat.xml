@@ -2,21 +2,114 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.NinchatChatActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/ninchat_chat_background"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/message_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/send_message_container"
+        android:layout_alignWithParentIfMissing="true"
+        android:overScrollMode="never"
+        tools:listitem="@layout/item_chat_message"
+        tools:itemCount="2"/>
+
+    <LinearLayout
+        android:id="@+id/send_message_container"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white">
+
+        <EditText
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:hint="Enter your message"
+            android:layout_margin="@dimen/ninchat_chat_activity_message_margin"
+            android:textColorHint="@color/ninchat_colorPrimary"
+            android:background="@null"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/ninchat_chat_activity_action_bar_height"
+            android:layout_gravity="end">
+
+            <ImageView
+                android:id="@+id/attachment"
+                android:layout_width="@dimen/ninchat_chat_activity_action_icon_size"
+                android:layout_height="@dimen/ninchat_chat_activity_action_icon_size"
+                android:src="@drawable/ninchat_attachment"
+                android:adjustViewBounds="true"
+                android:layout_gravity="center_vertical"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding"
+                android:visibility="gone"
+                tools:visibility="visible"/>
+
+            <ImageView
+                android:id="@+id/send_button"
+                android:layout_width="@dimen/ninchat_chat_activity_action_icon_size"
+                android:layout_height="@dimen/ninchat_chat_activity_action_icon_size"
+                android:src="@drawable/ninchat_send"
+                android:adjustViewBounds="true"
+                android:layout_gravity="center_vertical"
+                android:scaleType="fitCenter"
+                android:onClick="onSendClick"
+                android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding" />
+
+            <TextView
+                android:id="@+id/send_button_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Send"
+                android:onClick="onSendClick"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/ninchat_colorAccent"
+                android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding"
+                android:visibility="gone"
+                tools:visibility="visible"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/ninchat_chat_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/ninchat_chat_activity_close_button_top_margin"
+        android:layout_marginEnd="@dimen/ninchat_chat_activity_close_button_end_margin"
+        style="@style/NinchatTheme.Button.Close"
+        tools:text="Close"
+        android:drawableEnd="@drawable/ninchat_close"
+        android:onClick="onCloseChat"
+        android:drawablePadding="@dimen/ninchat_chat_activity_close_button_end_margin"/>
 
     <RelativeLayout
         android:id="@+id/videoContainer"
         android:layout_width="match_parent"
         android:layout_height="256dp"
-        android:visibility="gone"
-        tools:visibility="visible">
+        android:visibility="gone">
 
         <android.opengl.GLSurfaceView
             android:id="@+id/remoteVideo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true" />
-        
+
         <android.opengl.GLSurfaceView
             android:id="@+id/localVideo"
             android:layout_width="120dp"
@@ -25,44 +118,5 @@
             android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/message_list"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_above="@id/send_message_container"
-        android:layout_below="@id/videoContainer"
-        android:layout_alignWithParentIfMissing="true"
-        tools:listitem="@layout/item_chat_message"/>
-
-    <LinearLayout
-        android:id="@+id/send_message_container"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
-
-        <EditText
-            android:id="@+id/message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/ninchat_chat_enter_message"
-            android:textColorHint="@color/ninchat_colorAccent"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Send"
-                android:textSize="15sp"
-                android:textColor="@color/ninchat_colorAccent"
-                android:onClick="onSendClick"
-                android:layout_alignParentEnd="true"/>
-        </RelativeLayout>
-    </LinearLayout>
 
 </RelativeLayout>
