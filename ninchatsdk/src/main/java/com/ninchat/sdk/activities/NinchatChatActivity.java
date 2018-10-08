@@ -41,8 +41,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     protected static final int PICK_PDF_REQUEST_CODE = "PickPDF".hashCode() & 0xffff;
 
     private NinchatMessageAdapter messageAdapter = new NinchatMessageAdapter();
-    private boolean lastMessageWasRemote = false;
-    private String lastSentMessage = null;
 
     @Override
     protected int getLayoutRes() {
@@ -76,7 +74,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             }
         } else if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
             if (hasFileAccessPermissions()) {
-                findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.VISIBLE);
+                openImagePicker(null);
+                //findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.VISIBLE);
             } else {
                 // Display error
             }
@@ -112,10 +111,11 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             final String action = intent.getAction();
             if (NinchatSessionManager.Broadcast.NEW_MESSAGE.equals(action)) {
                 final String message = intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_CONTENT);
+                final String fileId = intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_FILE_ID);
                 final String sender = intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_SENDER);
                 final long timestamp = intent.getLongExtra(NinchatSessionManager.Broadcast.MESSAGE_TIMESTAMP, 0);
-                lastMessageWasRemote = !message.equals(lastSentMessage);
-                messageAdapter.add(message, sender, timestamp, lastMessageWasRemote);
+                final boolean isRemoteMessage = intent.getBooleanExtra(NinchatSessionManager.Broadcast.MESSAGE_IS_REMOTE, true);
+                messageAdapter.add(message, fileId, sender, timestamp, isRemoteMessage);
             }
         }
     };
@@ -170,7 +170,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     public void onAttachmentClick(final View view) {
         if (hasFileAccessPermissions()) {
-            findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.VISIBLE);
+            openImagePicker(null);
+            //findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.VISIBLE);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE);
         }
@@ -183,7 +184,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 .setActivityTheme(R.style.LibAppTheme)
                 .enableVideoPicker(true)
                 .enableCameraSupport(true)
-                .showGifs(false)
+                .showGifs(true)
                 .showFolderView(false)
                 .pickPhoto(this, PICK_PHOTO_VIDEO_REQUEST_CODE);
     }
@@ -208,8 +209,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             return;
         }
         NinchatSessionManager.getInstance().sendMessage(message);
-        lastSentMessage = message;
-        lastMessageWasRemote = false;
         messageView.setText(null);
     }
 

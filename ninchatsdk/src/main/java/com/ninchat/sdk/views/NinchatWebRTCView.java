@@ -83,7 +83,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                 NinchatSessionManager.getInstance().sessionError(e);
             }
         } else if (NinchatSessionManager.MessageTypes.ICE_CANDIDATE.equals(messageType) && peerConnection != null && peerConnection.iceGatheringState() == PeerConnection.IceGatheringState.GATHERING) {
-            JSONObject rootCandidate;
+            /*JSONObject rootCandidate;
             try {
                 rootCandidate = new JSONObject(payload);
             } catch (final Exception e) {
@@ -109,7 +109,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                 peerConnection.addIceCandidate(new IceCandidate(sdpMid, sdpMLineIndex, candidate.getString("candidate")));
             } catch (final JSONException e) {
                 NinchatSessionManager.getInstance().sessionError(e);
-            }
+            }*/
         } else if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType)) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override

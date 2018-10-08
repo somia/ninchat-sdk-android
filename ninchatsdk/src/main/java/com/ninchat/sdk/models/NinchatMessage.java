@@ -3,6 +3,7 @@ package com.ninchat.sdk.models;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 
 import java.util.Date;
 
@@ -11,26 +12,29 @@ public final class NinchatMessage {
     public enum Type {
         START,
         MESSAGE,
+        WRITING,
         END
     }
 
     private Type type;
     private String sender;
     private String message;
+    private String fileId;
     private Date timestamp;
     private boolean isRemoteMessage = false;
 
     public NinchatMessage(final Type type) {
-        this(type, null, null, 0, false);
+        this(type, null, null, null, 0, false);
     }
 
-    public NinchatMessage(final String message, final String sender, long timestamp, final boolean isRemoteMessage) {
-        this(Type.MESSAGE, message, sender, timestamp, isRemoteMessage);
+    public NinchatMessage(final String message, final String fileId, final String sender, long timestamp, final boolean isRemoteMessage) {
+        this(Type.MESSAGE, message, fileId, sender, timestamp, isRemoteMessage);
     }
 
-    private NinchatMessage(final Type type, final String message, final String sender, long timestamp, final boolean isRemoteMessage) {
+    private NinchatMessage(final Type type, final String message, final String fileId, final String sender, long timestamp, final boolean isRemoteMessage) {
         this.type = type;
         this.message = message;
+        this.fileId = fileId;
         this.sender = sender;
         this.timestamp = new Date(timestamp);
         this.isRemoteMessage = isRemoteMessage;
@@ -40,12 +44,16 @@ public final class NinchatMessage {
         return type;
     }
 
+    public String getFileId() {
+        return fileId;
+    }
+
     public String getSender() {
         return sender;
     }
 
     public Spanned getMessage() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(message, 0) : Html.fromHtml(message);
+        return message == null ? null : Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(message);
     }
 
     public Date getTimestamp() {

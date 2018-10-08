@@ -24,15 +24,18 @@ import com.ninchat.client.Session;
 import com.ninchat.client.SessionEventHandler;
 import com.ninchat.client.Strings;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
+import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatQueue;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
+import com.ninchat.sdk.tasks.NinchatDescribeFileTask;
 import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
 import com.ninchat.sdk.tasks.NinchatListQueuesTask;
 import com.ninchat.sdk.tasks.NinchatOpenSessionTask;
 import com.ninchat.sdk.tasks.NinchatSendBeginIceTask;
 import com.ninchat.sdk.tasks.NinchatSendMessageTask;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.IceCandidate;
@@ -40,6 +43,7 @@ import org.webrtc.SessionDescription;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +59,9 @@ public final class NinchatSessionManager {
         public static final String CHANNEL_CLOSED = BuildConfig.APPLICATION_ID + ".channelClosed";
         public static final String NEW_MESSAGE = BuildConfig.APPLICATION_ID + ".newMessage";
         public static final String MESSAGE_CONTENT = NEW_MESSAGE + ".content";
+        public static final String MESSAGE_FILE_ID = NEW_MESSAGE + ".fileId";
         public static final String MESSAGE_SENDER = NEW_MESSAGE + ".sender";
+        public static final String MESSAGE_IS_REMOTE = NEW_MESSAGE + ".isRemote";
         public static final String MESSAGE_TIMESTAMP = NEW_MESSAGE + ".timestamp";
         public static final String WEBRTC_MESSAGE = BuildConfig.APPLICATION_ID + ".webRTCMessage";
         public static final String WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type";
@@ -64,6 +70,7 @@ public final class NinchatSessionManager {
 
     public static final class MessageTypes {
         public static final String TEXT = "ninchat.com/text";
+        public static final String FILE = "ninchat.com/file";
         public static final String WEBRTC_PREFIX = "ninchat.com/rtc/";
         public static final String ICE_CANDIDATE = WEBRTC_PREFIX + "ice-candidate";
         public static final String ANSWER = WEBRTC_PREFIX + "answer";
@@ -101,6 +108,10 @@ public final class NinchatSessionManager {
         return contextWeakReference.get();
     }
 
+    public NinchatFile getFile(final String fileId) {
+        return files.get(fileId);
+    }
+
     public static void joinQueue(final String queueId) {
         NinchatJoinQueueTask.start(queueId);
     }
@@ -115,6 +126,7 @@ public final class NinchatSessionManager {
         this.session = null;
         this.queues = new ArrayList<>();
         this.ninchatQueueListAdapter = null;
+        this.files = new HashMap<>();
     }
 
     protected WeakReference<Context> contextWeakReference;
@@ -127,6 +139,7 @@ public final class NinchatSessionManager {
     protected String channelId;
     protected List<NinchatWebRTCServerInfo> stunServers;
     protected List<NinchatWebRTCServerInfo> turnServers;
+    protected Map<String, NinchatFile> files;
 
     public void setConfiguration(final String config) throws JSONException {
         try {
@@ -191,6 +204,8 @@ public final class NinchatSessionManager {
                         NinchatSessionManager.getInstance().messageReceived(params, payload);
                     } else if (event.equals("ice_begun")) {
                         NinchatSessionManager.getInstance().iceBegun(params);
+                    } else if (event.equals("file_found")) {
+                        NinchatSessionManager.getInstance().fileFound(params);
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);
@@ -411,6 +426,12 @@ public final class NinchatSessionManager {
         if (channelId == null) {
             return;
         }
+        long actionId = 0;
+        try {
+            actionId = params.getInt("action_id");
+        } catch (final Exception e) {
+            return;
+        }
         String messageType;
         try {
             messageType = params.getString("message_type");
@@ -432,7 +453,7 @@ public final class NinchatSessionManager {
                             .putExtra(Broadcast.WEBRTC_MESSAGE_CONTENT, builder.toString()));
             return;
         }
-        if (!messageType.equals(MessageTypes.TEXT)) {
+        if (!messageType.equals(MessageTypes.TEXT) && !messageType.equals(MessageTypes.FILE)) {
             return;
         }
         String sender = null;
@@ -448,15 +469,95 @@ public final class NinchatSessionManager {
         for (int i = 0; i < payload.length(); ++i) {
             try {
                 final JSONObject message = new JSONObject(new String(payload.get(i)));
-                LocalBroadcastManager.getInstance(context)
-                        .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
-                                .putExtra(Broadcast.MESSAGE_CONTENT, message.getString("text"))
-                                .putExtra(Broadcast.MESSAGE_SENDER, sender)
-                                .putExtra(Broadcast.MESSAGE_TIMESTAMP, timestamp));
+                final JSONArray files = message.optJSONArray("files");
+                if (files != null) {
+                    Log.e("JUSSI", "got files:" + files.toString());
+                    final JSONObject file = files.getJSONObject(0);
+                    final String filename = file.getJSONObject("file_attrs").getString("name");
+                    final String filetype = file.getJSONObject("file_attrs").getString("type");
+                    Log.e("JUSSI", filetype);
+                    if (filetype != null && (filetype.startsWith("image/") /*|| filetype.startsWith("video/") || filetype.equals("application/pdf")*/)) {
+                        final String fileId = file.getString("file_id");
+                        NinchatFile ninchatFile = this.files.get(fileId);
+                        if (ninchatFile == null) {
+                            ninchatFile = new NinchatFile(fileId, filename, filetype, timestamp, sender, actionId == 0);
+                            this.files.put(fileId, ninchatFile);
+                            NinchatDescribeFileTask.start(fileId);
+                        } else if (false) {
+                            // TODO: Check if the same file has been fetched already
+                        }
+                    }
+                } else {
+                    LocalBroadcastManager.getInstance(context)
+                            .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
+                                    .putExtra(Broadcast.MESSAGE_CONTENT, message.getString("text"))
+                                    .putExtra(Broadcast.MESSAGE_SENDER, sender)
+                                    .putExtra(Broadcast.MESSAGE_IS_REMOTE, actionId == 0)
+                                    .putExtra(Broadcast.MESSAGE_TIMESTAMP, timestamp));
+                }
             } catch (final JSONException e) {
                 // Ignore
             }
         }
+    }
+
+    private void fileFound(final Props params) {
+        String fileId;
+        try {
+            fileId = params.getString("file_id");
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        String url;
+        try {
+            url = params.getString("file_url");
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        long urlExpiry = 0;
+        try {
+            urlExpiry = params.getInt("url_expiry");
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        Props attrs;
+        try {
+            attrs = params.getObject("file_attrs");
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        Props thumbnail;
+        try {
+            thumbnail = attrs.getObject("thumbnail");
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        float aspectRatio = 1.0f;
+        try {
+            aspectRatio = ((float) thumbnail.getInt("width")) / ((float) thumbnail.getInt("height"));
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        final NinchatFile file = files.get(fileId);
+        file.setUrl(url);
+        file.setUrlExpiry(new Date(urlExpiry));
+        file.setAspectRatio(aspectRatio);
+        final Context context = contextWeakReference.get();
+        if (context != null) {
+            LocalBroadcastManager.getInstance(context)
+                    .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
+                            .putExtra(Broadcast.MESSAGE_FILE_ID, fileId)
+                            .putExtra(Broadcast.MESSAGE_SENDER, file.getSender())
+                            .putExtra(Broadcast.MESSAGE_IS_REMOTE, file.isRemote())
+                            .putExtra(Broadcast.MESSAGE_TIMESTAMP, file.getTimestamp()));
+        }
+
     }
 
     private void iceBegun(final Props params) {
@@ -560,8 +661,8 @@ public final class NinchatSessionManager {
         try {
             final JSONObject data = new JSONObject();
             final JSONObject candidate = new JSONObject();
-            candidate.put("sdpMLineIndex", iceCandidate.sdpMLineIndex);
-            candidate.put("sdpMid", iceCandidate.sdpMid);
+            candidate.put("id", iceCandidate.sdpMLineIndex);
+            candidate.put("label", iceCandidate.sdpMid);
             candidate.put("candidate", iceCandidate.sdp);
             data.put("candidate", iceCandidate.sdp);
             NinchatSendMessageTask.start(MessageTypes.ICE_CANDIDATE, data.toString(), channelId);
@@ -589,7 +690,7 @@ public final class NinchatSessionManager {
         final String centeredText = (text == null || (text.contains("<center>") && text.contains("</center>"))) ?
                 text : ("<center>" + text + "</center>");
         return centeredText == null ? null :
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(centeredText, 0) : Html.fromHtml(centeredText);
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(centeredText, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(centeredText);
     }
 
     public Spanned getWelcome() {
