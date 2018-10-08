@@ -21,15 +21,29 @@
 
     <dimen name="ninchat_chat_activity_close_button_top_margin">10dp</dimen>
     <dimen name="ninchat_chat_activity_close_button_end_margin">10dp</dimen>
-    <dimen name="ninchat_chat_activity_chat_started_bottom_margin">26dp</dimen>
+    <dimen name="ninchat_chat_activity_chat_started_bottom_margin">19dp</dimen>
     <dimen name="ninchat_chat_activity_message_title_height">30dp</dimen>
-    <dimen name="ninchat_chat_activity_message_title_top_margin">20dp</dimen>
+    <dimen name="ninchat_chat_activity_message_title_top_margin">13dp</dimen>
     <dimen name="ninchat_chat_activity_message_bubble_corner_radius">15dp</dimen>
     <dimen name="ninchat_chat_activity_message_bubble_padding_vertical">12dp</dimen>
     <dimen name="ninchat_chat_activity_message_bubble_padding_horizontal">16dp</dimen>
+    <dimen name="ninchat_chat_activity_message_bubble_margin_bottom">7dp</dimen>
     <dimen name="ninchat_chat_activity_chat_ended_top_margin">26dp</dimen>
     <dimen name="ninchat_chat_activity_message_margin">5dp</dimen>
     <dimen name="ninchat_chat_activity_action_bar_padding">10dp</dimen>
     <dimen name="ninchat_chat_activity_action_bar_height">35dp</dimen>
     <dimen name="ninchat_chat_activity_action_icon_size">24dp</dimen>
+
+    <dimen name="ninchat_chat_activity_video_call_consent_title_height">70dp</dimen>
+    <dimen name="ninchat_chat_activity_video_call_consent_image_size">100dp</dimen>
+    <dimen name="ninchat_chat_activity_video_call_consent_image_margin">10dp</dimen>
+    <dimen name="ninchat_chat_activity_video_call_consent_description_margin_top">20dp</dimen>
+    <dimen name="ninchat_chat_activity_video_call_consent_button_width">180dp</dimen>
+    <dimen name="ninchat_chat_activity_video_call_consent_button_outer_margin">23dp</dimen>
+    <dimen name="ninchat_chat_activity_video_call_consent_button_inner_margin">20dp</dimen>
+
+    <dimen name="ninchat_chat_activity_file_type_dialog_title_height">70dp</dimen>
+    <dimen name="ninchat_chat_activity_file_type_dialog_button_width">180dp</dimen>
+    <dimen name="ninchat_chat_activity_file_type_dialog_button_outer_margin">23dp</dimen>
+    <dimen name="ninchat_chat_activity_file_type_dialog_button_inner_margin">20dp</dimen>
 </resources>

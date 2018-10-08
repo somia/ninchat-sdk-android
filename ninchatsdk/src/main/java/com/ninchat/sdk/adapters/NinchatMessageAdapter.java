@@ -14,8 +14,6 @@ import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatChatActivity;
 import com.ninchat.sdk.models.NinchatMessage;
 
-import org.w3c.dom.Text;
-
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,36 +34,31 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         }
 
         void bind(final Pair<NinchatMessage, Boolean> data, final boolean isContinuedMessage) {
-            if (data.first == null) {
-                if (data.second && !isContinuedMessage) {
-                    final TextView end = itemView.findViewById(R.id.ninchat_chat_message_end);
-                    end.setText(NinchatSessionManager.getInstance().getChatEnded());
-                    end.setVisibility(View.VISIBLE);
-                    final Button closeButton = itemView.findViewById(R.id.ninchat_chat_message_close);
-                    closeButton.setVisibility(View.VISIBLE);
-                    closeButton.setText(NinchatSessionManager.getInstance().getCloseChat());
-                    closeButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            final NinchatChatActivity activity = activityWeakReference.get();
-                            if (activity != null) {
-                                activity.chatClosed();
-                            }
+            if (data.first.getType() == NinchatMessage.Type.START) {
+                final TextView start = itemView.findViewById(R.id.ninchat_chat_message_start);
+                start.setText(NinchatSessionManager.getInstance().getChatStarted());
+                start.setVisibility(View.VISIBLE);
+            } else if (data.first.getType() == NinchatMessage.Type.END) {
+                final TextView end = itemView.findViewById(R.id.ninchat_chat_message_end_text);
+                end.setText(NinchatSessionManager.getInstance().getChatEnded());
+                final Button closeButton = itemView.findViewById(R.id.ninchat_chat_message_close);
+                closeButton.setText(NinchatSessionManager.getInstance().getCloseChat());
+                closeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        final NinchatChatActivity activity = activityWeakReference.get();
+                        if (activity != null) {
+                            activity.chatClosed();
                         }
-                    });
-                } else {
-                    final TextView start = itemView.findViewById(R.id.ninchat_chat_message_start);
-                    start.setText(NinchatSessionManager.getInstance().getChatStarted());
-                    start.setVisibility(View.VISIBLE);
-                }
-                return;
-            }
-            if (data.second) {
+                    }
+                });
+                itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.VISIBLE);
+            } else if (data.second) {
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.VISIBLE);
                 final TextView agent = itemView.findViewById(R.id.ninchat_chat_message_agent_name);
                 agent.setText(data.first.getSender());
                 final TextView agentTimestamp = itemView.findViewById(R.id.ninchat_chat_message_agent_timestamp);
-                agentTimestamp.setText(TIMESTAMP_FORMATTER.format(new Date()));
+                agentTimestamp.setText(TIMESTAMP_FORMATTER.format(data.first.getTimestamp()));
                 final TextView agentMessage = itemView.findViewById(R.id.ninchat_chat_message_agent_message);
                 agentMessage.setText(data.first.getMessage());
                 if (isContinuedMessage) {
@@ -76,7 +69,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 final TextView user = itemView.findViewById(R.id.ninchat_chat_message_user_name);
                 user.setText(NinchatSessionManager.getInstance().getUserName());
                 final TextView userTimestamp = itemView.findViewById(R.id.ninchat_chat_message_user_timestamp);
-                userTimestamp.setText(TIMESTAMP_FORMATTER.format(new Date()));
+                userTimestamp.setText(TIMESTAMP_FORMATTER.format(data.first.getTimestamp()));
                 final TextView userMessage = itemView.findViewById(R.id.ninchat_chat_message_user_message);
                 userMessage.setText(data.first.getMessage());
                 if (isContinuedMessage) {
@@ -95,12 +88,12 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     public NinchatMessageAdapter() {
         this.data = new ArrayList<>();
-        this.data.add(new Pair<>(null, false));
+        this.data.add(new Pair<>(new NinchatMessage(NinchatMessage.Type.START), false));
         this.recyclerViewWeakReference = new WeakReference<>(null);
     }
 
-    public void add(final String data, final String sender, final boolean isRemoteMessage) {
-        this.data.add(new Pair<>(new NinchatMessage(data, sender, isRemoteMessage), isRemoteMessage));
+    public void add(final String data, final String sender, long timestamp, final boolean isRemoteMessage) {
+        this.data.add(new Pair<>(new NinchatMessage(data, sender, timestamp, isRemoteMessage), isRemoteMessage));
         final int position = this.data.size() - 1;
         notifyItemInserted(position);
         final RecyclerView recyclerView = recyclerViewWeakReference.get();
@@ -111,7 +104,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     public void close(final NinchatChatActivity activity) {
         activityWeakReference = new WeakReference<>(activity);
-        this.data.add(new Pair<>(null, true));
+        this.data.add(new Pair<>(new NinchatMessage(NinchatMessage.Type.END), false));
         final int position = this.data.size() - 1;
         notifyItemInserted(position);
         final RecyclerView recyclerView = recyclerViewWeakReference.get();

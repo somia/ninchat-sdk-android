@@ -23,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:layout_marginBottom="@dimen/ninchat_chat_activity_message_bubble_margin_bottom"
         android:visibility="gone"
         tools:visibility="visible">
 
@@ -66,6 +67,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/ninchat_chat_activity_message_bubble_margin_bottom"
         android:visibility="gone"
         tools:visibility="visible">
 
@@ -107,24 +109,29 @@
 
     </LinearLayout>
 
-    <TextView
+    <LinearLayout
+        android:orientation="vertical"
         android:id="@+id/ninchat_chat_message_end"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/ninchat_chat_activity_chat_ended_top_margin"
-        tools:text="Chat ended"
         android:visibility="gone"
-        tools:visibility="visible"/>
+        tools:visibility="visible">
 
-    <Button
-        android:id="@+id/ninchat_chat_message_close"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/NinchatTheme.Button.Close"
-        tools:text="Close"
-        android:layout_gravity="center_horizontal"
-        android:visibility="gone"
-        tools:visibility="visible"/>
+        <TextView
+            android:id="@+id/ninchat_chat_message_end_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            tools:text="Chat ended" />
 
+        <Button
+            android:id="@+id/ninchat_chat_message_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/NinchatTheme.Button.Close"
+            tools:text="Close"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
 </LinearLayout>

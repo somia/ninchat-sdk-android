@@ -30,4 +30,27 @@
         <item name="android:textColor">@color/ninchat_colorAccent</item>
     </style>
 
+    <style name="LibAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/ninchat_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/ninchat_colorPrimaryDark</item>
+        <item name="colorAccent">@color/ninchat_colorAccent</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+
+    <style name="PickerTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabBackground">@android:color/white</item>
+        <item name="tabIndicatorColor">@color/ninchat_colorAccent</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabMaxWidth">0dp</item>
+    </style>
+
+    <style name="SmoothCheckBoxStyle">
+        <item name="color_checked">@color/ninchat_colorAccent</item>
+        <item name="color_unchecked">@android:color/white</item>
+        <item name="color_unchecked_stroke">@color/checkbox_unchecked_color</item>
+        <item name="color_tick">@android:color/white</item>
+    </style>
+
 </resources>

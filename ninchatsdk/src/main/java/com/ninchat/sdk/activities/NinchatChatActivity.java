@@ -1,12 +1,15 @@
 package com.ninchat.sdk.activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +26,8 @@ import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.views.NinchatWebRTCView;
 
+import droidninja.filepicker.FilePickerBuilder;
+
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
  */
@@ -31,6 +36,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     static int REQUEST_CODE = NinchatChatActivity.class.hashCode() & 0xffff;
 
     protected static final int CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE = "WebRTCVideoAudio".hashCode() & 0xffff;
+    protected static final int STORAGE_PERMISSION_REQUEST_CODE = "ExternalStorage".hashCode() & 0xffff;
+    protected static final int PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() & 0xffff;
+    protected static final int PICK_PDF_REQUEST_CODE = "PickPDF".hashCode() & 0xffff;
 
     private NinchatMessageAdapter messageAdapter = new NinchatMessageAdapter();
     private boolean lastMessageWasRemote = false;
@@ -45,23 +53,35 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (data == null) {
             data = new Intent();
         }
-        NinchatChatActivity.this.setResult(RESULT_OK, data);
+        setResult(Activity.RESULT_OK, data);
         finish();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == NinchatReviewActivity.REQUEST_CODE) {
+            quit(data);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE) {
-            if (hasPermissions()) {
+            if (hasVideoCallPermissions()) {
                 sendPickUpAnswer(true);
             } else {
                 // Display error
                 sendPickUpAnswer(false);
             }
-        } else if (requestCode == NinchatReviewActivity.REQUEST_CODE) {
-            quit(data);
+        } else if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
+            if (hasFileAccessPermissions()) {
+                findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.VISIBLE);
+            } else {
+                // Display error
+            }
         }
-        super.onActivityResult(requestCode, resultCode, data);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     protected BroadcastReceiver channelClosedReceiver = new BroadcastReceiver() {
@@ -93,18 +113,20 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             if (NinchatSessionManager.Broadcast.NEW_MESSAGE.equals(action)) {
                 final String message = intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_CONTENT);
                 final String sender = intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_SENDER);
+                final long timestamp = intent.getLongExtra(NinchatSessionManager.Broadcast.MESSAGE_TIMESTAMP, 0);
                 lastMessageWasRemote = !message.equals(lastSentMessage);
-                messageAdapter.add(message, sender, lastMessageWasRemote);
+                messageAdapter.add(message, sender, timestamp, lastMessageWasRemote);
             }
         }
     };
 
-    private boolean hasPermissions() {
-        if (checkCallingOrSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            return false;
-        }
-        return true;
+    private boolean hasVideoCallPermissions() {
+        return checkCallingOrSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+                checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private boolean hasFileAccessPermissions() {
+        return checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void sendPickUpAnswer(final boolean answer) {
@@ -120,33 +142,64 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             if (NinchatSessionManager.Broadcast.WEBRTC_MESSAGE.equals(action)) {
                 final String messageType = intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_TYPE);
                 if (NinchatSessionManager.MessageTypes.CALL.equals(messageType)) {
-                    /*new AlertDialog.Builder(NinchatChatActivity.this).setTitle("Video call request")
-                            .setMessage("Foo")
-                            .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    if (hasPermissions()) {
-                                        sendPickUpAnswer(true);
-                                    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                        requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE);
-                                    } else {
-                                        sendPickUpAnswer(false);
-                                    }
-                                }
-                            })
-                            .setNegativeButton("Decline", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    sendPickUpAnswer(false);
-                                }
-                            }).show();*/
-                    sendPickUpAnswer(false);
+                    findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.VISIBLE);
+                    final TextView userName = findViewById(R.id.ninchat_video_call_consent_dialog_user_name);
+                    userName.setText("foo");
                 } else {
                     webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT));
                 }
             }
         }
     };
+
+    public void onAcceptVideoCall(final View view) {
+        findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.GONE);
+        if (hasVideoCallPermissions()) {
+            sendPickUpAnswer(true);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE);
+        } else {
+            sendPickUpAnswer(false);
+        }
+    }
+
+    public void onRejectVideoCall(final View view) {
+        findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.GONE);
+        sendPickUpAnswer(false);
+    }
+
+    public void onAttachmentClick(final View view) {
+        if (hasFileAccessPermissions()) {
+            findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.VISIBLE);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    public void openImagePicker(final View view) {
+        findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.GONE);
+        FilePickerBuilder.getInstance()
+                .setMaxCount(1)
+                .setActivityTheme(R.style.LibAppTheme)
+                .enableVideoPicker(true)
+                .enableCameraSupport(true)
+                .showGifs(false)
+                .showFolderView(false)
+                .pickPhoto(this, PICK_PHOTO_VIDEO_REQUEST_CODE);
+    }
+
+    public void openPDFPicker(final View view) {
+        findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.GONE);
+        FilePickerBuilder.getInstance()
+                .setMaxCount(1)
+                .setActivityTheme(R.style.LibAppTheme)
+                .addFileSupport(getString(R.string.ninchat_file_type_pdf), new String[]{".pdf"})
+                .pickFile(this, PICK_PDF_REQUEST_CODE);
+    }
+
+    public void closeFilePickerDialog(final View view) {
+        findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.GONE);
+    }
 
     public void onSendClick(final View view) {
         final TextView messageView = findViewById(R.id.message);

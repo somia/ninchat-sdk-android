@@ -35,6 +35,8 @@ import com.ninchat.sdk.tasks.NinchatSendMessageTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.webrtc.IceCandidate;
+import org.webrtc.SessionDescription;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -54,6 +56,7 @@ public final class NinchatSessionManager {
         public static final String NEW_MESSAGE = BuildConfig.APPLICATION_ID + ".newMessage";
         public static final String MESSAGE_CONTENT = NEW_MESSAGE + ".content";
         public static final String MESSAGE_SENDER = NEW_MESSAGE + ".sender";
+        public static final String MESSAGE_TIMESTAMP = NEW_MESSAGE + ".timestamp";
         public static final String WEBRTC_MESSAGE = BuildConfig.APPLICATION_ID + ".webRTCMessage";
         public static final String WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type";
         public static final String WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content";
@@ -437,13 +440,19 @@ public final class NinchatSessionManager {
             sender = params.getString("message_user_name");
         } catch (final Exception e) {
         }
+        long timestamp = 0;
+        try {
+            timestamp = params.getInt("message_time");
+        } catch (final Exception e) {
+        }
         for (int i = 0; i < payload.length(); ++i) {
             try {
                 final JSONObject message = new JSONObject(new String(payload.get(i)));
                 LocalBroadcastManager.getInstance(context)
                         .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
                                 .putExtra(Broadcast.MESSAGE_CONTENT, message.getString("text"))
-                                .putExtra(Broadcast.MESSAGE_SENDER, sender));
+                                .putExtra(Broadcast.MESSAGE_SENDER, sender)
+                                .putExtra(Broadcast.MESSAGE_TIMESTAMP, timestamp));
             } catch (final JSONException e) {
                 // Ignore
             }
@@ -530,6 +539,37 @@ public final class NinchatSessionManager {
         NinchatSendBeginIceTask.start();
     }
 
+    public void sendWebRTCSDPReply(final SessionDescription sessionDescription) {
+        try {
+            final Map<SessionDescription.Type, String> typeMap = new HashMap<>();
+            typeMap.put(SessionDescription.Type.ANSWER, MessageTypes.ANSWER);
+            typeMap.put(SessionDescription.Type.OFFER, MessageTypes.OFFER);
+            final String messageType = typeMap.get(sessionDescription.type);
+            if (messageType == null) {
+                return;
+            }
+            final JSONObject data = new JSONObject();
+            data.put("sdp", sessionDescription.description);
+            NinchatSendMessageTask.start(messageType, data.toString(), channelId);
+        } catch (final JSONException e) {
+            sessionError(e);
+        }
+    }
+
+    public void sendWebRTCIceCandidate(final IceCandidate iceCandidate) {
+        try {
+            final JSONObject data = new JSONObject();
+            final JSONObject candidate = new JSONObject();
+            candidate.put("sdpMLineIndex", iceCandidate.sdpMLineIndex);
+            candidate.put("sdpMid", iceCandidate.sdpMid);
+            candidate.put("candidate", iceCandidate.sdp);
+            data.put("candidate", iceCandidate.sdp);
+            NinchatSendMessageTask.start(MessageTypes.ICE_CANDIDATE, data.toString(), channelId);
+        } catch (final JSONException e) {
+            sessionError(e);
+        }
+    }
+
     private JSONObject getDefault() throws JSONException {
         if (configuration != null) {
             return configuration.getJSONObject("default");
@@ -546,8 +586,10 @@ public final class NinchatSessionManager {
     }
 
     private Spanned toSpanned(final String text) {
-        return text == null ? null :
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(text, 0) : Html.fromHtml(text);
+        final String centeredText = (text == null || (text.contains("<center>") && text.contains("</center>"))) ?
+                text : ("<center>" + text + "</center>");
+        return centeredText == null ? null :
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(centeredText, 0) : Html.fromHtml(centeredText);
     }
 
     public Spanned getWelcome() {
@@ -560,12 +602,12 @@ public final class NinchatSessionManager {
         return toSpanned(welcomeText);
     }
 
-    public String getNoQueues() {
+    public Spanned getNoQueues() {
         final String key = "noQueuesText";
         try {
-            return getDefault().getString(key);
+            return toSpanned(getDefault().getString(key));
         } catch (final Exception e) {
-            return key;
+            return toSpanned(key);
         }
     }
 
@@ -627,21 +669,21 @@ public final class NinchatSessionManager {
         }
     }
 
-    public String getChatStarted() {
+    public Spanned getChatStarted() {
         final String key = "Audience in queue {{queue}} accepted.";
         try {
-            return getTranslations().getString(key);
+            return toSpanned(getTranslations().getString(key));
         } catch (final Exception e) {
-            return key;
+            return toSpanned(key);
         }
     }
 
-    public String getChatEnded() {
+    public Spanned getChatEnded() {
         final String key = "Conversation ended";
         try {
-            return getTranslations().getString(key);
+            return toSpanned(getTranslations().getString(key));
         } catch (final Exception e) {
-            return key;
+            return toSpanned(key);
         }
     }
 
@@ -697,7 +739,6 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
         }
         final String[] splits = queueStatus.split("\\{\\{");
-        Log.e("JUSSI", "" + splits.length);
         if (splits.length > 2) {
             queueStatus = queueStatus.replaceFirst("\\{\\{([^}]*?)\\}\\}", selectedQueue.getName());
         }

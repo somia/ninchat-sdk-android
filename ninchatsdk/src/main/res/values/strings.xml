@@ -1,21 +1,17 @@
 <resources>
-    <string name="ninchat_contact_us">Contact us</string>
-    <string name="ninchat_close">Close</string>
-
-    <string name="ninchat_start_title">Welcome to Ninchat customer care.</string>
-    <string name="ninchat_start_description">Click a topic for more info or start chatting.</string>
-    <string name="ninchat_blog_link">Ninchat blog</string>
-    <string name="ninchat_start_chat">Start chat</string>
-    <string name="ninchat_configuration_fetch_error">Failed to fetch the configuration. %s</string>
-
-    <string name="ninchat_queueing">Queueing</string>
-    <string name="ninchat_queue_title">Just a moment.</string>
-    <string name="ninchat_queue_description">We will help you in a moment.</string>
-    <string name="ninchat_queue_message">Did you know that Ninchat works on any website and mobile site, Facebook page, blog and mobile apps!</string>
-
     <string name="ninchat_chat_started">Keskustelu aloitettu</string>
     <string name="ninchat_chat_ended">Keskustelu päättynyt</string>
-    <string name="ninchat_chat_enter_message">Enter your message</string>
+    <string name="ninchat_chat_enter_message">Kirjoita viestisi</string>
+
+    <string name="ninchat_chat_video_call_consent_title">Video call request</string>
+    <string name="ninchat_chat_video_call_consent_description">wants to video chat with you</string>
+    <string name="ninchat_chat_video_call_consent_accept">Accept</string>
+    <string name="ninchat_chat_video_call_consent_reject">Reject</string>
+
+    <string name="ninchat_file_type_title">Select file type</string>
+    <string name="ninchat_file_type_image_video">Image/Video</string>
+    <string name="ninchat_file_type_pdf">PDF</string>
+    <string name="ninchat_file_type_cancel">Close</string>
 
     <string name="ninchat_review_title">How was our customer service?</string>
     <string name="ninchat_review_description">Give a rating - select a smiley</string>
