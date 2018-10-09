@@ -1,9 +1,12 @@
 package com.ninchat.sdk.activities;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -12,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.NinchatFile;
+import com.ninchat.sdk.tasks.NinchatDownloadFileTask;
 
 public final class NinchatMediaActivity extends NinchatBaseActivity {
 
@@ -35,10 +39,36 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
         finish();
     }
 
+    public void onDownloadFile(final View view) {
+        NinchatDownloadFileTask.start(fileId);
+    }
+
+    private String fileId;
+
+    private BroadcastReceiver fileDownloadedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (NinchatSessionManager.Broadcast.FILE_DOWNLOADED.equals(action)) {
+                findViewById(R.id.ninchat_media_download).setVisibility(NinchatSessionManager.getInstance().getFile(fileId).isDownloaded() ? View.GONE : View.VISIBLE);
+            }
+        }
+    };
+
+    private BroadcastReceiver fileDownloadingReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (NinchatSessionManager.Broadcast.DOWNLOADING_FILE.equals(action)) {
+                findViewById(R.id.ninchat_media_download).setVisibility(View.GONE);
+            }
+        }
+    };
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final String fileId = getIntent().getStringExtra(FILE_ID);
+        fileId = getIntent().getStringExtra(FILE_ID);
         final NinchatFile file = NinchatSessionManager.getInstance().getFile(fileId);
         final ImageView image = findViewById(R.id.ninchat_media_image);
         Glide.with(this)
@@ -46,5 +76,16 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
                 .into(image);
         final TextView name = findViewById(R.id.ninchat_media_name);
         name.setText(file.getName());
+        final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        localBroadcastManager.registerReceiver(fileDownloadedReceiver, new IntentFilter(NinchatSessionManager.Broadcast.FILE_DOWNLOADED));
+        localBroadcastManager.registerReceiver(fileDownloadingReceiver, new IntentFilter(NinchatSessionManager.Broadcast.DOWNLOADING_FILE));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
+        localBroadcastManager.unregisterReceiver(fileDownloadedReceiver);
+        localBroadcastManager.unregisterReceiver(fileDownloadingReceiver);
     }
 }

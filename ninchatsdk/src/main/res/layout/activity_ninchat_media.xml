@@ -30,12 +30,28 @@
             tools:text="File name"
             android:autoLink="none"/>
 
-        <ImageView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ninchat_close"
             android:layout_alignParentEnd="true"
-            android:onClick="onClose"/>
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/ninchat_media_download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ninchat_download"
+                android:onClick="onDownloadFile" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ninchat_close"
+                android:layout_marginStart="5dp"
+                android:onClick="onClose"/>
+
+        </LinearLayout>
 
     </RelativeLayout>
 

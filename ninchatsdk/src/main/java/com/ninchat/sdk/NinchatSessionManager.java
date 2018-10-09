@@ -66,6 +66,8 @@ public final class NinchatSessionManager {
         public static final String WEBRTC_MESSAGE = BuildConfig.APPLICATION_ID + ".webRTCMessage";
         public static final String WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type";
         public static final String WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content";
+        public static final String DOWNLOADING_FILE = BuildConfig.APPLICATION_ID + ".downloadingFile";
+        public static final String FILE_DOWNLOADED = BuildConfig.APPLICATION_ID + ".fileDownloaded";
     }
 
     public static final class MessageTypes {
