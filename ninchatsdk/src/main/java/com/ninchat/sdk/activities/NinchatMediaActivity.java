@@ -26,6 +26,11 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
         return R.layout.activity_ninchat_media;
     }
 
+    public void onToggleTopBar(final View view) {
+        final View top = findViewById(R.id.ninchat_media_top);
+        top.setVisibility(top.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
+    }
+
     public void onClose(final View view) {
         finish();
     }

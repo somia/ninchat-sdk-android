@@ -5,6 +5,16 @@
     android:background="@color/ninchat_colorPrimaryDark"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <ImageView
+        android:id="@+id/ninchat_media_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:src="@drawable/ninchat_logo"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:onClick="onToggleTopBar"
+        android:layout_centerInParent="true"/>
+
     <RelativeLayout
         android:id="@+id/ninchat_media_top"
         android:layout_width="match_parent"
@@ -17,7 +27,8 @@
             android:id="@+id/ninchat_media_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="File name"/>
+            tools:text="File name"
+            android:autoLink="none"/>
 
         <ImageView
             android:layout_width="wrap_content"
@@ -27,14 +38,5 @@
             android:onClick="onClose"/>
 
     </RelativeLayout>
-
-    <ImageView
-        android:id="@+id/ninchat_media_image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:src="@drawable/ninchat_logo"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
-        android:layout_centerInParent="true"/>
 
 </RelativeLayout>
