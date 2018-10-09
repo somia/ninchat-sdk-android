@@ -116,15 +116,23 @@
 
     <include
         android:id="@+id/ninchat_chat_video_call_consent_dialog"
-        layout="@layout/fragment_video_call_consent_dialog"
+        layout="@layout/dialog_video_call_consent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:visibility="gone"/>
 
     <include
+        android:id="@+id/ninchat_chat_close_chat_dialog"
+        layout="@layout/dialog_close_chat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:visibility="gone" />
+
+    <include
         android:id="@+id/ninchat_chat_file_picker_dialog"
-        layout="@layout/fragment_file_type_dialog"
+        layout="@layout/dialog_choose_file_type"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

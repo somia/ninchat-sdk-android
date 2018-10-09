@@ -94,7 +94,17 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     };
 
     public void onCloseChat(final View view) {
+        findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
+        findViewById(R.id.ninchat_chat_close_chat_dialog).setVisibility(View.VISIBLE);
+    }
+
+    public void onCloseChatConfirm(final View view) {
         chatClosed();
+    }
+
+    public void onContinueChat(final View view) {
+        findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
+        findViewById(R.id.ninchat_chat_close_chat_dialog).setVisibility(View.GONE);
     }
 
     public void chatClosed() {
@@ -142,9 +152,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             if (NinchatSessionManager.Broadcast.WEBRTC_MESSAGE.equals(action)) {
                 final String messageType = intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_TYPE);
                 if (NinchatSessionManager.MessageTypes.CALL.equals(messageType)) {
+                    findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
                     findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.VISIBLE);
                     final TextView userName = findViewById(R.id.ninchat_video_call_consent_dialog_user_name);
-                    userName.setText("foo");
+                    userName.setText(intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_SENDER));
                 } else {
                     webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT));
                 }
@@ -153,6 +164,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     };
 
     public void onAcceptVideoCall(final View view) {
+        findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
         findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.GONE);
         if (hasVideoCallPermissions()) {
             sendPickUpAnswer(true);
@@ -164,6 +176,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     public void onRejectVideoCall(final View view) {
+        findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
         findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.GONE);
         sendPickUpAnswer(false);
     }

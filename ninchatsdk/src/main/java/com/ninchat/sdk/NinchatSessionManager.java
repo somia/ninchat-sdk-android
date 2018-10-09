@@ -438,6 +438,11 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             return;
         }
+        String sender = null;
+        try {
+            sender = params.getString("message_user_name");
+        } catch (final Exception e) {
+        }
         final Context context = contextWeakReference.get();
         if (context == null) {
             return;
@@ -450,16 +455,12 @@ public final class NinchatSessionManager {
             LocalBroadcastManager.getInstance(context)
                     .sendBroadcast(new Intent(Broadcast.WEBRTC_MESSAGE)
                             .putExtra(Broadcast.WEBRTC_MESSAGE_TYPE, messageType)
+                            .putExtra(Broadcast.MESSAGE_SENDER, sender)
                             .putExtra(Broadcast.WEBRTC_MESSAGE_CONTENT, builder.toString()));
             return;
         }
         if (!messageType.equals(MessageTypes.TEXT) && !messageType.equals(MessageTypes.FILE)) {
             return;
-        }
-        String sender = null;
-        try {
-            sender = params.getString("message_user_name");
-        } catch (final Exception e) {
         }
         long timestamp = 0;
         try {

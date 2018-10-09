@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ninchat_colorPrimaryAlpha">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:elevation="4dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ninchat_chat_activity_video_call_consent_title_height">
+
+            <TextView
+                android:id="@+id/ninchat_video_call_consent_dialog_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/ninchat_chat_video_call_consent_title" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:foreground="@color/ninchat_colorPrimaryDark" />
+
+        <ImageView
+            android:id="@+id/ninchat_video_call_consent_dialog_user_avatar"
+            android:layout_width="@dimen/ninchat_chat_activity_video_call_consent_image_size"
+            android:layout_height="@dimen/ninchat_chat_activity_video_call_consent_image_size"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="@dimen/ninchat_chat_activity_video_call_consent_image_margin"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            tools:src="@drawable/ninchat_logo" />
+
+        <TextView
+            android:id="@+id/ninchat_video_call_consent_dialog_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            tools:text="User name" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/ninchat_chat_activity_video_call_consent_description_margin_top"
+            android:text="@string/ninchat_chat_video_call_consent_description" />
+
+        <Button
+            android:layout_width="@dimen/ninchat_chat_activity_video_call_consent_button_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/ninchat_chat_activity_video_call_consent_button_outer_margin"
+            android:onClick="onAcceptVideoCall"
+            android:text="@string/ninchat_chat_video_call_consent_accept" />
+
+        <Button
+            style="@style/NinchatTheme.Button.Close"
+            android:layout_width="@dimen/ninchat_chat_activity_video_call_consent_button_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/ninchat_chat_activity_video_call_consent_button_inner_margin"
+            android:layout_marginBottom="@dimen/ninchat_chat_activity_video_call_consent_button_outer_margin"
+            android:onClick="onRejectVideoCall"
+            android:text="@string/ninchat_chat_video_call_consent_reject" />
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -8,6 +8,11 @@
     <string name="ninchat_chat_video_call_consent_accept">Accept</string>
     <string name="ninchat_chat_video_call_consent_reject">Reject</string>
 
+    <string name="ninchat_chat_close_chat_dialog_title">Close chat</string>
+    <string name="ninchat_chat_close_chat_dialog_description">Are you sure you want to close the chat?</string>
+    <string name="ninchat_chat_close_chat_dialog_confirm">@string/ninchat_chat_close_chat_dialog_title</string>
+    <string name="ninchat_chat_close_chat_dialog_continue">Continue chat</string>
+
     <string name="ninchat_file_type_title">Select file type</string>
     <string name="ninchat_file_type_image_video">Image/Video</string>
     <string name="ninchat_file_type_pdf">PDF</string>
