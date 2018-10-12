@@ -1,9 +1,9 @@
 package com.ninchat.sdk.adapters;
 
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spanned;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,7 +23,6 @@ import com.ninchat.sdk.models.NinchatMessage;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -37,6 +36,42 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
         public NinchatMessageViewHolder(View itemView) {
             super(itemView);
+        }
+
+        private void bindMessage(final @IdRes int wrapperId, final @IdRes int headerId, final @IdRes int senderId, final @IdRes int timestampId, final @IdRes int messageView, final @IdRes int imageId, final @IdRes int playIconId, final NinchatMessage ninchatMessage, final boolean isContinuedMessage) {
+            itemView.findViewById(wrapperId).setVisibility(View.VISIBLE);
+            final TextView sender = itemView.findViewById(senderId);
+            sender.setText(ninchatMessage.getSender());
+            final TextView agentTimestamp = itemView.findViewById(timestampId);
+            agentTimestamp.setText(TIMESTAMP_FORMATTER.format(ninchatMessage.getTimestamp()));
+            final TextView message = itemView.findViewById(messageView);
+            final Spanned messageContent = ninchatMessage.getMessage();
+            final NinchatFile file = NinchatSessionManager.getInstance().getFile(ninchatMessage.getFileId());
+            if (messageContent != null) {
+                message.setText(messageContent);
+            } else if (file.isPDF()) {
+                message.setText(file.getUrl());
+            } else {
+                message.setVisibility(View.GONE);
+                final ImageView image = itemView.findViewById(imageId);
+                Glide.with(image.getContext())
+                        .load(file.getUrl())
+                        .into(image);
+                image.setVisibility(View.VISIBLE);
+                if (file.isVideo()) {
+                    itemView.findViewById(playIconId).setVisibility(View.VISIBLE);
+                }
+                image.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        v.getContext().startActivity(NinchatMediaActivity.getLaunchIntent(v.getContext(), ninchatMessage.getFileId()));
+                    }
+                });
+            }
+            if (isContinuedMessage) {
+                itemView.findViewById(headerId).setVisibility(View.GONE);
+                // TODO: Override the background resource
+            }
         }
 
         void bind(final Pair<NinchatMessage, Boolean> data, final boolean isContinuedMessage) {
@@ -60,71 +95,23 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 });
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.VISIBLE);
             } else if (data.second) {
-                itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.VISIBLE);
-                final TextView agent = itemView.findViewById(R.id.ninchat_chat_message_agent_name);
-                agent.setText(data.first.getSender());
-                final TextView agentTimestamp = itemView.findViewById(R.id.ninchat_chat_message_agent_timestamp);
-                agentTimestamp.setText(TIMESTAMP_FORMATTER.format(data.first.getTimestamp()));
-                final TextView agentMessage = itemView.findViewById(R.id.ninchat_chat_message_agent_message);
-                final Spanned message = data.first.getMessage();
-                final NinchatFile file = NinchatSessionManager.getInstance().getFile(data.first.getFileId());
-                if (message != null) {
-                    agentMessage.setText(message);
-                } else if (file.isPDF()) {
-                    agentMessage.setText(file.getUrl());
-                } else {
-                    agentMessage.setVisibility(View.GONE);
-                    final ImageView agentImage = itemView.findViewById(R.id.ninchat_chat_message_agent_image);
-                    Glide.with(agentImage.getContext())
-                            .load(file.getUrl())
-                            .into(agentImage);
-                    agentImage.setVisibility(View.VISIBLE);
-                    if (file.isVideo()) {
-                        itemView.findViewById(R.id.ninchat_chat_message_agent_video_play_image).setVisibility(View.VISIBLE);
-                    }
-                    agentImage.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            v.getContext().startActivity(NinchatMediaActivity.getLaunchIntent(v.getContext(), data.first.getFileId()));
-                        }
-                    });
-                }
-                if (isContinuedMessage) {
-                    itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(View.GONE);
-                    // TODO: Override the background resource
-                }
+                bindMessage(R.id.ninchat_chat_message_agent,
+                        R.id.ninchat_chat_message_agent_title,
+                        R.id.ninchat_chat_message_agent_name,
+                        R.id.ninchat_chat_message_agent_timestamp,
+                        R.id.ninchat_chat_message_agent_message,
+                        R.id.ninchat_chat_message_agent_image,
+                        R.id.ninchat_chat_message_agent_video_play_image,
+                        data.first, isContinuedMessage);
             } else {
-                itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.VISIBLE);
-                final TextView user = itemView.findViewById(R.id.ninchat_chat_message_user_name);
-                user.setText(NinchatSessionManager.getInstance().getUserName());
-                final TextView userTimestamp = itemView.findViewById(R.id.ninchat_chat_message_user_timestamp);
-                userTimestamp.setText(TIMESTAMP_FORMATTER.format(data.first.getTimestamp()));
-                final TextView userMessage = itemView.findViewById(R.id.ninchat_chat_message_user_message);
-                final Spanned message = data.first.getMessage();
-                final NinchatFile file = NinchatSessionManager.getInstance().getFile(data.first.getFileId());
-                if (message != null) {
-                    userMessage.setText(message);
-                } else {
-                    userMessage.setVisibility(View.GONE);
-                    final ImageView userImage = itemView.findViewById(R.id.ninchat_chat_message_user_image);
-                    Glide.with(userImage.getContext())
-                            .load(file.getUrl())
-                            .into(userImage);
-                    if (file.isVideo()) {
-                        itemView.findViewById(R.id.ninchat_chat_message_user_video_play_image).setVisibility(View.VISIBLE);
-                    }
-                    userImage.setVisibility(View.VISIBLE);
-                    userImage.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            v.getContext().startActivity(NinchatMediaActivity.getLaunchIntent(v.getContext(), data.first.getFileId()));
-                        }
-                    });
-                }
-                if (isContinuedMessage) {
-                    itemView.findViewById(R.id.ninchat_chat_message_user_title).setVisibility(View.GONE);
-                    // TODO: Override the background resource
-                }
+                bindMessage(R.id.ninchat_chat_message_user,
+                        R.id.ninchat_chat_message_user_title,
+                        R.id.ninchat_chat_message_user_name,
+                        R.id.ninchat_chat_message_user_timestamp,
+                        R.id.ninchat_chat_message_user_message,
+                        R.id.ninchat_chat_message_user_image,
+                        R.id.ninchat_chat_message_user_video_play_image,
+                        data.first, isContinuedMessage);
             }
         }
     }
@@ -193,7 +180,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         if (position > 0) {
             final Pair<NinchatMessage, Boolean> previousMessage = data.get(position - 1);
             if (previousMessage.first != null && message.first != null) {
-                isContinuedMessage = message.first.isRemoteMessage() == previousMessage.first.isRemoteMessage();
+                isContinuedMessage = previousMessage.first.getType() != NinchatMessage.Type.START &&
+                        message.first.isRemoteMessage() == previousMessage.first.isRemoteMessage();
             }
         }
         holder.bind(data.get(position), isContinuedMessage);

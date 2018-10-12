@@ -479,16 +479,18 @@ public final class NinchatSessionManager {
                     Log.e("JUSSI", "got files:" + files.toString());
                     final JSONObject file = files.getJSONObject(0);
                     final String filename = file.getJSONObject("file_attrs").getString("name");
+                    final int filesize = file.getJSONObject("file_attrs").getInt("size");
                     String filetype = file.getJSONObject("file_attrs").getString("type");
                     if (filetype == null || filetype.equals("application/octet-stream")) {
                         filetype = guessMimeTypeFromFileName(filename);
                     }
                     Log.e("JUSSI", filetype);
-                    if (filetype != null && (filetype.startsWith("image/") || filetype.startsWith("video/") /*|| filetype.equals("application/pdf")*/)) {
+                    if (filetype != null && (filetype.startsWith("image/") ||
+                            filetype.startsWith("video/") || filetype.equals("application/pdf"))) {
                         final String fileId = file.getString("file_id");
                         NinchatFile ninchatFile = this.files.get(fileId);
                         if (ninchatFile == null) {
-                            ninchatFile = new NinchatFile(fileId, filename, filetype, timestamp, sender, actionId == 0);
+                            ninchatFile = new NinchatFile(fileId, filename, filesize, filetype, timestamp, sender, actionId == 0);
                             this.files.put(fileId, ninchatFile);
                             NinchatDescribeFileTask.start(fileId);
                         } else if (false) {

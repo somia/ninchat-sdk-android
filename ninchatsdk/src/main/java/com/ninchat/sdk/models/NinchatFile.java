@@ -1,11 +1,16 @@
 package com.ninchat.sdk.models;
 
+import android.os.Build;
+import android.text.Html;
+import android.text.Spanned;
+
 import java.util.Date;
 
 public final class NinchatFile {
 
     private String fileId;
     private String name;
+    private int size;
     private String type;
     private long timestamp;
     private String sender;
@@ -16,9 +21,10 @@ public final class NinchatFile {
 
     private boolean isDownloaded = false;
 
-    public NinchatFile(final String fileId, final String name, final String type, final long timestamp, final String sender, final boolean isRemote) {
+    public NinchatFile(final String fileId, final String name, int size, final String type, final long timestamp, final String sender, final boolean isRemote) {
         this.fileId = fileId;
         this.name = name;
+        this.size = size;
         this.type = type;
         this.timestamp = timestamp;
         this.sender = sender;
@@ -75,6 +81,24 @@ public final class NinchatFile {
 
     public String getUrl() {
         return url;
+    }
+
+    private String getFileSize() {
+        if (size % 1024 == 0) {
+            return size + "B";
+        }
+        int kiloBytes = size % 1024;
+        if (kiloBytes % 1024 == 0) {
+            return kiloBytes + "kB";
+        }
+        int megaBytes = kiloBytes % 1024;
+        // TODO: Should we support gigabytes and terabytes too?
+        return megaBytes + "MB";
+    }
+
+    public Spanned getPDFLInk() {
+        final String link = "<a href='" + url + "'>" + name + "</a> (" + getFileSize() + ")";
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(link, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(link);
     }
 
     public Date getUrlExpiry() {
