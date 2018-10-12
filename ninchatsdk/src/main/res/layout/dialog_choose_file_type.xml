@@ -26,9 +26,17 @@
     <Button
         android:layout_width="@dimen/ninchat_chat_activity_file_type_dialog_button_width"
         android:layout_height="wrap_content"
-        android:text="@string/ninchat_file_type_image_video"
+        android:text="@string/ninchat_file_type_image"
         android:layout_gravity="center_horizontal"
         android:onClick="openImagePicker"
+        android:layout_marginTop="@dimen/ninchat_chat_activity_file_type_dialog_button_outer_margin" />
+
+    <Button
+        android:layout_width="@dimen/ninchat_chat_activity_file_type_dialog_button_width"
+        android:layout_height="wrap_content"
+        android:text="@string/ninchat_file_type_video"
+        android:layout_gravity="center_horizontal"
+        android:onClick="openVideoPicker"
         android:layout_marginTop="@dimen/ninchat_chat_activity_file_type_dialog_button_outer_margin" />
 
     <Button

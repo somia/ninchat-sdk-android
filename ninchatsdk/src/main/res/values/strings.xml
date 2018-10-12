@@ -14,7 +14,8 @@
     <string name="ninchat_chat_close_chat_dialog_continue">Continue chat</string>
 
     <string name="ninchat_file_type_title">Select file type</string>
-    <string name="ninchat_file_type_image_video">Image/Video</string>
+    <string name="ninchat_file_type_image">Image</string>
+    <string name="ninchat_file_type_video">Video</string>
     <string name="ninchat_file_type_pdf">PDF</string>
     <string name="ninchat_file_type_cancel">Close</string>
 

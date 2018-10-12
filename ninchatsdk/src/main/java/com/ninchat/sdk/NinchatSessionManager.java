@@ -10,6 +10,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.ninchat.client.CloseHandler;
@@ -33,6 +34,7 @@ import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
 import com.ninchat.sdk.tasks.NinchatListQueuesTask;
 import com.ninchat.sdk.tasks.NinchatOpenSessionTask;
 import com.ninchat.sdk.tasks.NinchatSendBeginIceTask;
+import com.ninchat.sdk.tasks.NinchatSendFileTask;
 import com.ninchat.sdk.tasks.NinchatSendMessageTask;
 
 import org.json.JSONArray;
@@ -477,7 +479,10 @@ public final class NinchatSessionManager {
                     Log.e("JUSSI", "got files:" + files.toString());
                     final JSONObject file = files.getJSONObject(0);
                     final String filename = file.getJSONObject("file_attrs").getString("name");
-                    final String filetype = file.getJSONObject("file_attrs").getString("type");
+                    String filetype = file.getJSONObject("file_attrs").getString("type");
+                    if (filetype == null || filetype.equals("application/octet-stream")) {
+                        filetype = guessMimeTypeFromFileName(filename);
+                    }
                     Log.e("JUSSI", filetype);
                     if (filetype != null && (filetype.startsWith("image/") /*|| filetype.startsWith("video/") || filetype.equals("application/pdf")*/)) {
                         final String fileId = file.getString("file_id");
@@ -502,6 +507,15 @@ public final class NinchatSessionManager {
                 // Ignore
             }
         }
+    }
+
+    private String guessMimeTypeFromFileName(final String name) {
+        final String extension = name.replaceAll(".*\\.", "");
+        final String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        if (mimeType == null) {
+            return "application/octet-stream";
+        }
+        return mimeType;
     }
 
     private void fileFound(final Props params) {
@@ -627,6 +641,10 @@ public final class NinchatSessionManager {
         } catch (final JSONException e) {
             sessionError(e);
         }
+    }
+
+    public void sendImage(final String name, final byte[] data) {
+        NinchatSendFileTask.start(name, data, channelId);
     }
 
     public void sendWebRTCCallAnswer(final boolean answer) {

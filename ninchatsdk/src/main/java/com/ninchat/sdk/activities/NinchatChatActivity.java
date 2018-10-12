@@ -7,15 +7,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -26,7 +31,7 @@ import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.views.NinchatWebRTCView;
 
-import droidninja.filepicker.FilePickerBuilder;
+import java.io.InputStream;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
@@ -59,8 +64,36 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NinchatReviewActivity.REQUEST_CODE) {
             quit(data);
+        } else if (requestCode == NinchatChatActivity.PICK_PHOTO_VIDEO_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            try {
+                final Uri uri = data.getData();
+                String fileName = getFileName(uri);
+                final InputStream inputStream = getContentResolver().openInputStream(uri);
+                final int size = inputStream.available();
+                final byte[] buffer = new byte[size];
+                inputStream.read(buffer);
+                inputStream.close();
+                NinchatSessionManager.getInstance().sendImage(fileName, buffer);
+            } catch (final Exception e) {
+                Log.e("JUSSI", "error", e);
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public String getFileName(Uri uri) {
+        final Cursor cursor = getContentResolver()
+                .query(uri, null, null, null, null, null);
+        String displayName = "";
+        try {
+            if (cursor != null && cursor.moveToFirst()) {
+                displayName = cursor.getString(
+                        cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+            }
+        } finally {
+            cursor.close();
+        }
+        return displayName;
     }
 
     @Override
@@ -192,23 +225,17 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     public void openImagePicker(final View view) {
         findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.GONE);
-        FilePickerBuilder.getInstance()
-                .setMaxCount(1)
-                .setActivityTheme(R.style.LibAppTheme)
-                .enableVideoPicker(true)
-                .enableCameraSupport(true)
-                .showGifs(true)
-                .showFolderView(false)
-                .pickPhoto(this, PICK_PHOTO_VIDEO_REQUEST_CODE);
+        startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), PICK_PHOTO_VIDEO_REQUEST_CODE);
+    }
+
+    public void openVideoPicker(final View view) {
+        findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.GONE);
+        startActivityForResult(new Intent(Intent.ACTION_PICK).setType("video/*"), PICK_PHOTO_VIDEO_REQUEST_CODE);
     }
 
     public void openPDFPicker(final View view) {
         findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.GONE);
-        FilePickerBuilder.getInstance()
-                .setMaxCount(1)
-                .setActivityTheme(R.style.LibAppTheme)
-                .addFileSupport(getString(R.string.ninchat_file_type_pdf), new String[]{".pdf"})
-                .pickFile(this, PICK_PDF_REQUEST_CODE);
+        startActivityForResult(new Intent(Intent.ACTION_PICK).setType("application/pdf"), PICK_PDF_REQUEST_CODE);
     }
 
     public void closeFilePickerDialog(final View view) {
