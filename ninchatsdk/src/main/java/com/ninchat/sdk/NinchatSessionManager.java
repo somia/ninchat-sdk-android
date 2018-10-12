@@ -484,7 +484,7 @@ public final class NinchatSessionManager {
                         filetype = guessMimeTypeFromFileName(filename);
                     }
                     Log.e("JUSSI", filetype);
-                    if (filetype != null && (filetype.startsWith("image/") /*|| filetype.startsWith("video/") || filetype.equals("application/pdf")*/)) {
+                    if (filetype != null && (filetype.startsWith("image/") || filetype.startsWith("video/") /*|| filetype.equals("application/pdf")*/)) {
                         final String fileId = file.getString("file_id");
                         NinchatFile ninchatFile = this.files.get(fileId);
                         if (ninchatFile == null) {
@@ -533,33 +533,20 @@ public final class NinchatSessionManager {
             sessionError(e);
             return;
         }
-        long urlExpiry = 0;
+        long urlExpiry;
         try {
             urlExpiry = params.getInt("url_expiry");
         } catch (final Exception e) {
             sessionError(e);
             return;
         }
-        Props attrs;
+        float aspectRatio;
         try {
-            attrs = params.getObject("file_attrs");
-        } catch (final Exception e) {
-            sessionError(e);
-            return;
-        }
-        Props thumbnail;
-        try {
-            thumbnail = attrs.getObject("thumbnail");
-        } catch (final Exception e) {
-            sessionError(e);
-            return;
-        }
-        float aspectRatio = 1.0f;
-        try {
+            final Props attrs = params.getObject("file_attrs");
+            final Props thumbnail = attrs.getObject("thumbnail");
             aspectRatio = ((float) thumbnail.getInt("width")) / ((float) thumbnail.getInt("height"));
         } catch (final Exception e) {
-            sessionError(e);
-            return;
+            aspectRatio = 16.0f / 9.0f;
         }
         final NinchatFile file = files.get(fileId);
         file.setUrl(url);

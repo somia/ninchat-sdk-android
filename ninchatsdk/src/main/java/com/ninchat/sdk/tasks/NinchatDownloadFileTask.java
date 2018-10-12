@@ -2,21 +2,18 @@ package com.ninchat.sdk.tasks;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.models.NinchatFile;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
-import java.net.URLConnection;
 
 public final class NinchatDownloadFileTask extends NinchatBaseTask {
 
@@ -43,19 +40,18 @@ public final class NinchatDownloadFileTask extends NinchatBaseTask {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSessionManager.Broadcast.DOWNLOADING_FILE));
             final NinchatFile ninchatFile = NinchatSessionManager.getInstance().getFile(fileId);
             final URL url = new URL(ninchatFile.getUrl());
-            final URLConnection connection = url.openConnection();
-            connection.setConnectTimeout(CONNECT_TIMEOUT);
-            connection.setReadTimeout(READ_TIMEOUT);
             final File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             final File file = new File(directory, ninchatFile.getName());
-            final FileOutputStream fos = new FileOutputStream(file);
-            if (ninchatFile.isImage()) {
-                final Bitmap bitmap = BitmapFactory.decodeStream(connection.getInputStream());
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                fos.close();
-                MediaStore.Images.Media.insertImage(context.getContentResolver(), file.getAbsolutePath(), file.getName(), "");
-                ninchatFile.setDownloaded();
+            final byte[] buffer = new byte[1024];
+            final DataInputStream inputStream = new DataInputStream(url.openStream());
+            final DataOutputStream fileOutputStream = new DataOutputStream(new FileOutputStream(file));
+            int len;
+            while ((len = inputStream.read(buffer)) > 0) {
+                fileOutputStream.write(buffer, 0, len);
             }
+            fileOutputStream.flush();
+            fileOutputStream.close();
+            ninchatFile.setDownloaded();
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSessionManager.Broadcast.FILE_DOWNLOADED));
         } catch (final Exception e) {
             final Context context = NinchatSessionManager.getInstance().getContext();

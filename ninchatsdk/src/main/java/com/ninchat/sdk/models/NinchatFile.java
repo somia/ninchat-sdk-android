@@ -45,6 +45,10 @@ public final class NinchatFile {
         return type.startsWith("image/");
     }
 
+    public boolean isVideo() {
+        return type.startsWith("video/");
+    }
+
     public boolean isDownloaded() {
         return isDownloaded;
     }

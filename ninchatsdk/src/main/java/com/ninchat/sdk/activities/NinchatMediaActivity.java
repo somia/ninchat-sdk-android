@@ -4,12 +4,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.ninchat.sdk.NinchatSessionManager;
@@ -70,10 +73,23 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
         super.onCreate(savedInstanceState);
         fileId = getIntent().getStringExtra(FILE_ID);
         final NinchatFile file = NinchatSessionManager.getInstance().getFile(fileId);
-        final ImageView image = findViewById(R.id.ninchat_media_image);
-        Glide.with(this)
-                .load(file.getUrl())
-                .into(image);
+        findViewById(R.id.ninchat_media_download).setVisibility(file.isDownloaded() ? View.GONE : View.VISIBLE);
+        if (file.isVideo()) {
+            findViewById(R.id.ninchat_media_image).setVisibility(View.GONE);
+            final VideoView video = findViewById(R.id.ninchat_media_video);
+            MediaController mediaController = new MediaController(this);
+            mediaController.setAnchorView(video);
+            mediaController.setMediaPlayer(video);
+            video.setVisibility(View.VISIBLE);
+            video.setMediaController(mediaController);
+            video.setVideoPath(file.getUrl());
+            video.start();
+        } else {
+            final ImageView image = findViewById(R.id.ninchat_media_image);
+            Glide.with(this)
+                    .load(file.getUrl())
+                    .into(image);
+        }
         final TextView name = findViewById(R.id.ninchat_media_name);
         name.setText(file.getName());
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);

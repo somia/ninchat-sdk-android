@@ -72,10 +72,14 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 } else {
                     agentMessage.setVisibility(View.GONE);
                     final ImageView agentImage = itemView.findViewById(R.id.ninchat_chat_message_agent_image);
+                    final NinchatFile file = NinchatSessionManager.getInstance().getFile(data.first.getFileId());
                     Glide.with(agentImage.getContext())
-                            .load(NinchatSessionManager.getInstance().getFile(data.first.getFileId()).getUrl())
+                            .load(file.getUrl())
                             .into(agentImage);
                     agentImage.setVisibility(View.VISIBLE);
+                    if (file.isVideo()) {
+                        itemView.findViewById(R.id.ninchat_chat_message_agent_video_play_image).setVisibility(View.VISIBLE);
+                    }
                     agentImage.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -100,9 +104,13 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 } else {
                     userMessage.setVisibility(View.GONE);
                     final ImageView userImage = itemView.findViewById(R.id.ninchat_chat_message_user_image);
+                    final NinchatFile file = NinchatSessionManager.getInstance().getFile(data.first.getFileId());
                     Glide.with(userImage.getContext())
-                            .load(NinchatSessionManager.getInstance().getFile(data.first.getFileId()).getUrl())
+                            .load(file.getUrl())
                             .into(userImage);
+                    if (file.isVideo()) {
+                        itemView.findViewById(R.id.ninchat_chat_message_user_video_play_image).setVisibility(View.VISIBLE);
+                    }
                     userImage.setVisibility(View.VISIBLE);
                     userImage.setOnClickListener(new View.OnClickListener() {
                         @Override
