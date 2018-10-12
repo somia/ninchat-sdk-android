@@ -67,12 +67,14 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 agentTimestamp.setText(TIMESTAMP_FORMATTER.format(data.first.getTimestamp()));
                 final TextView agentMessage = itemView.findViewById(R.id.ninchat_chat_message_agent_message);
                 final Spanned message = data.first.getMessage();
+                final NinchatFile file = NinchatSessionManager.getInstance().getFile(data.first.getFileId());
                 if (message != null) {
                     agentMessage.setText(message);
+                } else if (file.isPDF()) {
+                    agentMessage.setText(file.getUrl());
                 } else {
                     agentMessage.setVisibility(View.GONE);
                     final ImageView agentImage = itemView.findViewById(R.id.ninchat_chat_message_agent_image);
-                    final NinchatFile file = NinchatSessionManager.getInstance().getFile(data.first.getFileId());
                     Glide.with(agentImage.getContext())
                             .load(file.getUrl())
                             .into(agentImage);
@@ -99,12 +101,12 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 userTimestamp.setText(TIMESTAMP_FORMATTER.format(data.first.getTimestamp()));
                 final TextView userMessage = itemView.findViewById(R.id.ninchat_chat_message_user_message);
                 final Spanned message = data.first.getMessage();
+                final NinchatFile file = NinchatSessionManager.getInstance().getFile(data.first.getFileId());
                 if (message != null) {
                     userMessage.setText(message);
                 } else {
                     userMessage.setVisibility(View.GONE);
                     final ImageView userImage = itemView.findViewById(R.id.ninchat_chat_message_user_image);
-                    final NinchatFile file = NinchatSessionManager.getInstance().getFile(data.first.getFileId());
                     Glide.with(userImage.getContext())
                             .load(file.getUrl())
                             .into(userImage);

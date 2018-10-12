@@ -41,12 +41,12 @@ public final class NinchatFile {
         isDownloaded = true;
     }
 
-    public boolean isImage() {
-        return type.startsWith("image/");
-    }
-
     public boolean isVideo() {
         return type.startsWith("video/");
+    }
+
+    public boolean isPDF() {
+        return type.equals("application/pdf");
     }
 
     public boolean isDownloaded() {
