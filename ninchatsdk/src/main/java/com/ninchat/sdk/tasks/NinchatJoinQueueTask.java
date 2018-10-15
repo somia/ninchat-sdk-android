@@ -25,6 +25,10 @@ public final class NinchatJoinQueueTask extends NinchatBaseTask {
         final Props params = new Props();
         params.setString("action", "request_audience");
         params.setString("queue_id", queueId);
+        final Props audienceMetadata = NinchatSessionManager.getInstance().getAudienceMetadata();
+        if (audienceMetadata != null) {
+            params.setObject("audience_metadata", audienceMetadata);
+        }
         try {
             NinchatSessionManager.getInstance().getSession().send(params, null);
         } catch (final Exception e) {

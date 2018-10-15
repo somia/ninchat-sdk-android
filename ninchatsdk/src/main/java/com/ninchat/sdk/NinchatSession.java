@@ -3,6 +3,7 @@ package com.ninchat.sdk;
 import android.app.Activity;
 import android.content.Context;
 
+import com.ninchat.client.Props;
 import com.ninchat.sdk.activities.NinchatActivity;
 import com.ninchat.sdk.models.NinchatQueue;
 
@@ -42,6 +43,10 @@ public final class NinchatSession {
 
     public void setServerAddress(final String serverAddress) {
         NinchatSessionManager.getInstance().setServerAddress(serverAddress);
+    }
+
+    public void setAudienceMetadata(final Props audienceMetadata) {
+        NinchatSessionManager.getInstance().setAudienceMetadata(audienceMetadata);
     }
 
     public void start(final Activity activity) {

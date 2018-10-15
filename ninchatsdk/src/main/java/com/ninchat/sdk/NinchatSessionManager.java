@@ -113,6 +113,16 @@ public final class NinchatSessionManager {
                 (BuildConfig.DEBUG ? "api.luupi.net" : "api.ninchat.com");
     }
 
+    protected Props audienceMetadata;
+
+    public void setAudienceMetadata(final Props audienceMetadata) {
+        this.audienceMetadata = audienceMetadata;
+    }
+
+    public Props getAudienceMetadata() {
+        return audienceMetadata;
+    }
+
     public static NinchatSessionManager getInstance() {
         return instance;
     }
