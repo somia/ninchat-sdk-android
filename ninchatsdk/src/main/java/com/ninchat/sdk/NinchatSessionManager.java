@@ -476,7 +476,6 @@ public final class NinchatSessionManager {
                 final JSONObject message = new JSONObject(new String(payload.get(i)));
                 final JSONArray files = message.optJSONArray("files");
                 if (files != null) {
-                    Log.e("JUSSI", "got files:" + files.toString());
                     final JSONObject file = files.getJSONObject(0);
                     final String filename = file.getJSONObject("file_attrs").getString("name");
                     final int filesize = file.getJSONObject("file_attrs").getInt("size");
@@ -484,7 +483,6 @@ public final class NinchatSessionManager {
                     if (filetype == null || filetype.equals("application/octet-stream")) {
                         filetype = guessMimeTypeFromFileName(filename);
                     }
-                    Log.e("JUSSI", filetype);
                     if (filetype != null && (filetype.startsWith("image/") ||
                             filetype.startsWith("video/") || filetype.equals("application/pdf"))) {
                         final String fileId = file.getString("file_id");
@@ -660,7 +658,10 @@ public final class NinchatSessionManager {
                 return;
             }
             final JSONObject data = new JSONObject();
-            data.put("sdp", sessionDescription.description);
+            final JSONObject sdp = new JSONObject();
+            sdp.put("type", sessionDescription.type.canonicalForm());
+            sdp.put("sdp", sessionDescription.description);
+            data.put("sdp", sdp);
             NinchatSendMessageTask.start(messageType, data.toString(), channelId);
         } catch (final JSONException e) {
             sessionError(e);
@@ -674,7 +675,7 @@ public final class NinchatSessionManager {
             candidate.put("id", iceCandidate.sdpMLineIndex);
             candidate.put("label", iceCandidate.sdpMid);
             candidate.put("candidate", iceCandidate.sdp);
-            data.put("candidate", iceCandidate.sdp);
+            data.put("candidate", candidate);
             NinchatSendMessageTask.start(MessageTypes.ICE_CANDIDATE, data.toString(), channelId);
         } catch (final JSONException e) {
             sessionError(e);

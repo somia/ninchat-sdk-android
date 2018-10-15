@@ -3,7 +3,6 @@ package com.ninchat.sdk.views;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 
 import com.ninchat.sdk.NinchatSessionManager;
@@ -75,7 +74,6 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         } else if (NinchatSessionManager.MessageTypes.ANSWER.equals(messageType) && peerConnection != null) {
             try {
                 answer = new JSONObject(payload);
-                Log.e("JUSSI", "answer: " + payload);
                 if (peerConnection.getRemoteDescription() == null) {
                     peerConnection.setRemoteDescription(this, new SessionDescription(SessionDescription.Type.ANSWER, answer.getString("sdp")));
                 }
@@ -83,33 +81,29 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                 NinchatSessionManager.getInstance().sessionError(e);
             }
         } else if (NinchatSessionManager.MessageTypes.ICE_CANDIDATE.equals(messageType) && peerConnection != null && peerConnection.iceGatheringState() == PeerConnection.IceGatheringState.GATHERING) {
-            /*JSONObject rootCandidate;
-            try {
-                rootCandidate = new JSONObject(payload);
-            } catch (final Exception e) {
-                return;
-            }
             JSONObject candidate;
             try {
                 candidate = new JSONObject(payload).getJSONObject("candidate");
             } catch (final JSONException e) {
-                candidate = rootCandidate;
+                return;
             }
-            String sdpMid = "video";
+            String sdpMid;
             try {
                 sdpMid = candidate.getString("sdpMid");
             } catch (final JSONException e) {
+                return;
             }
-            int sdpMLineIndex = 1;
+            int sdpMLineIndex;
             try {
                 sdpMLineIndex = candidate.getInt("sdpMLineIndex");
             } catch (final JSONException e) {
+                return;
             }
             try {
                 peerConnection.addIceCandidate(new IceCandidate(sdpMid, sdpMLineIndex, candidate.getString("candidate")));
             } catch (final JSONException e) {
                 NinchatSessionManager.getInstance().sessionError(e);
-            }*/
+            }
         } else if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType)) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
@@ -128,7 +122,6 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     protected void startWithSDP(final JSONObject sdp) {
-        Log.e("JUSSI", sdp.toString());
         try {
             final List<PeerConnection.IceServer> servers = new ArrayList<>();
             for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().getStunServers()) {
@@ -145,7 +138,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             final SessionDescription remoteDescription = new SessionDescription(SessionDescription.Type.OFFER, sdp.getString("sdp"));
             peerConnection.setRemoteDescription(this, remoteDescription);
         } catch (final Exception e) {
-            Log.e("JUSSI", "error", e);
+            // TODO: Show error?
         }
     }
 
@@ -196,34 +189,27 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     @Override
     public void onSignalingChange(PeerConnection.SignalingState signalingState) {
-        Log.e("JUSSI", "onSignalingChange: " + signalingState);
     }
 
     @Override
     public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
-        Log.e("JUSSI", "onIceConnectionChange: " + iceConnectionState);
     }
 
     @Override
     public void onIceConnectionReceivingChange(boolean b) {
-        Log.e("JUSSI", "onIceConnectionReceivingChange: " + b);
-
     }
 
     @Override
     public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
-        Log.e("JUSSI", "onIceGatheringChange: " + iceGatheringState);
     }
 
     @Override
     public void onIceCandidate(IceCandidate iceCandidate) {
-        Log.e("JUSSI", "onIceCandidate: " + iceCandidate);
         NinchatSessionManager.getInstance().sendWebRTCIceCandidate(iceCandidate);
     }
 
     @Override
     public void onAddStream(MediaStream mediaStream) {
-        Log.e("JUSSI", "onAddStream: " + mediaStream + "\n" + mediaStream.label());
         final LinkedList<VideoTrack> videoTracks = mediaStream.videoTracks;
         if (videoTracks.size() == 0) {
             return;
@@ -240,22 +226,18 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     @Override
     public void onRemoveStream(MediaStream mediaStream) {
-        Log.e("JUSSI", "onRemoveStream: " + mediaStream);
     }
 
     @Override
     public void onDataChannel(DataChannel dataChannel) {
-        Log.e("JUSSI", "onDataChannel: " + dataChannel);
     }
 
     @Override
     public void onRenegotiationNeeded() {
-        Log.e("JUSSI", "onRenegotiationNeeded");
     }
 
     @Override
     public void onCreateSuccess(SessionDescription sessionDescription) {
-        Log.e("JUSSI", "onCreateSuccess: " + sessionDescription.type + ", " + sessionDescription.description);
         if (sessionDescription.type == SessionDescription.Type.ANSWER) {
             peerConnection.setLocalDescription(this, sessionDescription);
         }
@@ -264,7 +246,6 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     @Override
     public void onSetSuccess() {
-        Log.e("JUSSI", "onSetSuccess");
         if (peerConnection.getLocalDescription() == null) {
             peerConnection.createAnswer(this, getDefaultConstrains());
         }
@@ -272,11 +253,9 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     @Override
     public void onCreateFailure(String s) {
-        Log.e("JUSSI", "onCreateFailure: " + s);
     }
 
     @Override
     public void onSetFailure(String s) {
-        Log.e("JUSSI", "onSetFailure: " + s);
     }
 }
