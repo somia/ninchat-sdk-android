@@ -34,6 +34,7 @@
     <dimen name="ninchat_chat_activity_action_bar_padding">10dp</dimen>
     <dimen name="ninchat_chat_activity_action_bar_height">35dp</dimen>
     <dimen name="ninchat_chat_activity_action_icon_size">24dp</dimen>
+    <dimen name="ninchat_chat_activity_video_view_height">256dp</dimen>
 
     <dimen name="ninchat_chat_activity_video_call_consent_title_height">70dp</dimen>
     <dimen name="ninchat_chat_activity_video_call_consent_image_size">100dp</dimen>

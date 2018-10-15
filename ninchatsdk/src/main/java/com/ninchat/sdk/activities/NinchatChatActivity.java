@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -18,9 +19,8 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.webkit.MimeTypeMap;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -176,6 +176,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         NinchatSessionManager.getInstance().sendWebRTCCallAnswer(answer);
     }
 
+    private View videoContainer;
     protected NinchatWebRTCView webRTCView;
 
     protected BroadcastReceiver webRTCMessageReceiver = new BroadcastReceiver() {
@@ -255,7 +256,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        webRTCView = new NinchatWebRTCView(findViewById(R.id.videoContainer));
+        videoContainer = findViewById(R.id.videoContainer);
+        webRTCView = new NinchatWebRTCView(videoContainer);
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.registerReceiver(channelClosedReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_CLOSED));
         localBroadcastManager.registerReceiver(messageReceiver, new IntentFilter(NinchatSessionManager.Broadcast.NEW_MESSAGE));
@@ -288,5 +290,17 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         localBroadcastManager.unregisterReceiver(channelClosedReceiver);
         localBroadcastManager.unregisterReceiver(messageReceiver);
         localBroadcastManager.unregisterReceiver(webRTCMessageReceiver);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        final ViewGroup.LayoutParams layoutParams = videoContainer.getLayoutParams();
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            layoutParams.height = (int) getResources().getDimension(R.dimen.ninchat_chat_activity_video_view_height);
+        }
+        videoContainer.setLayoutParams(layoutParams);
     }
 }
