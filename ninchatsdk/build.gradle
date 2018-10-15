@@ -64,7 +64,7 @@ apply plugin: 'maven'
 
 uploadArchives {
     repositories.mavenDeployer {
-        def deployPath = file("${project.rootDir}/releases")
+        def deployPath = file("${project.rootDir}")
         repository(url: "file://${deployPath.absolutePath}")
         pom.project {
             groupId "com.ninchat"
