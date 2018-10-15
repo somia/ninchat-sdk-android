@@ -1,8 +1,28 @@
 apply plugin: 'com.android.library'
 
+
+import org.ajoberstar.grgit.Grgit
+
 ext {
-    versionName = "0.0.2"
+    // Read the app version information
+    def git = Grgit.open(currentDir: projectDir)
+    def gitVersionName = git.describe().replaceFirst("v", "") // Optional v in the beginnning
+    def s = gitVersionName.split("-")
+    def sp = s[0].split("\\.")
+    versionMajor = Integer.parseInt(sp[0])   // 0..n
+    versionMinor = Integer.parseInt(sp[1])   // 0..9
+    versionFix = Integer.parseInt(sp[2])   // 0..99
+    versionBuild = Integer.parseInt(s.size() < 2 ? "0" : s[1])
 }
+
+def calculateVersionName = {
+    // versionMajor = 1, versionMinor = 2
+    // - versionFix = 0 && versionBuild = 3     -> 1.2-3
+    // - versionFix = 3 && versionBuild = 4     -> 1.2.3-4
+    // - versionFix = 0 && versionBuild = 0    -> 1.2
+    return "${versionMajor}.${versionMinor}" + ((versionFix > 0) ? ".${versionFix}" : "") + ((versionBuild > 0) ? "-${versionBuild}" : "")
+}
+
 
 android {
     compileSdkVersion 28
@@ -10,7 +30,7 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 28
-        versionName "${versionName}"
+        versionName calculateVersionName()
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -49,7 +69,7 @@ uploadArchives {
         pom.project {
             groupId "com.ninchat"
             artifactId "sdk"
-            version "${versionName}"
+            version calculateVersionName()
         }
     }
 }
