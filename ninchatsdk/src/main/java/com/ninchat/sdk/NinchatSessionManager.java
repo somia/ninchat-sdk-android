@@ -102,8 +102,15 @@ public final class NinchatSessionManager {
         NinchatConfigurationFetchTask.start(configurationKey);
     }
 
-    public static String getServer() {
-        return BuildConfig.DEBUG ? "api.luupi.net" : "api.ninchat.com";
+    private String serverAddress = null;
+
+    public void setServerAddress(final String serverAddress) {
+        this.serverAddress = serverAddress;
+    }
+
+    public String getServerAddress() {
+        return serverAddress != null ? serverAddress :
+                (BuildConfig.DEBUG ? "api.luupi.net" : "api.ninchat.com");
     }
 
     public static NinchatSessionManager getInstance() {

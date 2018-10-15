@@ -40,6 +40,10 @@ public final class NinchatSession {
 
     public static final int NINCHAT_SESSION_REQUEST_CODE = NinchatSession.class.hashCode() & 0xffff;
 
+    public void setServerAddress(final String serverAddress) {
+        NinchatSessionManager.getInstance().setServerAddress(serverAddress);
+    }
+
     public void start(final Activity activity) {
         start(activity, NINCHAT_SESSION_REQUEST_CODE);
     }

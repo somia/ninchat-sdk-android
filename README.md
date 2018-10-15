@@ -30,7 +30,7 @@ The SDK is started by calling the static `start` method of the `NinchatSession` 
     ...
     NinchatSession.start(activity);
 
-At the moment the SDK opens up an activity that tests the connection to the Ninchat server.
+At the moment the SDK opens up an activity that tests the connection to the Ninchat serverAddress.
 
 Go client connection can be tested with a static method in Connection class:
 
