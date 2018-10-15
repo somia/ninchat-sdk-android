@@ -178,6 +178,10 @@ public final class NinchatSessionManager {
 
     public void setSession(final Session session) {
         this.session = session;
+        final Context context = contextWeakReference.get();
+        if (context != null) {
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSession.Broadcast.SESSION_CREATED));
+        }
         this.session.setOnSessionEvent(new SessionEventHandler() {
             @Override
             public void onSessionEvent(Props params) {

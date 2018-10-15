@@ -30,6 +30,7 @@ public final class NinchatSession {
 
     public static final class Broadcast {
         public static final String CONFIGURATION_FETCHED = BuildConfig.APPLICATION_ID + ".CONFIGURATION_FETCHED";
+        public static final String SESSION_CREATED = BuildConfig.APPLICATION_ID + ".SESSION_CREATED";
         public static final String QUEUES_UPDATED = BuildConfig.APPLICATION_ID + ".QUEUES_UPDATED";
     }
 

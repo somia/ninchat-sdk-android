@@ -119,6 +119,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NinchatQueueActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK || queueId != null) {
+                NinchatSessionManager.getInstance().close();
                 setResult(resultCode, data);
                 finish();
             }
