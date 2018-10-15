@@ -65,13 +65,13 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         new InitTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public void handleWebRTCMessage(final String messageType, final String payload) {
+    public boolean handleWebRTCMessage(final String messageType, final String payload) {
         if (NinchatSessionManager.MessageTypes.OFFER.equals(messageType)) {
             try {
                 offer = new JSONObject(payload);
             } catch (final JSONException e) {
                 NinchatSessionManager.getInstance().sessionError(e);
-                return;
+                return false;
             }
             NinchatSessionManager.getInstance().sendWebRTCBeginIce();
         } else if (NinchatSessionManager.MessageTypes.WEBRTC_SERVERS_PARSED.equals(messageType)) {
@@ -94,19 +94,19 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             try {
                 candidate = new JSONObject(payload).getJSONObject("candidate");
             } catch (final JSONException e) {
-                return;
+                return false;
             }
             String sdpMid;
             try {
                 sdpMid = candidate.getString("sdpMid");
             } catch (final JSONException e) {
-                return;
+                return false;
             }
             int sdpMLineIndex;
             try {
                 sdpMLineIndex = candidate.getInt("sdpMLineIndex");
             } catch (final JSONException e) {
-                return;
+                return false;
             }
             try {
                 peerConnection.addIceCandidate(new IceCandidate(sdpMid, sdpMLineIndex, candidate.getString("candidate")));
@@ -120,7 +120,9 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                     videoContainer.setVisibility(View.GONE);
                 }
             });
+            return true;
         }
+        return false;
     }
 
     private MediaConstraints getDefaultConstrains() {

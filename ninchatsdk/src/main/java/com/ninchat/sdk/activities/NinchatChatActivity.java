@@ -190,8 +190,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                     findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.VISIBLE);
                     final TextView userName = findViewById(R.id.ninchat_video_call_consent_dialog_user_name);
                     userName.setText(intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_SENDER));
-                } else {
-                    webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT));
+                } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT))) {
+                    if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType)) {
+                        findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
+                    }
                 }
             }
         }
