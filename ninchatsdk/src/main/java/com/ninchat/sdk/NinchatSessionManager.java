@@ -84,6 +84,7 @@ public final class NinchatSessionManager {
         public static final String PICK_UP = WEBRTC_PREFIX + "pick-up";
         public static final String HANG_UP = WEBRTC_PREFIX + "hang-up";
         public static final String WEBRTC_SERVERS_PARSED = WEBRTC_PREFIX + "serversParsed";
+        public static final String RATING = "ninchat.com/metadata";
 
         static final List<String> WEBRTC_MESSAGE_TYPES = new ArrayList<>();
         static {
@@ -702,6 +703,18 @@ public final class NinchatSessionManager {
             NinchatSendMessageTask.start(MessageTypes.ICE_CANDIDATE, data.toString(), channelId);
         } catch (final JSONException e) {
             sessionError(e);
+        }
+    }
+
+    public void sendRating(final int rating) {
+        try {
+            final JSONObject value = new JSONObject();
+            value.put("rating", rating);
+            final JSONObject data = new JSONObject();
+            data.put("data", value);
+            NinchatSendMessageTask.start(MessageTypes.RATING, data.toString(), channelId);
+        } catch (final JSONException e) {
+            // Ignore
         }
     }
 

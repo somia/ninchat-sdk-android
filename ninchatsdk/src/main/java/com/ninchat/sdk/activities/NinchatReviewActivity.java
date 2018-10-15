@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.View;
 
 import com.ninchat.sdk.NinchatSession;
+import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 
 public final class NinchatReviewActivity extends NinchatBaseActivity {
@@ -37,6 +38,9 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
     }
 
     private void close(final int rating) {
+        if (rating != NinchatSession.Analytics.Rating.NO_ANSWER) {
+            NinchatSessionManager.getInstance().sendRating(rating);
+        }
         setResult(RESULT_OK, getResultIntent(rating));
         finish();
     }
