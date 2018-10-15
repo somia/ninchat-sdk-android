@@ -1,6 +1,7 @@
 package com.ninchat.sdk.views;
 
 import android.opengl.GLSurfaceView;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
@@ -46,14 +47,22 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     private PeerConnection peerConnection;
     private PeerConnectionFactory peerConnectionFactory;
 
+    private class InitTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            VideoRendererGui.setView(video, null);
+            remoteRender = VideoRendererGui.create(0, 0, 100, 100, RendererCommon.ScalingType.SCALE_ASPECT_FILL, false);
+            localRender = VideoRendererGui.create(75, 75, 25, 25, RendererCommon.ScalingType.SCALE_ASPECT_FILL, true);
+            PeerConnectionFactory.initializeAndroidGlobals(videoContainer.getContext(), true, true, true);
+            peerConnectionFactory = new PeerConnectionFactory();
+            return null;
+        }
+    }
+
     public NinchatWebRTCView(final View view) {
         videoContainer = view;
         video = view.findViewById(R.id.video);
-        VideoRendererGui.setView(video, null);
-        remoteRender = VideoRendererGui.create(0, 0, 100, 100, RendererCommon.ScalingType.SCALE_ASPECT_FILL, false);
-        localRender = VideoRendererGui.create(75, 75, 25, 25, RendererCommon.ScalingType.SCALE_ASPECT_FILL, true);
-        PeerConnectionFactory.initializeAndroidGlobals(view.getContext(), true, true, true);
-        peerConnectionFactory = new PeerConnectionFactory();
+        new InitTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public void handleWebRTCMessage(final String messageType, final String payload) {
