@@ -1,13 +1,16 @@
 apply plugin: 'com.android.library'
 
+ext {
+    versionName = "0.0.2"
+}
+
 android {
     compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 1
-        versionName "0.0.1"
+        versionName "${versionName}"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -35,4 +38,18 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+apply plugin: 'maven'
+
+uploadArchives {
+    repositories.mavenDeployer {
+        def deployPath = file("${project.rootDir}/releases")
+        repository(url: "file://${deployPath.absolutePath}")
+        pom.project {
+            groupId "com.ninchat"
+            artifactId "sdk"
+            version "${versionName}"
+        }
+    }
 }
