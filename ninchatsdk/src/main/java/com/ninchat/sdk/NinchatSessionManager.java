@@ -65,6 +65,7 @@ public final class NinchatSessionManager {
         public static final String MESSAGE_SENDER = NEW_MESSAGE + ".sender";
         public static final String MESSAGE_IS_REMOTE = NEW_MESSAGE + ".isRemote";
         public static final String MESSAGE_TIMESTAMP = NEW_MESSAGE + ".timestamp";
+        public static final String MESSAGE_IS_WRITING = NEW_MESSAGE + ".writing";
         public static final String WEBRTC_MESSAGE = BuildConfig.APPLICATION_ID + ".webRTCMessage";
         public static final String WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type";
         public static final String WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content";
@@ -210,6 +211,8 @@ public final class NinchatSessionManager {
                         NinchatSessionManager.getInstance().iceBegun(params);
                     } else if (event.equals("file_found")) {
                         NinchatSessionManager.getInstance().fileFound(params);
+                    } else if (event.equals("channel_member_updated")) {
+                        NinchatSessionManager.getInstance().memberUpdated(params);
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);
@@ -561,7 +564,27 @@ public final class NinchatSessionManager {
                             .putExtra(Broadcast.MESSAGE_IS_REMOTE, file.isRemote())
                             .putExtra(Broadcast.MESSAGE_TIMESTAMP, file.getTimestamp()));
         }
+    }
 
+    private void memberUpdated(final Props params) {
+        Props memberAttrs;
+        try {
+            memberAttrs = params.getObject("member_attrs");
+        } catch (final Exception e) {
+            return;
+        }
+        boolean writing;
+        try {
+            writing = memberAttrs.getBool("writing");
+        } catch (final Exception e) {
+            return;
+        }
+        final Context context = contextWeakReference.get();
+        if (context != null && writing) {
+            LocalBroadcastManager.getInstance(context)
+                    .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
+                            .putExtra(Broadcast.MESSAGE_IS_WRITING, true));
+        }
     }
 
     private void iceBegun(final Props params) {

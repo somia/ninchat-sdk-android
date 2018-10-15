@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list android:id="@+id/ninchat_writing"
+    android:oneshot="false"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ninchat_writing_01" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_02" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_03" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_04" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_05" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_06" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_07" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_08" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_09" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_10" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_11" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_12" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_13" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_14" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_15" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_16" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_17" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_18" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_19" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_20" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_21" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_22" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_23" android:duration="50" />
+</animation-list>

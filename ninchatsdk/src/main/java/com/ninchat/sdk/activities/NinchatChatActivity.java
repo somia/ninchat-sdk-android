@@ -19,6 +19,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -158,7 +159,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 final String sender = intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_SENDER);
                 final long timestamp = intent.getLongExtra(NinchatSessionManager.Broadcast.MESSAGE_TIMESTAMP, 0);
                 final boolean isRemoteMessage = intent.getBooleanExtra(NinchatSessionManager.Broadcast.MESSAGE_IS_REMOTE, true);
-                messageAdapter.add(message, fileId, sender, timestamp, isRemoteMessage);
+                final boolean isWriting = intent.getBooleanExtra(NinchatSessionManager.Broadcast.MESSAGE_IS_WRITING, false);
+                messageAdapter.add(message, fileId, sender, timestamp, isRemoteMessage, isWriting);
             }
         }
     };
