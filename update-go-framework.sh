@@ -88,7 +88,7 @@ function buildGoLibrary() {
     fi
     cd "${CURRENTDIR}"
 
-    for file in $(find "${outdir}" -type f); do
+    for file in $(find "${outdir}" -type f -name '*.aar' -o -name '*.jar'); do
         generateMd5CheckSum "${file}"
         generateSha1CheckSum "${file}"
     done
@@ -129,6 +129,29 @@ EOF
     generateSha1CheckSum "${LIBDIR}/${filename}"
 }
 
+function generatePOMFile() {
+    local version="$(getGoRepoDescription)"
+    local outdir="${LIBDIR}/${version}"
+    local filename="${outdir}/${NAME}-${version}.pom"
+
+    cat > "${filename}" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>${PACKAGE}</groupId>
+  <artifactId>${NAME}</artifactId>
+  <version>${version}</version>
+  <packaging>aar</packaging>
+  <dependencies>
+  </dependencies>
+</project>
+EOF
+
+    generateMd5CheckSum "${filename}"
+    generateSha1CheckSum "${filename}"
+}
+
 function main() {
     # Pre-checks
     checkIsGoInstalled
@@ -143,6 +166,7 @@ function main() {
 
     # Post-processing
     generateMavenMetadata
+    generatePOMFile
 }
 
 main
