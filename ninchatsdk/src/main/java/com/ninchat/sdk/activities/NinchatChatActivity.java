@@ -254,22 +254,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     public void openImagePicker(final View view) {
-        findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.GONE);
         startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), PICK_PHOTO_VIDEO_REQUEST_CODE);
-    }
-
-    public void openVideoPicker(final View view) {
-        findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.GONE);
-        startActivityForResult(new Intent(Intent.ACTION_PICK).setType("video/*"), PICK_PHOTO_VIDEO_REQUEST_CODE);
-    }
-
-    public void openPDFPicker(final View view) {
-        findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.GONE);
-        startActivityForResult(new Intent(Intent.ACTION_PICK).setType("application/pdf"), PICK_PDF_REQUEST_CODE);
-    }
-
-    public void closeFilePickerDialog(final View view) {
-        findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.GONE);
     }
 
     public void onSendClick(final View view) {
