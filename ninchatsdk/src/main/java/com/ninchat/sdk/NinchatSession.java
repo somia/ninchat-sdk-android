@@ -35,8 +35,8 @@ public final class NinchatSession {
         public static final String QUEUES_UPDATED = BuildConfig.APPLICATION_ID + ".QUEUES_UPDATED";
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, final String siteSecret) {
-        NinchatSessionManager.init(applicationContext, configurationKey, siteSecret);
+    public NinchatSession(final Context applicationContext, final String configurationKey, final String siteSecret, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+        NinchatSessionManager.init(applicationContext, configurationKey, siteSecret, eventListener, logListener);
     }
 
     public static final int NINCHAT_SESSION_REQUEST_CODE = NinchatSession.class.hashCode() & 0xffff;

@@ -97,8 +97,8 @@ public final class NinchatSessionManager {
         }
     }
 
-    static void init(final Context context, final String configurationKey, final String siteSecret) {
-        instance = new NinchatSessionManager(context, siteSecret);
+    static void init(final Context context, final String configurationKey, final String siteSecret, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+        instance = new NinchatSessionManager(context, siteSecret, eventListener, logListener);
         NinchatConfigurationFetchTask.start(configurationKey);
     }
 
@@ -142,9 +142,11 @@ public final class NinchatSessionManager {
     protected static NinchatSessionManager instance;
     protected static final String TAG = NinchatSessionManager.class.getSimpleName();
 
-    protected NinchatSessionManager(final Context context, final String siteSecret) {
+    protected NinchatSessionManager(final Context context, final String siteSecret, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
         this.contextWeakReference = new WeakReference<>(context);
         this.siteSecret = siteSecret;
+        this.eventListenerWeakReference = new WeakReference<>(eventListener);
+        this.logListenerWeakReference = new WeakReference<>(logListener);
         this.configuration = null;
         this.session = null;
         this.queues = new ArrayList<>();
@@ -154,6 +156,8 @@ public final class NinchatSessionManager {
 
     protected WeakReference<Context> contextWeakReference;
     protected String siteSecret;
+    protected WeakReference<NinchatSDKEventListener> eventListenerWeakReference;
+    protected WeakReference<NinchatSDKLogListener> logListenerWeakReference;
 
     protected JSONObject configuration;
     protected Session session;
@@ -211,6 +215,10 @@ public final class NinchatSessionManager {
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);
                 }
+                final NinchatSDKEventListener eventListener = eventListenerWeakReference.get();
+                if (eventListener != null) {
+                    eventListener.onSessionEvent(params);
+                }
             }
         });
         this.session.setOnEvent(new EventHandler() {
@@ -238,6 +246,10 @@ public final class NinchatSessionManager {
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);
+                }
+                final NinchatSDKEventListener eventListener = eventListenerWeakReference.get();
+                if (eventListener != null) {
+                    eventListener.onEvent(params, payload);
                 }
             }
         });
