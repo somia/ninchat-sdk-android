@@ -158,13 +158,12 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (NinchatSessionManager.Broadcast.NEW_MESSAGE.equals(action)) {
-                final String message = intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_CONTENT);
-                final String fileId = intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_FILE_ID);
-                final String sender = intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_SENDER);
-                final long timestamp = intent.getLongExtra(NinchatSessionManager.Broadcast.MESSAGE_TIMESTAMP, 0);
-                final boolean isRemoteMessage = intent.getBooleanExtra(NinchatSessionManager.Broadcast.MESSAGE_IS_REMOTE, true);
-                final boolean isWriting = intent.getBooleanExtra(NinchatSessionManager.Broadcast.MESSAGE_IS_WRITING, false);
-                messageAdapter.add(message, fileId, sender, timestamp, isRemoteMessage, isWriting);
+                final int index = intent.getIntExtra(NinchatSessionManager.Broadcast.MESSAGE_INDEX, -1);
+                if (intent.getBooleanExtra(NinchatSessionManager.Broadcast.UPDATED_MESSAGE, false)) {
+                    messageAdapter.updatedMessage(index);
+                } else {
+                    messageAdapter.newMessage(index);
+                }
             }
         }
     };

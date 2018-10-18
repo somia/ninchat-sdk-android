@@ -3,7 +3,6 @@ package com.ninchat.sdk.models;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
-import android.util.Log;
 
 import java.util.Date;
 
