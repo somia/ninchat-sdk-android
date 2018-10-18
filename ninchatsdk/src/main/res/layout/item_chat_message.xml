@@ -84,7 +84,7 @@
                     android:layout_height="@dimen/ninchat_chat_activity_message_video_play_icon_size"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
-                    android:src="@drawable/ninchat_play"
+                    android:src="@drawable/ninchat_play_video_attachment"
                     android:layout_centerInParent="true"
                     android:visibility="gone"
                     tools:visibility="visible"/>
@@ -165,7 +165,7 @@
                     android:id="@+id/ninchat_chat_message_user_video_play_image"
                     android:layout_width="@dimen/ninchat_chat_activity_message_video_play_icon_size"
                     android:layout_height="@dimen/ninchat_chat_activity_message_video_play_icon_size"
-                    android:src="@drawable/ninchat_play"
+                    android:src="@drawable/ninchat_play_video_attachment"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
                     android:layout_centerInParent="true"

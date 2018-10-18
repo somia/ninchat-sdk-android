@@ -7,11 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,6 +36,8 @@ import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.views.NinchatWebRTCView;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
@@ -221,10 +226,30 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     public void onAttachmentClick(final View view) {
         if (hasFileAccessPermissions()) {
-            openImagePicker(null);
+            openImagePicker(view);
+            /*final Intent photos = new Intent(Intent.ACTION_PICK).setType("image/*");
+            final Intent videos = new Intent(Intent.ACTION_PICK).setType("video/*");
+            final Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            final List<Intent> openIntents = new ArrayList<>();
+            addIntentToList(openIntents, photos);
+            addIntentToList(openIntents, camera);
+            if (openIntents.size() > 0) {
+                final Intent chooserIntent = Intent.createChooser(openIntents.remove(openIntents.size() -1), "foo");
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, openIntents.toArray(new Parcelable[]{}));
+                startActivityForResult(chooserIntent, PICK_PHOTO_VIDEO_REQUEST_CODE);
+            }*/
             //findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.VISIBLE);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    private void addIntentToList(final List<Intent> intents, final Intent intent) {
+        for (final ResolveInfo resInfo : getPackageManager().queryIntentActivities(intent, 0)) {
+            String packageName = resInfo.activityInfo.packageName;
+            Intent targetedIntent = new Intent(intent);
+            targetedIntent.setPackage(packageName);
+            intents.add(targetedIntent);
         }
     }
 

@@ -1,9 +1,6 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-        android:width="24dp"
-        android:height="24dp"
-        android:viewportWidth="24.0"
-        android:viewportHeight="24.0">
-    <path
-        android:fillColor="@color/ninchat_colorAccent"
-        android:pathData="M19,9h-4V3H9v6H5l7,7 7,-7zM5,18v2h14v-2H5z"/>
+<vector android:height="24dp" android:viewportHeight="14"
+    android:viewportWidth="12.26" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="@color/ninchat_colorAccent" android:pathData="M11.29,6.8l-0.84,-0.84l-4.32,4.32l-4.32,-4.32l-0.83,0.84l5.15,5.15l5.16,-5.15z"/>
+    <path android:fillColor="@color/ninchat_colorAccent" android:pathData="M5.54,0h1.18v11.12h-1.18z"/>
+    <path android:fillColor="@color/ninchat_colorAccent" android:pathData="M12.27,12.82l-0,1.18l-12.28,0l-0,-1.18z"/>
 </vector>
