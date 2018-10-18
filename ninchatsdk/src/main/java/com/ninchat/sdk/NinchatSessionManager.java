@@ -512,11 +512,7 @@ public final class NinchatSessionManager {
         if (!messageType.equals(MessageTypes.TEXT) && !messageType.equals(MessageTypes.FILE)) {
             return;
         }
-        long timestamp = 0;
-        try {
-            timestamp = params.getInt("message_time");
-        } catch (final Exception e) {
-        }
+        final long timestamp = System.currentTimeMillis();
         for (int i = 0; i < payload.length(); ++i) {
             try {
                 final JSONObject message = new JSONObject(new String(payload.get(i)));
