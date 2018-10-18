@@ -52,6 +52,17 @@
                 android:textAlignment="center"
                 tools:text="In queue message" />
 
+            <Button
+                android:id="@+id/ninchat_queue_activity_close_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/NinchatTheme.Button.Close"
+                android:layout_marginTop="40dp"
+                android:layout_below="@id/ninchat_queue_activity_queue_message"
+                android:layout_centerHorizontal="true"
+                android:text="@string/ninchat_chat_close_chat_dialog_title"
+                android:onClick="onClose"/>
+
         </RelativeLayout>
 
     </LinearLayout>

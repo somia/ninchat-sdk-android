@@ -7,9 +7,11 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
@@ -82,6 +84,8 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         findViewById(R.id.ninchat_queue_activity_progress).setAnimation(animation);
         final TextView message = findViewById(R.id.ninchat_queue_activity_queue_message);
         message.setText(NinchatSessionManager.getInstance().getQueueMessage());
+        final Button closeButton = findViewById(R.id.ninchat_queue_activity_close_button);
+        closeButton.setText(NinchatSessionManager.getInstance().getCloseChat());
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         broadcastManager.registerReceiver(channelJoinedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_JOINED));
         broadcastManager.registerReceiver(channelUpdatedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_UPDATED));
@@ -94,5 +98,10 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         broadcastManager.unregisterReceiver(channelJoinedBroadcastReceiver);
         broadcastManager.unregisterReceiver(channelUpdatedBroadcastReceiver);
+    }
+
+    public void onClose(final View view) {
+        setResult(RESULT_CANCELED);
+        finish();
     }
 }
