@@ -75,12 +75,12 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             }
         }
 
-        void bind(final Pair<NinchatMessage, Boolean> data, final boolean isContinuedMessage) {
-            if (data.first.getType() == NinchatMessage.Type.START) {
+        void bind(final NinchatMessage data, final boolean isContinuedMessage) {
+            if (data.getType() == NinchatMessage.Type.START) {
                 final TextView start = itemView.findViewById(R.id.ninchat_chat_message_start);
                 start.setText(NinchatSessionManager.getInstance().getChatStarted());
                 start.setVisibility(View.VISIBLE);
-            } else if (data.first.getType() == NinchatMessage.Type.END) {
+            } else if (data.getType() == NinchatMessage.Type.END) {
                 final TextView end = itemView.findViewById(R.id.ninchat_chat_message_end_text);
                 end.setText(NinchatSessionManager.getInstance().getChatEnded());
                 final Button closeButton = itemView.findViewById(R.id.ninchat_chat_message_close);
@@ -95,7 +95,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                     }
                 });
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.VISIBLE);
-            } else if (data.first.getType() == NinchatMessage.Type.WRITING) {
+            } else if (data.getType() == NinchatMessage.Type.WRITING) {
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.VISIBLE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_message).setVisibility(View.GONE);
@@ -103,7 +103,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 image.setBackgroundResource(R.drawable.ninchat_writing_animation);
                 final AnimationDrawable animationDrawable = (AnimationDrawable) image.getBackground();
                 animationDrawable.start();
-            } else if (data.second) {
+            } else if (data.isRemoteMessage()) {
                 bindMessage(R.id.ninchat_chat_message_agent,
                         R.id.ninchat_chat_message_agent_title,
                         R.id.ninchat_chat_message_agent_name,
@@ -111,7 +111,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         R.id.ninchat_chat_message_agent_message,
                         R.id.ninchat_chat_message_agent_image,
                         R.id.ninchat_chat_message_agent_video_play_image,
-                        data.first, isContinuedMessage);
+                        data, isContinuedMessage);
             } else {
                 bindMessage(R.id.ninchat_chat_message_user,
                         R.id.ninchat_chat_message_user_title,
@@ -120,21 +120,21 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         R.id.ninchat_chat_message_user_message,
                         R.id.ninchat_chat_message_user_image,
                         R.id.ninchat_chat_message_user_video_play_image,
-                        data.first, isContinuedMessage);
+                        data, isContinuedMessage);
             }
         }
     }
 
     protected static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:MM", new Locale("fi-FI"));
 
-    private List<Pair<NinchatMessage, Boolean>> data;
+    private List<NinchatMessage> data;
 
     protected WeakReference<NinchatChatActivity> activityWeakReference;
     protected WeakReference<RecyclerView> recyclerViewWeakReference;
 
     public NinchatMessageAdapter() {
         this.data = new ArrayList<>();
-        this.data.add(new Pair<>(new NinchatMessage(NinchatMessage.Type.START), false));
+        this.data.add(new NinchatMessage(NinchatMessage.Type.START));
         this.recyclerViewWeakReference = new WeakReference<>(null);
     }
 
@@ -146,11 +146,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         } else {
             ninchatMessage = new NinchatMessage(data, fileId, sender, timestamp, isRemoteMessage);
         }
-        if (position > 0 && this.data.get(position - 1).first.getType() == NinchatMessage.Type.WRITING) {
-            this.data.set(position - 1, new Pair<>(ninchatMessage, isRemoteMessage));
+        if (position > 0 && this.data.get(position - 1).getType() == NinchatMessage.Type.WRITING) {
+            this.data.set(position - 1, ninchatMessage);
             notifyItemChanged(position - 1);
         } else {
-            this.data.add(position, new Pair<>(ninchatMessage, isRemoteMessage));
+            this.data.add(position, ninchatMessage);
             notifyItemInserted(position);
         }
         final RecyclerView recyclerView = recyclerViewWeakReference.get();
@@ -161,7 +161,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     public void close(final NinchatChatActivity activity) {
         activityWeakReference = new WeakReference<>(activity);
-        this.data.add(new Pair<>(new NinchatMessage(NinchatMessage.Type.END), false));
+        this.data.add(new NinchatMessage(NinchatMessage.Type.END));
         final int position = this.data.size() - 1;
         notifyItemInserted(position);
         final RecyclerView recyclerView = recyclerViewWeakReference.get();
@@ -195,15 +195,15 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     @Override
     public void onBindViewHolder(@NonNull NinchatMessageViewHolder holder, int position) {
-        final Pair<NinchatMessage, Boolean> message = data.get(position);
+        final NinchatMessage message = data.get(position);
         boolean isContinuedMessage = false;
         if (position > 0) {
-            final Pair<NinchatMessage, Boolean> previousMessage = data.get(position - 1);
-            if (previousMessage.first != null && message.first != null) {
-                isContinuedMessage = previousMessage.first.getType() != NinchatMessage.Type.START &&
-                        previousMessage.first.getType() != NinchatMessage.Type.WRITING &&
-                        message.first.getType() != NinchatMessage.Type.WRITING &&
-                        message.first.isRemoteMessage() == previousMessage.first.isRemoteMessage();
+            final NinchatMessage previousMessage = data.get(position - 1);
+            if (previousMessage != null && message != null) {
+                isContinuedMessage = previousMessage.getType() != NinchatMessage.Type.START &&
+                        previousMessage.getType() != NinchatMessage.Type.WRITING &&
+                        message.getType() != NinchatMessage.Type.WRITING &&
+                        message.isRemoteMessage() == previousMessage.isRemoteMessage();
             }
         }
         holder.bind(data.get(position), isContinuedMessage);
