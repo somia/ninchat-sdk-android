@@ -221,7 +221,6 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 isContinuedMessage = previousMessage.getSender().equals(message.getSender());
             }
         }
-        Log.e("JUSSI", "continued message: " + isContinuedMessage);
         holder.bind(message, isContinuedMessage);
     }
 }

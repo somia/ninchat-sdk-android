@@ -559,7 +559,6 @@ public final class NinchatSessionManager {
                     } else {
                         messages.add(ninchatMessage);
                     }
-                    Log.e("JUSSI", messageUpdated + " -> " + messageIndex);
                     final Context context = contextWeakReference.get();
                     if (context != null) {
                         LocalBroadcastManager.getInstance(context)
