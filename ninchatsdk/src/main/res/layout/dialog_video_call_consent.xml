@@ -39,7 +39,7 @@
             android:layout_margin="@dimen/ninchat_chat_activity_video_call_consent_image_margin"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            tools:src="@drawable/ninchat_logo" />
+            android:src="@drawable/ninchat_avatar_agent" />
 
         <TextView
             android:id="@+id/ninchat_video_call_consent_dialog_user_name"

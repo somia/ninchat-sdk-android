@@ -49,7 +49,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     protected static final int CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE = "WebRTCVideoAudio".hashCode() & 0xffff;
     protected static final int STORAGE_PERMISSION_REQUEST_CODE = "ExternalStorage".hashCode() & 0xffff;
     protected static final int PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() & 0xffff;
-    protected static final int PICK_PDF_REQUEST_CODE = "PickPDF".hashCode() & 0xffff;
 
     private NinchatMessageAdapter messageAdapter = new NinchatMessageAdapter();
 
@@ -195,6 +194,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 if (NinchatSessionManager.MessageTypes.CALL.equals(messageType)) {
                     findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
                     findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.VISIBLE);
+                    final ImageView userImage = findViewById(R.id.ninchat_video_call_consent_dialog_user_avatar);
+                    // TODO: Set the user Image
                     final TextView userName = findViewById(R.id.ninchat_video_call_consent_dialog_user_name);
                     userName.setText(intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_SENDER));
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT))) {
@@ -207,7 +208,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     };
 
     public void onAcceptVideoCall(final View view) {
-        findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
         findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.GONE);
         if (hasVideoCallPermissions()) {
             sendPickUpAnswer(true);
@@ -223,6 +223,20 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.GONE);
         sendPickUpAnswer(false);
     }
+
+    public void onVideoHangUp(final View view) {
+        webRTCView.hangUp();
+        findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
+    }
+
+    public void onToggleMicrophone(final View view) {
+        webRTCView.toggleMicrophone();
+    }
+
+    public void onToggleVideo(final View view) {
+        webRTCView.toggleVideo();
+    }
+
 
     public void onAttachmentClick(final View view) {
         if (hasFileAccessPermissions()) {

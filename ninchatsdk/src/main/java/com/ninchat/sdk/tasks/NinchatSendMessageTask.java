@@ -38,8 +38,11 @@ public final class NinchatSendMessageTask extends NinchatBaseTask {
             params.setStringArray("message_recipient_ids", new Strings());
             params.setBool("message_fold", true);
         }
-        final Payload payload = new Payload();
-        payload.append(message.getBytes());
+        Payload payload = null;
+        if (message != null) {
+            payload = new Payload();
+            payload.append(message.getBytes());
+        }
         try {
             NinchatSessionManager.getInstance().getSession().send(params, payload);
         } catch (final Exception e) {

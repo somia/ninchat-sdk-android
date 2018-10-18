@@ -727,6 +727,10 @@ public final class NinchatSessionManager {
         }
     }
 
+    public void sendWebRTCHangUp() {
+        NinchatSendMessageTask.start(MessageTypes.HANG_UP, "{}", channelId);
+    }
+
     public void sendRating(final int rating) {
         try {
             final JSONObject value = new JSONObject();
