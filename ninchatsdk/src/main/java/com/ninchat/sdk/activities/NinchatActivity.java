@@ -93,7 +93,6 @@ public final class NinchatActivity extends NinchatBaseActivity {
         broadcastManager.registerReceiver(configurationFetchedReceiver, new IntentFilter(NinchatSession.Broadcast.CONFIGURATION_FETCHED));
         final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         if (sessionManager != null) {
-            setQueueAdapter();
             setTexts();
         }
     }

@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.ninchat.client.Props;
-import com.ninchat.sdk.activities.NinchatActivity;
 import com.ninchat.sdk.models.NinchatQueue;
+import com.ninchat.sdk.tasks.NinchatOpenSessionTask;
 
 import java.util.List;
 
@@ -35,15 +35,15 @@ public final class NinchatSession {
         public static final String QUEUES_UPDATED = BuildConfig.APPLICATION_ID + ".QUEUES_UPDATED";
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, final String siteSecret) {
-        this(applicationContext, configurationKey, siteSecret, null, null);
-    }
-
-    public NinchatSession(final Context applicationContext, final String configurationKey, final String siteSecret, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
-        NinchatSessionManager.init(applicationContext, configurationKey, siteSecret, eventListener, logListener);
-    }
-
     public static final int NINCHAT_SESSION_REQUEST_CODE = NinchatSession.class.hashCode() & 0xffff;
+
+    public NinchatSession(final Context applicationContext, final String configurationKey) {
+        this(applicationContext, configurationKey, null, null);
+    }
+
+    public NinchatSession(final Context applicationContext, final String configurationKey, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+        NinchatSessionManager.init(applicationContext, configurationKey, eventListener, logListener);
+    }
 
     public void setServerAddress(final String serverAddress) {
         NinchatSessionManager.getInstance().setServerAddress(serverAddress);
@@ -53,20 +53,20 @@ public final class NinchatSession {
         NinchatSessionManager.getInstance().setAudienceMetadata(audienceMetadata);
     }
 
-    public void start(final Activity activity) {
-        start(activity, NINCHAT_SESSION_REQUEST_CODE);
+    public void start(final Activity activity, String siteSecret) {
+        start(activity, siteSecret, NINCHAT_SESSION_REQUEST_CODE);
     }
 
-    public void start(final Activity activity, final int requestCode) {
-        start(activity, requestCode, null);
+    public void start(final Activity activity, String siteSecret, final int requestCode) {
+        start(activity, siteSecret, requestCode, null);
     }
 
-    public void start(final Activity activity, final String queueId) {
-        start(activity, NINCHAT_SESSION_REQUEST_CODE, queueId);
+    public void start(final Activity activity, final String siteSecret, final String queueId) {
+        start(activity, siteSecret, NINCHAT_SESSION_REQUEST_CODE, queueId);
     }
 
-    public void start(final Activity activity, final int requestCode, final String queueId) {
-        activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, queueId), requestCode);
+    public void start(final Activity activity, final String siteSecret, final int requestCode, final String queueId) {
+        NinchatOpenSessionTask.start(activity, siteSecret, requestCode, queueId);
     }
 
     public void close() {
