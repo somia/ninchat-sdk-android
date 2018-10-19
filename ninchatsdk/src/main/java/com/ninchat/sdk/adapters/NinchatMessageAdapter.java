@@ -5,6 +5,8 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -50,9 +52,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             final Spanned messageContent = ninchatMessage.getMessage();
             final NinchatFile file = NinchatSessionManager.getInstance().getFile(ninchatMessage.getFileId());
             if (messageContent != null) {
+                message.setAutoLinkMask(Linkify.ALL);
                 message.setText(messageContent);
             } else if (file.isPDF()) {
-                message.setText(file.getUrl());
+                message.setText(file.getPDFLInk());
+                message.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
                 message.setVisibility(View.GONE);
                 final ImageView image = itemView.findViewById(imageId);
