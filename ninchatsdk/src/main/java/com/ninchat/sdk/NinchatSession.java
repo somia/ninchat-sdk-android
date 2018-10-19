@@ -73,8 +73,4 @@ public final class NinchatSession {
         NinchatSessionManager.getInstance().close();
     }
 
-    public List<NinchatQueue> getQueues() {
-        return NinchatSessionManager.getInstance().getQueues();
-    }
-
 }
