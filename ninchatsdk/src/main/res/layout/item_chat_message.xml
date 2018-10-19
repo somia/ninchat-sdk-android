@@ -124,9 +124,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal"
-                tools:text="Timestamp"
-                android:visibility="gone"
-                tools:visibility="visible"/>
+                tools:text="Timestamp" />
 
         </LinearLayout>
 

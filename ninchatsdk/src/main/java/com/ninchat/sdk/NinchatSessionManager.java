@@ -28,12 +28,12 @@ import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatQueue;
+import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
 import com.ninchat.sdk.tasks.NinchatDescribeFileTask;
 import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
 import com.ninchat.sdk.tasks.NinchatListQueuesTask;
-import com.ninchat.sdk.tasks.NinchatOpenSessionTask;
 import com.ninchat.sdk.tasks.NinchatSendBeginIceTask;
 import com.ninchat.sdk.tasks.NinchatSendFileTask;
 import com.ninchat.sdk.tasks.NinchatSendMessageTask;
@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 
 /**
@@ -61,14 +62,9 @@ public final class NinchatSessionManager {
         public static final String CHANNEL_UPDATED = BuildConfig.APPLICATION_ID + ".channelUpdated";
         public static final String CHANNEL_CLOSED = BuildConfig.APPLICATION_ID + ".channelClosed";
         public static final String NEW_MESSAGE = BuildConfig.APPLICATION_ID + ".newMessage";
-        public static final String UPDATED_MESSAGE = NEW_MESSAGE + ".updated";
-        public static final String MESSAGE_INDEX = BuildConfig.APPLICATION_ID + ".messageIndex";
-        public static final String MESSAGE_CONTENT = NEW_MESSAGE + ".content";
-        public static final String MESSAGE_FILE_ID = NEW_MESSAGE + ".fileId";
+        public static final String MESSAGE_UPDATED = NEW_MESSAGE + ".updated";
+        public static final String MESSAGE_INDEX = NEW_MESSAGE + ".index";
         public static final String MESSAGE_SENDER = NEW_MESSAGE + ".sender";
-        public static final String MESSAGE_IS_REMOTE = NEW_MESSAGE + ".isRemote";
-        public static final String MESSAGE_TIMESTAMP = NEW_MESSAGE + ".timestamp";
-        public static final String MESSAGE_IS_WRITING = NEW_MESSAGE + ".writing";
         public static final String WEBRTC_MESSAGE = BuildConfig.APPLICATION_ID + ".webRTCMessage";
         public static final String WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type";
         public static final String WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content";
@@ -153,6 +149,7 @@ public final class NinchatSessionManager {
         this.session = null;
         this.queues = new ArrayList<>();
         this.messages = new ArrayList<>();
+        this.members = new HashMap<>();
         this.ninchatQueueListAdapter = null;
         this.files = new HashMap<>();
     }
@@ -166,6 +163,8 @@ public final class NinchatSessionManager {
     protected List<NinchatQueue> queues;
     protected NinchatQueueListAdapter ninchatQueueListAdapter;
     protected String channelId;
+    protected String userId;
+    protected Map<String, NinchatUser> members;
     protected List<NinchatMessage> messages;
     protected List<NinchatWebRTCServerInfo> stunServers;
     protected List<NinchatWebRTCServerInfo> turnServers;
@@ -208,6 +207,7 @@ public final class NinchatSessionManager {
                     Log.v(TAG, "onSessionEvent: " + params.string());
                     final String event = params.getString("event");
                     if (event.equals("session_created")) {
+                        userId = params.getString("user_id");
                         NinchatListQueuesTask.start();
                     }
                 } catch (final Exception e) {
@@ -239,7 +239,7 @@ public final class NinchatSessionManager {
                         NinchatSessionManager.getInstance().iceBegun(params);
                     } else if (event.equals("file_found")) {
                         NinchatSessionManager.getInstance().fileFound(params);
-                    } else if (event.equals("channel_member_updated")) {
+                    } else if (event.equals("channel_member_updated") || event.equals("user_updated")) {
                         NinchatSessionManager.getInstance().memberUpdated(params);
                     }
                 } catch (final Exception e) {
@@ -298,6 +298,10 @@ public final class NinchatSessionManager {
         return messages;
     }
 
+    public NinchatUser getMember(final String userId) {
+        return members.get(userId);
+    }
+
     public List<NinchatWebRTCServerInfo> getStunServers() {
         return stunServers;
     }
@@ -306,7 +310,7 @@ public final class NinchatSessionManager {
         return turnServers;
     }
 
-    private class QueuePropVisitor implements PropVisitor {
+    private class NinchatPropVisitor implements PropVisitor {
 
         private Map<String, Object> properties = new HashMap<>();
 
@@ -337,7 +341,7 @@ public final class NinchatSessionManager {
 
         @Override
         public void visitObjectArray(String p0, Objects p1) throws Exception {
-
+            properties.put(p0, p1);
         }
     }
 
@@ -349,7 +353,7 @@ public final class NinchatSessionManager {
             sessionError(e);
             return;
         }
-        final QueuePropVisitor parser = new QueuePropVisitor();
+        final NinchatPropVisitor parser = new NinchatPropVisitor();
         try {
             remoteQueues.accept(parser);
         } catch (final Exception e) {
@@ -431,6 +435,57 @@ public final class NinchatSessionManager {
             sessionError(e);
             return;
         }
+        Props members;
+        try {
+            members = params.getObject("channel_members");
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        final NinchatPropVisitor parser = new NinchatPropVisitor();
+        try {
+            members.accept(parser);
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
+        }
+        this.members.clear();
+        for (final String userId : parser.properties.keySet()) {
+            Props memberAttrs = (Props) parser.properties.get(userId);
+            Props userAttrs;
+            try {
+                userAttrs = memberAttrs.getObject("user_attrs");
+            } catch (final Exception e) {
+                // Ignore
+                continue;
+            }
+            String displayName = null;
+            try {
+                displayName = userAttrs.getString("name");
+            } catch (final Exception e) {
+                // Ignore
+            }
+            String realName = null;
+            try {
+                realName = userAttrs.getString("realname");
+            } catch (final Exception e) {
+                // Ignore
+            }
+            String avatar = null;
+            try {
+                avatar = userAttrs.getString("iconurl");
+            } catch (final Exception e) {
+                // Ignore
+            }
+            boolean guest = false;
+            try {
+                guest = userAttrs.getBool("guest");
+            } catch (final Exception e) {
+                // Ignore
+            }
+            this.members.put(userId, new NinchatUser(displayName, realName, avatar, guest));
+        }
+
         final Context context = contextWeakReference.get();
         if (context != null) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.CHANNEL_JOINED));
@@ -485,10 +540,11 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             return;
         }
-        String sender = null;
+        String sender;
         try {
-            sender = params.getString("message_user_name");
+            sender = params.getString("message_user_id");
         } catch (final Exception e) {
+            return;
         }
         if (MessageTypes.WEBRTC_MESSAGE_TYPES.contains(messageType)) {
             final StringBuilder builder = new StringBuilder();
@@ -537,27 +593,27 @@ public final class NinchatSessionManager {
                 } else {
                     final boolean isRemoteMessage = actionId == 0;
                     final NinchatMessage ninchatMessage = new NinchatMessage(message.getString("text"), null, sender, timestamp, isRemoteMessage);
-                    boolean previousMessageIsWritingMessage = false;
-                    final int lastMessageIndex = messages.size() - 1;
-                    int messageIndex = messages.size();
-                    boolean messageUpdated = false;
-                    if (lastMessageIndex > 1) {
-                        previousMessageIsWritingMessage = messages.get(lastMessageIndex).getType() == NinchatMessage.Type.WRITING;
+                    final ListIterator<NinchatMessage> iterator = messages.listIterator(messages.size());
+                    int index = messages.size();
+                    boolean updated = false;
+                    while (iterator.hasPrevious()) {
+                        final NinchatMessage previousMessage = iterator.previous();
+                        if (previousMessage.getType().equals(NinchatMessage.Type.WRITING)) {
+                            index = iterator.nextIndex();
+                            if (sender.equals(previousMessage.getSenderId())) {
+                                updated = true;
+                                iterator.remove();
+                                break;
+                            }
+                        }
                     }
-                    if (previousMessageIsWritingMessage && isRemoteMessage) {
-                        messages.remove(lastMessageIndex);
-                        messages.add(ninchatMessage);
-                        messageIndex = lastMessageIndex;
-                        messageUpdated = true;
-                    } else {
-                        messages.add(ninchatMessage);
-                    }
+                    messages.add(index, ninchatMessage);
                     final Context context = contextWeakReference.get();
                     if (context != null) {
                         LocalBroadcastManager.getInstance(context)
                                 .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
-                                        .putExtra(Broadcast.UPDATED_MESSAGE, messageUpdated)
-                                        .putExtra(Broadcast.MESSAGE_INDEX, messageIndex));
+                                        .putExtra(Broadcast.MESSAGE_UPDATED, updated)
+                                        .putExtra(Broadcast.MESSAGE_INDEX, index));
                     }
                 }
             } catch (final JSONException e) {
@@ -613,32 +669,48 @@ public final class NinchatSessionManager {
         messages.add(new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
         if (context != null) {
             LocalBroadcastManager.getInstance(context)
-                    .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
-                            .putExtra(Broadcast.MESSAGE_INDEX, messages.size() - 1));
+                    .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE));
         }
     }
 
     private void memberUpdated(final Props params) {
-        Props memberAttrs;
+        String sender;
+        try {
+            sender = params.getString("user_id");
+        } catch (final Exception e) {
+            return;
+        }
+        Props memberAttrs = null;
         try {
             memberAttrs = params.getObject("member_attrs");
         } catch (final Exception e) {
-            return;
+            // Ignore
         }
         boolean addMessage = false;
         try {
-            addMessage = memberAttrs.getBool("writing") && messages.size() > 1 &&
-                    messages.get(messages.size() - 1).getType() != NinchatMessage.Type.START;
+            addMessage = memberAttrs.getBool("writing") && messages.size() > 1;
         } catch (final Exception e) {
-            return;
+            // Ignore
         }
         if (addMessage) {
-            messages.add(new NinchatMessage(NinchatMessage.Type.WRITING));
+            messages.add(new NinchatMessage(NinchatMessage.Type.WRITING, sender));
             final Context context = contextWeakReference.get();
             if (context != null) {
                 LocalBroadcastManager.getInstance(context)
-                        .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
-                                .putExtra(Broadcast.MESSAGE_INDEX, messages.size() - 1));
+                        .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE));
+            }
+        } else {
+            final ListIterator<NinchatMessage> iterator = messages.listIterator(messages.size());
+            while (iterator.hasPrevious()) {
+                final NinchatMessage message = iterator.previous();
+                if (message.getType().equals(NinchatMessage.Type.WRITING) && sender.equals(message.getSenderId())) {
+                    iterator.remove();
+                    break;
+                }
+            }
+            final Context context = contextWeakReference.get();
+            if (context != null) {
+                LocalBroadcastManager.getInstance(context).sendBroadcastSync(new Intent(Broadcast.NEW_MESSAGE));
             }
         }
     }

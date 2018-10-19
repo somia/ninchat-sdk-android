@@ -3,6 +3,9 @@ package com.ninchat.sdk.models;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
+
+import com.ninchat.sdk.NinchatSessionManager;
 
 import java.util.Date;
 
@@ -24,6 +27,10 @@ public final class NinchatMessage {
 
     public NinchatMessage(final Type type) {
         this(type, null, null, null, 0, false);
+    }
+
+    public NinchatMessage(final Type type, final String sender) {
+        this(type, null, null, sender, 0, false);
     }
 
     public NinchatMessage(final String message, final String fileId, final String sender, long timestamp, final boolean isRemoteMessage) {
@@ -48,6 +55,11 @@ public final class NinchatMessage {
     }
 
     public String getSender() {
+        final NinchatUser member = NinchatSessionManager.getInstance().getMember(sender);
+        return member == null ? NinchatSessionManager.getInstance().getUserName() : member.getName();
+    }
+
+    public String getSenderId() {
         return sender;
     }
 

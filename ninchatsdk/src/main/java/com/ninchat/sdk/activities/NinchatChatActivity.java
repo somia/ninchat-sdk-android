@@ -158,12 +158,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (NinchatSessionManager.Broadcast.NEW_MESSAGE.equals(action)) {
-                final int index = intent.getIntExtra(NinchatSessionManager.Broadcast.MESSAGE_INDEX, -1);
-                if (intent.getBooleanExtra(NinchatSessionManager.Broadcast.UPDATED_MESSAGE, false)) {
-                    messageAdapter.updatedMessage(index);
-                } else {
-                    messageAdapter.newMessage(index);
-                }
+                messageAdapter.messagesUpdated(intent.getBooleanExtra(NinchatSessionManager.Broadcast.MESSAGE_UPDATED, false),
+                        intent.getIntExtra(NinchatSessionManager.Broadcast.MESSAGE_INDEX, -1));
             }
         }
     };
