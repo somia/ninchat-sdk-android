@@ -43,6 +43,12 @@ public final class NinchatOpenSessionTask extends NinchatBaseTask {
         if (siteSecret != null) {
             sessionParams.setString("site_secret", siteSecret);
         }
+        final String userName = NinchatSessionManager.getInstance().getUserName();
+        if (userName != null) {
+            final Props attrs = new Props();
+            attrs.setString("name", userName);
+            sessionParams.setObject("user_attrs", attrs);
+        }
         sessionParams.setStringArray("message_types", messageTypes);
         final Session session = new Session();
         session.setAddress(NinchatSessionManager.getInstance().getServerAddress());

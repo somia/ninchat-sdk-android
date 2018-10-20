@@ -922,7 +922,7 @@ public final class NinchatSessionManager {
         try {
             return getDefault().getString(key);
         } catch (final Exception e) {
-            return key;
+            return null;
         }
     }
 
