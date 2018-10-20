@@ -299,6 +299,9 @@ public final class NinchatSessionManager {
     }
 
     public NinchatUser getMember(final String userId) {
+        if (this.userId.equals(userId)) {
+            return new NinchatUser(getUserName(), getUserName(), null, true);
+        }
         return members.get(userId);
     }
 
@@ -463,7 +466,7 @@ public final class NinchatSessionManager {
             try {
                 displayName = userAttrs.getString("name");
             } catch (final Exception e) {
-                // Ignore
+                continue;
             }
             String realName = null;
             try {
@@ -602,12 +605,14 @@ public final class NinchatSessionManager {
                             index = iterator.nextIndex();
                             if (sender.equals(previousMessage.getSenderId())) {
                                 updated = true;
-                                iterator.remove();
+                                iterator.set(ninchatMessage);
                                 break;
                             }
                         }
                     }
-                    messages.add(index, ninchatMessage);
+                    if (!updated) {
+                        messages.add(index, ninchatMessage);
+                    }
                     final Context context = contextWeakReference.get();
                     if (context != null) {
                         LocalBroadcastManager.getInstance(context)
@@ -710,7 +715,7 @@ public final class NinchatSessionManager {
             }
             final Context context = contextWeakReference.get();
             if (context != null) {
-                LocalBroadcastManager.getInstance(context).sendBroadcastSync(new Intent(Broadcast.NEW_MESSAGE));
+                LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.NEW_MESSAGE));
             }
         }
     }

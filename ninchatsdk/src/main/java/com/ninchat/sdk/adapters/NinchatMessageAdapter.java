@@ -162,6 +162,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             notifyItemChanged(messageIndex);
         } else if (messageIndex > 0) {
             notifyItemInserted(messageIndex);
+            if (messageIndex < getItemCount()) {
+                notifyItemChanged(messageIndex + 1);
+            }
         } else {
             notifyDataSetChanged();
         }
@@ -212,7 +215,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         final NinchatMessage message = NinchatSessionManager.getInstance().getMessages().get(position);
         try {
             final NinchatMessage previousMessage = NinchatSessionManager.getInstance().getMessages().get(position - 1);
-            isContinuedMessage = message.getSender().equals(previousMessage.getSender());
+            isContinuedMessage = message.getSenderId().equals(previousMessage.getSenderId());
         } catch (final Exception e) {
             // Ignore
         }
