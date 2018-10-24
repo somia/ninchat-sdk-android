@@ -953,13 +953,33 @@ public final class NinchatSessionManager {
         }
     }
 
+    public boolean showAvatars() {
+        final String key = "agentAvatar";
+        try {
+            return getDefault().getBoolean(key);
+        } catch (final Exception e) {
+            return getRemoteAvatar() != null;
+        }
+    }
+
+    public String getRemoteAvatar() {
+        final String key = "agentAvatar";
+        try {
+            return getDefault().getString(key);
+        } catch (final Exception e) {
+            return null;
+        }
+    }
+
     public Spanned getChatStarted() {
         final String key = "Audience in queue {{queue}} accepted.";
+        String chatStarted = key;
         try {
-            return toSpanned(getTranslations().getString(key));
+            chatStarted = getTranslations().getString(key);
         } catch (final Exception e) {
-            return toSpanned(key);
+            // Ignore
         }
+        return toSpanned(chatStarted.replaceFirst("\\{\\{([^}]*?)\\}\\}", ""));
     }
 
     public Spanned getChatEnded() {
@@ -1001,11 +1021,13 @@ public final class NinchatSessionManager {
 
     public String getQueueName(final String name) {
         final String key = "Join audience queue {{audienceQueue.queue_attrs.name}}";
+        String queueName = key;
         try {
-            return getTranslations().getString(key).replaceFirst("\\{\\{([^}]*?)\\}\\}", name);
+            queueName = getTranslations().getString(key);
         } catch (final Exception e) {
-            return key.replaceFirst("\\{\\{([^}]*?)\\}\\}", name);
+            // Ignore
         }
+        return queueName.replaceFirst("\\{\\{([^}]*?)\\}\\}", name);
     }
 
     public Spanned getQueueStatus(final String queueId) {

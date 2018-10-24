@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,12 +38,28 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             super(itemView);
         }
 
-        private void bindMessage(final @IdRes int wrapperId, final @IdRes int headerId, final @IdRes int senderId, final @IdRes int timestampId, final @IdRes int messageView, final @IdRes int imageId, final @IdRes int playIconId, final NinchatMessage ninchatMessage, final boolean isContinuedMessage) {
+        private void bindMessage(final @IdRes int wrapperId, final @IdRes int headerId, final @IdRes int senderId, final @IdRes int timestampId, final @IdRes int messageView, final @IdRes int imageId, final @IdRes int playIconId, final @IdRes int avatarId, final NinchatMessage ninchatMessage, final boolean isContinuedMessage) {
             itemView.findViewById(wrapperId).setVisibility(View.VISIBLE);
             final TextView sender = itemView.findViewById(senderId);
             sender.setText(ninchatMessage.getSender());
             final TextView timestamp = itemView.findViewById(timestampId);
             timestamp.setText(TIMESTAMP_FORMATTER.format(ninchatMessage.getTimestamp()));
+            final ImageView avatar = itemView.findViewById(avatarId);
+            if (NinchatSessionManager.getInstance().showAvatars() && ninchatMessage.isRemoteMessage()) {
+                avatar.setVisibility(View.VISIBLE);
+                String userAvatar = NinchatSessionManager.getInstance().getMember(ninchatMessage.getSenderId()).getAvatar();
+                if (userAvatar == null) {
+                    userAvatar = NinchatSessionManager.getInstance().getRemoteAvatar();
+                }
+                if (userAvatar != null) {
+                    Glide.with(itemView.getContext())
+                            .load(userAvatar)
+                            .into(avatar);
+                }
+            } else if (!NinchatSessionManager.getInstance().showAvatars()) {
+                avatar.setVisibility(View.GONE);
+            }
+            // TODO: Set the avatar
             final TextView message = itemView.findViewById(messageView);
             final Spanned messageContent = ninchatMessage.getMessage();
             final NinchatFile file = NinchatSessionManager.getInstance().getFile(ninchatMessage.getFileId());
@@ -73,6 +88,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             }
             if (isContinuedMessage) {
                 itemView.findViewById(headerId).setVisibility(View.GONE);
+                itemView.findViewById(avatarId).setVisibility(NinchatSessionManager.getInstance().showAvatars() ? View.INVISIBLE : View.GONE);
                 // TODO: Override the background resource
             }
         }
@@ -127,6 +143,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         R.id.ninchat_chat_message_agent_message,
                         R.id.ninchat_chat_message_agent_image,
                         R.id.ninchat_chat_message_agent_video_play_image,
+                        R.id.ninchat_chat_message_agent_avatar,
                         data, isContinuedMessage);
             } else {
                 itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
@@ -139,6 +156,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         R.id.ninchat_chat_message_user_message,
                         R.id.ninchat_chat_message_user_image,
                         R.id.ninchat_chat_message_user_video_play_image,
+                        R.id.ninchat_chat_message_user_avatar,
                         data, isContinuedMessage);
             }
         }

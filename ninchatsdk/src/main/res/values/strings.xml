@@ -1,8 +1,4 @@
 <resources>
-    <string name="ninchat_chat_started">Keskustelu aloitettu</string>
-    <string name="ninchat_chat_ended">Keskustelu päättynyt</string>
-    <string name="ninchat_chat_enter_message">Kirjoita viestisi</string>
-
     <string name="ninchat_chat_video_call_consent_title">Video call request</string>
     <string name="ninchat_chat_video_call_consent_description">wants to video chat with you</string>
     <string name="ninchat_chat_video_call_consent_accept">Accept</string>
