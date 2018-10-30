@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             tools:hint="Enter your message"
             android:layout_margin="@dimen/ninchat_chat_activity_message_margin"
-            android:textColorHint="@color/ninchat_colorPrimary"
+            android:textColorHint="@color/ninchat_color_textarea_text"
             android:background="@null"/>
 
         <LinearLayout
@@ -49,7 +49,7 @@
                 android:id="@+id/video_call"
                 android:layout_width="@dimen/ninchat_chat_activity_action_icon_size"
                 android:layout_height="@dimen/ninchat_chat_activity_action_icon_size"
-                android:src="@drawable/ninchat_video"
+                android:src="@drawable/ninchat_icon_textarea_camera"
                 android:adjustViewBounds="true"
                 android:layout_gravity="center_vertical"
                 android:scaleType="fitCenter"
@@ -61,7 +61,7 @@
                 android:id="@+id/attachment"
                 android:layout_width="@dimen/ninchat_chat_activity_action_icon_size"
                 android:layout_height="@dimen/ninchat_chat_activity_action_icon_size"
-                android:src="@drawable/ninchat_attachment"
+                android:src="@drawable/ninchat_icon_textarea_attachment"
                 android:adjustViewBounds="true"
                 android:layout_gravity="center_vertical"
                 android:scaleType="fitCenter"
@@ -70,31 +70,36 @@
                 android:visibility="gone"
                 tools:visibility="visible"/>
 
-            <ImageView
-                android:id="@+id/send_button"
-                android:layout_width="@dimen/ninchat_chat_activity_action_icon_size"
-                android:layout_height="@dimen/ninchat_chat_activity_action_icon_size"
-                android:src="@drawable/ninchat_send"
-                android:adjustViewBounds="true"
+            <RelativeLayout
+                android:id="@+id/send_button_icon"
+                android:layout_width="@dimen/ninchat_send_button_height"
+                android:layout_height="@dimen/ninchat_send_button_height"
+                android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding"
                 android:layout_gravity="center_vertical"
-                android:scaleType="fitCenter"
+                android:background="@drawable/ninchat_textarea_submit_button"
                 android:onClick="onSendClick"
-                android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding" />
+                android:visibility="gone"
+                tools:visibility="visible">
 
-            <TextView
-                android:id="@+id/send_button_text"
+                <ImageView
+                    android:layout_width="@dimen/ninchat_chat_activity_action_icon_size"
+                    android:layout_height="@dimen/ninchat_chat_activity_action_icon_size"
+                    android:src="@drawable/ninchat_icon_textarea_submit_button"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:layout_centerInParent="true"/>
+
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/send_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Send"
-                android:background="@drawable/ninchat_send_text_button"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:onClick="onSendClick"
                 android:layout_gravity="center_vertical"
-                android:textColor="@color/ninchat_colorAccent"
+                style="@style/NinchatTheme.Button.Send"
                 android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding"
-                android:visibility="gone"
-                tools:visibility="visible"/>
+                tools:text="Send"
+                android:onClick="onSendClick" />
 
         </LinearLayout>
 
@@ -108,16 +113,15 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="@dimen/ninchat_chat_activity_close_button_top_margin"
         android:layout_marginEnd="@dimen/ninchat_chat_activity_close_button_end_margin"
-        style="@style/NinchatTheme.Button.Close"
+        style="@style/NinchatTheme.Button.Close.Chat"
         tools:text="Close"
-        android:drawableEnd="@drawable/ninchat_close"
         android:onClick="onCloseChat"
         android:drawablePadding="@dimen/ninchat_chat_activity_close_button_end_margin"/>
 
     <RelativeLayout
         android:id="@+id/videoContainer"
         android:layout_width="match_parent"
-        android:layout_height="256dp"
+        android:layout_height="@dimen/ninchat_chat_activity_video_view_height"
         android:visibility="gone"
         tools:visibility="visible">
 
@@ -131,33 +135,36 @@
             android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="15dp"
+            android:padding="@dimen/ninchat_chat_activity_video_control_padding"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true" >
 
             <ImageView
-                android:id="@+id/video_on_off"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ninchat_camera_off"
-                android:layout_marginEnd="15dp"
-                android:onClick="onToggleVideo"/>
-
-            <ImageView
                 android:id="@+id/microphone_on_off"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_height="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ninchat_microphone_off"
-                android:layout_marginEnd="15dp"
+                android:src="@drawable/ninchat_icon_video_microphone_off"
+                android:layout_marginEnd="@dimen/ninchat_chat_activity_video_control_icon_margin"
                 android:onClick="onToggleMicrophone"/>
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/video_on_off"
+                android:layout_width="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_height="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ninchat_video_hangup"
+                android:src="@drawable/ninchat_icon_video_camera_off"
+                android:layout_marginEnd="@dimen/ninchat_chat_activity_video_control_icon_margin"
+                android:onClick="onToggleVideo"/>
+
+            <ImageView
+                android:layout_width="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_height="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ninchat_icon_video_hangup"
                 android:onClick="onVideoHangUp"/>
 
         </LinearLayout>

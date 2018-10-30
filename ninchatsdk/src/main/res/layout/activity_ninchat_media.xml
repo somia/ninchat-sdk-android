@@ -24,37 +24,40 @@
     <RelativeLayout
         android:id="@+id/ninchat_media_top"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp"
+        android:layout_height="@dimen/ninchat_media_activity_top_bar_height"
         android:layout_alignParentTop="true"
         android:background="@android:color/white">
 
         <TextView
             android:id="@+id/ninchat_media_name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/ninchat_media_activity_top_bar_file_name_margin"
             tools:text="File name"
-            android:autoLink="none"/>
+            android:autoLink="none"
+            android:layout_centerVertical="true"/>
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true">
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/ninchat_media_activity_top_bar_button_padding">
 
             <ImageView
                 android:id="@+id/ninchat_media_download"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/ninchat_media_activity_top_bar_button_height"
+                android:adjustViewBounds="true"
                 android:src="@drawable/ninchat_download"
+                android:layout_marginEnd="@dimen/ninchat_media_activity_top_bar_button_padding"
                 android:onClick="onDownloadFile" />
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ninchat_close"
-                android:layout_marginStart="5dp"
+                android:layout_height="@dimen/ninchat_media_activity_top_bar_button_height"
+                android:src="@drawable/ninchat_icon_chat_close_button"
                 android:onClick="onClose"/>
 
         </LinearLayout>

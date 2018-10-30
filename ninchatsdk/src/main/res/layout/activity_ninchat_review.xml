@@ -3,64 +3,66 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#fff"
+    android:background="@color/ninchat_color_background_bottom"
     tools:context=".activities.NinchatReviewActivity">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/ninchat_color_background_top"
+        android:padding="@dimen/ninchat_review_activity_top_padding"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
 
         <TextView
+            android:id="@+id/ninchat_review_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="70dp"
-            android:text="@string/ninchat_review_title"
-            android:textSize="17sp"
+            android:layout_marginTop="@dimen/ninchat_review_activity_title_top_margin"
+            tools:text="@string/ninchat_review_title"
+            android:textColor="@color/ninchat_color_text_top"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/ninchat_review_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="15dp"
-            android:text="@string/ninchat_review_description"
-            android:textSize="16sp"/>
+            android:layout_marginTop="@dimen/ninchat_review_activity_description_top_margin"
+            tools:text="@string/ninchat_review_description"
+            android:textColor="@color/ninchat_color_text_top" />
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="30dp">
+            android:layout_marginTop="@dimen/ninchat_review_activity_icons_top_margin">
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="@dimen/ninchat_review_activity_icon_margin"
                 android:onClick="onGoodClick">
 
                 <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:src="@drawable/ninchat_happy"
+                    android:layout_width="@dimen/ninchat_review_activity_icon_size"
+                    android:layout_height="@dimen/ninchat_review_activity_icon_size"
+                    android:src="@drawable/ninchat_icon_rating_positive"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
-                    android:contentDescription="@string/ninchat_review_happy"/>
+                    android:contentDescription="@string/ninchat_review_happy" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="@dimen/ninchat_review_activity_icon_text_margin"
                     android:text="@string/ninchat_review_happy"
-                    android:textSize="16sp"
-                    android:textAllCaps="true"
-                    android:layout_gravity="center_horizontal" />
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/ninchat_color_rating_positive_text"/>
 
             </LinearLayout>
 
@@ -68,14 +70,13 @@
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="@dimen/ninchat_review_activity_icon_margin"
                 android:onClick="onFairClick">
 
                 <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:src="@drawable/ninchat_neutral"
+                    android:layout_width="@dimen/ninchat_review_activity_icon_size"
+                    android:layout_height="@dimen/ninchat_review_activity_icon_size"
+                    android:src="@drawable/ninchat_icon_rating_neutral"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
                     android:contentDescription="@string/ninchat_review_neutral"/>
@@ -83,11 +84,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="@dimen/ninchat_review_activity_icon_text_margin"
                     android:text="@string/ninchat_review_neutral"
-                    android:textSize="16sp"
-                    android:textAllCaps="true"
-                    android:layout_gravity="center_horizontal" />
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/ninchat_color_rating_neutral_text"/>
 
             </LinearLayout>
 
@@ -95,14 +95,12 @@
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
                 android:onClick="onPoorClick">
 
                 <ImageView
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:src="@drawable/ninchat_sad"
+                    android:layout_width="@dimen/ninchat_review_activity_icon_size"
+                    android:layout_height="@dimen/ninchat_review_activity_icon_size"
+                    android:src="@drawable/ninchat_icon_rating_negative"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
                     android:contentDescription="@string/ninchat_review_sad"/>
@@ -110,11 +108,10 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="@dimen/ninchat_review_activity_icon_text_margin"
                     android:text="@string/ninchat_review_sad"
-                    android:textSize="16sp"
-                    android:textAllCaps="true"
-                    android:layout_gravity="center_horizontal" />
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/ninchat_color_rating_negative_text"/>
 
             </LinearLayout>
 
@@ -126,9 +123,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/ninchat_review_skip"
-        android:textSize="15sp"
-        android:textColor="@color/ninchat_colorAccent"
-        android:layout_marginBottom="120dp"
+        android:textColor="@color/ninchat_color_link"
+        android:layout_marginBottom="@dimen/ninchat_review_activity_skip_bottom_margin"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:onClick="onSkipClick"/>

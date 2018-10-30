@@ -129,7 +129,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 final TextView agentName = itemView.findViewById(R.id.ninchat_chat_message_agent_name);
                 agentName.setText(data.getSender());
                 final ImageView image = itemView.findViewById(R.id.ninchat_chat_message_agent_image);
-                image.setBackgroundResource(R.drawable.ninchat_writing_animation);
+                image.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator);
                 final AnimationDrawable animationDrawable = (AnimationDrawable) image.getBackground();
                 animationDrawable.start();
             } else if (data.isRemoteMessage()) {

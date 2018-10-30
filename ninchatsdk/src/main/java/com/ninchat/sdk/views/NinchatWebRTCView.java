@@ -304,7 +304,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     public void toggleMicrophone() {
         isMuted = !isMuted;
         final ImageView image = videoContainer.findViewById(R.id.microphone_on_off);
-        image.setImageResource(isMuted ? R.drawable.ninchat_microphone_on : R.drawable.ninchat_microphone_off);
+        image.setImageResource(isMuted ? R.drawable.ninchat_icon_video_microphone_on : R.drawable.ninchat_icon_video_microphone_off);
         if (isMuted) {
             localAudioTrack = localStream.audioTracks.get(0);
             localStream.removeTrack(localAudioTrack);
@@ -320,7 +320,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     public void toggleVideo() {
         isVideoDisabled = !isVideoDisabled;
         final ImageView image = videoContainer.findViewById(R.id.video_on_off);
-        image.setImageResource(isVideoDisabled ? R.drawable.ninchat_camera_on : R.drawable.ninchat_camera_off);
+        image.setImageResource(isVideoDisabled ? R.drawable.ninchat_icon_video_camera_on : R.drawable.ninchat_icon_video_camera_off);
         if (isVideoDisabled) {
             localVideoTrack = localStream.videoTracks.get(0);
             localStream.removeTrack(localVideoTrack);

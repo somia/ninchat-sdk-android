@@ -9,7 +9,7 @@
         <item name="android:textColor">@color/ninchat_colorPrimary</item>
         <item name="android:linksClickable">true</item>
         <item name="android:autoLink">all</item>
-        <item name="android:textColorLink">@color/ninchat_colorAccent</item>
+        <item name="android:textColorLink">@color/ninchat_color_link</item>
         <item name="android:buttonStyle">@style/NinchatTheme.Button</item>
     </style>
 
@@ -20,7 +20,7 @@
         <item name="android:layout_marginBottom">@dimen/ninchat_button_vertical_margin</item>
         <item name="android:paddingStart">@dimen/ninchat_button_horizontal_padding</item>
         <item name="android:paddingEnd">@dimen/ninchat_button_horizontal_padding</item>
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColor">@color/ninchat_color_button_primary_text</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:lines">2</item>
         <item name="android:elevation">0dp</item>
@@ -28,7 +28,20 @@
 
     <style name="NinchatTheme.Button.Close" parent="NinchatTheme.Button">
         <item name="android:background">@drawable/ninchat_rounded_button_close</item>
-        <item name="android:textColor">@color/ninchat_colorAccent</item>
+        <item name="android:textColor">@color/ninchat_color_button_secondary_text</item>
+    </style>
+
+    <style name="NinchatTheme.Button.Close.Chat" parent="NinchatTheme.Button.Close">
+        <item name="android:background">@drawable/ninchat_chat_close_button</item>
+        <item name="android:drawableEnd">@drawable/ninchat_icon_chat_close_button</item>
+    </style>
+
+    <style name="NinchatTheme.Button.Send" parent="NinchatTheme.Button.Close">
+        <item name="android:height">@dimen/ninchat_send_button_height</item>
+        <item name="android:maxHeight">@dimen/ninchat_send_button_height</item>
+        <item name="android:background">@drawable/ninchat_textarea_submit_button</item>
+        <item name="android:paddingStart">@dimen/ninchat_chat_activity_send_text_padding</item>
+        <item name="android:paddingEnd">@dimen/ninchat_chat_activity_send_text_padding</item>
     </style>
 
 </resources>

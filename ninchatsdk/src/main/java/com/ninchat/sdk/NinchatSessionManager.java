@@ -1065,12 +1065,21 @@ public final class NinchatSessionManager {
     public boolean showRating() {
         if (configuration != null) {
             try {
-                return configuration.getJSONObject("default").getBoolean("audienceRating");
-            } catch (final JSONException e) {
+                return getDefault().getBoolean("audienceRating");
+            } catch (final Exception e) {
                 return false;
             }
         }
         return false;
+    }
+
+    public Spanned getFeedbackTitle() {
+        final String key = "How was our customer service?";
+        try {
+            return toSpanned(getTranslations().getString(key));
+        } catch (final Exception e) {
+            return toSpanned(key);
+        }
     }
 
     public void close() {

@@ -2,7 +2,10 @@ package com.ninchat.sdk.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
+import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
@@ -19,6 +22,13 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_ninchat_review;
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        final TextView hello = findViewById(R.id.ninchat_review_title);
+        hello.setText(NinchatSessionManager.getInstance().getFeedbackTitle());
     }
 
     public final void onGoodClick(final View view) {

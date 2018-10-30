@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ninchat_activity_bottom_matter_background"
+    android:background="@color/ninchat_color_background_bottom"
     tools:context=".activities.NinchatQueueActivity">
 
     <LinearLayout
@@ -18,7 +18,7 @@
             android:orientation="vertical"
             android:paddingTop="@dimen/ninchat_queue_activity_top_matter_top_margin"
             android:paddingBottom="@dimen/ninchat_queue_activity_top_matter_bottom_margin"
-            android:background="@android:color/white">
+            android:background="@color/ninchat_color_background_top">
 
             <ImageView
                 android:id="@+id/ninchat_queue_activity_progress"
@@ -26,7 +26,7 @@
                 android:layout_height="@dimen/ninchat_queue_activity_progress_size"
                 android:layout_gravity="center_horizontal"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ninchat_progress" />
+                android:src="@drawable/ninchat_icon_loader" />
 
             <TextView
                 android:id="@+id/ninchat_queue_activity_queue_status"
@@ -34,7 +34,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="@dimen/ninchat_queue_activity_queue_status_top_margin"
-                tools:text="Queue status" />
+                tools:text="Queue status"
+                android:textColor="@color/ninchat_color_text_top" />
 
         </LinearLayout>
 
@@ -50,6 +51,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentTop="true"
                 android:textAlignment="center"
+                android:textColor="@color/ninchat_color_text_bottom"
                 tools:text="In queue message" />
 
             <Button
@@ -57,7 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/NinchatTheme.Button.Close"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="@dimen/ninchat_queue_activity_bottom_matter_button_margin"
                 android:layout_below="@id/ninchat_queue_activity_queue_message"
                 android:layout_centerHorizontal="true"
                 android:text="@string/ninchat_chat_close_chat_dialog_title"

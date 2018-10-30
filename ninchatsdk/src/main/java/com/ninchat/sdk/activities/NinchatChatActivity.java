@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
@@ -293,10 +294,13 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         final Button closeButton = findViewById(R.id.ninchat_chat_close);
         closeButton.setText(NinchatSessionManager.getInstance().getCloseChat());
         final String sendButtonText = NinchatSessionManager.getInstance().getSendButtonText();
-        final ImageView sendButton = findViewById(R.id.send_button);
+        final Button sendButton = findViewById(R.id.send_button);
+        final RelativeLayout sendIcon = findViewById(R.id.send_button_icon);
         if (sendButtonText != null) {
-            findViewById(R.id.send_button_text).setVisibility(View.VISIBLE);
+            sendButton.setText(sendButtonText);
+        } else {
             sendButton.setVisibility(View.GONE);
+            sendIcon.setVisibility(View.VISIBLE);
         }
         if (NinchatSessionManager.getInstance().isAttachmentsEnabled()) {
             findViewById(R.id.attachment).setVisibility(View.VISIBLE);

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/ninchat_activity_bottom_matter_background"
+    android:background="@color/ninchat_color_background_bottom"
     tools:context=".activities.NinchatActivity">
 
     <LinearLayout
@@ -16,12 +16,10 @@
             android:id="@+id/ninchat_acvitity_top_matter"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="0dp"
             android:orientation="vertical"
             android:paddingTop="@dimen/ninchat_activity_top_matter_top_margin"
             android:paddingBottom="@dimen/ninchat_activity_top_matter_bottom_margin"
-            android:background="@android:color/white">
+            android:background="@color/ninchat_color_background_top">
 
             <TextView
                 android:id="@+id/ninchat_activity_header"
@@ -32,6 +30,7 @@
                 android:paddingStart="@dimen/ninchat_activity_top_matter_horizontal_margin"
                 android:paddingEnd="@dimen/ninchat_activity_top_matter_horizontal_margin"
                 android:textStyle="bold"
+                android:textColor="@color/ninchat_color_text_top"
                 tools:text="Welcome" />
 
             <TextView
@@ -45,6 +44,7 @@
                 android:paddingEnd="@dimen/ninchat_activity_top_matter_horizontal_margin"
                 android:visibility="gone"
                 tools:text="No queues"
+                android:textColor="@color/ninchat_color_text_top"
                 tools:visibility="visible" />
 
             <android.support.v7.widget.RecyclerView
@@ -82,6 +82,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:textAlignment="center"
+                android:textColor="@color/ninchat_color_text_bottom"
                 tools:text="Message of the day" />
 
         </RelativeLayout>
