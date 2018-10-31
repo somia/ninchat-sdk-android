@@ -1,9 +1,13 @@
 package com.ninchat.sdk.views;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.opengl.GLSurfaceView;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -39,6 +43,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     private View videoContainer;
     private GLSurfaceView video;
+    private VideoSource localVideoSource;
     private MediaStream localStream;
     private AudioTrack localAudioTrack;
     private VideoTrack localVideoTrack;
@@ -176,7 +181,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
         final VideoCapturer videoCapturer = getVideoCapturer();
         if (videoCapturer != null) {
-            final VideoSource localVideoSource = peerConnectionFactory.createVideoSource(videoCapturer, new MediaConstraints());
+            localVideoSource = peerConnectionFactory.createVideoSource(videoCapturer, new MediaConstraints());
             videoTrack = peerConnectionFactory.createVideoTrack("ARDAMSv0", localVideoSource);
             localRender = new VideoRenderer(localRenderCallback);
             videoTrack.addRenderer(localRender);
@@ -293,19 +298,45 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         if (remoteRender != null) {
             remoteRender.dispose();
         }
-        peerConnection.close();
+        if (peerConnection != null) {
+            peerConnection.close();
+            NinchatSessionManager.getInstance().sendWebRTCHangUp();
+        }
         peerConnection = null;
         videoContainer.setVisibility(View.GONE);
-        NinchatSessionManager.getInstance().sendWebRTCHangUp();
     }
 
-    private boolean isMuted = false;
+    private boolean isAudioMuted = false;
+
+    public void toggleAudio() {
+        isAudioMuted = !isAudioMuted;
+        final ImageView image = videoContainer.findViewById(R.id.audio_on_off);
+        image.setImageResource(isAudioMuted ? R.drawable.ninchat_icon_video_sound_off : R.drawable.ninchat_icon_video_sound_on);
+        if (isAudioMuted) {
+            toggleAudio(true);
+        } else {
+            toggleAudio(false);
+        }
+    }
+
+    private void toggleAudio(final boolean mute) {
+        final AudioManager audioManager = (AudioManager) videoContainer.getContext().getSystemService(Context.AUDIO_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, mute ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE, 0);
+            audioManager.adjustStreamVolume(AudioManager.STREAM_SYSTEM, mute ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE, 0);
+        } else {
+            audioManager.setStreamMute(AudioManager.STREAM_MUSIC, mute);
+            audioManager.setStreamMute(AudioManager.STREAM_SYSTEM, mute);
+        }
+    }
+
+    private boolean isMicrophoneMuted = false;
 
     public void toggleMicrophone() {
-        isMuted = !isMuted;
+        isMicrophoneMuted = !isMicrophoneMuted;
         final ImageView image = videoContainer.findViewById(R.id.microphone_on_off);
-        image.setImageResource(isMuted ? R.drawable.ninchat_icon_video_microphone_on : R.drawable.ninchat_icon_video_microphone_off);
-        if (isMuted) {
+        image.setImageResource(isMicrophoneMuted ? R.drawable.ninchat_icon_video_microphone_off : R.drawable.ninchat_icon_video_microphone_on);
+        if (isMicrophoneMuted) {
             localAudioTrack = localStream.audioTracks.get(0);
             localStream.removeTrack(localAudioTrack);
         } else {
@@ -320,7 +351,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     public void toggleVideo() {
         isVideoDisabled = !isVideoDisabled;
         final ImageView image = videoContainer.findViewById(R.id.video_on_off);
-        image.setImageResource(isVideoDisabled ? R.drawable.ninchat_icon_video_camera_on : R.drawable.ninchat_icon_video_camera_off);
+        image.setImageResource(isVideoDisabled ? R.drawable.ninchat_icon_video_camera_off : R.drawable.ninchat_icon_video_camera_on);
         if (isVideoDisabled) {
             localVideoTrack = localStream.videoTracks.get(0);
             localStream.removeTrack(localVideoTrack);
@@ -329,6 +360,24 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         }
         peerConnection.removeStream(localStream);
         peerConnection.addStream(localStream);
+    }
+
+    public void onResume() {
+        Log.e("JUSSI", "onResume");
+        try {
+            video.onResume();
+        } catch (final Exception e) {
+            // Not fully initialized yet, ignore the exception
+        }
+    }
+
+    public void onPause() {
+        Log.e("JUSSI", "onPause");
+        try {
+            video.onPause();
+        } catch (final Exception e) {
+            // Not fully initialized yet, ignore the exception
+        }
     }
 
 }

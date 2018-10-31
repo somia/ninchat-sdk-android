@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
@@ -31,9 +32,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
+import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.views.NinchatWebRTCView;
 
 import java.io.InputStream;
@@ -190,10 +193,16 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 if (NinchatSessionManager.MessageTypes.CALL.equals(messageType)) {
                     findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
                     findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.VISIBLE);
+                    final NinchatUser user = NinchatSessionManager.getInstance().getMember(intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_SENDER));
                     final ImageView userImage = findViewById(R.id.ninchat_video_call_consent_dialog_user_avatar);
-                    // TODO: Set the user Image
+                    final String avatar = user.getAvatar();
+                    if (!TextUtils.isEmpty(avatar)) {
+                        Glide.with(userImage.getContext())
+                                .load(avatar)
+                                .into(userImage);
+                    }
                     final TextView userName = findViewById(R.id.ninchat_video_call_consent_dialog_user_name);
-                    userName.setText(intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_SENDER));
+                    userName.setText(user.getName());
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT))) {
                     if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType)) {
                         findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
@@ -223,6 +232,18 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     public void onVideoHangUp(final View view) {
         webRTCView.hangUp();
         findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
+    }
+
+    public void onToggleFullScreen(final View view) {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        }
+    }
+
+    public void onToggleAudio(final View view) {
+        webRTCView.toggleAudio();
     }
 
     public void onToggleMicrophone(final View view) {
@@ -311,8 +332,21 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        webRTCView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        webRTCView.onPause();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        webRTCView.hangUp();
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.unregisterReceiver(channelClosedReceiver);
         localBroadcastManager.unregisterReceiver(messageReceiver);
@@ -322,12 +356,17 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        webRTCView.onPause();
         final ViewGroup.LayoutParams layoutParams = videoContainer.getLayoutParams();
+        final ImageView image = findViewById(R.id.fullscreen_on_off);
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            image.setImageResource(R.drawable.ninchat_icon_video_toggle_normal);
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             layoutParams.height = (int) getResources().getDimension(R.dimen.ninchat_chat_activity_video_view_height);
+            image.setImageResource(R.drawable.ninchat_icon_video_toggle_full);
         }
         videoContainer.setLayoutParams(layoutParams);
+        webRTCView.onResume();
     }
 }

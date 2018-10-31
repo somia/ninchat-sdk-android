@@ -140,12 +140,32 @@
             android:layout_alignParentBottom="true" >
 
             <ImageView
+                android:id="@+id/fullscreen_on_off"
+                android:layout_width="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_height="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ninchat_icon_video_toggle_full"
+                android:layout_marginEnd="@dimen/ninchat_chat_activity_video_control_icon_margin"
+                android:onClick="onToggleFullScreen"/>
+
+            <ImageView
+                android:id="@+id/audio_on_off"
+                android:layout_width="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_height="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ninchat_icon_video_sound_on"
+                android:layout_marginEnd="@dimen/ninchat_chat_activity_video_control_icon_margin"
+                android:onClick="onToggleAudio"/>
+
+            <ImageView
                 android:id="@+id/microphone_on_off"
                 android:layout_width="@dimen/ninchat_chat_activity_video_control_icon_size"
                 android:layout_height="@dimen/ninchat_chat_activity_video_control_icon_size"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ninchat_icon_video_microphone_off"
+                android:src="@drawable/ninchat_icon_video_microphone_on"
                 android:layout_marginEnd="@dimen/ninchat_chat_activity_video_control_icon_margin"
                 android:onClick="onToggleMicrophone"/>
 
@@ -155,7 +175,7 @@
                 android:layout_height="@dimen/ninchat_chat_activity_video_control_icon_size"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ninchat_icon_video_camera_off"
+                android:src="@drawable/ninchat_icon_video_camera_on"
                 android:layout_marginEnd="@dimen/ninchat_chat_activity_video_control_icon_margin"
                 android:onClick="onToggleVideo"/>
 
