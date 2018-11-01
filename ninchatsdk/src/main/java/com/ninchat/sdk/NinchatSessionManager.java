@@ -549,7 +549,7 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             return;
         }
-        if (MessageTypes.WEBRTC_MESSAGE_TYPES.contains(messageType)) {
+        if (MessageTypes.WEBRTC_MESSAGE_TYPES.contains(messageType) && !sender.equals(userId)) {
             final StringBuilder builder = new StringBuilder();
             for (int i = 0; i < payload.length(); ++i) {
                 builder.append(new String(payload.get(i)));
@@ -788,6 +788,10 @@ public final class NinchatSessionManager {
 
     public void sendImage(final String name, final byte[] data) {
         NinchatSendFileTask.start(name, data, channelId);
+    }
+
+    public void sendWebRTCCall() {
+        NinchatSendMessageTask.start(MessageTypes.CALL, "{}", channelId);
     }
 
     public void sendWebRTCCallAnswer(final boolean answer) {

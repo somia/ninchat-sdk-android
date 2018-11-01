@@ -54,6 +54,7 @@
                 android:layout_gravity="center_vertical"
                 android:scaleType="fitCenter"
                 android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding"
+                android:onClick="onVideoCall"
                 android:visibility="gone"
                 tools:visibility="visible"/>
 

@@ -204,7 +204,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                     final TextView userName = findViewById(R.id.ninchat_video_call_consent_dialog_user_name);
                     userName.setText(user.getName());
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT))) {
-                    if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType)) {
+                    if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType) ||
+                            NinchatSessionManager.MessageTypes.PICK_UP.equals(messageType)) {
                         findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
                     }
                 }
@@ -254,6 +255,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         webRTCView.toggleVideo();
     }
 
+    public void onVideoCall(final View view) {
+        findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
+        webRTCView.call();
+    }
 
     public void onAttachmentClick(final View view) {
         if (hasFileAccessPermissions()) {
@@ -327,7 +332,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             findViewById(R.id.attachment).setVisibility(View.VISIBLE);
         }
         if (NinchatSessionManager.getInstance().isVideoEnabled()) {
-            // TODO: Show the video icon
+            findViewById(R.id.video_call).setVisibility(View.VISIBLE);
         }
     }
 
