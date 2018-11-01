@@ -20,7 +20,7 @@ def calculateVersionName = {
     // - versionFix = 0 && versionBuild = 3     -> 1.2-3
     // - versionFix = 3 && versionBuild = 4     -> 1.2.3-4
     // - versionFix = 0 && versionBuild = 0    -> 1.2
-    return "${versionMajor}.${versionMinor}" + ((versionFix > 0) ? ".${versionFix}" : "") + ((versionBuild > 0) ? "-${versionBuild}" : "")
+    return "${versionMajor}.${versionMinor}.${versionFix}" + ((versionBuild > 0) ? "-${versionBuild}" : "")
 }
 
 
