@@ -115,8 +115,7 @@
         android:layout_marginEnd="@dimen/ninchat_chat_activity_close_button_end_margin"
         style="@style/NinchatTheme.Button.Close.Chat"
         tools:text="Close"
-        android:onClick="onCloseChat"
-        android:drawablePadding="@dimen/ninchat_chat_activity_close_button_end_margin"/>
+        android:onClick="onCloseChat"/>
 
     <RelativeLayout
         android:id="@+id/videoContainer"

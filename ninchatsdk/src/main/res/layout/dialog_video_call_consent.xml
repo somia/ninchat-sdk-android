@@ -62,12 +62,13 @@
             android:layout_width="@dimen/ninchat_chat_activity_video_call_consent_button_width"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            style="@style/NinchatTheme.Button.Dialog"
             android:layout_marginTop="@dimen/ninchat_chat_activity_video_call_consent_button_outer_margin"
             android:onClick="onAcceptVideoCall"
             android:text="@string/ninchat_chat_video_call_consent_accept" />
 
         <Button
-            style="@style/NinchatTheme.Button.Close"
+            style="@style/NinchatTheme.Button.Dialog.Close"
             android:layout_width="@dimen/ninchat_chat_activity_video_call_consent_button_width"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

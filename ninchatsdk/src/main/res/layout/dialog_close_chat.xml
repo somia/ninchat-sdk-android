@@ -42,12 +42,13 @@
             android:layout_width="@dimen/ninchat_chat_activity_close_chat_dialog_button_width"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            style="@style/NinchatTheme.Button.Dialog"
             android:layout_marginTop="@dimen/ninchat_chat_activity_close_chat_dialog_button_outer_margin"
             android:onClick="onCloseChatConfirm"
             android:text="@string/ninchat_chat_close_chat_dialog_confirm" />
 
         <Button
-            style="@style/NinchatTheme.Button.Close"
+            style="@style/NinchatTheme.Button.Dialog.Close"
             android:layout_width="@dimen/ninchat_chat_activity_close_chat_dialog_button_width"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
