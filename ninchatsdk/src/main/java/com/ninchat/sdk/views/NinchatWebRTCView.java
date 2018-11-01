@@ -8,6 +8,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 
 import com.ninchat.sdk.NinchatSessionManager;
@@ -78,7 +81,13 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     public void call() {
         videoContainer.setVisibility(View.VISIBLE);
-        // TODO: Shwo the spinner
+        final RotateAnimation animation = new RotateAnimation(0f, 359f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        animation.setInterpolator(new LinearInterpolator());
+        animation.setRepeatCount(Animation.INFINITE);
+        animation.setDuration(3000);
+        final ImageView spinner = videoContainer.findViewById(R.id.video_call_spinner);
+        spinner.setVisibility(View.VISIBLE);
+        spinner.setAnimation(animation);
         NinchatSessionManager.getInstance().sendWebRTCCall();
     }
 
@@ -93,6 +102,9 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             NinchatSessionManager.getInstance().sendWebRTCBeginIce();
         } else if (NinchatSessionManager.MessageTypes.PICK_UP.equals(messageType)) {
             try {
+                final ImageView spinner = videoContainer.findViewById(R.id.video_call_spinner);
+                spinner.getAnimation().cancel();
+                spinner.setVisibility(View.GONE);
                 final JSONObject answer = new JSONObject(payload);
                 if (answer.getBoolean("answer")) {
                     NinchatSessionManager.getInstance().sendWebRTCBeginIce();

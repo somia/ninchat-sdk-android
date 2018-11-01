@@ -131,6 +131,17 @@
             android:layout_height="match_parent"
             android:layout_alignParentTop="true" />
 
+        <ImageView
+            android:id="@+id/video_call_spinner"
+            android:layout_width="@dimen/ninchat_chat_activity_video_call_spinner_size"
+            android:layout_height="@dimen/ninchat_chat_activity_video_call_spinner_size"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ninchat_icon_loader_large"
+            android:scaleType="fitCenter"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+            
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="wrap_content"
