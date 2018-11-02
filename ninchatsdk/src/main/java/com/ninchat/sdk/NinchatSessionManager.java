@@ -36,6 +36,7 @@ import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
 import com.ninchat.sdk.tasks.NinchatListQueuesTask;
 import com.ninchat.sdk.tasks.NinchatSendBeginIceTask;
 import com.ninchat.sdk.tasks.NinchatSendFileTask;
+import com.ninchat.sdk.tasks.NinchatSendIsWritingTask;
 import com.ninchat.sdk.tasks.NinchatSendMessageTask;
 
 import org.json.JSONArray;
@@ -784,6 +785,10 @@ public final class NinchatSessionManager {
         } catch (final JSONException e) {
             sessionError(e);
         }
+    }
+
+    public void sendIsWritingUpdate(final boolean isWriting) {
+        NinchatSendIsWritingTask.start(channelId, userId, isWriting);
     }
 
     public void sendImage(final String name, final byte[] data) {
