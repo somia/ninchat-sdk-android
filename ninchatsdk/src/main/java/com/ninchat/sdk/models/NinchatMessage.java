@@ -29,7 +29,7 @@ public final class NinchatMessage {
     }
 
     public NinchatMessage(final Type type, final String sender) {
-        this(type, null, null, sender, 0, false);
+        this(type, null, null, sender, 0, true);
     }
 
     public NinchatMessage(final String message, final String fileId, final String sender, long timestamp, final boolean isRemoteMessage) {

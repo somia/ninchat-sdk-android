@@ -40,14 +40,15 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             super(itemView);
         }
 
-        private void setAvatar(final ImageView avatar, final NinchatMessage ninchatMessage, final boolean isContinuedMessage) {
+        private void setAvatar(final ImageView avatar, final NinchatMessage ninchatMessage, final boolean hideAvatar) {
             final boolean showAvatars = NinchatSessionManager.getInstance().showAvatars();
-            if (isContinuedMessage) {
+            if (hideAvatar) {
                 avatar.setVisibility(showAvatars ? View.INVISIBLE : View.GONE);
                 return;
             }
-            if (showAvatars && ninchatMessage.isRemoteMessage()) {
-                avatar.setVisibility(View.VISIBLE);
+            if (!showAvatars) {
+                avatar.setVisibility(View.GONE);
+            } else if (ninchatMessage.isRemoteMessage()) {
                 String userAvatar = NinchatSessionManager.getInstance().getMember(ninchatMessage.getSenderId()).getAvatar();
                 if (userAvatar == null) {
                     userAvatar = NinchatSessionManager.getInstance().getRemoteAvatar();
@@ -57,13 +58,12 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                             .load(userAvatar)
                             .into(avatar);
                 }
-            } else if (!showAvatars) {
-                avatar.setVisibility(View.GONE);
             }
         }
 
         private void bindMessage(final @IdRes int wrapperId, final @IdRes int headerId, final @IdRes int senderId, final @IdRes int timestampId, final @IdRes int messageView, final @IdRes int imageId, final @IdRes int playIconId, final @IdRes int avatarId, final NinchatMessage ninchatMessage, final boolean isContinuedMessage, int firstMessageBackground, final @DrawableRes int repeatedMessageBackground) {
             itemView.findViewById(wrapperId).setVisibility(View.VISIBLE);
+            itemView.findViewById(headerId).setVisibility(View.VISIBLE);
             final TextView sender = itemView.findViewById(senderId);
             sender.setText(ninchatMessage.getSender());
             final TextView timestamp = itemView.findViewById(timestampId);
