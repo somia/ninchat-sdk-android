@@ -15,7 +15,7 @@
 
     <style name="NinchatTheme.Button" parent="android:Widget.Material.Light.Button">
         <item name="android:height">@dimen/ninchat_button_height</item>
-        <item name="android:background">@drawable/ninchat_rounded_button</item>
+        <item name="android:background">@drawable/ninchat_chat_primary_button</item>
         <item name="android:layout_marginTop">@dimen/ninchat_button_vertical_margin</item>
         <item name="android:layout_marginBottom">@dimen/ninchat_button_vertical_margin</item>
         <item name="android:paddingStart">@dimen/ninchat_button_horizontal_padding</item>
@@ -31,7 +31,7 @@
     </style>
 
     <style name="NinchatTheme.Button.Close" parent="NinchatTheme.Button">
-        <item name="android:background">@drawable/ninchat_rounded_button_close</item>
+        <item name="android:background">@drawable/ninchat_chat_secondary_button</item>
         <item name="android:textColor">@color/ninchat_color_button_secondary_text</item>
     </style>
 

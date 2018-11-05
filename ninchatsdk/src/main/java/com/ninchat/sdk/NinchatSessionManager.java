@@ -590,8 +590,15 @@ public final class NinchatSessionManager {
                             ninchatFile = new NinchatFile(fileId, filename, filesize, filetype, timestamp, sender, actionId == 0);
                             this.files.put(fileId, ninchatFile);
                             NinchatDescribeFileTask.start(fileId);
-                        } else if (false) {
-                            // TODO: Check if the same file has been fetched already
+                        } else if (new Date().after(ninchatFile.getUrlExpiry())) {
+                            NinchatDescribeFileTask.start(fileId);
+                        } else {
+                            final Context context = contextWeakReference.get();
+                            messages.add(new NinchatMessage(null, fileId, ninchatFile.getSender(), ninchatFile.getTimestamp(), ninchatFile.isRemote()));
+                            if (context != null) {
+                                LocalBroadcastManager.getInstance(context)
+                                        .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE));
+                            }
                         }
                     }
                 } else {
@@ -686,6 +693,10 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             return;
         }
+        if (sender.equals(userId)) {
+            // Do not update myself
+            return;
+        }
         Props memberAttrs = null;
         try {
             memberAttrs = params.getObject("member_attrs");
@@ -707,15 +718,17 @@ public final class NinchatSessionManager {
             }
         } else {
             final ListIterator<NinchatMessage> iterator = messages.listIterator(messages.size());
+            boolean sendUpdate = false;
             while (iterator.hasPrevious()) {
                 final NinchatMessage message = iterator.previous();
                 if (message.getType().equals(NinchatMessage.Type.WRITING) && sender.equals(message.getSenderId())) {
                     iterator.remove();
+                    sendUpdate = true;
                     break;
                 }
             }
             final Context context = contextWeakReference.get();
-            if (context != null) {
+            if (context != null && sendUpdate) {
                 LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.NEW_MESSAGE));
             }
         }

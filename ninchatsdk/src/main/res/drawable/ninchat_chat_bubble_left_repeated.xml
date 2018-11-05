@@ -1,4 +1,8 @@
-<vector android:height="239dp" android:viewportHeight="238.7"
-    android:viewportWidth="541.9" android:width="542dp" xmlns:android="http://schemas.android.com/apk/res/android">
-    <path android:fillColor="#ffffff" android:pathData="M471.2,31.4c0,0 -374,0 -410,0S0,0 0,0v168.1c0,39 31.6,70.7 70.7,70.7h400.5c39,0 70.7,-31.6 70.7,-70.7v-66C541.9,63 510.2,31.4 471.2,31.4z"/>
-</vector>
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="top|left"><!-- android:gravity="top|left" android:drawable="@drawable/ninchat_chat_bubble_left_caret">-->
+        <bitmap android:src="@drawable/ninchat_chat_bubble_left_caret"
+            android:gravity="center" />
+    </item>
+    <item android:top="7dp" android:drawable="@drawable/ninchat_chat_bubble_left" />
+</layer-list>

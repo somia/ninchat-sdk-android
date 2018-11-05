@@ -29,11 +29,12 @@
     <dimen name="ninchat_chat_activity_avatar_size">40dp</dimen>
     <dimen name="ninchat_chat_activity_avatar_margin">11dp</dimen>
     <dimen name="ninchat_chat_activity_message_title_height">30dp</dimen>
-    <dimen name="ninchat_chat_activity_message_title_top_margin">13dp</dimen>
+    <dimen name="ninchat_chat_activity_message_title_top_margin">20dp</dimen>
     <dimen name="ninchat_chat_activity_message_bubble_corner_radius">15dp</dimen>
     <dimen name="ninchat_chat_activity_message_bubble_padding_vertical">12dp</dimen>
+    <dimen name="ninchat_chat_activity_message_bubble_continued_padding_top">19dp</dimen>
     <dimen name="ninchat_chat_activity_message_bubble_padding_horizontal">16dp</dimen>
-    <dimen name="ninchat_chat_activity_message_bubble_margin_bottom">7dp</dimen>
+    <dimen name="ninchat_chat_activity_message_bubble_margin_bottom">1dp</dimen>
     <dimen name="ninchat_chat_activity_message_video_play_icon_background_size">35dp</dimen>
     <dimen name="ninchat_chat_activity_message_video_play_icon_size">17dp</dimen>
     <dimen name="ninchat_chat_activity_chat_ended_top_margin">26dp</dimen>

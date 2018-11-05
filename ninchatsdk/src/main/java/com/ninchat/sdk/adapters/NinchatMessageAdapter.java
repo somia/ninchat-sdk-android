@@ -1,6 +1,8 @@
 package com.ninchat.sdk.adapters;
 
+import android.content.res.Resources;
 import android.graphics.drawable.AnimationDrawable;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -38,14 +40,13 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             super(itemView);
         }
 
-        private void bindMessage(final @IdRes int wrapperId, final @IdRes int headerId, final @IdRes int senderId, final @IdRes int timestampId, final @IdRes int messageView, final @IdRes int imageId, final @IdRes int playIconId, final @IdRes int avatarId, final NinchatMessage ninchatMessage, final boolean isContinuedMessage) {
-            itemView.findViewById(wrapperId).setVisibility(View.VISIBLE);
-            final TextView sender = itemView.findViewById(senderId);
-            sender.setText(ninchatMessage.getSender());
-            final TextView timestamp = itemView.findViewById(timestampId);
-            timestamp.setText(TIMESTAMP_FORMATTER.format(ninchatMessage.getTimestamp()));
-            final ImageView avatar = itemView.findViewById(avatarId);
-            if (NinchatSessionManager.getInstance().showAvatars() && ninchatMessage.isRemoteMessage()) {
+        private void setAvatar(final ImageView avatar, final NinchatMessage ninchatMessage, final boolean isContinuedMessage) {
+            final boolean showAvatars = NinchatSessionManager.getInstance().showAvatars();
+            if (isContinuedMessage) {
+                avatar.setVisibility(showAvatars ? View.INVISIBLE : View.GONE);
+                return;
+            }
+            if (showAvatars && ninchatMessage.isRemoteMessage()) {
                 avatar.setVisibility(View.VISIBLE);
                 String userAvatar = NinchatSessionManager.getInstance().getMember(ninchatMessage.getSenderId()).getAvatar();
                 if (userAvatar == null) {
@@ -56,10 +57,18 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                             .load(userAvatar)
                             .into(avatar);
                 }
-            } else if (!NinchatSessionManager.getInstance().showAvatars()) {
+            } else if (!showAvatars) {
                 avatar.setVisibility(View.GONE);
             }
-            // TODO: Set the avatar
+        }
+
+        private void bindMessage(final @IdRes int wrapperId, final @IdRes int headerId, final @IdRes int senderId, final @IdRes int timestampId, final @IdRes int messageView, final @IdRes int imageId, final @IdRes int playIconId, final @IdRes int avatarId, final NinchatMessage ninchatMessage, final boolean isContinuedMessage, int firstMessageBackground, final @DrawableRes int repeatedMessageBackground) {
+            itemView.findViewById(wrapperId).setVisibility(View.VISIBLE);
+            final TextView sender = itemView.findViewById(senderId);
+            sender.setText(ninchatMessage.getSender());
+            final TextView timestamp = itemView.findViewById(timestampId);
+            timestamp.setText(TIMESTAMP_FORMATTER.format(ninchatMessage.getTimestamp()));
+            setAvatar(itemView.findViewById(avatarId), ninchatMessage, isContinuedMessage);
             final TextView message = itemView.findViewById(messageView);
             final Spanned messageContent = ninchatMessage.getMessage();
             final NinchatFile file = NinchatSessionManager.getInstance().getFile(ninchatMessage.getFileId());
@@ -86,10 +95,17 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                     }
                 });
             }
+            final Resources resources = itemView.getResources();
+            final int horizontalPadding = (int) resources.getDimension(R.dimen.ninchat_chat_activity_message_bubble_padding_horizontal);
+            final int verticalPadding = (int) resources.getDimension(R.dimen.ninchat_chat_activity_message_bubble_padding_vertical);
+            final int topPaddingContinued = (int) resources.getDimension(R.dimen.ninchat_chat_activity_message_bubble_continued_padding_top);
             if (isContinuedMessage) {
                 itemView.findViewById(headerId).setVisibility(View.GONE);
-                itemView.findViewById(avatarId).setVisibility(NinchatSessionManager.getInstance().showAvatars() ? View.INVISIBLE : View.GONE);
-                // TODO: Override the background resource
+                itemView.findViewById(messageView).setBackgroundResource(repeatedMessageBackground);
+                itemView.findViewById(wrapperId).setPadding(0, 0, 0, 0);
+                itemView.findViewById(messageView).setPadding(horizontalPadding, topPaddingContinued, horizontalPadding, verticalPadding);
+            } else {
+                itemView.findViewById(messageView).setBackgroundResource(firstMessageBackground);
             }
         }
 
@@ -125,9 +141,15 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.VISIBLE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(isContinuedMessage ? View.GONE : View.VISIBLE);
+                setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
+                itemView.findViewById(R.id.ninchat_chat_message_agent).setPadding(0, 0, 0, 0);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_message).setVisibility(View.GONE);
                 final TextView agentName = itemView.findViewById(R.id.ninchat_chat_message_agent_name);
                 agentName.setText(data.getSender());
+                itemView.findViewById(R.id.ninchat_chat_message_agent_wrapper)
+                        .setBackgroundResource(isContinuedMessage ?
+                                R.drawable.ninchat_chat_bubble_left_repeated :
+                                R.drawable.ninchat_chat_bubble_left);
                 final ImageView image = itemView.findViewById(R.id.ninchat_chat_message_agent_image);
                 image.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator);
                 final AnimationDrawable animationDrawable = (AnimationDrawable) image.getBackground();
@@ -144,7 +166,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         R.id.ninchat_chat_message_agent_image,
                         R.id.ninchat_chat_message_agent_video_play_image,
                         R.id.ninchat_chat_message_agent_avatar,
-                        data, isContinuedMessage);
+                        data, isContinuedMessage,
+                        R.drawable.ninchat_chat_bubble_left,
+                        R.drawable.ninchat_chat_bubble_left_repeated);
             } else {
                 itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.GONE);
@@ -157,7 +181,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         R.id.ninchat_chat_message_user_image,
                         R.id.ninchat_chat_message_user_video_play_image,
                         R.id.ninchat_chat_message_user_avatar,
-                        data, isContinuedMessage);
+                        data, isContinuedMessage,
+                        R.drawable.ninchat_chat_bubble_right,
+                        R.drawable.ninchat_chat_bubble_right_repeated);
             }
         }
     }

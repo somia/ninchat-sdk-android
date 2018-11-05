@@ -50,7 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/ninchat_media_activity_top_bar_button_height"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ninchat_download"
+                android:src="@drawable/ninchat_icon_download"
                 android:layout_marginEnd="@dimen/ninchat_media_activity_top_bar_button_padding"
                 android:onClick="onDownloadFile" />
 
