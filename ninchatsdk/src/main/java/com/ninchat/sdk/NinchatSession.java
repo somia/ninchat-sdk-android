@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 
 import com.ninchat.client.Props;
-import com.ninchat.sdk.models.NinchatQueue;
+import com.ninchat.client.Session;
 import com.ninchat.sdk.tasks.NinchatOpenSessionTask;
-
-import java.util.List;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 17/08/2018.
@@ -53,11 +51,19 @@ public final class NinchatSession {
         NinchatSessionManager.getInstance().setAudienceMetadata(audienceMetadata);
     }
 
-    public void start(final Activity activity, String siteSecret) {
+    public Session getSession() {
+        return NinchatSessionManager.getInstance().getSession();
+    }
+
+    public void start(final Activity activity) {
+        start(activity, null);
+    }
+
+    public void start(final Activity activity, final String siteSecret) {
         start(activity, siteSecret, NINCHAT_SESSION_REQUEST_CODE);
     }
 
-    public void start(final Activity activity, String siteSecret, final int requestCode) {
+    public void start(final Activity activity, final String siteSecret, final int requestCode) {
         start(activity, siteSecret, requestCode, null);
     }
 
