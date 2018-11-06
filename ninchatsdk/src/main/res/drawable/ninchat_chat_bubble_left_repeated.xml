@@ -4,5 +4,21 @@
         <bitmap android:src="@drawable/ninchat_chat_bubble_left_caret"
             android:gravity="center" />
     </item>
-    <item android:top="7dp" android:drawable="@drawable/ninchat_chat_bubble_left" />
+    <item android:top="7dp">
+        <shape android:shape="rectangle">
+            <corners
+                android:radius="@dimen/ninchat_chat_activity_message_bubble_corner_radius"
+                android:topLeftRadius="0dp"
+                />
+            <solid android:color="@android:color/white" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <padding android:left="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal"
+                android:top="@dimen/ninchat_chat_activity_message_bubble_continued_padding_top"
+                android:bottom="@dimen/ninchat_chat_activity_message_bubble_padding_vertical"
+                android:right="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal" />
+        </shape>
+    </item>
 </layer-list>

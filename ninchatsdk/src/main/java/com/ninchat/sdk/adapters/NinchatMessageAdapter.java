@@ -1,6 +1,5 @@
 package com.ninchat.sdk.adapters;
 
-import android.content.res.Resources;
 import android.graphics.drawable.AnimationDrawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
@@ -95,15 +94,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                     }
                 });
             }
-            final Resources resources = itemView.getResources();
-            final int horizontalPadding = (int) resources.getDimension(R.dimen.ninchat_chat_activity_message_bubble_padding_horizontal);
-            final int verticalPadding = (int) resources.getDimension(R.dimen.ninchat_chat_activity_message_bubble_padding_vertical);
-            final int topPaddingContinued = (int) resources.getDimension(R.dimen.ninchat_chat_activity_message_bubble_continued_padding_top);
             if (isContinuedMessage) {
                 itemView.findViewById(headerId).setVisibility(View.GONE);
-                itemView.findViewById(messageView).setBackgroundResource(repeatedMessageBackground);
                 itemView.findViewById(wrapperId).setPadding(0, 0, 0, 0);
-                itemView.findViewById(messageView).setPadding(horizontalPadding, topPaddingContinued, horizontalPadding, verticalPadding);
+                itemView.findViewById(messageView).setBackgroundResource(repeatedMessageBackground);
             } else {
                 itemView.findViewById(messageView).setBackgroundResource(firstMessageBackground);
             }
