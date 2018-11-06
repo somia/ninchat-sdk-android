@@ -302,12 +302,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             return;
         }
         NinchatSessionManager.getInstance().sendMessage(message);
-        messageSent = true;
         writingMessageSent = false;
         messageView.setText(null);
     }
 
-    private boolean messageSent = false;
     private boolean writingMessageSent = false;
 
     private TextWatcher textWatcher = new TextWatcher() {
@@ -322,8 +320,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             if (s.length() != 0 && !writingMessageSent) {
                 NinchatSessionManager.getInstance().sendIsWritingUpdate(true);
                 writingMessageSent = true;
-                messageSent = false;
-            } else if (s.length() == 0 && !messageSent) {
+            } else if (s.length() == 0) {
                 NinchatSessionManager.getInstance().sendIsWritingUpdate(false);
                 writingMessageSent = false;
             }
