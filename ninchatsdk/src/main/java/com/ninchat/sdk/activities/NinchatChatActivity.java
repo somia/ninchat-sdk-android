@@ -124,12 +124,16 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    protected boolean chatClosed = false;
+
     protected BroadcastReceiver channelClosedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (NinchatSessionManager.Broadcast.CHANNEL_CLOSED.equals(action)) {
                 messageAdapter.close(NinchatChatActivity.this);
+                chatClosed = true;
+                hideKeyboard();
             }
         }
     };
@@ -137,6 +141,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     public void onCloseChat(final View view) {
         findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
         findViewById(R.id.ninchat_chat_close_chat_dialog).setVisibility(View.VISIBLE);
+        hideKeyboard();
     }
 
     public void onCloseChatConfirm(final View view) {
@@ -202,12 +207,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                     }
                     final TextView userName = findViewById(R.id.ninchat_video_call_consent_dialog_user_name);
                     userName.setText(user.getName());
-                    final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    try {
-                        inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                    } catch (final Exception e) {
-                        // Ignore
-                    }
+                    hideKeyboard();
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT))) {
                     if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType) ||
                             NinchatSessionManager.MessageTypes.PICK_UP.equals(messageType)) {
@@ -217,6 +217,15 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             }
         }
     };
+
+    private void hideKeyboard() {
+        final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        try {
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        } catch (final Exception e) {
+            // Ignore
+        }
+    }
 
     public void onAcceptVideoCall(final View view) {
         findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.GONE);
@@ -261,11 +270,17 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     public void onVideoCall(final View view) {
+        if (chatClosed) {
+            return;
+        }
         findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
         webRTCView.call();
     }
 
     public void onAttachmentClick(final View view) {
+        if (chatClosed) {
+            return;
+        }
         if (hasFileAccessPermissions()) {
             openImagePicker(view);
             /*final Intent photos = new Intent(Intent.ACTION_PICK).setType("image/*");
@@ -299,6 +314,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     public void onSendClick(final View view) {
+        if (chatClosed) {
+            return;
+        }
         final TextView messageView = findViewById(R.id.message);
         final String message = messageView.getText().toString();
         if (TextUtils.isEmpty(message)) {
