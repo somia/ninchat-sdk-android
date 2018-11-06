@@ -136,7 +136,6 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.VISIBLE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(isContinuedMessage ? View.GONE : View.VISIBLE);
                 setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
-                itemView.findViewById(R.id.ninchat_chat_message_agent).setPadding(0, 0, 0, 0);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_message).setVisibility(View.GONE);
                 final TextView agentName = itemView.findViewById(R.id.ninchat_chat_message_agent_name);
                 agentName.setText(data.getSender());
@@ -148,6 +147,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 image.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator);
                 final AnimationDrawable animationDrawable = (AnimationDrawable) image.getBackground();
                 animationDrawable.start();
+                if (isContinuedMessage) {
+                    itemView.findViewById(R.id.ninchat_chat_message_agent).setPadding(0, 0, 0, 0);
+                }
             } else if (data.isRemoteMessage()) {
                 itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
