@@ -24,6 +24,7 @@ import com.ninchat.client.Props;
 import com.ninchat.client.Session;
 import com.ninchat.client.SessionEventHandler;
 import com.ninchat.client.Strings;
+import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
@@ -50,7 +51,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 /**
@@ -63,10 +63,10 @@ public final class NinchatSessionManager {
         public static final String CHANNEL_UPDATED = BuildConfig.APPLICATION_ID + ".channelUpdated";
         public static final String CHANNEL_CLOSED = BuildConfig.APPLICATION_ID + ".channelClosed";
         public static final String NEW_MESSAGE = BuildConfig.APPLICATION_ID + ".newMessage";
-        public static final String MESSAGE_UPDATED = NEW_MESSAGE + ".updated";
         public static final String MESSAGE_INDEX = NEW_MESSAGE + ".index";
-        public static final String MESSAGE_SENDER = NEW_MESSAGE + ".sender";
+        public static final String MESSAGE_REMOVED = NEW_MESSAGE + ".removed";
         public static final String WEBRTC_MESSAGE = BuildConfig.APPLICATION_ID + ".webRTCMessage";
+        public static final String WEBRTC_MESSAGE_SENDER = WEBRTC_MESSAGE + ".sender";
         public static final String WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type";
         public static final String WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content";
         public static final String DOWNLOADING_FILE = BuildConfig.APPLICATION_ID + ".downloadingFile";
@@ -149,7 +149,7 @@ public final class NinchatSessionManager {
         this.configuration = null;
         this.session = null;
         this.queues = new ArrayList<>();
-        this.messages = new ArrayList<>();
+        this.messageAdapter = new NinchatMessageAdapter();
         this.members = new HashMap<>();
         this.ninchatQueueListAdapter = null;
         this.files = new HashMap<>();
@@ -166,10 +166,14 @@ public final class NinchatSessionManager {
     protected String channelId;
     protected String userId;
     protected Map<String, NinchatUser> members;
-    protected List<NinchatMessage> messages;
+    protected NinchatMessageAdapter messageAdapter;
     protected List<NinchatWebRTCServerInfo> stunServers;
     protected List<NinchatWebRTCServerInfo> turnServers;
     protected Map<String, NinchatFile> files;
+
+    public NinchatMessageAdapter getMessageAdapter() {
+        return messageAdapter;
+    }
 
     public void setConfiguration(final String config) throws JSONException {
         try {
@@ -287,16 +291,8 @@ public final class NinchatSessionManager {
         return ninchatQueueListAdapter;
     }
 
-    public List<NinchatQueue> getQueues() {
-        return queues;
-    }
-
     public boolean hasQueues() {
         return queues.size() > 0;
-    }
-
-    public List<NinchatMessage> getMessages() {
-        return messages;
     }
 
     public NinchatUser getMember(final String userId) {
@@ -304,6 +300,10 @@ public final class NinchatSessionManager {
             return new NinchatUser(getUserName(), getUserName(), null, true);
         }
         return members.get(userId);
+    }
+
+    public int getMemberCount() {
+        return members.size();
     }
 
     public List<NinchatWebRTCServerInfo> getStunServers() {
@@ -562,7 +562,7 @@ public final class NinchatSessionManager {
             LocalBroadcastManager.getInstance(context)
                     .sendBroadcast(new Intent(Broadcast.WEBRTC_MESSAGE)
                             .putExtra(Broadcast.WEBRTC_MESSAGE_TYPE, messageType)
-                            .putExtra(Broadcast.MESSAGE_SENDER, sender)
+                            .putExtra(Broadcast.WEBRTC_MESSAGE_SENDER, sender)
                             .putExtra(Broadcast.WEBRTC_MESSAGE_CONTENT, builder.toString()));
             return;
         }
@@ -570,6 +570,7 @@ public final class NinchatSessionManager {
             return;
         }
         final long timestamp = System.currentTimeMillis();
+        int index = -1;
         for (int i = 0; i < payload.length(); ++i) {
             try {
                 final JSONObject message = new JSONObject(new String(payload.get(i)));
@@ -593,45 +594,21 @@ public final class NinchatSessionManager {
                         } else if (new Date().after(ninchatFile.getUrlExpiry())) {
                             NinchatDescribeFileTask.start(fileId);
                         } else {
-                            final Context context = contextWeakReference.get();
-                            messages.add(new NinchatMessage(null, fileId, ninchatFile.getSender(), ninchatFile.getTimestamp(), ninchatFile.isRemote()));
-                            if (context != null) {
-                                LocalBroadcastManager.getInstance(context)
-                                        .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE));
-                            }
+                            index = messageAdapter.add(new NinchatMessage(null, fileId, ninchatFile.getSender(), ninchatFile.getTimestamp(), ninchatFile.isRemote()));
                         }
                     }
                 } else {
-                    final boolean isRemoteMessage = actionId == 0;
-                    final NinchatMessage ninchatMessage = new NinchatMessage(message.getString("text"), null, sender, timestamp, isRemoteMessage);
-                    final ListIterator<NinchatMessage> iterator = messages.listIterator(messages.size());
-                    int index = messages.size();
-                    boolean updated = false;
-                    while (iterator.hasPrevious()) {
-                        final NinchatMessage previousMessage = iterator.previous();
-                        if (previousMessage.getType().equals(NinchatMessage.Type.WRITING)) {
-                            index = iterator.nextIndex();
-                            if (sender.equals(previousMessage.getSenderId())) {
-                                updated = true;
-                                iterator.set(ninchatMessage);
-                                break;
-                            }
-                        }
-                    }
-                    if (!updated) {
-                        messages.add(index, ninchatMessage);
-                    }
-                    final Context context = contextWeakReference.get();
-                    if (context != null) {
-                        LocalBroadcastManager.getInstance(context)
-                                .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
-                                        .putExtra(Broadcast.MESSAGE_UPDATED, updated)
-                                        .putExtra(Broadcast.MESSAGE_INDEX, index));
-                    }
+                    index = messageAdapter.add(new NinchatMessage(message.getString("text"), null, sender, System.currentTimeMillis(), !sender.equals(userId)));
                 }
             } catch (final JSONException e) {
                 // Ignore
             }
+        }
+        final Context context = contextWeakReference.get();
+        if (context != null) {
+            LocalBroadcastManager.getInstance(context)
+                    .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
+                            .putExtra(Broadcast.MESSAGE_INDEX, index));
         }
     }
 
@@ -679,10 +656,11 @@ public final class NinchatSessionManager {
         file.setUrlExpiry(new Date(urlExpiry));
         file.setAspectRatio(aspectRatio);
         final Context context = contextWeakReference.get();
-        messages.add(new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
+        final int index = messageAdapter.add(new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
         if (context != null) {
             LocalBroadcastManager.getInstance(context)
-                    .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE));
+                    .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
+                            .putExtra(Broadcast.MESSAGE_INDEX, index));
         }
     }
 
@@ -703,34 +681,24 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             // Ignore
         }
-        boolean addMessage = false;
+        boolean addWritingMessage = false;
         try {
-            addMessage = memberAttrs.getBool("writing") && messages.size() > 1;
+            addWritingMessage = memberAttrs.getBool("writing") && messageAdapter.getItemCount() > 1;
         } catch (final Exception e) {
             // Ignore
         }
-        if (addMessage) {
-            messages.add(new NinchatMessage(NinchatMessage.Type.WRITING, sender));
-            final Context context = contextWeakReference.get();
-            if (context != null) {
-                LocalBroadcastManager.getInstance(context)
-                        .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE));
-            }
+        int index = -1;
+        if (addWritingMessage) {
+            index = messageAdapter.addWriting(sender);
         } else {
-            final ListIterator<NinchatMessage> iterator = messages.listIterator(messages.size());
-            boolean sendUpdate = false;
-            while (iterator.hasPrevious()) {
-                final NinchatMessage message = iterator.previous();
-                if (message.getType().equals(NinchatMessage.Type.WRITING) && sender.equals(message.getSenderId())) {
-                    iterator.remove();
-                    sendUpdate = true;
-                    break;
-                }
-            }
-            final Context context = contextWeakReference.get();
-            if (context != null && sendUpdate) {
-                LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.NEW_MESSAGE));
-            }
+            index = messageAdapter.removeWritingMessage(sender);
+        }
+        final Context context = contextWeakReference.get();
+        if (context != null) {
+            LocalBroadcastManager.getInstance(context)
+                    .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
+                            .putExtra(Broadcast.MESSAGE_INDEX, index)
+                            .putExtra(Broadcast.MESSAGE_REMOVED, !addWritingMessage));
         }
     }
 

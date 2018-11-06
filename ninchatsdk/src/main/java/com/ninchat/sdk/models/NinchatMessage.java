@@ -25,11 +25,11 @@ public final class NinchatMessage {
     private boolean isRemoteMessage = false;
 
     public NinchatMessage(final Type type) {
-        this(type, null, null, null, 0, false);
+        this(type, null, null, null, System.currentTimeMillis(), false);
     }
 
     public NinchatMessage(final Type type, final String sender) {
-        this(type, null, null, sender, 0, true);
+        this(type, null, null, sender, System.currentTimeMillis(), true);
     }
 
     public NinchatMessage(final String message, final String fileId, final String sender, long timestamp, final boolean isRemoteMessage) {

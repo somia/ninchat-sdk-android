@@ -25,6 +25,9 @@ import com.ninchat.sdk.models.NinchatMessage;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 
 
@@ -188,25 +191,55 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     protected WeakReference<NinchatChatActivity> activityWeakReference;
     protected WeakReference<RecyclerView> recyclerViewWeakReference;
-    protected int numberOfMessages;
+    protected List<NinchatMessage> messages;
 
     public NinchatMessageAdapter() {
-        NinchatSessionManager.getInstance().getMessages().add(new NinchatMessage(NinchatMessage.Type.START));
-        numberOfMessages = getItemCount();
+        this.messages = new ArrayList<>();
+        this.messages.add(new NinchatMessage(NinchatMessage.Type.START));
         this.recyclerViewWeakReference = new WeakReference<>(null);
-
     }
 
-    public void messagesUpdated(final boolean isUpdated, final int messageIndex) {
-        if (isUpdated) {
-            notifyItemChanged(messageIndex);
-        } else if (messageIndex > 0) {
-            notifyItemInserted(messageIndex);
-            if (messageIndex < getItemCount()) {
-                notifyItemChanged(messageIndex + 1);
+    public int addWriting(final String sender) {
+        messages.add(new NinchatMessage(NinchatMessage.Type.WRITING, sender));
+        return getItemCount() - 1;
+    }
+
+    public int add(final NinchatMessage message) {
+        int index = getItemCount();
+        if (!message.getType().equals(NinchatMessage.Type.WRITING)) {
+            final ListIterator<NinchatMessage> iterator = messages.listIterator(getItemCount());
+            int i = 0;
+            while (iterator.hasPrevious() && i < NinchatSessionManager.getInstance().getMemberCount()) {
+                final NinchatMessage previousMessage = iterator.previous();
+                if (previousMessage.getType().equals(NinchatMessage.Type.WRITING)) {
+                    index--;
+                    i++;
+                }
             }
-        } else {
+        }
+        messages.add(index, message);
+        return index;
+    }
+
+    public int removeWritingMessage(final String sender) {
+        final ListIterator<NinchatMessage> iterator = messages.listIterator(getItemCount());
+        while (iterator.hasPrevious()) {
+            final NinchatMessage message = iterator.previous();
+            if (message.getType().equals(NinchatMessage.Type.WRITING) && sender.equals(message.getSenderId())) {
+                messages.remove(message);
+                return iterator.nextIndex();
+            }
+        }
+        return -1;
+    }
+
+    public void messagesUpdated(final int index, final boolean removed) {
+        if (index < 0) {
             notifyDataSetChanged();
+        } else if (removed) {
+            notifyItemRemoved(index);
+        } else {
+            notifyItemInserted(index);
         }
         final int position = getItemCount() - 1;
         final RecyclerView recyclerView = recyclerViewWeakReference.get();
@@ -217,8 +250,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     public void close(final NinchatChatActivity activity) {
         activityWeakReference = new WeakReference<>(activity);
-        NinchatSessionManager.getInstance().getMessages().add(new NinchatMessage(NinchatMessage.Type.END));
-        final int position = NinchatSessionManager.getInstance().getMessages().size() - 1;
+        messages.add(new NinchatMessage(NinchatMessage.Type.END));
+        final int position = getItemCount() - 1;
         notifyItemInserted(position);
         final RecyclerView recyclerView = recyclerViewWeakReference.get();
         if (recyclerView != null) {
@@ -239,8 +272,13 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     }
 
     @Override
+    public long getItemId(int position) {
+        return messages.get(position).getTimestamp().getTime();
+    }
+
+    @Override
     public int getItemCount() {
-        return NinchatSessionManager.getInstance().getMessages().size();
+        return messages.size();
     }
 
     @NonNull
@@ -252,9 +290,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     @Override
     public void onBindViewHolder(@NonNull NinchatMessageViewHolder holder, int position) {
         boolean isContinuedMessage = false;
-        final NinchatMessage message = NinchatSessionManager.getInstance().getMessages().get(position);
+        final NinchatMessage message = messages.get(position);
         try {
-            final NinchatMessage previousMessage = NinchatSessionManager.getInstance().getMessages().get(position - 1);
+            final NinchatMessage previousMessage = messages.get(position - 1);
             isContinuedMessage = message.getSenderId().equals(previousMessage.getSenderId());
         } catch (final Exception e) {
             // Ignore

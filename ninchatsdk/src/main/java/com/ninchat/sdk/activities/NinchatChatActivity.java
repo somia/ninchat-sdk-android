@@ -53,7 +53,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     protected static final int STORAGE_PERMISSION_REQUEST_CODE = "ExternalStorage".hashCode() & 0xffff;
     protected static final int PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() & 0xffff;
 
-    private NinchatMessageAdapter messageAdapter = new NinchatMessageAdapter();
+    private NinchatMessageAdapter messageAdapter = NinchatSessionManager.getInstance().getMessageAdapter();
 
     @Override
     protected int getLayoutRes() {
@@ -161,8 +161,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (NinchatSessionManager.Broadcast.NEW_MESSAGE.equals(action)) {
-                messageAdapter.messagesUpdated(intent.getBooleanExtra(NinchatSessionManager.Broadcast.MESSAGE_UPDATED, false),
-                        intent.getIntExtra(NinchatSessionManager.Broadcast.MESSAGE_INDEX, -1));
+                messageAdapter.messagesUpdated(intent.getIntExtra(NinchatSessionManager.Broadcast.MESSAGE_INDEX, -1),
+                        intent.getBooleanExtra(NinchatSessionManager.Broadcast.MESSAGE_REMOVED, false));
             }
         }
     };
@@ -192,7 +192,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 if (NinchatSessionManager.MessageTypes.CALL.equals(messageType)) {
                     findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
                     findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.VISIBLE);
-                    final NinchatUser user = NinchatSessionManager.getInstance().getMember(intent.getStringExtra(NinchatSessionManager.Broadcast.MESSAGE_SENDER));
+                    final NinchatUser user = NinchatSessionManager.getInstance().getMember(intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_SENDER));
                     final ImageView userImage = findViewById(R.id.ninchat_video_call_consent_dialog_user_avatar);
                     final String avatar = user.getAvatar();
                     if (!TextUtils.isEmpty(avatar)) {
