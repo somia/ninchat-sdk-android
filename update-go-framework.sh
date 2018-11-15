@@ -5,6 +5,8 @@
 #
 # https://github.com/golang/go/wiki/Mobile#building-and-deploying-to-android-1
 
+set -e
+
 readonly CURRENTDIR=$(pwd)
 readonly GOCODEDIR="${CURRENTDIR}/go-sdk/src/github.com/ninchat/ninchat-go/mobile"
 readonly PACKAGE="com.ninchat"
@@ -62,7 +64,11 @@ function getGoRepoDescription() {
 
 function generateMd5CheckSum() {
     local filename="$1"
-    md5 -q "${filename}" > "${filename}.md5"
+    if which md5 > /dev/null; then
+        md5 -q "${filename}" > "${filename}.md5"
+    else
+        md5sum "${filename}" | sed 's/ .*//' > "${filename}.md5"
+    fi
 }
 
 function generateSha1CheckSum() {
@@ -81,7 +87,7 @@ function buildGoLibrary() {
 
     cd "${GOCODEDIR}"
     echo "Running gomobile tool.."
-    GOPATH="${GOPATH}:${CURRENTDIR}/go-sdk" gomobile bind -target android -javapkg "${PACKAGE}" -o "${filename}"
+    GOPATH="${CURRENTDIR}/go-sdk:${GOPATH}" gomobile bind -target android -javapkg "${PACKAGE}" -o "${filename}"
     if [ $? -ne 0 ]; then
         echo "gomobile cmd failed, aborting."
         exit 1
@@ -111,7 +117,7 @@ function generateMavenMetadata() {
     <versions>
 EOF
 
-    for dir in $(find "${LIBDIR}" -depth 1 -type d); do
+    for dir in $(find "${LIBDIR}" -mindepth 1 -type d); do
         local base=$(basename "${dir}")
         echo "      <version>${base}</version>" >> "${LIBDIR}/${filename}"
     done
