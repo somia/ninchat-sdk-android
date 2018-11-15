@@ -35,6 +35,8 @@ public final class NinchatSession {
 
     public static final int NINCHAT_SESSION_REQUEST_CODE = NinchatSession.class.hashCode() & 0xffff;
 
+    private String siteSecret = null;
+
     public NinchatSession(final Context applicationContext, final String configurationKey) {
         this(applicationContext, configurationKey, null, null);
     }
@@ -45,6 +47,10 @@ public final class NinchatSession {
 
     public void setServerAddress(final String serverAddress) {
         NinchatSessionManager.getInstance().setServerAddress(serverAddress);
+    }
+
+    public void setSiteSecret(final String siteSecret) {
+        this.siteSecret = siteSecret;
     }
 
     public void setAudienceMetadata(final Props audienceMetadata) {
@@ -59,20 +65,34 @@ public final class NinchatSession {
         start(activity, null);
     }
 
-    public void start(final Activity activity, final String siteSecret) {
-        start(activity, siteSecret, NINCHAT_SESSION_REQUEST_CODE);
+    public void start(final Activity activity, final int requestCode) {
+        start(activity, requestCode, null);
     }
 
-    public void start(final Activity activity, final String siteSecret, final int requestCode) {
-        start(activity, siteSecret, requestCode, null);
+    public void start(final Activity activity, final String queueId) {
+        start(activity, NINCHAT_SESSION_REQUEST_CODE, queueId);
     }
 
-    public void start(final Activity activity, final String siteSecret, final String queueId) {
-        start(activity, siteSecret, NINCHAT_SESSION_REQUEST_CODE, queueId);
-    }
-
-    public void start(final Activity activity, final String siteSecret, final int requestCode, final String queueId) {
+    public void start(final Activity activity, final int requestCode, final String queueId) {
         NinchatOpenSessionTask.start(activity, siteSecret, requestCode, queueId);
+    }
+
+    @Deprecated
+    public void start(final Activity activity, final String siteSecret, final int requestCode) {
+        setSiteSecret(siteSecret);
+        start(activity, requestCode);
+    }
+
+    @Deprecated
+    public void start(final Activity activity, final String siteSecret, final String queueId) {
+        setSiteSecret(siteSecret);
+        start(activity, queueId);
+    }
+
+    @Deprecated
+    public void start(final Activity activity, final String siteSecret, final int requestCode, final String queueId) {
+        setSiteSecret(siteSecret);
+        start(activity, requestCode, queueId);
     }
 
     public void close() {
