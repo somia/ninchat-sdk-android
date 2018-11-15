@@ -231,11 +231,11 @@ public final class NinchatSessionManager {
                     final String event = params.getString("event");
                     if (event.equals("realm_queues_found")) {
                         NinchatSessionManager.getInstance().parseQueues(params);
-                    } else if (event.equals("queue_updated") || event.equals("audience_enqueued")) {
+                    } else if (event.equals("queue_found") || event.equals("queue_updated") || event.equals("audience_enqueued")) {
                         NinchatSessionManager.getInstance().queueUpdated(params);
                     } else if (event.equals("channel_joined")) {
                         NinchatSessionManager.getInstance().channelJoined(params);
-                    } else if (event.equals("channel_updated")) {
+                    } else if (event.equals("channel_found") || event.equals("channel_updated")) {
                         NinchatSessionManager.getInstance().channelUpdated(params);
                     } else if (event.equals("message_received")) {
                         NinchatSessionManager.getInstance().messageReceived(params, payload);
