@@ -32,9 +32,14 @@ The SDK is then started by calling the `start` method of the class. The method t
 
 The `start` method opens the SDK UI automatically.
 
-### Setting server address and user metadata
+### Setting metadata
 
-The `NinchatSession` class has a setter for the server address to be used by the SDK. Similarly, the application can set the user metadata (e.g. real name) using the respective setter of the `NinchatSession` class.
+The `NinchatSession` class has a setter for audience metadata (i.e. user information).  It's specified as a `com.ninchat.client.Props` object:
+
+    Props metadata = new Props();
+    metadata.setString("Significant Information", someValue);
+    metadata.setString("secure", secureMetadata);
+    session.setAudienceMetadata(metadata);
 
 ### Optional parameters
 
