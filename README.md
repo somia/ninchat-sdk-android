@@ -38,18 +38,16 @@ The `NinchatSession` class has a setter for the server address to be used by the
 
 ### Optional parameters
 
-The start method can take site secret (`String`) and the request code (`int`) as optional parameters:
+The start method can take the request code (`int`) as optional parameters:
 
-    session.start(activity, siteSecret);
     session.start(activity, requestCode);
-    session.start(activity, siteSecret, requestCode);
 
 By default, the request code parameter is `NinchatSession.NINCHAT_SESSION_REQUEST_CODE`. The calling activity can observe the result of the SDK opening by checking the result code in its `onActivityResult` method for the selected request code. If the SDK has joined a queue, the result code will be `Activity.RESULT_OK` while in the other cases it will be `Activity.RESULT_CANCELLED`.
 
 Alternatively, if the client knows the queue ID it wants to join, the SDK can be started by calling the `start` method with the queue ID (`String`):
 
-    session.start(activity, siteSecret, queueId);
-    session.start(activity, siteSecret, requestCode, queueId);
+    session.start(activity, queueId);
+    session.start(activity, requestCode, queueId);
 
 These methods open the SDK directly to the queueing view for that given queue.
 
