@@ -364,31 +364,43 @@ public final class NinchatSessionManager {
             return;
         }
         for (String queueId : parser.properties.keySet()) {
-            Props queue;
+            Props info;
             try {
-                queue = (Props) parser.properties.get(queueId);
+                info = (Props) parser.properties.get(queueId);
             } catch (final Exception e) {
                 sessionError(e);
                 return;
             }
-            Props queueAttributes;
+            long position;
             try {
-                queueAttributes = queue.getObject("queue_attrs");
+                position = info.getInt("queue_position");
             } catch (final Exception e) {
                 sessionError(e);
                 return;
             }
-            String name;
-            try {
-                name = queueAttributes.getString("name");
-            } catch (final Exception e) {
-                sessionError(e);
-                return;
-            }
-            final NinchatQueue ninchatQueue = new NinchatQueue(queueId, name);
-            queues.add(ninchatQueue);
-            if (ninchatQueueListAdapter != null) {
-                ninchatQueueListAdapter.addQueue(ninchatQueue);
+            NinchatQueue queue = getQueue(queueId);
+            if (queue != null) {
+                queue.setPosition(position);
+            } else {
+                Props attrs;
+                try {
+                    attrs = info.getObject("queue_attrs");
+                } catch (final Exception e) {
+                    sessionError(e);
+                    return;
+                }
+                String name;
+                try {
+                    name = attrs.getString("name");
+                } catch (final Exception e) {
+                    sessionError(e);
+                    return;
+                }
+                queue = new NinchatQueue(queueId, name, position);
+                queues.add(queue);
+                if (ninchatQueueListAdapter != null) {
+                    ninchatQueueListAdapter.addQueue(queue);
+                }
             }
         }
         final Context context = contextWeakReference.get();
@@ -421,9 +433,29 @@ public final class NinchatSessionManager {
             sessionError(e);
             return;
         }
-        final NinchatQueue queue = getQueue(queueId);
+        NinchatQueue queue = getQueue(queueId);
         if (queue != null) {
             queue.setPosition(position);
+        } else {
+            Props attrs;
+            try {
+                attrs = params.getObject("queue_attrs");
+            } catch (final Exception e) {
+                sessionError(e);
+                return;
+            }
+            String name;
+            try {
+                name = attrs.getString("name");
+            } catch (final Exception e) {
+                sessionError(e);
+                return;
+            }
+            queue = new NinchatQueue(queueId, name, position);
+            queues.add(queue);
+            if (ninchatQueueListAdapter != null) {
+                ninchatQueueListAdapter.addQueue(queue);
+            }
         }
         final Context context = contextWeakReference.get();
         if (context != null) {
