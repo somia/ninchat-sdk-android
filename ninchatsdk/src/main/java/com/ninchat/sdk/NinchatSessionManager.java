@@ -109,8 +109,7 @@ public final class NinchatSessionManager {
     }
 
     public String getServerAddress() {
-        return serverAddress != null ? serverAddress :
-                (BuildConfig.DEBUG ? "api.luupi.net" : "api.ninchat.com");
+        return serverAddress != null ? serverAddress : "api.ninchat.com";
     }
 
     protected Props audienceMetadata;
