@@ -34,7 +34,6 @@ import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
 import com.ninchat.sdk.tasks.NinchatDescribeFileTask;
 import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
-import com.ninchat.sdk.tasks.NinchatListQueuesTask;
 import com.ninchat.sdk.tasks.NinchatSendBeginIceTask;
 import com.ninchat.sdk.tasks.NinchatSendFileTask;
 import com.ninchat.sdk.tasks.NinchatSendIsWritingTask;
@@ -212,7 +211,7 @@ public final class NinchatSessionManager {
                     final String event = params.getString("event");
                     if (event.equals("session_created")) {
                         userId = params.getString("user_id");
-                        NinchatListQueuesTask.start();
+                        describeQueues();
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);
@@ -345,6 +344,18 @@ public final class NinchatSessionManager {
         @Override
         public void visitObjectArray(String p0, Objects p1) throws Exception {
             properties.put(p0, p1);
+        }
+    }
+
+    private void describeQueues() {
+        final Props params = new Props();
+        params.setString("action", "describe_realm_queues");
+        params.setString("realm_id", getRealmId());
+        try {
+            session.send(params, null);
+        } catch (final Exception e) {
+            sessionError(e);
+            return;
         }
     }
 
