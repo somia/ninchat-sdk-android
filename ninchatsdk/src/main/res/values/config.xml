@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="ninchat_queue_activity_progress_duration">3</integer>
+    <bool name="ninchat_allow_user_initiated_video_calls">false</bool>
 </resources>
