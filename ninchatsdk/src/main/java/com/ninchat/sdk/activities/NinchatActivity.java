@@ -46,12 +46,12 @@ public final class NinchatActivity extends NinchatBaseActivity {
 
     private void setQueueAdapter() {
         final RecyclerView queueList = findViewById(R.id.ninchat_activity_queue_list);
-        final NinchatQueueListAdapter ninchatQueueListAdapter = NinchatSessionManager.getInstance().getNinchatQueueListAdapter(NinchatActivity.this);
+        final NinchatQueueListAdapter ninchatQueueListAdapter = sessionManager.getNinchatQueueListAdapter(NinchatActivity.this);
         queueList.setAdapter(ninchatQueueListAdapter);
         if (ninchatQueueListAdapter.getItemCount() == 0) {
             findViewById(R.id.ninchat_activity_no_queues).setVisibility(View.VISIBLE);
             final TextView motd = findViewById(R.id.ninchat_activity_motd);
-            motd.setText(NinchatSessionManager.getInstance().getNoQueues());
+            motd.setText(sessionManager.getNoQueues());
             findViewById(R.id.ninchat_activity_close).setVisibility(View.VISIBLE);
         }
     }
@@ -66,7 +66,6 @@ public final class NinchatActivity extends NinchatBaseActivity {
     };
 
     private void setTexts() {
-        final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         final TextView topHeader = findViewById(R.id.ninchat_activity_header);
         topHeader.setText(sessionManager.getWelcome());
         final Button closeButton = findViewById(R.id.ninchat_activity_close);
@@ -91,10 +90,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         broadcastManager.registerReceiver(queuesUpdatedReceiver, new IntentFilter(NinchatSession.Broadcast.QUEUES_UPDATED));
         broadcastManager.registerReceiver(configurationFetchedReceiver, new IntentFilter(NinchatSession.Broadcast.CONFIGURATION_FETCHED));
-        final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
-        if (sessionManager != null) {
-            setTexts();
-        }
+        setTexts();
     }
 
     @Override
@@ -118,7 +114,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NinchatQueueActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK || queueId != null) {
-                NinchatSessionManager.getInstance().close();
+                sessionManager.close();
                 setResult(resultCode, data);
                 finish();
             }

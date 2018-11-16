@@ -5,10 +5,14 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 
+import com.ninchat.sdk.NinchatSessionManager;
+
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 17/08/2018.
  */
 abstract class NinchatBaseActivity extends Activity {
+
+    protected NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
 
     abstract protected @LayoutRes int getLayoutRes();
 

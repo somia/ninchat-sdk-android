@@ -28,7 +28,7 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final TextView hello = findViewById(R.id.ninchat_review_title);
-        hello.setText(NinchatSessionManager.getInstance().getFeedbackTitle());
+        hello.setText(sessionManager.getFeedbackTitle());
     }
 
     public final void onGoodClick(final View view) {
@@ -49,7 +49,7 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
 
     private void close(final int rating) {
         if (rating != NinchatSession.Analytics.Rating.NO_ANSWER) {
-            NinchatSessionManager.getInstance().sendRating(rating);
+            sessionManager.sendRating(rating);
         }
         setResult(RESULT_OK, getResultIntent(rating));
         finish();

@@ -67,7 +67,7 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
 
     private void updateQueueStatus() {
         final TextView queueStatus = findViewById(R.id.ninchat_queue_activity_queue_status);
-        queueStatus.setText(NinchatSessionManager.getInstance().getQueueStatus(queueId));
+        queueStatus.setText(sessionManager.getQueueStatus(queueId));
     }
 
     @Override
@@ -83,9 +83,9 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         animation.setDuration(3000);
         findViewById(R.id.ninchat_queue_activity_progress).setAnimation(animation);
         final TextView message = findViewById(R.id.ninchat_queue_activity_queue_message);
-        message.setText(NinchatSessionManager.getInstance().getQueueMessage());
+        message.setText(sessionManager.getQueueMessage());
         final Button closeButton = findViewById(R.id.ninchat_queue_activity_close_button);
-        closeButton.setText(NinchatSessionManager.getInstance().getCloseChat());
+        closeButton.setText(sessionManager.getCloseChat());
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         broadcastManager.registerReceiver(channelJoinedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_JOINED));
         broadcastManager.registerReceiver(channelUpdatedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_UPDATED));

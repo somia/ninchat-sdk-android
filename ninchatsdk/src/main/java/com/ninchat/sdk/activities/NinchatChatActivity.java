@@ -54,7 +54,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     protected static final int STORAGE_PERMISSION_REQUEST_CODE = "ExternalStorage".hashCode() & 0xffff;
     protected static final int PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() & 0xffff;
 
-    private NinchatMessageAdapter messageAdapter = NinchatSessionManager.getInstance().getMessageAdapter();
+    private NinchatMessageAdapter messageAdapter = sessionManager.getMessageAdapter();
 
     @Override
     protected int getLayoutRes() {
@@ -82,7 +82,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 final byte[] buffer = new byte[size];
                 inputStream.read(buffer);
                 inputStream.close();
-                NinchatSessionManager.getInstance().sendImage(fileName, buffer);
+                sessionManager.sendImage(fileName, buffer);
             } catch (final Exception e) {
                 // TODO: show error?
             }
@@ -159,7 +159,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     public void chatClosed() {
-        if (NinchatSessionManager.getInstance().showRating()) {
+        if (sessionManager.showRating()) {
             startActivityForResult(NinchatReviewActivity.getLaunchIntent(NinchatChatActivity.this), NinchatReviewActivity.REQUEST_CODE);
         } else {
             quit(null);
@@ -196,7 +196,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     private void sendPickUpAnswer(final boolean answer) {
-        NinchatSessionManager.getInstance().sendWebRTCCallAnswer(answer);
+        sessionManager.sendWebRTCCallAnswer(answer);
     }
 
     private View videoContainer;
@@ -211,7 +211,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 if (NinchatSessionManager.MessageTypes.CALL.equals(messageType)) {
                     findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
                     findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.VISIBLE);
-                    final NinchatUser user = NinchatSessionManager.getInstance().getMember(intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_SENDER));
+                    final NinchatUser user = sessionManager.getMember(intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_SENDER));
                     final ImageView userImage = findViewById(R.id.ninchat_video_call_consent_dialog_user_avatar);
                     final String avatar = user.getAvatar();
                     if (!TextUtils.isEmpty(avatar)) {
@@ -336,7 +336,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (TextUtils.isEmpty(message)) {
             return;
         }
-        NinchatSessionManager.getInstance().sendMessage(message);
+        sessionManager.sendMessage(message);
         writingMessageSent = false;
         messageView.setText(null);
     }
@@ -353,10 +353,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         @Override
         public void afterTextChanged(Editable s) {
             if (s.length() != 0 && !writingMessageSent) {
-                NinchatSessionManager.getInstance().sendIsWritingUpdate(true);
+                sessionManager.sendIsWritingUpdate(true);
                 writingMessageSent = true;
             } else if (s.length() == 0) {
-                NinchatSessionManager.getInstance().sendIsWritingUpdate(false);
+                sessionManager.sendIsWritingUpdate(false);
                 writingMessageSent = false;
             }
         }
@@ -375,11 +375,11 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         messages.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         messages.setAdapter(messageAdapter);
         final EditText message = findViewById(R.id.message);
-        message.setHint(NinchatSessionManager.getInstance().getEnterMessage());
+        message.setHint(sessionManager.getEnterMessage());
         message.addTextChangedListener(textWatcher);
         final Button closeButton = findViewById(R.id.ninchat_chat_close);
-        closeButton.setText(NinchatSessionManager.getInstance().getCloseChat());
-        final String sendButtonText = NinchatSessionManager.getInstance().getSendButtonText();
+        closeButton.setText(sessionManager.getCloseChat());
+        final String sendButtonText = sessionManager.getSendButtonText();
         final Button sendButton = findViewById(R.id.send_button);
         final RelativeLayout sendIcon = findViewById(R.id.send_button_icon);
         if (sendButtonText != null) {
@@ -388,14 +388,14 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             sendButton.setVisibility(View.GONE);
             sendIcon.setVisibility(View.VISIBLE);
         }
-        if (NinchatSessionManager.getInstance().isAttachmentsEnabled()) {
+        if (sessionManager.isAttachmentsEnabled()) {
             findViewById(R.id.attachment).setVisibility(View.VISIBLE);
             // User has rejected access to media and should not ask again
             if (!hasFileAccessPermissions() && hasRejectedFileAccessPermissionForGood()) {
                 findViewById(R.id.attachment).setVisibility(View.GONE);
             }
         }
-        if (NinchatSessionManager.getInstance().isVideoEnabled() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
+        if (sessionManager.isVideoEnabled() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
             findViewById(R.id.video_call).setVisibility(View.VISIBLE);
             if (!hasVideoCallPermissions() && hasRejectedVideoCallPermissionsForGood()) {
                 findViewById(R.id.video_call).setVisibility(View.GONE);

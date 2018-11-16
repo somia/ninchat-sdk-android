@@ -53,7 +53,7 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (NinchatSessionManager.Broadcast.FILE_DOWNLOADED.equals(action)) {
-                findViewById(R.id.ninchat_media_download).setVisibility(NinchatSessionManager.getInstance().getFile(fileId).isDownloaded() ? View.GONE : View.VISIBLE);
+                findViewById(R.id.ninchat_media_download).setVisibility(sessionManager.getFile(fileId).isDownloaded() ? View.GONE : View.VISIBLE);
             }
         }
     };
@@ -72,7 +72,7 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fileId = getIntent().getStringExtra(FILE_ID);
-        final NinchatFile file = NinchatSessionManager.getInstance().getFile(fileId);
+        final NinchatFile file = sessionManager.getFile(fileId);
         findViewById(R.id.ninchat_media_download).setVisibility(file.isDownloaded() ? View.GONE : View.VISIBLE);
         if (file.isVideo()) {
             findViewById(R.id.ninchat_media_image).setVisibility(View.GONE);
