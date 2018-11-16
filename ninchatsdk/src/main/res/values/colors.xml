@@ -18,6 +18,8 @@
     <color name="ninchat_color_background_bottom">@color/ninchat_activity_bottom_matter_background</color>
     <color name="ninchat_color_text_bottom">@color/ninchat_colorPrimary</color>
 
+    <color name="ninchat_color_error_background">#983637</color>
+
     <color name="ninchat_color_info_text">@color/ninchat_colorPrimary</color>
     <color name="ninchat_color_link">@color/ninchat_colorAccent</color>
 

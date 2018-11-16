@@ -1,4 +1,7 @@
 <resources>
+    <string name="ninchat_chat_error_no_video_call_permissions">You need to grant the application permission to use camera and microphone to have video chat!</string>
+    <string name="ninchat_chat_error_no_file_permissions">You need to grant the application permission to access storage to send image files!</string>
+
     <string name="ninchat_chat_video_call_consent_title">Video call request</string>
     <string name="ninchat_chat_video_call_consent_description">wants to video chat with you</string>
     <string name="ninchat_chat_video_call_consent_accept">Accept</string>

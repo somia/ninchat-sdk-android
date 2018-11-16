@@ -110,20 +110,17 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (requestCode == CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE) {
             if (hasVideoCallPermissions()) {
                 sendPickUpAnswer(true);
-            } else if (hasRejectedVideoCallPermissionsForGood()) {
-                findViewById(R.id.video_call).setVisibility(View.GONE);
             } else {
-                // Display error?
                 sendPickUpAnswer(false);
+                showError(R.id.ninchat_chat_error, R.string.ninchat_chat_error_no_video_call_permissions);
+
             }
         } else if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
             if (hasFileAccessPermissions()) {
                 openImagePicker(null);
                 //findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.VISIBLE);
-            } else if (hasRejectedFileAccessPermissionForGood()) {
-                findViewById(R.id.attachment).setVisibility(View.GONE);
             } else {
-                // Display error?
+                showError(R.id.ninchat_chat_error, R.string.ninchat_chat_error_no_file_permissions);
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -182,17 +179,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
     }
 
-    private boolean hasRejectedVideoCallPermissionsForGood() {
-        return !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
-                !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO);
-    }
-
     private boolean hasFileAccessPermissions() {
         return checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
-    private boolean hasRejectedFileAccessPermissionForGood() {
-        return !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
     private void sendPickUpAnswer(final boolean answer) {
@@ -390,16 +378,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         }
         if (sessionManager.isAttachmentsEnabled()) {
             findViewById(R.id.attachment).setVisibility(View.VISIBLE);
-            // User has rejected access to media and should not ask again
-            if (!hasFileAccessPermissions() && hasRejectedFileAccessPermissionForGood()) {
-                findViewById(R.id.attachment).setVisibility(View.GONE);
-            }
         }
         if (sessionManager.isVideoEnabled() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
             findViewById(R.id.video_call).setVisibility(View.VISIBLE);
-            if (!hasVideoCallPermissions() && hasRejectedVideoCallPermissionsForGood()) {
-                findViewById(R.id.video_call).setVisibility(View.GONE);
-            }
         }
     }
 
