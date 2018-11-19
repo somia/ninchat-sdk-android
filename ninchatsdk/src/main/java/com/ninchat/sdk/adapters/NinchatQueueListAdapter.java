@@ -66,6 +66,10 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
         return queues.size();
     }
 
+    public void clear() {
+        this.queues.clear();;
+    }
+
     public void addQueue(final NinchatQueue queue) {
         this.queues.add(queue);
         new Handler(Looper.getMainLooper()).post(new Runnable() {

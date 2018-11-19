@@ -24,6 +24,7 @@ import com.ninchat.client.Props;
 import com.ninchat.client.Session;
 import com.ninchat.client.SessionEventHandler;
 import com.ninchat.client.Strings;
+import com.ninchat.sdk.activities.NinchatActivity;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 import com.ninchat.sdk.models.NinchatFile;
@@ -35,6 +36,7 @@ import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
 import com.ninchat.sdk.tasks.NinchatDescribeFileTask;
 import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
 import com.ninchat.sdk.tasks.NinchatListQueuesTask;
+import com.ninchat.sdk.tasks.NinchatOpenSessionTask;
 import com.ninchat.sdk.tasks.NinchatSendBeginIceTask;
 import com.ninchat.sdk.tasks.NinchatSendFileTask;
 import com.ninchat.sdk.tasks.NinchatSendIsWritingTask;
@@ -152,6 +154,7 @@ public final class NinchatSessionManager {
         this.members = new HashMap<>();
         this.ninchatQueueListAdapter = null;
         this.files = new HashMap<>();
+        this.activityWeakReference = new WeakReference<>(null);
     }
 
     protected WeakReference<Context> contextWeakReference;
@@ -160,6 +163,9 @@ public final class NinchatSessionManager {
 
     protected JSONObject configuration;
     protected Session session;
+    protected WeakReference<Activity> activityWeakReference;
+    protected int requestCode;
+    protected String queueId;
     protected List<NinchatQueue> queues;
     protected NinchatQueueListAdapter ninchatQueueListAdapter;
     protected String channelId;
@@ -169,6 +175,13 @@ public final class NinchatSessionManager {
     protected List<NinchatWebRTCServerInfo> stunServers;
     protected List<NinchatWebRTCServerInfo> turnServers;
     protected Map<String, NinchatFile> files;
+
+    public void start(final Activity activity, final String siteSecret, final int requestCode, final String queueId) {
+        this.activityWeakReference = new WeakReference<>(activity);
+        this.requestCode = requestCode;
+        this.queueId = queueId;
+        NinchatOpenSessionTask.start(siteSecret);
+    }
 
     public NinchatMessageAdapter getMessageAdapter() {
         return messageAdapter;
@@ -363,6 +376,10 @@ public final class NinchatSessionManager {
             sessionError(e);
             return;
         }
+        queues.clear();
+        if (ninchatQueueListAdapter != null) {
+            ninchatQueueListAdapter.clear();
+        }
         for (String queueId : parser.properties.keySet()) {
             Props queue;
             try {
@@ -394,6 +411,10 @@ public final class NinchatSessionManager {
         final Context context = contextWeakReference.get();
         if (context != null && hasQueues()) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSession.Broadcast.QUEUES_UPDATED));
+        }
+        final Activity activity = activityWeakReference.get();
+        if (activity != null) {
+            activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, queueId), requestCode);
         }
     }
 

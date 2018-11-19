@@ -5,7 +5,6 @@ import android.content.Context;
 
 import com.ninchat.client.Props;
 import com.ninchat.client.Session;
-import com.ninchat.sdk.tasks.NinchatOpenSessionTask;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 17/08/2018.
@@ -74,7 +73,7 @@ public final class NinchatSession {
     }
 
     public void start(final Activity activity, final int requestCode, final String queueId) {
-        NinchatOpenSessionTask.start(activity, siteSecret, requestCode, queueId);
+        NinchatSessionManager.getInstance().start(activity, siteSecret, requestCode, queueId);
     }
 
     @Deprecated
