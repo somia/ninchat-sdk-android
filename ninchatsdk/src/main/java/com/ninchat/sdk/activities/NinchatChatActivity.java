@@ -65,7 +65,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (data == null) {
             data = new Intent();
         }
-        sessionManager.close();
         setResult(Activity.RESULT_OK, data);
         finish();
     }

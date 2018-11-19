@@ -599,7 +599,6 @@ public final class NinchatSessionManager {
             return;
         }
         final long timestamp = System.currentTimeMillis();
-        int index = -1;
         for (int i = 0; i < payload.length(); ++i) {
             try {
                 final JSONObject message = new JSONObject(new String(payload.get(i)));
@@ -615,29 +614,22 @@ public final class NinchatSessionManager {
                     if (filetype != null && (filetype.startsWith("image/") ||
                             filetype.startsWith("video/") || filetype.equals("application/pdf"))) {
                         final String fileId = file.getString("file_id");
-                        NinchatFile ninchatFile = this.files.get(fileId);
-                        if (ninchatFile == null) {
-                            ninchatFile = new NinchatFile(fileId, filename, filesize, filetype, timestamp, sender, actionId == 0);
-                            this.files.put(fileId, ninchatFile);
-                            NinchatDescribeFileTask.start(fileId);
-                        } else if (new Date().after(ninchatFile.getUrlExpiry())) {
-                            NinchatDescribeFileTask.start(fileId);
-                        } else {
-                            index = messageAdapter.add(new NinchatMessage(null, fileId, ninchatFile.getSender(), ninchatFile.getTimestamp(), ninchatFile.isRemote()));
-                        }
+                        final NinchatFile ninchatFile = new NinchatFile(fileId, filename, filesize, filetype, timestamp, sender, actionId == 0);
+                        this.files.put(fileId, ninchatFile);
+                        NinchatDescribeFileTask.start(fileId);
                     }
                 } else {
-                    index = messageAdapter.add(new NinchatMessage(message.getString("text"), null, sender, System.currentTimeMillis(), !sender.equals(userId)));
+                    final int index = messageAdapter.add(new NinchatMessage(message.getString("text"), null, sender, System.currentTimeMillis(), !sender.equals(userId)));
+                    final Context context = contextWeakReference.get();
+                    if (context != null) {
+                        LocalBroadcastManager.getInstance(context)
+                                .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
+                                        .putExtra(Broadcast.MESSAGE_INDEX, index));
+                    }
                 }
             } catch (final JSONException e) {
                 // Ignore
             }
-        }
-        final Context context = contextWeakReference.get();
-        if (context != null) {
-            LocalBroadcastManager.getInstance(context)
-                    .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
-                            .putExtra(Broadcast.MESSAGE_INDEX, index));
         }
     }
 
