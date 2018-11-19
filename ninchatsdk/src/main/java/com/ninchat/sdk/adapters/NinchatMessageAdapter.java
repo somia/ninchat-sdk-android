@@ -43,17 +43,17 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         }
 
         private void setAvatar(final ImageView avatar, final NinchatMessage ninchatMessage, final boolean hideAvatar) {
-            final boolean showAvatars = NinchatSessionManager.getInstance().showAvatars();
+            final boolean showAvatars = NinchatSessionManager.getInstance().showAvatars(ninchatMessage.isRemoteMessage());
             if (hideAvatar) {
                 avatar.setVisibility(showAvatars ? View.INVISIBLE : View.GONE);
                 return;
             }
             if (!showAvatars) {
                 avatar.setVisibility(View.GONE);
-            } else if (ninchatMessage.isRemoteMessage()) {
+            } else {
                 String userAvatar = NinchatSessionManager.getInstance().getMember(ninchatMessage.getSenderId()).getAvatar();
                 if (userAvatar == null) {
-                    userAvatar = NinchatSessionManager.getInstance().getRemoteAvatar();
+                    userAvatar = NinchatSessionManager.getInstance().getDefaultAvatar(ninchatMessage.isRemoteMessage());
                 }
                 if (userAvatar != null) {
                     Glide.with(itemView.getContext())

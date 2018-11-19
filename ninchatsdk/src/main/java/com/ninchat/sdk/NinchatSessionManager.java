@@ -985,17 +985,17 @@ public final class NinchatSessionManager {
         }
     }
 
-    public boolean showAvatars() {
-        final String key = "agentAvatar";
+    public boolean showAvatars(final boolean agentAvatar) {
+        final String key = agentAvatar ? "agentAvatar" : "userAvatar";
         try {
             return getDefault().getBoolean(key);
         } catch (final Exception e) {
-            return getRemoteAvatar() != null;
+            return getDefaultAvatar(agentAvatar) != null;
         }
     }
 
-    public String getRemoteAvatar() {
-        final String key = "agentAvatar";
+    public String getDefaultAvatar(final boolean agentAvatar) {
+        final String key = agentAvatar ? "agentAvatar" : "userAvatar";
         try {
             return getDefault().getString(key);
         } catch (final Exception e) {
