@@ -72,8 +72,13 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             timestamp.setText(TIMESTAMP_FORMATTER.format(ninchatMessage.getTimestamp()));
             setAvatar(itemView.findViewById(avatarId), ninchatMessage, isContinuedMessage);
             final TextView message = itemView.findViewById(messageView);
+            message.setVisibility(View.VISIBLE);
             final Spanned messageContent = ninchatMessage.getMessage();
             final NinchatFile file = NinchatSessionManager.getInstance().getFile(ninchatMessage.getFileId());
+            final ImageView image = itemView.findViewById(imageId);
+            image.setVisibility(View.GONE);
+            itemView.findViewById(playIconId).setVisibility(View.GONE);
+            Glide.with(image.getContext()).clear(image);
             if (messageContent != null) {
                 message.setAutoLinkMask(Linkify.ALL);
                 message.setText(messageContent);
@@ -82,11 +87,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 message.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
                 message.setVisibility(View.GONE);
-                final ImageView image = itemView.findViewById(imageId);
+                image.setVisibility(View.VISIBLE);
                 Glide.with(image.getContext())
                         .load(file.getUrl())
                         .into(image);
-                image.setVisibility(View.VISIBLE);
                 if (file.isVideo()) {
                     itemView.findViewById(playIconId).setVisibility(View.VISIBLE);
                 }
@@ -137,6 +141,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.VISIBLE);
+                itemView.findViewById(R.id.ninchat_chat_message_agent_image).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(isContinuedMessage ? View.GONE : View.VISIBLE);
                 setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_message).setVisibility(View.GONE);
@@ -146,7 +151,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         .setBackgroundResource(isContinuedMessage ?
                                 R.drawable.ninchat_chat_bubble_left_repeated :
                                 R.drawable.ninchat_chat_bubble_left);
-                final ImageView image = itemView.findViewById(R.id.ninchat_chat_message_agent_image);
+                final ImageView image = itemView.findViewById(R.id.ninchat_chat_message_agent_writing);
+                Glide.with(image.getContext()).clear(image);
                 image.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator);
                 final AnimationDrawable animationDrawable = (AnimationDrawable) image.getBackground();
                 animationDrawable.start();
@@ -157,6 +163,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_agent_writing).setVisibility(View.GONE);
                 bindMessage(R.id.ninchat_chat_message_agent,
                         R.id.ninchat_chat_message_agent_title,
                         R.id.ninchat_chat_message_agent_name,

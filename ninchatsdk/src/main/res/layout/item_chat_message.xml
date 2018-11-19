@@ -122,6 +122,14 @@
 
                 </RelativeLayout>
 
+                <ImageView
+                    android:id="@+id/ninchat_chat_message_agent_writing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:src="@drawable/ninchat_writing_10"
+                    android:visibility="gone"
+                    tools:visibility="visible"/>
+
             </LinearLayout>
 
         </LinearLayout>
@@ -208,7 +216,7 @@
                         tools:layout_width="150dp"
                         tools:layout_height="150dp"
                         tools:src="@drawable/ninchat_logo"
-                        android:adjustViewBounds="false" />
+                        android:adjustViewBounds="true" />
                     
                     <RelativeLayout
                         android:id="@+id/ninchat_chat_message_user_video_play_image"
