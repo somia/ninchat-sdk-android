@@ -385,7 +385,11 @@ public final class NinchatSessionManager {
         if (ninchatQueueListAdapter != null) {
             ninchatQueueListAdapter.clear();
         }
+        final List<String> openQueues = getAudienceQueues();
         for (String queueId : parser.properties.keySet()) {
+            if (!openQueues.contains(queueId)) {
+                continue;
+            }
             Props queue;
             try {
                 queue = (Props) parser.properties.get(queueId);
@@ -874,6 +878,19 @@ public final class NinchatSessionManager {
             return configuration.getJSONObject("default");
         }
         return null;
+    }
+
+    private List<String> getAudienceQueues() {
+        final List<String> queues = new ArrayList<>();
+        try {
+            final JSONArray array = getDefault().getJSONArray("audienceQueues");
+            for (int i = 0; i < array.length(); ++i) {
+                queues.add(array.getString(i));
+            }
+        } catch (final Exception e) {
+            // Ignore
+        }
+        return queues;
     }
 
     public String getRealmId() {
