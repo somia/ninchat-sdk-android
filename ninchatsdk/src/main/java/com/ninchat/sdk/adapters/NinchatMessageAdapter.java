@@ -221,6 +221,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         return index;
     }
 
+    public void clear() {
+        messages.clear();
+    }
+
     public int removeWritingMessage(final String sender) {
         final ListIterator<NinchatMessage> iterator = messages.listIterator(getItemCount());
         while (iterator.hasPrevious()) {

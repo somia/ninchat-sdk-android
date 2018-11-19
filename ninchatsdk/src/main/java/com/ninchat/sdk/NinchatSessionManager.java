@@ -37,6 +37,7 @@ import com.ninchat.sdk.tasks.NinchatDescribeFileTask;
 import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
 import com.ninchat.sdk.tasks.NinchatListQueuesTask;
 import com.ninchat.sdk.tasks.NinchatOpenSessionTask;
+import com.ninchat.sdk.tasks.NinchatPartChannelTask;
 import com.ninchat.sdk.tasks.NinchatSendBeginIceTask;
 import com.ninchat.sdk.tasks.NinchatSendFileTask;
 import com.ninchat.sdk.tasks.NinchatSendIsWritingTask;
@@ -138,6 +139,10 @@ public final class NinchatSessionManager {
 
     public static void joinQueue(final String queueId) {
         NinchatJoinQueueTask.start(queueId);
+    }
+
+    public void partChannel() {
+        NinchatPartChannelTask.start(channelId);
     }
 
     protected static NinchatSessionManager instance;
@@ -1095,6 +1100,9 @@ public final class NinchatSessionManager {
     public void close() {
         if (session != null) {
             session.close();
+        }
+        if (messageAdapter != null) {
+            messageAdapter.clear();
         }
     }
 

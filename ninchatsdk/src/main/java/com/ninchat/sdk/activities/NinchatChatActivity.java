@@ -65,6 +65,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (data == null) {
             data = new Intent();
         }
+        sessionManager.close();
         setResult(Activity.RESULT_OK, data);
         finish();
     }
@@ -156,6 +157,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     public void chatClosed() {
+        sessionManager.partChannel();
         if (sessionManager.showRating()) {
             startActivityForResult(NinchatReviewActivity.getLaunchIntent(NinchatChatActivity.this), NinchatReviewActivity.REQUEST_CODE);
         } else {
