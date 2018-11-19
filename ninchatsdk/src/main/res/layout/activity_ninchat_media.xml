@@ -19,7 +19,8 @@
         android:id="@+id/ninchat_media_video"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        android:visibility="gone"/>
 
     <RelativeLayout
         android:id="@+id/ninchat_media_top"
