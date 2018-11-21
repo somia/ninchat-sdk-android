@@ -995,6 +995,10 @@ public final class NinchatSessionManager {
         }
     }
 
+    private String replacePlaceholder(final String origin, final String replacement) {
+        return origin.replaceFirst("\\{\\{([^}]*?)\\}\\}", replacement);
+    }
+
     public Spanned getChatStarted() {
         final String key = "Audience in queue {{queue}} accepted.";
         String chatStarted = key;
@@ -1003,7 +1007,7 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             // Ignore
         }
-        return toSpanned(chatStarted.replaceFirst("\\{\\{([^}]*?)\\}\\}", ""));
+        return toSpanned(replacePlaceholder(chatStarted, ""));
     }
 
     public Spanned getChatEnded() {
@@ -1051,10 +1055,10 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             // Ignore
         }
-        return queueName.replaceFirst("\\{\\{([^}]*?)\\}\\}", name);
+        return replacePlaceholder(queueName, name);
     }
 
-    public Spanned getQueueStatus(final String queueId) {
+    public Spanned  getQueueStatus(final String queueId) {
         NinchatQueue selectedQueue = getQueue(queueId);
         if (selectedQueue == null) {
             return null;
@@ -1068,11 +1072,12 @@ public final class NinchatSessionManager {
             queueStatus = getTranslations().getString(key);
         } catch (final Exception e) {
         }
-        final String[] splits = queueStatus.split("\\{\\{");
-        if (splits.length > 2) {
-            queueStatus = queueStatus.replaceFirst("\\{\\{([^}]*?)\\}\\}", selectedQueue.getName());
+        if (queueStatus.contains("audienceQueue.queue_attrs.name")) {
+            queueStatus = replacePlaceholder(queueStatus, selectedQueue.getName());
         }
-        queueStatus = queueStatus.replaceFirst("\\{\\{([^}]*?)\\}\\}", String.valueOf(position));
+        if (queueStatus.contains("audienceQueue.queue_position")) {
+            queueStatus = replacePlaceholder(queueStatus, String.valueOf(position));
+        }
         return toSpanned(queueStatus);
     }
 
