@@ -138,6 +138,7 @@ public final class NinchatSessionManager {
     }
 
     public static void joinQueue(final String queueId) {
+        instance.queueId = queueId;
         NinchatJoinQueueTask.start(queueId);
     }
 
@@ -1007,7 +1008,12 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             // Ignore
         }
-        return toSpanned(replacePlaceholder(chatStarted, ""));
+        final NinchatQueue queue = getQueue(this.queueId);
+        String name = "";
+        if (queue != null) {
+            name = queue.getName();
+        }
+        return toSpanned(replacePlaceholder(chatStarted, name));
     }
 
     public Spanned getChatEnded() {
