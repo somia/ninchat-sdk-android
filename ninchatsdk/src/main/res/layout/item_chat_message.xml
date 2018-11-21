@@ -34,7 +34,7 @@
         android:visibility="gone"
         tools:visibility="visible">
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/ninchat_chat_message_agent_avatar"
             android:layout_width="@dimen/ninchat_chat_activity_avatar_size"
             android:layout_height="@dimen/ninchat_chat_activity_avatar_size"
@@ -42,8 +42,8 @@
             android:src="@drawable/ninchat_chat_avatar_left"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
-            app:civ_border_width="0dp"
-            app:civ_border_color="#fff"/>
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -148,7 +148,7 @@
         android:visibility="gone"
         tools:visibility="visible">
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/ninchat_chat_message_user_avatar"
             android:layout_width="@dimen/ninchat_chat_activity_avatar_size"
             android:layout_height="@dimen/ninchat_chat_activity_avatar_size"
@@ -157,8 +157,8 @@
             android:layout_marginTop="@dimen/ninchat_chat_activity_message_title_top_margin"
             android:layout_marginStart="@dimen/ninchat_chat_activity_avatar_margin"
             android:src="@drawable/ninchat_chat_avatar_right"
-            app:civ_border_width="0dp"
-            app:civ_border_color="#fff" />
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter" />
 
         <LinearLayout
             android:orientation="vertical"

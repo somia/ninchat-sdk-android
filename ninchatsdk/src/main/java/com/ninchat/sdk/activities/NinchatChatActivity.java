@@ -33,6 +33,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
@@ -199,12 +200,16 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 if (NinchatSessionManager.MessageTypes.CALL.equals(messageType)) {
                     findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
                     findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.VISIBLE);
-                    final NinchatUser user = sessionManager.getMember(intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_SENDER));
                     final ImageView userImage = findViewById(R.id.ninchat_video_call_consent_dialog_user_avatar);
-                    final String avatar = user.getAvatar();
+                    final NinchatUser user = sessionManager.getMember(intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_SENDER));
+                    String avatar = user.getAvatar();
+                    if (TextUtils.isEmpty(avatar)) {
+                        avatar = sessionManager.getDefaultAvatar(true);
+                    }
                     if (!TextUtils.isEmpty(avatar)) {
-                        Glide.with(userImage.getContext())
+                        GlideApp.with(userImage.getContext())
                                 .load(avatar)
+                                .circleCrop()
                                 .into(userImage);
                     }
                     final TextView userName = findViewById(R.id.ninchat_video_call_consent_dialog_user_name);

@@ -32,15 +32,15 @@
             android:layout_height="1dp"
             android:foreground="@color/ninchat_activity_bottom_matter_background" />
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/ninchat_video_call_consent_dialog_user_avatar"
             android:layout_width="@dimen/ninchat_chat_activity_video_call_consent_image_size"
             android:layout_height="@dimen/ninchat_chat_activity_video_call_consent_image_size"
             android:layout_gravity="center_horizontal"
             android:layout_margin="@dimen/ninchat_chat_activity_video_call_consent_image_margin"
             android:src="@drawable/ninchat_chat_avatar_left"
-            app:civ_border_width="0dp"
-            app:civ_border_color="#fff"/>
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"/>
 
         <TextView
             android:id="@+id/ninchat_video_call_consent_dialog_user_name"

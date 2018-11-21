@@ -6,6 +6,7 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatChatActivity;
@@ -52,12 +54,13 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 avatar.setVisibility(View.GONE);
             } else {
                 String userAvatar = NinchatSessionManager.getInstance().getMember(ninchatMessage.getSenderId()).getAvatar();
-                if (userAvatar == null) {
+                if (TextUtils.isEmpty(userAvatar)) {
                     userAvatar = NinchatSessionManager.getInstance().getDefaultAvatar(ninchatMessage.isRemoteMessage());
                 }
-                if (userAvatar != null) {
-                    Glide.with(itemView.getContext())
+                if (!TextUtils.isEmpty(userAvatar)) {
+                    GlideApp.with(itemView.getContext())
                             .load(userAvatar)
+                            .circleCrop()
                             .into(avatar);
                 }
             }
