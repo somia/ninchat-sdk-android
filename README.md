@@ -12,7 +12,7 @@ Add the following maven repository to the project dependency repositories:
 
 Then you need to add the following dependency to the project dependencies:
 
-    implementation 'com.ninchat:sdk:0.1.2'
+    implementation 'com.ninchat:sdk:0.1.6'
 
 ## Usage
 
@@ -32,6 +32,10 @@ The SDK is then started by calling the `start` method of the class. The method t
 
 The `start` method opens the SDK UI automatically.
 
+The SDK does some things asynchronously before the SDK UI opens. Therefore it is recommended that the host application displays a spinner or some other visual cue after the SDK has been started. The spinner/whatever can be dismissed when
+1. The SDK returns and the `onActivityResult` method of the calling Activity is called with the default or the given `requestCode` (see the [Optional parameters](#optionalparameters) section) or
+2. The host application subscribes to LocalBroadcastManager's broadcasts with the Intent action `NinchatSession.Broadcast.QUEUES_UPDATED` that is sent when the SDK opens its UI. Alternatively, should there be any issues with the SDK launch that prevent the SDK from starting, the host application can catch that by subscribing to LocalBroadcastManager's broadcasts with the Intent action `NinchatSession.Broadcast.START_FAILED`.
+
 ### Setting metadata
 
 The `NinchatSession` class has a setter for audience metadata (i.e. user information).  It's specified as a `com.ninchat.client.Props` object:
@@ -41,7 +45,7 @@ The `NinchatSession` class has a setter for audience metadata (i.e. user informa
     metadata.setString("secure", secureMetadata);
     session.setAudienceMetadata(metadata);
 
-### Optional parameters
+### <a name="optionalparameters"></a>Optional parameters
 
 The start method can take the request code (`int`) as optional parameters:
 

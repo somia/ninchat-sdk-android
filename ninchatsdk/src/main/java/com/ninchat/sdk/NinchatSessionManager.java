@@ -367,12 +367,21 @@ public final class NinchatSessionManager {
         }
     }
 
+    private void sendQueueParsingError() {
+        final Context context = contextWeakReference.get();
+        if (context != null) {
+            LocalBroadcastManager.getInstance(context)
+                    .sendBroadcast(new Intent(NinchatSession.Broadcast.START_FAILED));
+        }
+    }
+
     private void parseQueues(final Props params) {
         Props remoteQueues;
         try {
             remoteQueues = params.getObject("realm_queues");
         } catch (final Exception e) {
             sessionError(e);
+            sendQueueParsingError();
             return;
         }
         final NinchatPropVisitor parser = new NinchatPropVisitor();
@@ -380,6 +389,7 @@ public final class NinchatSessionManager {
             remoteQueues.accept(parser);
         } catch (final Exception e) {
             sessionError(e);
+            sendQueueParsingError();
             return;
         }
         queues.clear();
@@ -396,6 +406,7 @@ public final class NinchatSessionManager {
                 queue = (Props) parser.properties.get(queueId);
             } catch (final Exception e) {
                 sessionError(e);
+                sendQueueParsingError();
                 return;
             }
             Props queueAttributes;
@@ -403,6 +414,7 @@ public final class NinchatSessionManager {
                 queueAttributes = queue.getObject("queue_attrs");
             } catch (final Exception e) {
                 sessionError(e);
+                sendQueueParsingError();
                 return;
             }
             String name;
@@ -410,6 +422,7 @@ public final class NinchatSessionManager {
                 name = queueAttributes.getString("name");
             } catch (final Exception e) {
                 sessionError(e);
+                sendQueueParsingError();
                 return;
             }
             final NinchatQueue ninchatQueue = new NinchatQueue(queueId, name);
