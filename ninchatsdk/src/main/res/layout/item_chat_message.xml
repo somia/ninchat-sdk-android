@@ -9,6 +9,12 @@
     android:paddingStart="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal"
     android:paddingEnd="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal">
 
+    <View
+        android:id="@+id/ninchat_chat_message_padding"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/ninchat_chat_activity_message_list_bottom_padding"
+        android:visibility="gone"
+        tools:visibility="visible" />
     <TextView
         android:id="@+id/ninchat_chat_message_start"
         android:layout_width="wrap_content"
@@ -25,7 +31,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/ninchat_chat_activity_message_title_top_margin"
-        android:layout_marginBottom="@dimen/ninchat_chat_activity_message_bubble_margin_bottom"
         android:visibility="gone"
         tools:visibility="visible">
 
@@ -140,7 +145,6 @@
         android:id="@+id/ninchat_chat_message_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/ninchat_chat_activity_message_bubble_margin_bottom"
         android:visibility="gone"
         tools:visibility="visible">
 
@@ -271,4 +275,5 @@
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
+
 </LinearLayout>

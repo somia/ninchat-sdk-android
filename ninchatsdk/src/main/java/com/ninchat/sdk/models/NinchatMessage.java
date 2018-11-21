@@ -14,7 +14,8 @@ public final class NinchatMessage {
         START,
         MESSAGE,
         WRITING,
-        END
+        END,
+        PADDING
     }
 
     private Type type;

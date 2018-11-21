@@ -111,10 +111,17 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         }
 
         void bind(final NinchatMessage data, final boolean isContinuedMessage) {
-            if (data.getType() == NinchatMessage.Type.START) {
+            if (data.getType() == NinchatMessage.Type.PADDING) {
+                itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.VISIBLE);
+            } else if (data.getType() == NinchatMessage.Type.START) {
+                itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
                 final TextView start = itemView.findViewById(R.id.ninchat_chat_message_start);
                 start.setText(NinchatSessionManager.getInstance().getChatStarted());
                 start.setVisibility(View.VISIBLE);
@@ -122,6 +129,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
                 final TextView end = itemView.findViewById(R.id.ninchat_chat_message_end_text);
                 end.setText(NinchatSessionManager.getInstance().getChatEnded());
                 final Button closeButton = itemView.findViewById(R.id.ninchat_chat_message_close);
@@ -140,6 +148,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.VISIBLE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_image).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(isContinuedMessage ? View.GONE : View.VISIBLE);
@@ -164,6 +173,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_writing).setVisibility(View.GONE);
                 bindMessage(R.id.ninchat_chat_message_agent,
                         R.id.ninchat_chat_message_agent_title,
@@ -180,6 +190,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
                 bindMessage(R.id.ninchat_chat_message_user,
                         R.id.ninchat_chat_message_user_title,
                         R.id.ninchat_chat_message_user_name,
@@ -204,18 +215,19 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     public NinchatMessageAdapter() {
         this.messages = new ArrayList<>();
         this.messages.add(new NinchatMessage(NinchatMessage.Type.START));
+        this.messages.add(new NinchatMessage(NinchatMessage.Type.PADDING));
         this.recyclerViewWeakReference = new WeakReference<>(null);
     }
 
     public int addWriting(final String sender) {
-        messages.add(new NinchatMessage(NinchatMessage.Type.WRITING, sender));
-        return getItemCount() - 1;
+        messages.add(getItemCount() - 1, new NinchatMessage(NinchatMessage.Type.WRITING, sender));
+        return getItemCount() - 2;
     }
 
     public int add(final NinchatMessage message) {
-        int index = getItemCount();
+        int index = getItemCount() - 1;
         if (!message.getType().equals(NinchatMessage.Type.WRITING)) {
-            final ListIterator<NinchatMessage> iterator = messages.listIterator(getItemCount());
+            final ListIterator<NinchatMessage> iterator = messages.listIterator(getItemCount() - 1);
             int i = 0;
             while (iterator.hasPrevious() && i < NinchatSessionManager.getInstance().getMemberCount()) {
                 final NinchatMessage previousMessage = iterator.previous();
@@ -234,7 +246,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     }
 
     public int removeWritingMessage(final String sender) {
-        final ListIterator<NinchatMessage> iterator = messages.listIterator(getItemCount());
+        final ListIterator<NinchatMessage> iterator = messages.listIterator(getItemCount() - 1);
         while (iterator.hasPrevious()) {
             final NinchatMessage message = iterator.previous();
             if (message.getType().equals(NinchatMessage.Type.WRITING) && sender.equals(message.getSenderId())) {
@@ -262,8 +274,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     public void close(final NinchatChatActivity activity) {
         activityWeakReference = new WeakReference<>(activity);
-        messages.add(new NinchatMessage(NinchatMessage.Type.END));
-        final int position = getItemCount() - 1;
+        messages.add(getItemCount() - 1, new NinchatMessage(NinchatMessage.Type.END));
+        final int position = getItemCount() - 2;
         notifyItemInserted(position);
         final RecyclerView recyclerView = recyclerViewWeakReference.get();
         if (recyclerView != null) {
