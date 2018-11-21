@@ -152,6 +152,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                                 R.drawable.ninchat_chat_bubble_left_repeated :
                                 R.drawable.ninchat_chat_bubble_left);
                 final ImageView image = itemView.findViewById(R.id.ninchat_chat_message_agent_writing);
+                image.setVisibility(View.VISIBLE);
                 Glide.with(image.getContext()).clear(image);
                 image.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator);
                 final AnimationDrawable animationDrawable = (AnimationDrawable) image.getBackground();
