@@ -58,7 +58,7 @@
                 android:id="@+id/ninchat_queue_activity_close_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/NinchatTheme.Button.Close"
+                style="@style/NinchatTheme.Button.Close.Chat"
                 android:layout_marginTop="@dimen/ninchat_queue_activity_bottom_matter_button_margin"
                 android:layout_below="@id/ninchat_queue_activity_queue_message"
                 android:layout_centerHorizontal="true"
