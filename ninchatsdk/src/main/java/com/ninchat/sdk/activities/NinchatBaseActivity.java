@@ -21,6 +21,10 @@ abstract class NinchatBaseActivity extends Activity {
 
     abstract protected @LayoutRes int getLayoutRes();
 
+    protected boolean allowBackButton() {
+        return false;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +46,8 @@ abstract class NinchatBaseActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        // Ignore back press, let's not navigate back
+        if (allowBackButton()) {
+            super.onBackPressed();
+        }
     }
 }
