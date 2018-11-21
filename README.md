@@ -78,7 +78,7 @@ For now, the application can override certain images/animations of the SDK. The 
 |:------------- |:-------------|:-----|
 | ninchat_icon_loader   | Progress indicator icon in queue view. |  |
 | ninchat_icon_chat_writing_indicator      | User is typing.. Indicator icon in chat bubble | Should be a [frame animation](https://developer.android.com/guide/topics/resources/animation-resource#Frame). |
-| ninchat_chat_background    | Chat view's background image. |   |
+| ninchat_chat_background    | Chat view's background image. Note: If you want to tile an image, define this drawable as an XML resource where the **bitmap** tile image is included using the `android:tileMode="repeat"` attribute. |   |
 | ninchat_chat_primary_button    | Background for the primary buttons. |   |
 | ninchat_chat_secondary_button    | Background for the secondary buttons. |   |
 | ninchat_chat_close_button              | Background for 'close chat' button. |  |
