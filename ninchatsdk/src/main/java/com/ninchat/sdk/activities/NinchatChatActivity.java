@@ -141,9 +141,13 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     };
 
     public void onCloseChat(final View view) {
-        findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
-        findViewById(R.id.ninchat_chat_close_chat_dialog).setVisibility(View.VISIBLE);
-        hideKeyboard();
+        if (chatClosed) {
+            chatClosed();
+        } else {
+            findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
+            findViewById(R.id.ninchat_chat_close_chat_dialog).setVisibility(View.VISIBLE);
+            hideKeyboard();
+        }
     }
 
     public void onCloseChatConfirm(final View view) {
