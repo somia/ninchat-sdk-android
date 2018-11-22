@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/ninchat_chat_background"
+    android:id="@+id/ninchat_chat_root"
+    android:background="@drawable/ninchat_chat_background_tiled"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activities.NinchatChatActivity">
 

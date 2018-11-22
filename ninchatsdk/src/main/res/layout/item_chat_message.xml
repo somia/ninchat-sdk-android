@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:background="@drawable/ninchat_chat_background"
+    tools:background="@drawable/ninchat_chat_background_tiled"
     android:paddingStart="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal"
     android:paddingEnd="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal">
 

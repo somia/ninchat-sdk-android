@@ -358,6 +358,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getResources().getBoolean(R.bool.ninchat_chat_background_not_tiled)) {
+            findViewById(R.id.ninchat_chat_root).setBackgroundResource(R.drawable.ninchat_chat_background);
+        }
         videoContainer = findViewById(R.id.videoContainer);
         webRTCView = new NinchatWebRTCView(videoContainer);
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
