@@ -10,7 +10,8 @@
         android:id="@+id/queue_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Queue name that is far too long to fit in one line"
+        tools:style="@style/NinchatTheme.Button"
+        tools:text="Queue name that is far too long to fit in one line and extends to multiple lines"
         android:layout_centerInParent="true"/>
 
 </RelativeLayout>

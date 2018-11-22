@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -15,11 +14,12 @@
         android:layout_height="@dimen/ninchat_chat_activity_message_list_bottom_padding"
         android:visibility="gone"
         tools:visibility="visible" />
+
     <TextView
         android:id="@+id/ninchat_chat_message_start"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
         android:layout_marginBottom="@dimen/ninchat_chat_activity_chat_started_bottom_margin"
         tools:text="Chat started"
         android:textColor="@color/ninchat_color_info_text"
@@ -260,9 +260,9 @@
 
         <TextView
             android:id="@+id/ninchat_chat_message_end_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
             tools:text="Chat ended"
             android:textColor="@color/ninchat_color_info_text" />
 

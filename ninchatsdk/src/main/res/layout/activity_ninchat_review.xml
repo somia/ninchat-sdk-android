@@ -17,9 +17,9 @@
 
         <TextView
             android:id="@+id/ninchat_review_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
             android:layout_marginTop="@dimen/ninchat_review_activity_title_top_margin"
             tools:text="How was our customer service?"
             android:textColor="@color/ninchat_color_text_top"
@@ -27,9 +27,9 @@
 
         <TextView
             android:id="@+id/ninchat_review_description"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
             android:layout_marginTop="@dimen/ninchat_review_activity_description_top_margin"
             tools:text="Give a rating - select a smiley"
             android:textColor="@color/ninchat_color_text_top" />
@@ -52,17 +52,18 @@
                     android:layout_width="@dimen/ninchat_review_activity_icon_size"
                     android:layout_height="@dimen/ninchat_review_activity_icon_size"
                     android:src="@drawable/ninchat_icon_rating_positive"
+                    android:layout_gravity="center_horizontal"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
                     android:contentDescription="@string/ninchat_review_positive" />
 
                 <TextView
                     android:id="@+id/ninchat_review_positive"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/ninchat_review_activity_icon_text_margin"
                     tools:text="@string/ninchat_review_positive"
-                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
                     android:textColor="@color/ninchat_color_rating_positive_text"/>
 
             </LinearLayout>
@@ -78,17 +79,18 @@
                     android:layout_width="@dimen/ninchat_review_activity_icon_size"
                     android:layout_height="@dimen/ninchat_review_activity_icon_size"
                     android:src="@drawable/ninchat_icon_rating_neutral"
+                    android:layout_gravity="center_horizontal"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
                     android:contentDescription="@string/ninchat_review_neutral"/>
 
                 <TextView
                     android:id="@+id/ninchat_review_neutral"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/ninchat_review_activity_icon_text_margin"
                     tools:text="@string/ninchat_review_neutral"
-                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
                     android:textColor="@color/ninchat_color_rating_neutral_text"/>
 
             </LinearLayout>
@@ -103,17 +105,18 @@
                     android:layout_width="@dimen/ninchat_review_activity_icon_size"
                     android:layout_height="@dimen/ninchat_review_activity_icon_size"
                     android:src="@drawable/ninchat_icon_rating_negative"
+                    android:layout_gravity="center_horizontal"
                     android:adjustViewBounds="true"
                     android:scaleType="fitCenter"
                     android:contentDescription="@string/ninchat_review_sad"/>
 
                 <TextView
                     android:id="@+id/ninchat_review_negative"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/ninchat_review_activity_icon_text_margin"
                     tools:text="@string/ninchat_review_sad"
-                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
                     android:textColor="@color/ninchat_color_rating_negative_text"/>
 
             </LinearLayout>
