@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/ninchat_colorPrimaryAlpha">
 
     <LinearLayout
@@ -20,7 +21,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="@string/ninchat_chat_close_chat_dialog_title"
+                tools:text="Close chat"
                 android:textColor="@color/ninchat_color_modal_title_text"/>
 
         </RelativeLayout>
@@ -31,23 +32,26 @@
             android:foreground="@color/ninchat_activity_bottom_matter_background" />
 
         <TextView
+            android:id="@+id/ninchat_close_chat_dialog_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/ninchat_chat_activity_close_chat_dialog_description_margin_top"
-            android:text="@string/ninchat_chat_close_chat_dialog_description"
+            tools:text="Are you sure you want to close the chat?"
             android:textColor="@color/ninchat_color_modal_title_text" />
 
         <Button
+            android:id="@+id/ninchat_close_chat_dialog_confirm"
             android:layout_width="@dimen/ninchat_chat_activity_close_chat_dialog_button_width"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             style="@style/NinchatTheme.Button.Dialog"
             android:layout_marginTop="@dimen/ninchat_chat_activity_close_chat_dialog_button_outer_margin"
             android:onClick="onCloseChatConfirm"
-            android:text="@string/ninchat_chat_close_chat_dialog_confirm" />
+            tools:text="Close" />
 
         <Button
+            android:id="@+id/ninchat_close_chat_dialog_decline"
             style="@style/NinchatTheme.Button.Dialog.Close"
             android:layout_width="@dimen/ninchat_chat_activity_close_chat_dialog_button_width"
             android:layout_height="wrap_content"
@@ -55,7 +59,7 @@
             android:layout_marginTop="@dimen/ninchat_chat_activity_close_chat_dialog_button_inner_margin"
             android:layout_marginBottom="@dimen/ninchat_chat_activity_close_chat_dialog_button_outer_margin"
             android:onClick="onContinueChat"
-            android:text="@string/ninchat_chat_close_chat_dialog_continue" />
+            tools:text="Continue" />
 
     </LinearLayout>
 

@@ -62,7 +62,7 @@
                 android:layout_marginTop="@dimen/ninchat_queue_activity_bottom_matter_button_margin"
                 android:layout_below="@id/ninchat_queue_activity_queue_message"
                 android:layout_centerHorizontal="true"
-                android:text="@string/ninchat_chat_close_chat_dialog_title"
+                tools:text="Close chat"
                 android:onClick="onClose"/>
 
         </RelativeLayout>

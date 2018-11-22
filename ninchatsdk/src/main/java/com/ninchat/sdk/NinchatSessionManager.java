@@ -1047,6 +1047,24 @@ public final class NinchatSessionManager {
         }
     }
 
+    public String getCloseChatDescription() {
+        final String key = "closeConfirmText";
+        try {
+            return getDefault().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
+    public String getContinueChat() {
+        final String key = "Continue chat";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
     public String getEnterMessage() {
         final String key = "Enter your message";
         try {
