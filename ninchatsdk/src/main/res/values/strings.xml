@@ -13,10 +13,7 @@
     <string name="ninchat_file_type_pdf">PDF</string>
     <string name="ninchat_file_type_cancel">Close</string>
 
-    <string name="ninchat_review_title">How was our customer service?</string>
-    <string name="ninchat_review_description">Give a rating - select a smiley</string>
-    <string name="ninchat_review_happy">Good</string>
+    <string name="ninchat_review_positive">Good</string>
     <string name="ninchat_review_neutral">Okay</string>
     <string name="ninchat_review_sad">Poor</string>
-    <string name="ninchat_review_skip">Skip</string>
 </resources>

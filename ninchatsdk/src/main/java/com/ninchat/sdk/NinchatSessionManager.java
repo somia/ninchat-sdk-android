@@ -1148,6 +1148,42 @@ public final class NinchatSessionManager {
         }
     }
 
+    public String getFeedbackPositive() {
+        final String key = "Good";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
+    public String getFeedbackNeutral() {
+        final String key = "Okay";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
+    public String getFeedbackNegative() {
+        final String key = "Poor";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
+    public String getFeedbackSkip() {
+        final String key = "Skip";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
     public void close() {
         if (session != null) {
             session.close();

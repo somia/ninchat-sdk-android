@@ -27,8 +27,16 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final TextView hello = findViewById(R.id.ninchat_review_title);
-        hello.setText(sessionManager.getFeedbackTitle());
+        final TextView title = findViewById(R.id.ninchat_review_title);
+        title.setText(sessionManager.getFeedbackTitle());
+        final TextView positive = findViewById(R.id.ninchat_review_positive);
+        positive.setText(sessionManager.getFeedbackPositive());
+        final TextView neutral = findViewById(R.id.ninchat_review_neutral);
+        neutral.setText(sessionManager.getFeedbackNeutral());
+        final TextView negative = findViewById(R.id.ninchat_review_negative);
+        negative.setText(sessionManager.getFeedbackNegative());
+        final TextView skip = findViewById(R.id.ninchat_review_skip);
+        skip.setText(sessionManager.getFeedbackSkip());
     }
 
     public final void onGoodClick(final View view) {
