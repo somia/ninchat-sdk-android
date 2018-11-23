@@ -12,7 +12,7 @@ Add the following maven repository to the project dependency repositories:
 
 Then you need to add the following dependency to the project dependencies:
 
-    implementation 'com.ninchat:sdk:0.2.1'
+    implementation 'com.ninchat:sdk:0.2.2'
 
 ## Usage
 
