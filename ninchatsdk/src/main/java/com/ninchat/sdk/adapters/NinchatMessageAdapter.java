@@ -115,21 +115,21 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
         void bind(final NinchatMessage data, final boolean isContinuedMessage) {
             if (data.getType() == NinchatMessage.Type.PADDING) {
-                itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_meta).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.VISIBLE);
-            } else if (data.getType() == NinchatMessage.Type.START) {
+            } else if (data.getType() == NinchatMessage.Type.META) {
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
-                final TextView start = itemView.findViewById(R.id.ninchat_chat_message_start);
-                start.setText(NinchatSessionManager.getInstance().getChatStarted());
+                final TextView start = itemView.findViewById(R.id.ninchat_chat_message_meta);
+                start.setText(data.getMessage());
                 start.setVisibility(View.VISIBLE);
             } else if (data.getType() == NinchatMessage.Type.END) {
-                itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_meta).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
@@ -148,7 +148,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 });
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.VISIBLE);
             } else if (data.getType().equals(NinchatMessage.Type.WRITING)) {
-                itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_meta).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
@@ -173,7 +173,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                     itemView.findViewById(R.id.ninchat_chat_message_agent).setPadding(0, 0, 0, 0);
                 }
             } else if (data.isRemoteMessage()) {
-                itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_meta).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
@@ -190,7 +190,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         R.drawable.ninchat_chat_bubble_left,
                         R.drawable.ninchat_chat_bubble_left_repeated);
             } else {
-                itemView.findViewById(R.id.ninchat_chat_message_start).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_meta).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
@@ -217,7 +217,6 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     public NinchatMessageAdapter() {
         this.messages = new ArrayList<>();
-        this.messages.add(new NinchatMessage(NinchatMessage.Type.START));
         this.messages.add(new NinchatMessage(NinchatMessage.Type.PADDING));
         this.recyclerViewWeakReference = new WeakReference<>(null);
     }
@@ -242,6 +241,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         }
         messages.add(index, message);
         return index;
+    }
+
+    public void addMetaMessage(final String message) {
+        messages.add(getItemCount() - 1, new NinchatMessage(NinchatMessage.Type.META, message));
+        messagesUpdated(getItemCount() - 2, false);
     }
 
     public void clear() {

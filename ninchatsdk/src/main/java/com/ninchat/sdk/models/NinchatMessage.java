@@ -11,7 +11,7 @@ import java.util.Date;
 public final class NinchatMessage {
 
     public enum Type {
-        START,
+        META,
         MESSAGE,
         WRITING,
         END,
@@ -29,8 +29,8 @@ public final class NinchatMessage {
         this(type, null, null, null, System.currentTimeMillis(), false);
     }
 
-    public NinchatMessage(final Type type, final String sender) {
-        this(type, null, null, sender, System.currentTimeMillis(), true);
+    public NinchatMessage(final Type type, final String data) {
+        this(type, type == Type.WRITING ? null : data, null, type == Type.WRITING ? data : null, System.currentTimeMillis(), true);
     }
 
     public NinchatMessage(final String message, final String fileId, final String sender, long timestamp, final boolean isRemoteMessage) {

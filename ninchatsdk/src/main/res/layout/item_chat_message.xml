@@ -16,7 +16,7 @@
         tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/ninchat_chat_message_start"
+        android:id="@+id/ninchat_chat_message_meta"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"

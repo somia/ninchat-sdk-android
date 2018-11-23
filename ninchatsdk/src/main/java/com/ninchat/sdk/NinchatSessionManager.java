@@ -202,6 +202,7 @@ public final class NinchatSessionManager {
             this.configuration = null;
             throw e;
         }
+        this.messageAdapter.addMetaMessage(getChatStarted());
         final Context context = contextWeakReference.get();
         if (context != null && configuration != null) {
             LocalBroadcastManager.getInstance(context)
@@ -907,9 +908,13 @@ public final class NinchatSessionManager {
         }
     }
 
-    private Spanned toSpanned(final String text) {
-        final String centeredText = (text == null || (text.contains("<center>") && text.contains("</center>"))) ?
+    private String center(final String text) {
+        return (text == null || (text.contains("<center>") && text.contains("</center>"))) ?
                 text : ("<center>" + text + "</center>");
+    }
+
+    private Spanned toSpanned(final String text) {
+        final String centeredText = center(text);
         return centeredText == null ? null :
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(centeredText, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(centeredText);
     }
@@ -1013,7 +1018,7 @@ public final class NinchatSessionManager {
         return origin.replaceFirst("\\{\\{([^}]*?)\\}\\}", replacement);
     }
 
-    public Spanned getChatStarted() {
+    public String getChatStarted() {
         final String key = "Audience in queue {{queue}} accepted.";
         String chatStarted = key;
         try {
@@ -1026,7 +1031,7 @@ public final class NinchatSessionManager {
         if (queue != null) {
             name = queue.getName();
         }
-        return toSpanned(replacePlaceholder(chatStarted, name));
+        return center(replacePlaceholder(chatStarted, name));
     }
 
     public Spanned getChatEnded() {
