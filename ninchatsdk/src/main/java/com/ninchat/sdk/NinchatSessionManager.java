@@ -1074,6 +1074,24 @@ public final class NinchatSessionManager {
         }
     }
 
+    public String getVideoChatTitle() {
+        final String key = "You are invited to a video chat";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
+    public String getVideoChatDescription() {
+        final String key = "wants to video chat with you";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
     public Spanned getMOTD() {
         final String key = "motd";
         String motd = key;

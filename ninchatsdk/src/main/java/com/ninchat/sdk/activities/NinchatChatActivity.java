@@ -32,7 +32,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
@@ -211,7 +210,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 final String messageType = intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_TYPE);
                 if (NinchatSessionManager.MessageTypes.CALL.equals(messageType)) {
                     findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
-                    findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.VISIBLE);
+                    final TextView title = findViewById(R.id.ninchat_video_call_consent_dialog_title);
+                    title.setText(sessionManager.getVideoChatTitle());
                     final ImageView userImage = findViewById(R.id.ninchat_video_call_consent_dialog_user_avatar);
                     final NinchatUser user = sessionManager.getMember(intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_SENDER));
                     String avatar = user.getAvatar();
@@ -226,6 +226,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                     }
                     final TextView userName = findViewById(R.id.ninchat_video_call_consent_dialog_user_name);
                     userName.setText(user.getName());
+                    final TextView description = findViewById(R.id.ninchat_video_call_consent_dialog_description);
+                    description.setText(sessionManager.getVideoChatDescription());
+                    findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.VISIBLE);
                     hideKeyboard();
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT))) {
                     if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType) ||
