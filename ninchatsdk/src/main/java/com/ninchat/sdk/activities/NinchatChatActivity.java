@@ -197,6 +197,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     private void sendPickUpAnswer(final boolean answer) {
         sessionManager.sendWebRTCCallAnswer(answer);
+        messageAdapter.addMetaMessage(answer ? sessionManager.getVideoCallAccepted() : sessionManager.getVideoCallRejected());
     }
 
     private View videoContainer;
@@ -230,6 +231,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                     description.setText(sessionManager.getVideoChatDescription());
                     findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.VISIBLE);
                     hideKeyboard();
+                    messageAdapter.addMetaMessage(sessionManager.getVideoCallMetaMessage());
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT))) {
                     if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType) ||
                             NinchatSessionManager.MessageTypes.PICK_UP.equals(messageType)) {
