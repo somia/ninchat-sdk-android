@@ -34,7 +34,9 @@ The `start` method opens the SDK UI automatically.
 
 The SDK does some things asynchronously before the SDK UI opens. Therefore it is recommended that the host application displays a spinner or some other visual cue after the SDK has been started. The spinner/whatever can be dismissed when
 1. The SDK returns and the `onActivityResult` method of the calling Activity is called with the default or the given `requestCode` (see the [Optional parameters](#optionalparameters) section) or
-2. The host application subscribes to LocalBroadcastManager's broadcasts with the Intent action `NinchatSession.Broadcast.QUEUES_UPDATED` that is sent when the SDK opens its UI. Alternatively, should there be any issues with the SDK launch that prevent the SDK from starting, the host application can catch that by subscribing to LocalBroadcastManager's broadcasts with the Intent action `NinchatSession.Broadcast.START_FAILED`.
+2. The host application sets a `NinchatSDKEventListener` to the `NinchatSession` object when creating it (see the [Low-level API access](#lowlevelapi) section) and listens to the `onSessionStarted` event that gets called when the SDK will open its UI.
+
+Should there be any issues with the SDK init, the `NinchatSDKEventListener`'s `onSessionInitFailed` method will be called. The `NinchatSDKEventListener` interface has also a method `onSessionInitiated` that gets called when the SDK has successfully fetched the configuration.
 
 ### Setting metadata
 
@@ -60,12 +62,14 @@ Alternatively, if the client knows the queue ID it wants to join, the SDK can be
 
 These methods open the SDK directly to the queueing view for that given queue.
 
-### Low-level API access
+### <a name="lowlevelapi"></a>Low-level API access
 
 The SDK exposes the low-level communication interface with the method `getSession()` in the `NinchatSession` class. The host app may use this object to communicate to the server, bypassing the SDK logic.
 
-Furthermore, the host application can register itself (or its property) as a listener to the low-level API events and/or logs by creating the `NinchatSession` instance with the listeners as constructor arguments:
+Furthermore, the host application can register itself (or its property/properties) as a listener to the low-level API events and/or logs by creating the `NinchatSession` instance with the listeners as constructor arguments:
 
+    session = new NinchatSession(applicationContext, configurationKey, eventListener);
+    session = new NinchatSession(applicationContext, configurationKey, logListener);
     session = new NinchatSession(applicationContext, configurationKey, eventListener, logListener);
 
 The argument `eventListener`, when non-null, must be an instance of the `NinchatSDKEventListener` interface and the `logListener` an instance of the `NinchatSDKLogListener`interface.
@@ -82,7 +86,7 @@ For now, the application can override certain images/animations of the SDK. The 
 |:------------- |:-------------|:-----|
 | ninchat_icon_loader   | Progress indicator icon in queue view. |  |
 | ninchat_icon_chat_writing_indicator      | User is typing.. Indicator icon in chat bubble | Should be a [frame animation](https://developer.android.com/guide/topics/resources/animation-resource#Frame). |
-| ninchat_chat_background    | Chat view's background image. Note: The drawable **must** be a bitmap image. |   |
+| ninchat_chat_background    | Chat view's background image that gets tiled. | The drawable **must** be a bitmap image. |
 | ninchat_chat_primary_button    | Background for the primary buttons. |   |
 | ninchat_chat_secondary_button    | Background for the secondary buttons. |   |
 | ninchat_chat_close_button              | Background for 'close chat' button. |  |

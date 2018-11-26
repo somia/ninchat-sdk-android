@@ -41,6 +41,14 @@ public final class NinchatSession {
         this(applicationContext, configurationKey, null, null);
     }
 
+    public NinchatSession(final Context applicationContext, final String configurationKey, final NinchatSDKEventListener eventListener) {
+        this(applicationContext, configurationKey, eventListener, null);
+    }
+
+    public NinchatSession(final Context applicationContext, final String configurationKey, final NinchatSDKLogListener logListener) {
+        this(applicationContext, configurationKey, null, logListener);
+    }
+
     public NinchatSession(final Context applicationContext, final String configurationKey, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
         NinchatSessionManager.init(applicationContext, configurationKey, eventListener, logListener);
     }
@@ -75,24 +83,6 @@ public final class NinchatSession {
 
     public void start(final Activity activity, final int requestCode, final String queueId) {
         NinchatSessionManager.getInstance().start(activity, siteSecret, requestCode, queueId);
-    }
-
-    @Deprecated
-    public void start(final Activity activity, final String siteSecret, final int requestCode) {
-        setSiteSecret(siteSecret);
-        start(activity, requestCode);
-    }
-
-    @Deprecated
-    public void start(final Activity activity, final String siteSecret, final String queueId) {
-        setSiteSecret(siteSecret);
-        start(activity, queueId);
-    }
-
-    @Deprecated
-    public void start(final Activity activity, final String siteSecret, final int requestCode, final String queueId) {
-        setSiteSecret(siteSecret);
-        start(activity, requestCode, queueId);
     }
 
     public void close() {

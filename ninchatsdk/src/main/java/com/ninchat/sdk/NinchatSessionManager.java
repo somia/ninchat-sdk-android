@@ -208,15 +208,26 @@ public final class NinchatSessionManager {
             LocalBroadcastManager.getInstance(context)
                     .sendBroadcast(new Intent(NinchatSession.Broadcast.CONFIGURATION_FETCHED));
         }
+        final NinchatSDKEventListener listener = eventListenerWeakReference.get();
+        if (listener != null) {
+            if (configuration != null) {
+                listener.onSessionInitiated();
+            } else {
+                listener.onSessionInitFailed();
+            }
+        }
     }
 
     public void sessionError(final Exception error) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                final Context context = contextWeakReference.get();
-                if (context != null) {
-                    Toast.makeText(context, error.getMessage(), Toast.LENGTH_LONG).show();
+                final NinchatSDKEventListener listener = eventListenerWeakReference.get();
+                if (listener != null) {
+                    listener.onSessionError(error);
+                    if (configuration == null || session == null) {
+                        listener.onSessionInitFailed();
+                    }
                 }
             }
         });
@@ -237,10 +248,15 @@ public final class NinchatSessionManager {
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);
                 }
-                final NinchatSDKEventListener eventListener = eventListenerWeakReference.get();
-                if (eventListener != null) {
-                    eventListener.onSessionEvent(params);
-                }
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        final NinchatSDKEventListener eventListener = eventListenerWeakReference.get();
+                        if (eventListener != null) {
+                            eventListener.onSessionEvent(params);
+                        }
+                    }
+                });
             }
         });
         this.session.setOnEvent(new EventHandler() {
@@ -269,10 +285,15 @@ public final class NinchatSessionManager {
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);
                 }
-                final NinchatSDKEventListener eventListener = eventListenerWeakReference.get();
-                if (eventListener != null) {
-                    eventListener.onEvent(params, payload);
-                }
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        final NinchatSDKEventListener eventListener = eventListenerWeakReference.get();
+                        if (eventListener != null) {
+                            eventListener.onEvent(params, payload);
+                        }
+                    }
+                });
             }
         });
         this.session.setOnClose(new CloseHandler() {
@@ -374,6 +395,10 @@ public final class NinchatSessionManager {
             LocalBroadcastManager.getInstance(context)
                     .sendBroadcast(new Intent(NinchatSession.Broadcast.START_FAILED));
         }
+        final NinchatSDKEventListener listener = eventListenerWeakReference.get();
+        if (listener != null) {
+            listener.onSessionInitFailed();
+        }
     }
 
     private void parseQueues(final Props params) {
@@ -439,6 +464,10 @@ public final class NinchatSessionManager {
         final Activity activity = activityWeakReference.get();
         if (activity != null) {
             activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, queueId), requestCode);
+        }
+        final NinchatSDKEventListener listener = eventListenerWeakReference.get();
+        if (listener != null) {
+            listener.onSessionStarted();
         }
     }
 
@@ -1179,14 +1208,11 @@ public final class NinchatSessionManager {
     }
 
     public boolean showRating() {
-        if (configuration != null) {
-            try {
-                return getDefault().getBoolean("audienceRating");
-            } catch (final Exception e) {
-                return false;
-            }
+        try {
+            return getDefault().getBoolean("audienceRating");
+        } catch (final Exception e) {
+            return false;
         }
-        return false;
     }
 
     public Spanned getFeedbackTitle() {
