@@ -36,7 +36,7 @@ The SDK does some things asynchronously before the SDK UI opens. Therefore it is
 1. The SDK returns and the `onActivityResult` method of the calling Activity is called with the default or the given `requestCode` (see the [Optional parameters](#optionalparameters) section) or
 2. The host application sets a `NinchatSDKEventListener` to the `NinchatSession` object when creating it (see the [Low-level API access](#lowlevelapi) section) and listens to the `onSessionStarted` event that gets called when the SDK will open its UI.
 
-Should there be any issues with the SDK init, the `NinchatSDKEventListener`'s `onSessionInitFailed` method will be called. The `NinchatSDKEventListener` interface has also a method `onSessionInitiated` that gets called when the SDK has successfully fetched the configuration.
+Should there be any issues with the SDK init, the `NinchatSDKEventListener`'s `onSessionInitFailed` method will be called. The `NinchatSDKEventListener` class has also a method `onSessionInitiated` that gets called when the SDK has successfully fetched the configuration.
 
 ### Setting metadata
 
@@ -72,7 +72,7 @@ Furthermore, the host application can register itself (or its property/propertie
     session = new NinchatSession(applicationContext, configurationKey, logListener);
     session = new NinchatSession(applicationContext, configurationKey, eventListener, logListener);
 
-The argument `eventListener`, when non-null, must be an instance of the `NinchatSDKEventListener` interface and the `logListener` an instance of the `NinchatSDKLogListener`interface.
+The argument `eventListener`, when non-null, must be an instance of the `NinchatSDKEventListener` class and the `logListener` an instance of the `NinchatSDKLogListener`interface.
 
 See [Ninchat API Reference](https://github.com/ninchat/ninchat-api/blob/v2/api.md) for information about the API's outbound Actions and inbound Events.
 
