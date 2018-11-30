@@ -229,6 +229,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                     userName.setText(user.getName());
                     final TextView description = findViewById(R.id.ninchat_video_call_consent_dialog_description);
                     description.setText(sessionManager.getVideoChatDescription());
+                    final Button accept = findViewById(R.id.ninchat_video_call_consent_dialog_accept);
+                    accept.setText(sessionManager.getVideoCallAccept());
+                    final Button decline = findViewById(R.id.ninchat_video_call_consent_dialog_decline);
+                    decline.setText(sessionManager.getVideoCallDecline());
                     findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.VISIBLE);
                     hideKeyboard();
                     messageAdapter.addMetaMessage(sessionManager.getVideoCallMetaMessage());

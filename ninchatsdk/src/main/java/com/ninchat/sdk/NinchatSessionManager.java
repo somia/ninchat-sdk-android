@@ -1126,6 +1126,24 @@ public final class NinchatSessionManager {
         }
     }
 
+    public String getVideoCallAccept() {
+        final String key = "Accept";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
+    public String getVideoCallDecline() {
+        final String key = "Decline";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
+        }
+    }
+
     public String getVideoCallMetaMessage() {
         final String key = "You are invited to a video chat";
         try {

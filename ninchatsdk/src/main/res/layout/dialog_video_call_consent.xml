@@ -68,7 +68,7 @@
             style="@style/NinchatTheme.Button.Dialog"
             android:layout_marginTop="@dimen/ninchat_chat_activity_video_call_consent_button_outer_margin"
             android:onClick="onAcceptVideoCall"
-            android:text="Accept" />
+            tools:text="Accept" />
 
         <Button
             android:id="@+id/ninchat_video_call_consent_dialog_decline"
@@ -79,7 +79,7 @@
             android:layout_marginTop="@dimen/ninchat_chat_activity_video_call_consent_button_inner_margin"
             android:layout_marginBottom="@dimen/ninchat_chat_activity_video_call_consent_button_outer_margin"
             android:onClick="onRejectVideoCall"
-            android:text="Reject" />
+            tools:text="Decline" />
 
     </LinearLayout>
 
