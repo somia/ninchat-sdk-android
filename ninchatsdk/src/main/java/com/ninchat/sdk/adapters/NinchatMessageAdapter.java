@@ -281,6 +281,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             notifyItemRemoved(index);
         } else {
             notifyItemInserted(index);
+            if (index < getItemCount() - 2) {
+                notifyItemRangeChanged(index + 1, getItemCount() - 1);
+            }
         }
         final int position = getItemCount() - 1;
         final RecyclerView recyclerView = recyclerViewWeakReference.get();
