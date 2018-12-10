@@ -181,6 +181,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             final String action = intent.getAction();
             if (NinchatSessionManager.Broadcast.NEW_MESSAGE.equals(action)) {
                 messageAdapter.messagesUpdated(intent.getIntExtra(NinchatSessionManager.Broadcast.MESSAGE_INDEX, -1),
+                        intent.getBooleanExtra(NinchatSessionManager.Broadcast.MESSAGE_UPDATED, false),
                         intent.getBooleanExtra(NinchatSessionManager.Broadcast.MESSAGE_REMOVED, false));
             }
         }

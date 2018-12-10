@@ -9,6 +9,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,34 +69,36 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
         private void bindMessage(final @IdRes int wrapperId, final @IdRes int headerId, final @IdRes int senderId, final @IdRes int timestampId, final @IdRes int messageView, final @IdRes int imageId, final @IdRes int playIconId, final @IdRes int avatarId, final NinchatMessage ninchatMessage, final boolean isContinuedMessage, int firstMessageBackground, final @DrawableRes int repeatedMessageBackground) {
             itemView.findViewById(wrapperId).setVisibility(View.VISIBLE);
-            itemView.findViewById(headerId).setVisibility(View.VISIBLE);
+            itemView.findViewById(headerId).setVisibility(View.GONE);
             final TextView sender = itemView.findViewById(senderId);
             sender.setText(ninchatMessage.getSender());
             final TextView timestamp = itemView.findViewById(timestampId);
             timestamp.setText(TIMESTAMP_FORMATTER.format(ninchatMessage.getTimestamp()));
             setAvatar(itemView.findViewById(avatarId), ninchatMessage, isContinuedMessage);
             final TextView message = itemView.findViewById(messageView);
-            message.setVisibility(View.VISIBLE);
+            message.setVisibility(View.GONE);
             final Spanned messageContent = ninchatMessage.getMessage();
             final NinchatFile file = NinchatSessionManager.getInstance().getFile(ninchatMessage.getFileId());
             final ImageView image = itemView.findViewById(imageId);
             image.setVisibility(View.GONE);
-            itemView.findViewById(playIconId).setVisibility(View.GONE);
+            final View playIcon = itemView.findViewById(playIconId);
+            playIcon.setVisibility(View.GONE);
             Glide.with(image.getContext()).clear(image);
             if (messageContent != null) {
+                message.setVisibility(View.VISIBLE);
                 message.setAutoLinkMask(Linkify.ALL);
                 message.setText(messageContent);
             } else if (file.isPDF()) {
+                message.setVisibility(View.VISIBLE);
                 message.setText(file.getPDFLInk());
                 message.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
-                message.setVisibility(View.GONE);
                 image.setVisibility(View.VISIBLE);
                 Glide.with(image.getContext())
                         .load(file.getUrl())
                         .into(image);
                 if (file.isVideo()) {
-                    itemView.findViewById(playIconId).setVisibility(View.VISIBLE);
+                    playIcon.setVisibility(View.VISIBLE);
                 }
                 image.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -105,10 +108,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 });
             }
             if (isContinuedMessage) {
-                itemView.findViewById(headerId).setVisibility(View.GONE);
                 itemView.findViewById(wrapperId).setPadding(0, 0, 0, 0);
                 itemView.findViewById(messageView).setBackgroundResource(repeatedMessageBackground);
             } else {
+                itemView.findViewById(headerId).setVisibility(View.VISIBLE);
                 itemView.findViewById(messageView).setBackgroundResource(firstMessageBackground);
             }
         }
@@ -226,8 +229,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         return getItemCount() - 2;
     }
 
-    public int add(final NinchatMessage message) {
+    public Pair<Integer, Boolean> add(final NinchatMessage message) {
         int index = getItemCount() - 1;
+        boolean updated = false;
         if (!message.getType().equals(NinchatMessage.Type.WRITING)) {
             final ListIterator<NinchatMessage> iterator = messages.listIterator(getItemCount() - 1);
             int i = 0;
@@ -236,16 +240,20 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 if (previousMessage.getType().equals(NinchatMessage.Type.WRITING)) {
                     index--;
                     i++;
+                    if (previousMessage.getSenderId().equals(message.getSenderId())) {
+                        iterator.remove();
+                        updated = true;
+                    }
                 }
             }
         }
         messages.add(index, message);
-        return index;
+        return new Pair<>(index, updated);
     }
 
     public void addMetaMessage(final String message) {
         messages.add(getItemCount() - 1, new NinchatMessage(NinchatMessage.Type.META, message));
-        messagesUpdated(getItemCount() - 2, false);
+        messagesUpdated(getItemCount() - 2, false, false);
     }
 
     public void clear() {
@@ -264,9 +272,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         return -1;
     }
 
-    public void messagesUpdated(final int index, final boolean removed) {
+    public void messagesUpdated(final int index, final boolean updated, final boolean removed) {
         if (index < 0) {
             notifyDataSetChanged();
+        } else if (updated) {
+            notifyItemChanged(index);
         } else if (removed) {
             notifyItemRemoved(index);
         } else {
