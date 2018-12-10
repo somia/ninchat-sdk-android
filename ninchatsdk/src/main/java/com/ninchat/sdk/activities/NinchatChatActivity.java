@@ -241,6 +241,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                             NinchatSessionManager.MessageTypes.PICK_UP.equals(messageType)) {
                         findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
                     }
+                    if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType)) {
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
+                    }
                 }
             }
         }
@@ -275,6 +278,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     public void onVideoHangUp(final View view) {
         webRTCView.hangUp();
         findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
     }
 
     public void onToggleFullScreen(final View view) {
