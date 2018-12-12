@@ -12,7 +12,6 @@ import android.text.Spanned;
 import android.util.Log;
 import android.util.Pair;
 import android.webkit.MimeTypeMap;
-import android.widget.Toast;
 
 import com.ninchat.client.CloseHandler;
 import com.ninchat.client.ConnStateHandler;
@@ -204,7 +203,6 @@ public final class NinchatSessionManager {
             this.configuration = null;
             throw e;
         }
-        this.messageAdapter.addMetaMessage(getChatStarted());
         final Context context = contextWeakReference.get();
         if (context != null && configuration != null) {
             LocalBroadcastManager.getInstance(context)
@@ -564,7 +562,7 @@ public final class NinchatSessionManager {
             }
             this.members.put(userId, new NinchatUser(displayName, realName, avatar, guest));
         }
-
+        this.messageAdapter.addMetaMessage(getChatStarted());
         final Context context = contextWeakReference.get();
         if (context != null) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.CHANNEL_JOINED));
