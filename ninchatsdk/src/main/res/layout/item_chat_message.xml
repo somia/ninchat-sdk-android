@@ -20,6 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
+        android:layout_marginTop="@dimen/ninchat_chat_activity_chat_started_bottom_margin"
         android:layout_marginBottom="@dimen/ninchat_chat_activity_chat_started_bottom_margin"
         tools:text="Chat started"
         android:textColor="@color/ninchat_color_info_text"
