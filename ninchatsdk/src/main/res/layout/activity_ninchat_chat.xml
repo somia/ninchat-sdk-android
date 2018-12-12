@@ -118,7 +118,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/ninchat_chat_activity_video_view_height"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="visible"
+        android:keepScreenOn="true">
 
         <android.opengl.GLSurfaceView
             android:id="@+id/video"
