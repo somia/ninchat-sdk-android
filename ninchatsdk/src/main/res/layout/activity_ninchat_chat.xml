@@ -5,7 +5,8 @@
     android:id="@+id/ninchat_chat_root"
     android:background="@drawable/ninchat_chat_background_tiled"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".activities.NinchatChatActivity">
+    tools:context=".activities.NinchatChatActivity"
+    android:keepScreenOn="true">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/message_list"
@@ -118,8 +119,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/ninchat_chat_activity_video_view_height"
         android:visibility="gone"
-        tools:visibility="visible"
-        android:keepScreenOn="true">
+        tools:visibility="visible">
 
         <android.opengl.GLSurfaceView
             android:id="@+id/video"
