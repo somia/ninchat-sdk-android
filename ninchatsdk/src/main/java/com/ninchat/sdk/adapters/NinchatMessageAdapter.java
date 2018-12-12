@@ -232,7 +232,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     public Pair<Integer, Boolean> add(final NinchatMessage message) {
         int index = getItemCount() - 1;
         boolean updated = false;
-        if (!message.getType().equals(NinchatMessage.Type.WRITING)) {
+        if (!message.getType().equals(NinchatMessage.Type.WRITING) && index > 0) {
             final ListIterator<NinchatMessage> iterator = messages.listIterator(getItemCount() - 1);
             int i = 0;
             while (iterator.hasPrevious() && i < NinchatSessionManager.getInstance().getMemberCount()) {
@@ -294,8 +294,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     public void close(final NinchatChatActivity activity) {
         activityWeakReference = new WeakReference<>(activity);
-        messages.add(getItemCount() - 1, new NinchatMessage(NinchatMessage.Type.END));
-        final int position = getItemCount() - 2;
+        final int index = getItemCount() - 1;
+        messages.add(index > 0 ? index : getItemCount(), new NinchatMessage(NinchatMessage.Type.END));
+        final int position = getItemCount() - (index > 0 ? 2 : 1);
         notifyItemInserted(position);
         final RecyclerView recyclerView = recyclerViewWeakReference.get();
         if (recyclerView != null) {
