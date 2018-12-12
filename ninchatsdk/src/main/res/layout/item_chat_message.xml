@@ -133,8 +133,8 @@
 
                 <ImageView
                     android:id="@+id/ninchat_chat_message_agent_writing"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/ninchat_chat_activity_message_writing_indicator_width"
+                    android:layout_height="@dimen/ninchat_chat_activity_message_writing_indicator_height"
                     tools:src="@drawable/ninchat_writing_10"
                     android:visibility="gone"
                     tools:visibility="visible"/>
