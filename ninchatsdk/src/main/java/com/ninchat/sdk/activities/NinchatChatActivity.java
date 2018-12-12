@@ -50,7 +50,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     static int REQUEST_CODE = NinchatChatActivity.class.hashCode() & 0xffff;
 
     protected static final int CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE = "WebRTCVideoAudio".hashCode() & 0xffff;
-    protected static final int STORAGE_PERMISSION_REQUEST_CODE = "ExternalStorage".hashCode() & 0xffff;
     protected static final int PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() & 0xffff;
 
     private NinchatMessageAdapter messageAdapter = sessionManager.getMessageAdapter();
@@ -192,10 +191,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
     }
 
-    private boolean hasFileAccessPermissions() {
-        return checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-    }
-
     private void sendPickUpAnswer(final boolean answer) {
         sessionManager.sendWebRTCCallAnswer(answer);
         messageAdapter.addMetaMessage(answer ? sessionManager.getVideoCallAccepted() : sessionManager.getVideoCallRejected());
@@ -328,8 +323,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 startActivityForResult(chooserIntent, PICK_PHOTO_VIDEO_REQUEST_CODE);
             }*/
             //findViewById(R.id.ninchat_chat_file_picker_dialog).setVisibility(View.VISIBLE);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE);
+        } else {
+            requestFileAccessPermissions();
         }
     }
 

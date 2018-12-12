@@ -1,10 +1,14 @@
 package com.ninchat.sdk.activities;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.support.annotation.StringRes;
 import android.view.View;
 import android.widget.TextView;
@@ -17,12 +21,24 @@ import com.ninchat.sdk.R;
  */
 abstract class NinchatBaseActivity extends Activity {
 
+    protected static final int STORAGE_PERMISSION_REQUEST_CODE = "ExternalStorage".hashCode() & 0xffff;
+
     protected NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
 
     abstract protected @LayoutRes int getLayoutRes();
 
     protected boolean allowBackButton() {
         return false;
+    }
+
+    protected boolean hasFileAccessPermissions() {
+        return checkCallingOrSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    protected void requestFileAccessPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_PERMISSION_REQUEST_CODE);
+        }
     }
 
     @Override
@@ -41,7 +57,6 @@ abstract class NinchatBaseActivity extends Activity {
             }
         });
         findViewById(layoutId).setVisibility(View.VISIBLE);
-
     }
 
     @Override

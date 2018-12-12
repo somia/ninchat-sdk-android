@@ -71,7 +71,8 @@
     <dimen name="ninchat_media_activity_top_bar_file_name_margin">15dp</dimen>
     <dimen name="ninchat_media_activity_top_bar_button_margin">16dp</dimen>
     <dimen name="ninchat_media_activity_top_bar_button_height">12dp</dimen>
-    <dimen name="ninchat_media_activity_top_bar_button_padding">33dp</dimen>
+    <dimen name="ninchat_media_activity_top_bar_button_padding">16dp</dimen>
+    <dimen name="ninchat_media_activity_top_bar_button_end_margin">11dp</dimen>
 
     <dimen name="ninchat_review_activity_top_padding">38dp</dimen>
     <dimen name="ninchat_review_activity_title_top_margin">9dp</dimen>

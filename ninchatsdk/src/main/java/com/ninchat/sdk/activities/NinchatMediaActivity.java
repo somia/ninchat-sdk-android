@@ -1,11 +1,14 @@
 package com.ninchat.sdk.activities;
 
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.View;
@@ -18,7 +21,6 @@ import com.bumptech.glide.Glide;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.NinchatFile;
-import com.ninchat.sdk.tasks.NinchatDownloadFileTask;
 
 public final class NinchatMediaActivity extends NinchatBaseActivity {
 
@@ -48,7 +50,35 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
     }
 
     public void onDownloadFile(final View view) {
-        NinchatDownloadFileTask.start(fileId);
+        if (hasFileAccessPermissions()) {
+            downloadFile();
+        } else {
+            requestFileAccessPermissions();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
+            if (hasFileAccessPermissions()) {
+                downloadFile();
+            } else {
+                showError(R.id.ninchat_media_error, R.string.ninchat_chat_error_no_file_permissions);
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    private void downloadFile() {
+        final NinchatFile file = sessionManager.getFile(fileId);
+        final Uri uri = Uri.parse(file.getUrl());
+        final DownloadManager.Request request = new DownloadManager.Request(uri);
+        request.setTitle(file.getName());
+        request.setDescription(file.getUrl());
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, file.getName());
+        final DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        downloadManager.enqueue(request);
+        findViewById(R.id.ninchat_media_download).setVisibility(View.GONE);
     }
 
     private String fileId;
@@ -57,18 +87,8 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (NinchatSessionManager.Broadcast.FILE_DOWNLOADED.equals(action)) {
+            if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
                 findViewById(R.id.ninchat_media_download).setVisibility(sessionManager.getFile(fileId).isDownloaded() ? View.GONE : View.VISIBLE);
-            }
-        }
-    };
-
-    private BroadcastReceiver fileDownloadingReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (NinchatSessionManager.Broadcast.DOWNLOADING_FILE.equals(action)) {
-                findViewById(R.id.ninchat_media_download).setVisibility(View.GONE);
             }
         }
     };
@@ -95,11 +115,13 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
                     .load(file.getUrl())
                     .into(image);
         }
+        if (file.isDownloaded()) {
+            findViewById(R.id.ninchat_media_download).setVisibility(View.GONE);
+        }
         final TextView name = findViewById(R.id.ninchat_media_name);
         name.setText(file.getName());
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.registerReceiver(fileDownloadedReceiver, new IntentFilter(NinchatSessionManager.Broadcast.FILE_DOWNLOADED));
-        localBroadcastManager.registerReceiver(fileDownloadingReceiver, new IntentFilter(NinchatSessionManager.Broadcast.DOWNLOADING_FILE));
+        localBroadcastManager.registerReceiver(fileDownloadedReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
     @Override
@@ -107,6 +129,5 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
         super.onDestroy();
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.unregisterReceiver(fileDownloadedReceiver);
-        localBroadcastManager.unregisterReceiver(fileDownloadingReceiver);
     }
 }
