@@ -25,6 +25,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -339,6 +340,14 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     public void openImagePicker(final View view) {
         startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), PICK_PHOTO_VIDEO_REQUEST_CODE);
+    }
+
+    public void onEditTextClick(final View view) {
+        final EditText editText = findViewById(R.id.message);
+        if(editText.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
     public void onSendClick(final View view) {
