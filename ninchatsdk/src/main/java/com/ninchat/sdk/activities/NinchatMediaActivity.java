@@ -17,8 +17,7 @@ import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-import com.bumptech.glide.Glide;
-import com.ninchat.sdk.NinchatSessionManager;
+import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.NinchatFile;
 
@@ -111,7 +110,7 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
             video.start();
         } else {
             final ImageView image = findViewById(R.id.ninchat_media_image);
-            Glide.with(this)
+            GlideApp.with(this)
                     .load(file.getUrl())
                     .into(image);
         }

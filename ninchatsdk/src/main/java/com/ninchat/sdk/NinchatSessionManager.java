@@ -710,17 +710,25 @@ public final class NinchatSessionManager {
             return;
         }
         float aspectRatio;
+        long width;
+        long height;
         try {
             final Props attrs = params.getObject("file_attrs");
             final Props thumbnail = attrs.getObject("thumbnail");
-            aspectRatio = ((float) thumbnail.getInt("width")) / ((float) thumbnail.getInt("height"));
+            width = thumbnail.getInt("width");
+            height = thumbnail.getInt("height");
+            aspectRatio = ((float) width) / ((float) height);
         } catch (final Exception e) {
             aspectRatio = 16.0f / 9.0f;
+            width = -1;
+            height = -1;
         }
         final NinchatFile file = files.get(fileId);
         file.setUrl(url);
         file.setUrlExpiry(new Date(urlExpiry));
         file.setAspectRatio(aspectRatio);
+        file.setWidth(width);
+        file.setHeight(height);
         final Context context = contextWeakReference.get();
         final Pair<Integer, Boolean> result = messageAdapter.add(new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
         if (context != null) {
@@ -750,7 +758,7 @@ public final class NinchatSessionManager {
         }
         boolean addWritingMessage = false;
         try {
-            addWritingMessage = memberAttrs.getBool("writing") && messageAdapter.getItemCount() > 1;
+            addWritingMessage = memberAttrs.getBool("writing") && messageAdapter.getItemCount() > 2;
         } catch (final Exception e) {
             return;
         }

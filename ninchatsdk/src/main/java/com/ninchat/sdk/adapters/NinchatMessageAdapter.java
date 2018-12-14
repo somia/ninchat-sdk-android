@@ -1,9 +1,11 @@
 package com.ninchat.sdk.adapters;
 
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -13,11 +15,15 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
@@ -46,24 +52,23 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         }
 
         private void setAvatar(final ImageView avatar, final NinchatMessage ninchatMessage, final boolean hideAvatar) {
+            GlideApp.with(avatar.getContext()).clear(avatar);
             final boolean showAvatars = NinchatSessionManager.getInstance().showAvatars(ninchatMessage.isRemoteMessage());
-            if (hideAvatar) {
+            if (!showAvatars) {
+                avatar.setVisibility(View.GONE);
+            } else if (hideAvatar) {
                 avatar.setVisibility(showAvatars ? View.INVISIBLE : View.GONE);
                 return;
             }
-            if (!showAvatars) {
-                avatar.setVisibility(View.GONE);
-            } else {
-                String userAvatar = NinchatSessionManager.getInstance().getMember(ninchatMessage.getSenderId()).getAvatar();
-                if (TextUtils.isEmpty(userAvatar)) {
-                    userAvatar = NinchatSessionManager.getInstance().getDefaultAvatar(ninchatMessage.isRemoteMessage());
-                }
-                if (!TextUtils.isEmpty(userAvatar)) {
-                    GlideApp.with(itemView.getContext())
-                            .load(userAvatar)
-                            .circleCrop()
-                            .into(avatar);
-                }
+            String userAvatar = NinchatSessionManager.getInstance().getMember(ninchatMessage.getSenderId()).getAvatar();
+            if (TextUtils.isEmpty(userAvatar)) {
+                userAvatar = NinchatSessionManager.getInstance().getDefaultAvatar(ninchatMessage.isRemoteMessage());
+            }
+            if (!TextUtils.isEmpty(userAvatar)) {
+                GlideApp.with(itemView.getContext())
+                        .load(userAvatar)
+                        .circleCrop()
+                        .into(avatar);
             }
         }
 
@@ -83,7 +88,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             image.setVisibility(View.GONE);
             final View playIcon = itemView.findViewById(playIconId);
             playIcon.setVisibility(View.GONE);
-            Glide.with(image.getContext()).clear(image);
+            GlideApp.with(image.getContext()).clear(image);
+            boolean imageMessage = false;
             if (messageContent != null) {
                 message.setVisibility(View.VISIBLE);
                 message.setAutoLinkMask(Linkify.ALL);
@@ -93,9 +99,18 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 message.setText(file.getPDFLInk());
                 message.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
+                final int width = file.getWidth();
+                final int height = file.getHeight();
+                final float density = itemView.getResources().getDisplayMetrics().density;
+                image.getLayoutParams().width = (int) (width * density);
+                image.getLayoutParams().height = (int) (height * density);
+                image.setBackgroundResource(isContinuedMessage ? repeatedMessageBackground : firstMessageBackground);
                 image.setVisibility(View.VISIBLE);
-                Glide.with(image.getContext())
+                imageMessage = true;
+                GlideApp.with(image.getContext())
                         .load(file.getUrl())
+                        .placeholder(R.color.ninchat_colorPrimaryDark)
+                        .override(width, height)
                         .into(image);
                 if (file.isVideo()) {
                     playIcon.setVisibility(View.VISIBLE);
@@ -107,12 +122,13 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                     }
                 });
             }
+            if (!imageMessage) {
+                itemView.findViewById(messageView).setBackgroundResource(isContinuedMessage ? repeatedMessageBackground : firstMessageBackground);
+            }
             if (isContinuedMessage) {
                 itemView.findViewById(wrapperId).setPadding(0, 0, 0, 0);
-                itemView.findViewById(messageView).setBackgroundResource(repeatedMessageBackground);
             } else {
                 itemView.findViewById(headerId).setVisibility(View.VISIBLE);
-                itemView.findViewById(messageView).setBackgroundResource(firstMessageBackground);
             }
         }
 
@@ -168,7 +184,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                                 R.drawable.ninchat_chat_bubble_left);
                 final ImageView image = itemView.findViewById(R.id.ninchat_chat_message_agent_writing);
                 image.setVisibility(View.VISIBLE);
-                Glide.with(image.getContext()).clear(image);
+                GlideApp.with(image.getContext()).clear(image);
                 image.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator);
                 final AnimationDrawable animationDrawable = (AnimationDrawable) image.getBackground();
                 animationDrawable.start();
@@ -266,6 +282,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             final NinchatMessage message = iterator.previous();
             if (message.getType().equals(NinchatMessage.Type.WRITING) && sender.equals(message.getSenderId())) {
                 messages.remove(message);
+
                 return iterator.nextIndex();
             }
         }

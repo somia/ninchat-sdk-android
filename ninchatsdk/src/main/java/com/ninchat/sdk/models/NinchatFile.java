@@ -18,6 +18,8 @@ public final class NinchatFile {
     private String url;
     private Date urlExpiry;
     private float aspectRatio;
+    private long width;
+    private long height;
 
     private boolean isDownloaded = false;
 
@@ -41,6 +43,14 @@ public final class NinchatFile {
 
     public void setAspectRatio(float aspectRatio) {
         this.aspectRatio = aspectRatio;
+    }
+
+    public void setWidth(long width) {
+        this.width = width;
+    }
+
+    public void setHeight(long height) {
+        this.height = height;
     }
 
     public void setDownloaded() {
@@ -81,6 +91,14 @@ public final class NinchatFile {
 
     public String getUrl() {
         return url;
+    }
+
+    public int getWidth() {
+        return (int) width;
+    }
+
+    public int getHeight() {
+        return (int) height;
     }
 
     private String getFileSize() {
