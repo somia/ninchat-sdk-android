@@ -201,24 +201,6 @@
     </RelativeLayout>
 
     <include
-        android:id="@+id/ninchat_chat_video_call_consent_dialog"
-        layout="@layout/dialog_video_call_consent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:visibility="gone"/>
-
-    <include
-        android:id="@+id/ninchat_chat_close_chat_dialog"
-        layout="@layout/dialog_close_chat"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:visibility="gone" />
-
-    <include
         android:id="@+id/ninchat_chat_error"
         layout="@layout/dialog_error"
         android:layout_width="match_parent"

@@ -2,8 +2,10 @@ package com.ninchat.sdk.activities;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
@@ -140,30 +142,35 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     };
 
     public void onCloseChat(final View view) {
+        final AlertDialog dialog = new AlertDialog.Builder(this, R.style.NinchatTheme_Dialog)
+                .setView(R.layout.dialog_close_chat)
+                .setCancelable(true)
+                .create();
+        dialog.show();
+        final TextView title = dialog.findViewById(R.id.ninchat_close_chat_dialog_title);
+        title.setText(sessionManager.getCloseChat());
+        final TextView description = dialog.findViewById(R.id.ninchat_close_chat_dialog_description);
+        description.setText(sessionManager.getCloseChatDescription());
+        final Button confirm = dialog.findViewById(R.id.ninchat_close_chat_dialog_confirm);
+        confirm.setText(sessionManager.getCloseChat());
+        confirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chatClosed();
+            }
+        });
+        final Button decline = dialog.findViewById(R.id.ninchat_close_chat_dialog_decline);
+        decline.setText(sessionManager.getContinueChat());
+        decline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        hideKeyboard();
         if (chatClosed) {
             chatClosed();
-        } else {
-            findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
-            final TextView title = findViewById(R.id.ninchat_close_chat_dialog_title);
-            title.setText(sessionManager.getCloseChat());
-            final TextView description = findViewById(R.id.ninchat_close_chat_dialog_description);
-            description.setText(sessionManager.getCloseChatDescription());
-            final Button confirm = findViewById(R.id.ninchat_close_chat_dialog_confirm);
-            confirm.setText(sessionManager.getCloseChat());
-            final Button decline = findViewById(R.id.ninchat_close_chat_dialog_decline);
-            decline.setText(sessionManager.getContinueChat());
-            findViewById(R.id.ninchat_chat_close_chat_dialog).setVisibility(View.VISIBLE);
-            hideKeyboard();
         }
-    }
-
-    public void onCloseChatConfirm(final View view) {
-        chatClosed();
-    }
-
-    public void onContinueChat(final View view) {
-        findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
-        findViewById(R.id.ninchat_chat_close_chat_dialog).setVisibility(View.GONE);
     }
 
     public void chatClosed() {
@@ -207,10 +214,14 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             if (NinchatSessionManager.Broadcast.WEBRTC_MESSAGE.equals(action)) {
                 final String messageType = intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_TYPE);
                 if (NinchatSessionManager.MessageTypes.CALL.equals(messageType)) {
-                    findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
-                    final TextView title = findViewById(R.id.ninchat_video_call_consent_dialog_title);
+                    final AlertDialog dialog = new AlertDialog.Builder(NinchatChatActivity.this, R.style.NinchatTheme_Dialog)
+                            .setView(R.layout.dialog_video_call_consent)
+                            .setCancelable(true)
+                            .create();
+                    dialog.show();
+                    final TextView title = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_title);
                     title.setText(sessionManager.getVideoChatTitle());
-                    final ImageView userImage = findViewById(R.id.ninchat_video_call_consent_dialog_user_avatar);
+                    final ImageView userImage = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_user_avatar);
                     final NinchatUser user = sessionManager.getMember(intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_SENDER));
                     String avatar = user.getAvatar();
                     if (TextUtils.isEmpty(avatar)) {
@@ -222,22 +233,37 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                                 .circleCrop()
                                 .into(userImage);
                     }
-                    final TextView userName = findViewById(R.id.ninchat_video_call_consent_dialog_user_name);
+                    final TextView userName = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_user_name);
                     userName.setText(user.getName());
-                    final TextView description = findViewById(R.id.ninchat_video_call_consent_dialog_description);
+                    final TextView description = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_description);
                     description.setText(sessionManager.getVideoChatDescription());
-                    final Button accept = findViewById(R.id.ninchat_video_call_consent_dialog_accept);
+                    final Button accept = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_accept);
                     accept.setText(sessionManager.getVideoCallAccept());
-                    final Button decline = findViewById(R.id.ninchat_video_call_consent_dialog_decline);
+                    accept.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                            if (hasVideoCallPermissions()) {
+                                sendPickUpAnswer(true);
+                            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE);
+                            } else {
+                                sendPickUpAnswer(false);
+                            }
+                        }
+                    });
+                    final Button decline = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_decline);
                     decline.setText(sessionManager.getVideoCallDecline());
-                    findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.VISIBLE);
+                    decline.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            sendPickUpAnswer(false);
+                            dialog.dismiss();
+                        }
+                    });
                     hideKeyboard();
                     messageAdapter.addMetaMessage(sessionManager.getVideoCallMetaMessage());
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT))) {
-                    if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType) ||
-                            NinchatSessionManager.MessageTypes.PICK_UP.equals(messageType)) {
-                        findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
-                    }
                     if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType)) {
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
                     }
@@ -255,26 +281,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         }
     }
 
-    public void onAcceptVideoCall(final View view) {
-        findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.GONE);
-        if (hasVideoCallPermissions()) {
-            sendPickUpAnswer(true);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE);
-        } else {
-            sendPickUpAnswer(false);
-        }
-    }
-
-    public void onRejectVideoCall(final View view) {
-        findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
-        findViewById(R.id.ninchat_chat_video_call_consent_dialog).setVisibility(View.GONE);
-        sendPickUpAnswer(false);
-    }
-
     public void onVideoHangUp(final View view) {
         webRTCView.hangUp();
-        findViewById(R.id.ninchat_chat_close).setVisibility(View.VISIBLE);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
     }
 
@@ -302,7 +310,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (chatClosed) {
             return;
         }
-        findViewById(R.id.ninchat_chat_close).setVisibility(View.GONE);
         webRTCView.call();
     }
 

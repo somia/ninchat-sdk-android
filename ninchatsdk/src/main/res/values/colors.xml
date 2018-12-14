@@ -3,7 +3,6 @@
     <!-- Common color definitions -->
     <color name="ninchat_colorPrimary">#242424</color>
     <color name="ninchat_colorPrimaryDark">#0D2230</color>
-    <color name="ninchat_colorPrimaryAlpha">#80242424</color>
     <color name="ninchat_colorAccent">#008aff</color>
     <color name="ninchat_colorTimestamp">#7492AA</color>
     <color name="ninchat_activity_top_matter_background">@android:color/white</color>
