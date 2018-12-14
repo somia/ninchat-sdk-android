@@ -83,7 +83,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 inputStream.close();
                 sessionManager.sendImage(fileName, buffer);
             } catch (final Exception e) {
-                // TODO: show error?
+                sessionManager.sessionError(e);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
