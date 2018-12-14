@@ -131,7 +131,7 @@
         android:layout_height="wrap_content"
         tools:text="Skip"
         android:textColor="@color/ninchat_color_link"
-        android:layout_marginBottom="@dimen/ninchat_review_activity_skip_bottom_margin"
+        android:padding="@dimen/ninchat_review_activity_skip_bottom_margin"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:onClick="onSkipClick"/>
