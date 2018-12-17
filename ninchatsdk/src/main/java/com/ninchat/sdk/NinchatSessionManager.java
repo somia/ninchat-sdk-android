@@ -666,10 +666,15 @@ public final class NinchatSessionManager {
                     final Pair<Integer, Boolean> result = messageAdapter.add(new NinchatMessage(message.getString("text"), null, sender, System.currentTimeMillis(), !sender.equals(userId)));
                     final Context context = contextWeakReference.get();
                     if (context != null) {
-                        LocalBroadcastManager.getInstance(context)
-                                .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
-                                        .putExtra(Broadcast.MESSAGE_INDEX, result.first)
-                                        .putExtra(Broadcast.MESSAGE_UPDATED, result.second));
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                LocalBroadcastManager.getInstance(context)
+                                        .sendBroadcastSync(new Intent(Broadcast.NEW_MESSAGE)
+                                                .putExtra(Broadcast.MESSAGE_INDEX, result.first)
+                                                .putExtra(Broadcast.MESSAGE_UPDATED, result.second));
+                            }
+                        });
                     }
                 }
             } catch (final JSONException e) {
@@ -732,10 +737,15 @@ public final class NinchatSessionManager {
         final Context context = contextWeakReference.get();
         final Pair<Integer, Boolean> result = messageAdapter.add(new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
         if (context != null) {
-            LocalBroadcastManager.getInstance(context)
-                    .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
-                            .putExtra(Broadcast.MESSAGE_INDEX, result.first)
-                            .putExtra(Broadcast.MESSAGE_UPDATED, result.second));
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    LocalBroadcastManager.getInstance(context)
+                            .sendBroadcastSync(new Intent(Broadcast.NEW_MESSAGE)
+                                    .putExtra(Broadcast.MESSAGE_INDEX, result.first)
+                                    .putExtra(Broadcast.MESSAGE_UPDATED, result.second));
+                }
+            });
         }
     }
 
@@ -770,10 +780,16 @@ public final class NinchatSessionManager {
         }
         final Context context = contextWeakReference.get();
         if (context != null) {
-            LocalBroadcastManager.getInstance(context)
-                    .sendBroadcast(new Intent(Broadcast.NEW_MESSAGE)
-                            .putExtra(Broadcast.MESSAGE_INDEX, index)
-                            .putExtra(Broadcast.MESSAGE_REMOVED, !addWritingMessage));
+            final Pair<Integer, Boolean> data = new Pair<>(index, !addWritingMessage);
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    LocalBroadcastManager.getInstance(context)
+                            .sendBroadcastSync(new Intent(Broadcast.NEW_MESSAGE)
+                                    .putExtra(Broadcast.MESSAGE_INDEX, data.first)
+                                    .putExtra(Broadcast.MESSAGE_REMOVED, data.second));
+                }
+            });
         }
     }
 
