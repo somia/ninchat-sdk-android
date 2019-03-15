@@ -22,23 +22,21 @@ import org.json.JSONObject;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
 import org.webrtc.DataChannel;
+import org.webrtc.EglRenderer;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
-import org.webrtc.RendererCommon;
+import org.webrtc.RtpReceiver;
+import org.webrtc.RtpTransceiver;
 import org.webrtc.SdpObserver;
 import org.webrtc.SessionDescription;
 import org.webrtc.VideoCapturer;
-import org.webrtc.VideoCapturerAndroid;
-import org.webrtc.VideoRenderer;
-import org.webrtc.VideoRendererGui;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObserver {
@@ -49,11 +47,11 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     private MediaStream localStream;
     private AudioTrack localAudioTrack;
     private VideoTrack localVideoTrack;
-    private VideoRenderer localRender;
-    private VideoRenderer.Callbacks localRenderCallback;
+    /*private VideoRenderer localRender;
+    private VideoRenderer.Callbacks localRenderCallback;*/
     private VideoTrack remoteVideoTrack;
-    private VideoRenderer remoteRender;
-    private VideoRenderer.Callbacks remoteRenderCallback;
+    /*private VideoRenderer remoteRender;
+    private VideoRenderer.Callbacks remoteRenderCallback;*/
 
     private JSONObject offer;
     private JSONObject answer;
@@ -64,11 +62,10 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     private class InitTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
-            VideoRendererGui.setView(video, null);
+            peerConnectionFactory = PeerConnectionFactory.builder().createPeerConnectionFactory();
+            /*VideoRendererGui.setView(video, null);
             remoteRenderCallback = VideoRendererGui.create(0, 0, 100, 100, RendererCommon.ScalingType.SCALE_ASPECT_FILL, false);
-            localRenderCallback = VideoRendererGui.create(75, 75, 25, 25, RendererCommon.ScalingType.SCALE_ASPECT_FILL, true);
-            PeerConnectionFactory.initializeAndroidGlobals(videoContainer.getContext(), true, true, true);
-            peerConnectionFactory = new PeerConnectionFactory();
+            localRenderCallback = VideoRendererGui.create(75, 75, 25, 25, RendererCommon.ScalingType.SCALE_ASPECT_FILL, true);*/
             return null;
         }
     }
@@ -76,6 +73,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     public NinchatWebRTCView(final View view) {
         videoContainer = view;
         video = view.findViewById(R.id.video);
+        PeerConnectionFactory.initialize(PeerConnectionFactory.InitializationOptions.builder(view.getContext().getApplicationContext()).createInitializationOptions());
         new InitTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -97,7 +95,9 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     private void removeSpinner() {
         final ImageView spinner = videoContainer.findViewById(R.id.video_call_spinner);
-        spinner.getAnimation().cancel();
+        final Animation animation = spinner.getAnimation();
+        animation.cancel();
+        animation.reset();
         spinner.setVisibility(View.GONE);
     }
 
@@ -188,15 +188,12 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         try {
             final List<PeerConnection.IceServer> servers = new ArrayList<>();
             for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().getStunServers()) {
-                servers.add(new PeerConnection.IceServer(serverInfo.getUrl(), serverInfo.getUsername(),serverInfo.getCredential()));
+                servers.add(PeerConnection.IceServer.builder(serverInfo.getUrl()).setUsername(serverInfo.getUsername()).setPassword(serverInfo.getCredential()).createIceServer());
             }
             for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().getTurnServers()) {
-                servers.add(new PeerConnection.IceServer(serverInfo.getUrl(), serverInfo.getUsername(),serverInfo.getCredential()));
+                servers.add(PeerConnection.IceServer.builder(serverInfo.getUrl()).setUsername(serverInfo.getUsername()).setPassword(serverInfo.getCredential()).createIceServer());
             }
-            final MediaConstraints mediaConstraints = new MediaConstraints();
-            final MediaConstraints.KeyValuePair optionalConstraints = new MediaConstraints.KeyValuePair("DtlsSrtpKeyAgreement", "true");
-            mediaConstraints.optional.add(optionalConstraints);
-            peerConnection = peerConnectionFactory.createPeerConnection(servers, mediaConstraints, this);
+            peerConnection = peerConnectionFactory.createPeerConnection(servers, this);
             peerConnection.addStream(getLocalMediaStream());
             if (offer != null) {
                 peerConnection.setRemoteDescription(this, new SessionDescription(SessionDescription.Type.OFFER, sdp.getString("sdp")));
@@ -224,10 +221,10 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
         final VideoCapturer videoCapturer = getVideoCapturer();
         if (videoCapturer != null) {
-            localVideoSource = peerConnectionFactory.createVideoSource(videoCapturer, new MediaConstraints());
+            localVideoSource = peerConnectionFactory.createVideoSource(false);
             videoTrack = peerConnectionFactory.createVideoTrack("ARDAMSv0", localVideoSource);
-            localRender = new VideoRenderer(localRenderCallback);
-            videoTrack.addRenderer(localRender);
+            /*localRender = new VideoRenderer(localRenderCallback);
+            videoTrack.addRenderer(localRender);*/
         }
 
         return videoTrack;
@@ -244,10 +241,10 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                 for (int orientation : cameraOrientation) {
                     String name = "Camera " + index + ", Facing " + facing +
                             ", Orientation " + orientation;
-                    final VideoCapturer capturer = VideoCapturerAndroid.create(name);
+                    /*final VideoCapturer capturer = VideoCapturer.create(name);
                     if (capturer != null) {
                         return capturer;
-                    }
+                    }*/
                 }
             }
         }
@@ -255,19 +252,33 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     @Override
+    public void onConnectionChange(PeerConnection.PeerConnectionState newState) {
+
+    }
+
+    @Override
+    public void onTrack(RtpTransceiver transceiver) {
+
+    }
+
+    @Override
     public void onSignalingChange(PeerConnection.SignalingState signalingState) {
+
     }
 
     @Override
     public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
+
     }
 
     @Override
     public void onIceConnectionReceivingChange(boolean b) {
+
     }
 
     @Override
     public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
+
     }
 
     @Override
@@ -276,33 +287,47 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     @Override
+    public void onIceCandidatesRemoved(IceCandidate[] iceCandidates) {
+
+    }
+
+    @Override
     public void onAddStream(MediaStream mediaStream) {
-        final LinkedList<VideoTrack> videoTracks = mediaStream.videoTracks;
+        final List<VideoTrack> videoTracks = mediaStream.videoTracks;
         if (videoTracks.size() == 0) {
             return;
         }
-        remoteVideoTrack = videoTracks.getFirst();
+        remoteVideoTrack = videoTracks.get(0);
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                remoteRender = new VideoRenderer(remoteRenderCallback);
+                /*remoteRender = new VideoRenderer(remoteRenderCallback);
                 remoteVideoTrack.addRenderer(remoteRender);
-                VideoRendererGui.update(remoteRenderCallback, 0, 0, 100, 100, RendererCommon.ScalingType.SCALE_ASPECT_FILL, false);
+                VideoRendererGui.update(remoteRenderCallback, 0, 0, 100, 100, RendererCommon.ScalingType.SCALE_ASPECT_FILL, false);*/
                 removeSpinner();
             }
         });
+
     }
 
     @Override
     public void onRemoveStream(MediaStream mediaStream) {
+
     }
 
     @Override
     public void onDataChannel(DataChannel dataChannel) {
+
     }
 
     @Override
     public void onRenegotiationNeeded() {
+
+    }
+
+    @Override
+    public void onAddTrack(RtpReceiver rtpReceiver, MediaStream[] mediaStreams) {
+
     }
 
     @Override
@@ -334,17 +359,17 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     private void hangUp(final boolean sendMessage) {
         if (localVideoTrack != null) {
-            localVideoTrack.removeRenderer(localRender);
+            //localVideoTrack.removeRenderer(localRender);
         }
-        if (localRender != null) {
+        /*if (localRender != null) {
             localRender.dispose();
-        }
+        }*/
         if (remoteVideoTrack != null) {
-            remoteVideoTrack.removeRenderer(remoteRender);
+            //remoteVideoTrack.removeRenderer(remoteRender);
         }
-        if (remoteRender != null) {
+        /*if (remoteRender != null) {
             remoteRender.dispose();
-        }
+        }*/
         if (peerConnection != null) {
             peerConnection.close();
             if (sendMessage) {
