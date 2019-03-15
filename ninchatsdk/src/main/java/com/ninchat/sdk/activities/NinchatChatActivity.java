@@ -157,6 +157,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             @Override
             public void onClick(View v) {
                 chatClosed();
+                dialog.dismiss();
             }
         });
         final Button decline = dialog.findViewById(R.id.ninchat_close_chat_dialog_decline);
@@ -169,6 +170,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         });
         hideKeyboard();
         if (chatClosed) {
+            dialog.dismiss();
             chatClosed();
         }
     }
