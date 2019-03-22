@@ -2,11 +2,10 @@ package com.ninchat.sdk.views;
 
 import android.content.Context;
 import android.media.AudioManager;
-import android.opengl.GLSurfaceView;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -21,18 +20,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
+import org.webrtc.Camera2Enumerator;
 import org.webrtc.DataChannel;
-import org.webrtc.EglRenderer;
+import org.webrtc.DefaultVideoDecoderFactory;
+import org.webrtc.DefaultVideoEncoderFactory;
+import org.webrtc.EglBase;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
+import org.webrtc.RendererCommon;
 import org.webrtc.RtpReceiver;
 import org.webrtc.RtpTransceiver;
 import org.webrtc.SdpObserver;
 import org.webrtc.SessionDescription;
+import org.webrtc.SurfaceTextureHelper;
+import org.webrtc.SurfaceViewRenderer;
 import org.webrtc.VideoCapturer;
+import org.webrtc.VideoFrame;
+import org.webrtc.VideoSink;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
@@ -41,17 +48,40 @@ import java.util.List;
 
 public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObserver {
 
+    private static final String TAG = NinchatWebRTCView.class.getSimpleName();
+
+    private static class ProxyVideoSink implements VideoSink {
+        private VideoSink target;
+
+        @Override
+        synchronized public void onFrame(VideoFrame videoFrame) {
+            if (target == null) {
+                Log.d(TAG, "video sink target is null");
+                return;
+            }
+            target.onFrame(videoFrame);
+        }
+
+        synchronized public void setTarget(VideoSink target) {
+            this.target = target;
+        }
+    }
+
     private View videoContainer;
-    private GLSurfaceView video;
-    private VideoSource localVideoSource;
+    private EglBase eglBase;
+    private SurfaceViewRenderer localVideo;
     private MediaStream localStream;
+    private AudioSource audioSource;
     private AudioTrack localAudioTrack;
+    private VideoSource localVideoSource;
     private VideoTrack localVideoTrack;
-    /*private VideoRenderer localRender;
-    private VideoRenderer.Callbacks localRenderCallback;*/
+    private ProxyVideoSink localRender = new ProxyVideoSink();
+    private VideoCapturer videoCapturer;
     private VideoTrack remoteVideoTrack;
-    /*private VideoRenderer remoteRender;
-    private VideoRenderer.Callbacks remoteRenderCallback;*/
+    private List<VideoSink> remoteSinks;
+    private SurfaceViewRenderer remoteVideo;
+    private SurfaceTextureHelper surfaceTextureHelper;
+    private ProxyVideoSink remoteRender = new ProxyVideoSink();
 
     private JSONObject offer;
     private JSONObject answer;
@@ -59,22 +89,25 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     private PeerConnection peerConnection;
     private PeerConnectionFactory peerConnectionFactory;
 
-    private class InitTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            peerConnectionFactory = PeerConnectionFactory.builder().createPeerConnectionFactory();
-            /*VideoRendererGui.setView(video, null);
-            remoteRenderCallback = VideoRendererGui.create(0, 0, 100, 100, RendererCommon.ScalingType.SCALE_ASPECT_FILL, false);
-            localRenderCallback = VideoRendererGui.create(75, 75, 25, 25, RendererCommon.ScalingType.SCALE_ASPECT_FILL, true);*/
-            return null;
-        }
-    }
-
     public NinchatWebRTCView(final View view) {
         videoContainer = view;
-        video = view.findViewById(R.id.video);
+        eglBase = EglBase.create();
+        remoteVideo = view.findViewById(R.id.video);
+        localVideo = view.findViewById(R.id.pip_video);
         PeerConnectionFactory.initialize(PeerConnectionFactory.InitializationOptions.builder(view.getContext().getApplicationContext()).createInitializationOptions());
-        new InitTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        peerConnectionFactory = PeerConnectionFactory.builder()
+                .setVideoDecoderFactory(new DefaultVideoDecoderFactory(eglBase.getEglBaseContext()))
+                .setVideoEncoderFactory(new DefaultVideoEncoderFactory(eglBase.getEglBaseContext(), false, false))
+                .createPeerConnectionFactory();
+        remoteSinks = new ArrayList<>();
+        localVideo.init(eglBase.getEglBaseContext(), null);
+        localVideo.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FILL);
+        localRender.setTarget(localVideo);
+        remoteVideo.init(eglBase.getEglBaseContext(), null);
+        remoteVideo.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FILL);
+        remoteVideo.setEnableHardwareScaler(false);
+        remoteRender.setTarget(remoteVideo);
+        remoteSinks.add(remoteRender);
     }
 
     private void animateSpinner() {
@@ -143,6 +176,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             }
         } else if (NinchatSessionManager.MessageTypes.ICE_CANDIDATE.equals(messageType) && peerConnection != null && peerConnection.iceGatheringState() == PeerConnection.IceGatheringState.GATHERING) {
             JSONObject candidate;
+            Log.e("JUSSI", "payload: " + payload);
             try {
                 candidate = new JSONObject(payload).getJSONObject("candidate");
             } catch (final JSONException e) {
@@ -193,7 +227,9 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().getTurnServers()) {
                 servers.add(PeerConnection.IceServer.builder(serverInfo.getUrl()).setUsername(serverInfo.getUsername()).setPassword(serverInfo.getCredential()).createIceServer());
             }
-            peerConnection = peerConnectionFactory.createPeerConnection(servers, this);
+            final PeerConnection.RTCConfiguration configuration = new PeerConnection.RTCConfiguration(servers);
+            configuration.sdpSemantics = PeerConnection.SdpSemantics.PLAN_B;
+            peerConnection = peerConnectionFactory.createPeerConnection(configuration, this);
             peerConnection.addStream(getLocalMediaStream());
             if (offer != null) {
                 peerConnection.setRemoteDescription(this, new SessionDescription(SessionDescription.Type.OFFER, sdp.getString("sdp")));
@@ -206,25 +242,32 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     private MediaStream getLocalMediaStream() {
-        localStream = peerConnectionFactory.createLocalMediaStream("ARDAMS");
+        localStream = peerConnectionFactory.createLocalMediaStream("NINAMS");
+        audioSource = peerConnectionFactory.createAudioSource(new MediaConstraints());
+        localAudioTrack = peerConnectionFactory.createAudioTrack("NINAMSa0", audioSource);
+        localStream.addTrack(localAudioTrack);
+        final List<String> mediaIds = new ArrayList<>();
+        mediaIds.add("NINAMS");
+        peerConnection.addTrack(localAudioTrack, mediaIds);
         localVideoTrack = getLocalVideoTrack();
         if (localVideoTrack != null) {
+            surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.getEglBaseContext());
+            videoCapturer.initialize(surfaceTextureHelper, videoContainer.getContext().getApplicationContext(), localVideoSource.getCapturerObserver());
+            videoCapturer.startCapture(1280, 710, 30);
+            localVideoTrack.addSink(localRender);
             localStream.addTrack(localVideoTrack);
+            peerConnection.addTrack(localVideoTrack, mediaIds);
         }
-        final AudioSource audioSource = peerConnectionFactory.createAudioSource(new MediaConstraints());
-        localStream.addTrack(peerConnectionFactory.createAudioTrack("ARDAMSa0", audioSource));
         return localStream;
     }
 
     private VideoTrack getLocalVideoTrack() {
         VideoTrack videoTrack = null;
 
-        final VideoCapturer videoCapturer = getVideoCapturer();
+        videoCapturer = getVideoCapturer();
         if (videoCapturer != null) {
             localVideoSource = peerConnectionFactory.createVideoSource(false);
-            videoTrack = peerConnectionFactory.createVideoTrack("ARDAMSv0", localVideoSource);
-            /*localRender = new VideoRenderer(localRenderCallback);
-            videoTrack.addRenderer(localRender);*/
+            videoTrack = peerConnectionFactory.createVideoTrack("NINAMSv0", localVideoSource);
         }
 
         return videoTrack;
@@ -233,18 +276,22 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     // Hackity hack, copy-pasted from https://github.com/pristineio/apprtc-android/blob/master/app/src/main/java/org/appspot/apprtc/AppRTCDemoActivity.java
     // This works, while all the other solutions do not for some reason
     private VideoCapturer getVideoCapturer() {
-        String[] cameraFacing = { "front"};
-        int[] cameraIndex = { 0, 1 };
-        int[] cameraOrientation = { 0, 90, 180, 270 };
-        for (String facing : cameraFacing) {
-            for (int index : cameraIndex) {
-                for (int orientation : cameraOrientation) {
-                    String name = "Camera " + index + ", Facing " + facing +
-                            ", Orientation " + orientation;
-                    /*final VideoCapturer capturer = VideoCapturer.create(name);
-                    if (capturer != null) {
-                        return capturer;
-                    }*/
+        final Camera2Enumerator enumerator = new Camera2Enumerator(videoContainer.getContext());
+        final String[] deviceNames = enumerator.getDeviceNames();
+        for (final String deviceName : deviceNames) {
+            if (enumerator.isFrontFacing(deviceName)) {
+                final VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
+                if (videoCapturer != null) {
+                    return videoCapturer;
+                }
+            }
+        }
+        // Front facing camera not found, try something else
+        for (final String deviceName : deviceNames) {
+            if (!enumerator.isFrontFacing(deviceName)) {
+                VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
+                if (videoCapturer != null) {
+                    return videoCapturer;
                 }
             }
         }
@@ -298,12 +345,12 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             return;
         }
         remoteVideoTrack = videoTracks.get(0);
+        for (final VideoSink remoteSink : remoteSinks) {
+            remoteVideoTrack.addSink(remoteSink);
+        }
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                /*remoteRender = new VideoRenderer(remoteRenderCallback);
-                remoteVideoTrack.addRenderer(remoteRender);
-                VideoRendererGui.update(remoteRenderCallback, 0, 0, 100, 100, RendererCommon.ScalingType.SCALE_ASPECT_FILL, false);*/
                 removeSpinner();
             }
         });
@@ -358,25 +405,56 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     private void hangUp(final boolean sendMessage) {
-        if (localVideoTrack != null) {
-            //localVideoTrack.removeRenderer(localRender);
+        if (localRender != null) {
+            localRender.setTarget(null);
         }
-        /*if (localRender != null) {
-            localRender.dispose();
-        }*/
-        if (remoteVideoTrack != null) {
-            //remoteVideoTrack.removeRenderer(remoteRender);
+        if (remoteRender != null) {
+            remoteRender.setTarget(null);
         }
-        /*if (remoteRender != null) {
-            remoteRender.dispose();
-        }*/
+        if (localVideo != null) {
+            localVideo.release();
+            localVideoTrack = null;
+        }
+        if (remoteVideo != null) {
+            remoteVideo.release();
+            remoteVideo = null;
+        }
         if (peerConnection != null) {
-            peerConnection.close();
+            peerConnection.dispose();
+            peerConnection = null;
             if (sendMessage) {
                 NinchatSessionManager.getInstance().sendWebRTCHangUp();
             }
         }
-        peerConnection = null;
+        if (audioSource != null) {
+            audioSource.dispose();
+            audioSource = null;
+        }
+        if (videoCapturer != null) {
+            try {
+                videoCapturer.stopCapture();
+            } catch (final InterruptedException e) {
+                // Ignore
+            }
+            videoCapturer.dispose();
+            videoCapturer = null;
+        }
+        if (localVideoSource != null) {
+            localVideoSource.dispose();
+            localVideoSource = null;
+        }
+        if (surfaceTextureHelper != null) {
+            surfaceTextureHelper.dispose();
+            surfaceTextureHelper = null;
+        }
+        if (peerConnectionFactory != null) {
+            peerConnectionFactory.stopAecDump();
+            peerConnectionFactory.dispose();
+            peerConnectionFactory = null;
+        }
+        eglBase.release();
+        PeerConnectionFactory.stopInternalTracingCapture();
+        PeerConnectionFactory.shutdownInternalTracer();
         videoContainer.setVisibility(View.GONE);
     }
 
@@ -438,7 +516,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     public void onResume() {
         try {
-            video.onResume();
+            // TODO: Resume video?
         } catch (final Exception e) {
             // Not fully initialized yet, ignore the exception
         }
@@ -446,7 +524,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     public void onPause() {
         try {
-            video.onPause();
+            // TODO: Pause video?
         } catch (final Exception e) {
             // Not fully initialized yet, ignore the exception
         }

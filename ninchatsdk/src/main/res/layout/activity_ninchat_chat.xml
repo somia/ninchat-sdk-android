@@ -123,11 +123,18 @@
         tools:visibility="visible"
         android:background="@color/ninchat_colorPrimaryDark">
 
-        <android.opengl.GLSurfaceView
+        <org.webrtc.SurfaceViewRenderer
             android:id="@+id/video"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true" />
+
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/pip_video"
+            android:layout_height="72dp"
+            android:layout_width="126dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true" />
 
         <ImageView
             android:id="@+id/video_call_spinner"
