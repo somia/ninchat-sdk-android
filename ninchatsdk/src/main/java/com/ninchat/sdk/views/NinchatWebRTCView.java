@@ -452,7 +452,10 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             peerConnectionFactory.dispose();
             peerConnectionFactory = null;
         }
-        eglBase.release();
+        if (eglBase != null) {
+            eglBase.release();
+            eglBase = null;
+        }
         PeerConnectionFactory.stopInternalTracingCapture();
         PeerConnectionFactory.shutdownInternalTracer();
         videoContainer.setVisibility(View.GONE);
