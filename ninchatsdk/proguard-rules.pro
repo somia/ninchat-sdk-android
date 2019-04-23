@@ -19,3 +19,20 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# ninchat-sdk-android
+-keep class com.ninchat.sdk.** { *; }
+-keep class com.ninchat.client.** { *; }
+
+# Glide
+# http://bumptech.github.io/glide/doc/download-setup.html#proguard
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public class * extends com.bumptech.glide.module.AppGlideModule
+-keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
+**[] $VALUES;
+public *;
+}
+-dontwarn com.bumptech.glide.load.resource.bitmap.VideoDecoder
+
+# WebRTC
+-keep class org.webrtc.** { *; }
