@@ -28,6 +28,7 @@ import org.webrtc.EglBase;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
+import org.webrtc.MediaStreamTrack;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
 import org.webrtc.RendererCommon;
@@ -176,7 +177,6 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             }
         } else if (NinchatSessionManager.MessageTypes.ICE_CANDIDATE.equals(messageType) && peerConnection != null && peerConnection.iceGatheringState() == PeerConnection.IceGatheringState.GATHERING) {
             JSONObject candidate;
-            Log.e("JUSSI", "payload: " + payload);
             try {
                 candidate = new JSONObject(payload).getJSONObject("candidate");
             } catch (final JSONException e) {
@@ -228,9 +228,10 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                 servers.add(PeerConnection.IceServer.builder(serverInfo.getUrl()).setUsername(serverInfo.getUsername()).setPassword(serverInfo.getCredential()).createIceServer());
             }
             final PeerConnection.RTCConfiguration configuration = new PeerConnection.RTCConfiguration(servers);
-            configuration.sdpSemantics = PeerConnection.SdpSemantics.PLAN_B;
+            configuration.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN;
             peerConnection = peerConnectionFactory.createPeerConnection(configuration, this);
-            peerConnection.addStream(getLocalMediaStream());
+            getLocalMediaStream();
+            //peerConnection.addTrack(getLocalMediaStream());
             if (offer != null) {
                 peerConnection.setRemoteDescription(this, new SessionDescription(SessionDescription.Type.OFFER, sdp.getString("sdp")));
             } else {
@@ -239,6 +240,15 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         } catch (final Exception e) {
             // TODO: Show error?
         }
+    }
+
+    private RtpTransceiver getVideoTransceiver() {
+        for (final RtpTransceiver transceiver : peerConnection.getTransceivers()) {
+            if (transceiver.getMediaType() == MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO) {
+                return transceiver;
+            }
+        }
+        return null;
     }
 
     private MediaStream getLocalMediaStream() {
@@ -257,6 +267,11 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             localVideoTrack.addSink(localRender);
             localStream.addTrack(localVideoTrack);
             peerConnection.addTrack(localVideoTrack, mediaIds);
+            final RtpTransceiver transceiver = getVideoTransceiver();
+            if (transceiver != null) {
+                final MediaStreamTrack track = transceiver.getReceiver().track();
+                peerConnection.addTransceiver(track);
+            }
         }
         return localStream;
     }
@@ -491,14 +506,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         isMicrophoneMuted = !isMicrophoneMuted;
         final ImageView image = videoContainer.findViewById(R.id.microphone_on_off);
         image.setImageResource(isMicrophoneMuted ? R.drawable.ninchat_icon_video_microphone_off : R.drawable.ninchat_icon_video_microphone_on);
-        if (isMicrophoneMuted) {
-            localAudioTrack = localStream.audioTracks.get(0);
-            localStream.removeTrack(localAudioTrack);
-        } else {
-            localStream.addTrack(localAudioTrack);
-        }
-        peerConnection.removeStream(localStream);
-        peerConnection.addStream(localStream);
+        localAudioTrack.setEnabled(!isMicrophoneMuted);
     }
 
     private boolean isVideoDisabled = false;
@@ -507,14 +515,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         isVideoDisabled = !isVideoDisabled;
         final ImageView image = videoContainer.findViewById(R.id.video_on_off);
         image.setImageResource(isVideoDisabled ? R.drawable.ninchat_icon_video_camera_off : R.drawable.ninchat_icon_video_camera_on);
-        if (isVideoDisabled) {
-            localVideoTrack = localStream.videoTracks.get(0);
-            localStream.removeTrack(localVideoTrack);
-        } else {
-            localStream.addTrack(localVideoTrack);
-        }
-        peerConnection.removeStream(localStream);
-        peerConnection.addStream(localStream);
+        localVideoTrack.setEnabled(!isVideoDisabled);
     }
 
     public void onResume() {

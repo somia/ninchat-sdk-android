@@ -909,8 +909,8 @@ public final class NinchatSessionManager {
         try {
             final JSONObject data = new JSONObject();
             final JSONObject candidate = new JSONObject();
-            candidate.put("id", iceCandidate.sdpMLineIndex);
-            candidate.put("label", iceCandidate.sdpMid);
+            candidate.put("sdpMLineIndex", iceCandidate.sdpMLineIndex);
+            candidate.put("sdpMid", iceCandidate.sdpMid);
             candidate.put("candidate", iceCandidate.sdp);
             data.put("candidate", candidate);
             NinchatSendMessageTask.start(MessageTypes.ICE_CANDIDATE, data.toString(), channelId);
