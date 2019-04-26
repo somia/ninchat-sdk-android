@@ -176,6 +176,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     public void chatClosed() {
+        onVideoHangUp(null);
         sessionManager.partChannel();
         if (sessionManager.showRating()) {
             startActivityForResult(NinchatReviewActivity.getLaunchIntent(NinchatChatActivity.this), NinchatReviewActivity.REQUEST_CODE);
