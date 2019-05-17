@@ -3,7 +3,7 @@
   <groupId>com.ninchat</groupId>
   <artifactId>sdk</artifactId>
   <versioning>
-    <release>0.3.4</release>
+    <release>0.3.5</release>
     <versions>
       <version>0.0.6</version>
       <version>0.0.7</version>
@@ -33,7 +33,8 @@
       <version>0.3.2</version>
       <version>0.3.3</version>
       <version>0.3.4</version>
+      <version>0.3.5</version>
     </versions>
-    <lastUpdated>20190426085036</lastUpdated>
+    <lastUpdated>20190517081109</lastUpdated>
   </versioning>
 </metadata>
