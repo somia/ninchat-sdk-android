@@ -912,6 +912,8 @@ public final class NinchatSessionManager {
             candidate.put("sdpMLineIndex", iceCandidate.sdpMLineIndex);
             candidate.put("sdpMid", iceCandidate.sdpMid);
             candidate.put("candidate", iceCandidate.sdp);
+            candidate.put("id", iceCandidate.sdpMLineIndex);
+            candidate.put("label", iceCandidate.sdpMid);
             data.put("candidate", candidate);
             NinchatSendMessageTask.start(MessageTypes.ICE_CANDIDATE, data.toString(), channelId);
         } catch (final JSONException e) {
