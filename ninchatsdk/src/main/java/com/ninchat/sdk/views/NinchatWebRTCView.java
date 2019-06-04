@@ -112,13 +112,15 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     private void animateSpinner() {
-        final RotateAnimation animation = new RotateAnimation(0f, 359f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        animation.setInterpolator(new LinearInterpolator());
-        animation.setRepeatCount(Animation.INFINITE);
-        animation.setDuration(3000);
-        final ImageView spinner = videoContainer.findViewById(R.id.video_call_spinner);
-        spinner.setVisibility(View.VISIBLE);
-        spinner.setAnimation(animation);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            final RotateAnimation animation = new RotateAnimation(0f, 359f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            animation.setInterpolator(new LinearInterpolator());
+            animation.setRepeatCount(Animation.INFINITE);
+            animation.setDuration(3000);
+            final ImageView spinner = videoContainer.findViewById(R.id.video_call_spinner);
+            spinner.setVisibility(View.VISIBLE);
+            spinner.setAnimation(animation);
+        }
     }
 
     public void call() {
@@ -128,11 +130,13 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     private void removeSpinner() {
-        final ImageView spinner = videoContainer.findViewById(R.id.video_call_spinner);
-        final Animation animation = spinner.getAnimation();
-        animation.cancel();
-        animation.reset();
-        spinner.setVisibility(View.GONE);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            final ImageView spinner = videoContainer.findViewById(R.id.video_call_spinner);
+            final Animation animation = spinner.getAnimation();
+            animation.cancel();
+            animation.reset();
+            spinner.setVisibility(View.GONE);
+        }
     }
 
     public boolean handleWebRTCMessage(final String messageType, final String payload) {
