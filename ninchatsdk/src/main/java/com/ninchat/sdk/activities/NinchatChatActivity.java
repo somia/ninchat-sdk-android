@@ -248,10 +248,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                             dialog.dismiss();
                             if (hasVideoCallPermissions()) {
                                 sendPickUpAnswer(true);
-                            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE);
                             } else {
-                                sendPickUpAnswer(false);
+                                requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE);
                             }
                         }
                     });

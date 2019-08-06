@@ -495,13 +495,8 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     private void toggleAudio(final boolean mute) {
         final AudioManager audioManager = (AudioManager) videoContainer.getContext().getSystemService(Context.AUDIO_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, mute ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE, 0);
-            audioManager.adjustStreamVolume(AudioManager.STREAM_SYSTEM, mute ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE, 0);
-        } else {
-            audioManager.setStreamMute(AudioManager.STREAM_MUSIC, mute);
-            audioManager.setStreamMute(AudioManager.STREAM_SYSTEM, mute);
-        }
+        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, mute ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE, 0);
+        audioManager.adjustStreamVolume(AudioManager.STREAM_SYSTEM, mute ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE, 0);
     }
 
     private boolean isMicrophoneMuted = false;
