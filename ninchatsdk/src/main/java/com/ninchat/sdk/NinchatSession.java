@@ -35,6 +35,7 @@ public final class NinchatSession {
 
     public static final int NINCHAT_SESSION_REQUEST_CODE = NinchatSession.class.hashCode() & 0xffff;
 
+    private NinchatSessionManager sessionManager;
     private String siteSecret = null;
 
     public NinchatSession(final Context applicationContext, final String configurationKey) {
@@ -50,7 +51,7 @@ public final class NinchatSession {
     }
 
     public NinchatSession(final Context applicationContext, final String configurationKey, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
-        NinchatSessionManager.init(applicationContext, configurationKey, eventListener, logListener);
+        this.sessionManager = NinchatSessionManager.init(applicationContext, configurationKey, eventListener, logListener);
     }
 
     public void setServerAddress(final String serverAddress) {
@@ -62,11 +63,11 @@ public final class NinchatSession {
     }
 
     public void setAudienceMetadata(final Props audienceMetadata) {
-        NinchatSessionManager.getInstance().setAudienceMetadata(audienceMetadata);
+        sessionManager.setAudienceMetadata(audienceMetadata);
     }
 
     public Session getSession() {
-        return NinchatSessionManager.getInstance().getSession();
+        return sessionManager.getSession();
     }
 
     public void start(final Activity activity) {
@@ -82,11 +83,11 @@ public final class NinchatSession {
     }
 
     public void start(final Activity activity, final int requestCode, final String queueId) {
-        NinchatSessionManager.getInstance().start(activity, siteSecret, requestCode, queueId);
+        sessionManager.start(activity, siteSecret, requestCode, queueId);
     }
 
     public void close() {
-        NinchatSessionManager.getInstance().close();
+        sessionManager.close();
     }
 
 }

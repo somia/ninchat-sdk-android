@@ -101,9 +101,10 @@ public final class NinchatSessionManager {
         }
     }
 
-    static void init(final Context context, final String configurationKey, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+    static NinchatSessionManager init(final Context context, final String configurationKey, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
         instance = new NinchatSessionManager(context, eventListener, logListener);
         NinchatConfigurationFetchTask.start(configurationKey);
+        return instance;
     }
 
     private String serverAddress = null;
