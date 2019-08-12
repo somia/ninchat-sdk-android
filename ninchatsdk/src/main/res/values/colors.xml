@@ -7,6 +7,7 @@
     <color name="ninchat_colorTimestamp">#7492AA</color>
     <color name="ninchat_activity_top_matter_background">@android:color/white</color>
     <color name="ninchat_activity_bottom_matter_background">#e9e9e9</color>
+    <color name="ninchat_color_hint">#A2A2A2</color>
 
     <!-- Public colors -->
     <color name="ninchat_color_button_primary_text">@android:color/white</color>
@@ -29,7 +30,7 @@
     <color name="ninchat_color_chat_bubble_right_text">@android:color/white</color>
     <color name="ninchat_color_chat_bubble_right_link">@color/ninchat_colorAccent</color>
 
-    <color name="ninchat_color_textarea_text">#A2A2A2</color>
+    <color name="ninchat_color_textarea_text">@color/ninchat_color_hint</color>
     <color name="ninchat_color_textarea_submit_text">@color/ninchat_colorAccent</color>
 
     <color name="ninchat_color_modal_background">@android:color/white</color>
@@ -38,4 +39,8 @@
     <color name="ninchat_color_rating_positive_text">@color/ninchat_colorPrimary</color>
     <color name="ninchat_color_rating_neutral_text">@color/ninchat_colorPrimary</color>
     <color name="ninchat_color_rating_negative_text">@color/ninchat_colorPrimary</color>
+    
+    <color name="ninchat_color_ui_compose_submit_text">@color/ninchat_colorPrimary</color>
+    <color name="ninchat_color_ui_compose_select_unselected_text">@color/ninchat_color_hint</color>
+    <color name="ninchat_color_ui_compose_select_selected_text">@android:color/white</color>
 </resources>

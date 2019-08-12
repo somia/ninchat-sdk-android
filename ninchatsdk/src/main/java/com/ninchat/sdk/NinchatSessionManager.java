@@ -29,6 +29,7 @@ import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
+import com.ninchat.sdk.models.NinchatOption;
 import com.ninchat.sdk.models.NinchatQueue;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
@@ -80,6 +81,8 @@ public final class NinchatSessionManager {
     public static final class MessageTypes {
         public static final String TEXT = "ninchat.com/text";
         public static final String FILE = "ninchat.com/file";
+        public static final String UI_COMPOSE = "ninchat.com/ui/compose";
+        public static final String UI_ACTION = "ninchat.com/ui/action";
         public static final String WEBRTC_PREFIX = "ninchat.com/rtc/";
         public static final String ICE_CANDIDATE = WEBRTC_PREFIX + "ice-candidate";
         public static final String ANSWER = WEBRTC_PREFIX + "answer";
@@ -638,7 +641,38 @@ public final class NinchatSessionManager {
                             .putExtra(Broadcast.WEBRTC_MESSAGE_TYPE, messageType)
                             .putExtra(Broadcast.WEBRTC_MESSAGE_SENDER, sender)
                             .putExtra(Broadcast.WEBRTC_MESSAGE_CONTENT, builder.toString()));
-            return;
+        }
+        if (MessageTypes.UI_COMPOSE.equals(messageType)) {
+            final StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < payload.length(); ++i) {
+                builder.append(new String(payload.get(i)));
+            }
+            try {
+                final JSONArray messages = new JSONArray(builder.toString());
+                for (int j = 0; j < messages.length(); ++j) {
+                    final JSONObject message = messages.getJSONObject(j);
+                    final List<NinchatOption> messageOptions = new ArrayList<>();
+                    final JSONArray options = message.getJSONArray("options");
+                    for (int k = 0; k < options.length(); ++k) {
+                        messageOptions.add(new NinchatOption(options.getJSONObject(k)));
+                    }
+                    final Pair<Integer, Boolean> result = messageAdapter.add(new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, message.getString("label"), message, messageOptions));
+                    final Context context = contextWeakReference.get();
+                    if (context != null) {
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                LocalBroadcastManager.getInstance(context)
+                                        .sendBroadcastSync(new Intent(Broadcast.NEW_MESSAGE)
+                                                .putExtra(Broadcast.MESSAGE_INDEX, result.first)
+                                                .putExtra(Broadcast.MESSAGE_UPDATED, result.second));
+                            }
+                        });
+                    }
+                }
+            } catch (final JSONException e) {
+                // Ignore
+            }
         }
         if (!messageType.equals(MessageTypes.TEXT) && !messageType.equals(MessageTypes.FILE)) {
             return;
@@ -860,6 +894,17 @@ public final class NinchatSessionManager {
         }
     }
 
+    public void sendUIAction(final JSONObject selected) {
+        try {
+            final JSONObject data = new JSONObject();
+            data.put("action", "click");
+            data.put("target", selected);
+            NinchatSendMessageTask.start(MessageTypes.UI_ACTION, data.toString(), channelId);
+        } catch (final JSONException e) {
+            Log.e(TAG, "Error when sending multichoice answer!", e);
+        }
+    }
+
     public void sendIsWritingUpdate(final boolean isWriting) {
         NinchatSendIsWritingTask.start(channelId, userId, isWriting);
     }
@@ -1033,6 +1078,15 @@ public final class NinchatSessionManager {
             return getDefault().getString(key);
         } catch (final Exception e) {
             return null;
+        }
+    }
+
+    public String getSubmitButtonText() {
+        final String key = "Submit";
+        try {
+            return getTranslations().getString(key);
+        } catch (final Exception e) {
+            return key;
         }
     }
 

@@ -15,6 +15,7 @@
 
     <style name="NinchatTheme.Button" parent="android:Widget.Material.Light.Button">
         <item name="android:height">@dimen/ninchat_button_height</item>
+        <item name="android:layout_height">@dimen/ninchat_button_height</item>
         <item name="android:background">@drawable/ninchat_chat_primary_button</item>
         <item name="android:layout_marginTop">@dimen/ninchat_button_vertical_margin</item>
         <item name="android:layout_marginBottom">@dimen/ninchat_button_vertical_margin</item>
@@ -28,6 +29,7 @@
 
     <style name="NinchatTheme.Button.Dialog" parent="NinchatTheme.Button">
         <item name="android:height">@dimen/ninchat_dialog_button_height</item>
+        <item name="android:layout_height">@dimen/ninchat_dialog_button_height</item>
     </style>
 
     <style name="NinchatTheme.Button.Close" parent="NinchatTheme.Button">
@@ -37,10 +39,12 @@
 
     <style name="NinchatTheme.Button.Dialog.Close" parent="NinchatTheme.Button.Close">
         <item name="android:height">@dimen/ninchat_dialog_button_height</item>
+        <item name="android:layout_height">@dimen/ninchat_dialog_button_height</item>
     </style>
 
     <style name="NinchatTheme.Button.Close.Chat" parent="NinchatTheme.Button.Close">
         <item name="android:height">@dimen/ninchat_close_button_height</item>
+        <item name="android:layout_height">@dimen/ninchat_close_button_height</item>
         <item name="android:background">@drawable/ninchat_chat_close_button</item>
         <item name="android:drawableEnd">@drawable/ninchat_icon_chat_close_button</item>
         <item name="android:drawablePadding">@dimen/ninchat_chat_activity_close_button_end_margin</item>
@@ -48,9 +52,27 @@
 
     <style name="NinchatTheme.Button.Send" parent="NinchatTheme.Button.Close">
         <item name="android:height">@dimen/ninchat_send_button_height</item>
+        <item name="android:layout_height">@dimen/ninchat_send_button_height</item>
         <item name="android:background">@drawable/ninchat_textarea_submit_button</item>
         <item name="android:paddingStart">@dimen/ninchat_chat_activity_send_text_padding</item>
         <item name="android:paddingEnd">@dimen/ninchat_chat_activity_send_text_padding</item>
+    </style>
+
+    <style name="NinchatTheme.Button.MultiChoice.Send" parent="NinchatTheme.Button.Send">
+        <item name="android:height">@dimen/ninchat_send_button_height</item>
+        <item name="android:layout_height">@dimen/ninchat_send_button_height</item>
+        <item name="android:background">@drawable/ninchat_ui_compose_select_submit</item>
+    </style>
+
+    <style name="NinchatTheme.Button.MultiChoice" parent="NinchatTheme.Button.MultiChoice.Send">
+        <item name="android:background">@drawable/ninchat_ui_compose_select_button</item>
+        <item name="android:textColor">@color/ninchat_color_ui_compose_select_unselected_text</item>
+        <item name="android:lines">0</item>
+    </style>
+
+    <style name="NinchatTheme.Button.MultiChoice.Selected" parent="NinchatTheme.Button.MultiChoice">
+        <item name="android:background">@drawable/ninchat_ui_compose_select_button_selected</item>
+        <item name="android:textColor">@color/ninchat_color_ui_compose_select_selected_text</item>
     </style>
 
     <style name="NinchatTheme.Dialog" parent="android:Theme.Material.Dialog.Alert">

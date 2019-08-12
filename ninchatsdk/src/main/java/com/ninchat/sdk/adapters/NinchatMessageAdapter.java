@@ -4,11 +4,14 @@ import android.graphics.drawable.AnimationDrawable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +27,8 @@ import com.ninchat.sdk.activities.NinchatChatActivity;
 import com.ninchat.sdk.activities.NinchatMediaActivity;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
+
+import org.json.JSONException;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
@@ -162,6 +167,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.VISIBLE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_image).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(isContinuedMessage ? View.GONE : View.VISIBLE);
                 setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_message).setVisibility(View.GONE);
@@ -180,12 +186,51 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 if (isContinuedMessage) {
                     itemView.findViewById(R.id.ninchat_chat_message_agent).setPadding(0, 0, 0, 0);
                 }
+            } else if (data.getType().equals(NinchatMessage.Type.MULTICHOICE)) {
+                itemView.findViewById(R.id.ninchat_chat_message_meta).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.VISIBLE);
+                itemView.findViewById(R.id.ninchat_chat_message_agent_image).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(isContinuedMessage ? View.GONE : View.VISIBLE);
+                setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
+                final TextView agentName = itemView.findViewById(R.id.ninchat_chat_message_agent_name);
+                agentName.setText(data.getSender());
+                itemView.findViewById(R.id.ninchat_chat_message_agent_wrapper)
+                        .setBackgroundResource(isContinuedMessage ?
+                                R.drawable.ninchat_chat_bubble_left_repeated :
+                                R.drawable.ninchat_chat_bubble_left);
+                final TextView message = itemView.findViewById(R.id.ninchat_chat_message_agent_message);
+                message.setVisibility(View.VISIBLE);
+                message.setText(data.getMessage());
+                itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice).setVisibility(View.VISIBLE);
+                final RecyclerView options = itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice_options);
+                options.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
+                options.setAdapter(new NinchatMultiChoiceAdapter(data, this));
+                final Button sendButton = itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice_send);
+                sendButton.setText(NinchatSessionManager.getInstance().getSubmitButtonText());
+                sendButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            NinchatSessionManager.getInstance().sendUIAction(data.getMultiChoiceData());
+                        } catch (final JSONException e) {
+                            Log.e(NinchatMessageAdapter.class.getSimpleName(), "Error when sending multichoice answer!", e);
+                        }
+                    }
+                });
+                itemView.findViewById(R.id.ninchat_chat_message_agent_wrapper).getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+                if (isContinuedMessage) {
+                    itemView.findViewById(R.id.ninchat_chat_message_agent).setPadding(0, 0, 0, 0);
+                }
             } else if (data.isRemoteMessage()) {
                 itemView.findViewById(R.id.ninchat_chat_message_meta).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_writing).setVisibility(View.GONE);
+                itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice).setVisibility(View.GONE);
                 bindMessage(R.id.ninchat_chat_message_agent,
                         R.id.ninchat_chat_message_agent_title,
                         R.id.ninchat_chat_message_agent_name,
@@ -214,6 +259,19 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         R.drawable.ninchat_chat_bubble_right,
                         R.drawable.ninchat_chat_bubble_right_repeated);
             }
+            final RecyclerView recyclerView = recyclerViewWeakReference.get();
+            if (recyclerView != null) {
+                ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(true);
+            }
+        }
+
+        public void optionToggled(final NinchatMessage message, final int position) {
+            final RecyclerView recyclerView = recyclerViewWeakReference.get();
+            if (recyclerView != null) {
+                ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+            }
+            message.toggleOption(position);
+            notifyItemChanged(getAdapterPosition());
         }
     }
 

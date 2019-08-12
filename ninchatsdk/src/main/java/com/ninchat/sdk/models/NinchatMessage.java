@@ -6,7 +6,12 @@ import android.text.Spanned;
 
 import com.ninchat.sdk.NinchatSessionManager;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
+import java.util.List;
 
 public final class NinchatMessage {
 
@@ -15,7 +20,8 @@ public final class NinchatMessage {
         MESSAGE,
         WRITING,
         END,
-        PADDING
+        PADDING,
+        MULTICHOICE
     }
 
     private Type type;
@@ -24,6 +30,8 @@ public final class NinchatMessage {
     private String fileId;
     private Date timestamp;
     private boolean isRemoteMessage = false;
+    private JSONObject data;
+    private List<NinchatOption> options;
 
     public NinchatMessage(final Type type) {
         this(type, null, null, null, System.currentTimeMillis(), false);
@@ -31,6 +39,12 @@ public final class NinchatMessage {
 
     public NinchatMessage(final Type type, final String data) {
         this(type, type == Type.WRITING ? null : data, null, type == Type.WRITING ? data : null, System.currentTimeMillis(), true);
+    }
+
+    public NinchatMessage(final Type type, final String sender, final String label, final JSONObject data, final List<NinchatOption> options) {
+        this(type, label, null, sender, System.currentTimeMillis(), true);
+        this.data = data;
+        this.options = options;
     }
 
     public NinchatMessage(final String message, final String fileId, final String sender, long timestamp, final boolean isRemoteMessage) {
@@ -73,5 +87,22 @@ public final class NinchatMessage {
 
     public boolean isRemoteMessage() {
         return isRemoteMessage;
+    }
+
+    public List<NinchatOption> getOptions() {
+        return options;
+    }
+
+    public void toggleOption(final int position) {
+        final NinchatOption option = options.get(position);
+        option.toggle();
+    }
+
+    public JSONObject getMultiChoiceData() throws JSONException {
+        final JSONArray options = new JSONArray();
+        for (final NinchatOption option : this.options) {
+            options.put(option.toJSON());
+        }
+        return this.data.put("options", options);
     }
 }

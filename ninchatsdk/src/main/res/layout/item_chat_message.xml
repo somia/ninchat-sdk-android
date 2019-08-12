@@ -95,6 +95,32 @@
                     android:visibility="gone"
                     tools:visibility="visible"/>
 
+                <LinearLayout
+                    android:id="@+id/ninchat_chat_message_agent_multichoice"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    tools:visibility="visible">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/ninchat_chat_message_agent_multichoice_options"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:orientation="vertical"
+                        tools:listitem="@layout/item_chat_multichoice_unselected"
+                        tools:itemCount="3"/>
+
+                    <Button
+                        android:id="@+id/ninchat_chat_message_agent_multichoice_send"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/ninchat_send_button_height"
+                        android:layout_gravity="end"
+                        style="@style/NinchatTheme.Button.MultiChoice.Send"
+                        tools:text="Send"/>
+
+                </LinearLayout>
+
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">

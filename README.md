@@ -115,6 +115,9 @@ For now, the application can override certain images/animations of the SDK. The 
 | ninchat_icon_rating_positive   | Ratings view positive icon |  |
 | ninchat_icon_rating_neutral   | Ratings view neutral icon |  |
 | ninchat_icon_rating_negative   | Ratings view negative icon |  |
+| ninchat_ui_compose_select_button   | Multichoice select button, unselected |  |
+| ninchat_ui_compose_select_button_selected   | Multichoice select button, selected |  |
+| ninchat_ui_compose_select_submit   | Multichoice selection submit button |  |
 
 ### Colors
 
@@ -122,27 +125,30 @@ In addition, the application can override colors used in the SDK. The colors nee
 
 | Asset name       | Related UI control(s)
 |:------------- |:-------------|
-| ninchat_color_button_primary_text | Text on 'primary' buttons
-| ninchat_color_button_secondary_text | Text on 'secondary' buttons
-| ninchat_color_info_text | Chat view's meta information (eg. 'Chat started')
-| ninchat_color_chat_name | User name above chat bubbles
-| ninchat_color_chat_timestamp | Timestamp above chat bubbles
-| ninchat_color_chat_bubble_left_text | Text in others' chat messages
-| ninchat_color_chat_bubble_right_text | Text in my chat messages
-| ninchat_color_textarea_text | Chat input text
-| ninchat_color_textarea_submit_text | Message submit button title
-| ninchat_color_chat_bubble_left_link | Link color in others' messages
-| ninchat_color_chat_bubble_right_link | Link color in my messages
-| ninchat_color_modal_background | Background in 'modal dialogs'
-| ninchat_color_modal_title_text | Text in 'modal dialogs'
-| ninchat_color_background_top | Background of the top part in some views
-| ninchat_color_text_top | Text in top parts of some views
-| ninchat_color_link | Link color (except in chat bubbles)
-| ninchat_color_background_bottom | Background of the bottom part in some views
-| ninchat_color_text_bottom | Text in bottom parts of some views
-| ninchat_color_rating_positive_text | Text of the positive rating button
-| ninchat_color_rating_neutral_text | Text of the neutral rating button
-| ninchat_color_rating_negative_text | Text of the negative rating button
+| ninchat_color_button_primary_text | Text on 'primary' buttons |
+| ninchat_color_button_secondary_text | Text on 'secondary' buttons |
+| ninchat_color_info_text | Chat view's meta information (eg. 'Chat started') |
+| ninchat_color_chat_name | User name above chat bubbles |
+| ninchat_color_chat_timestamp | Timestamp above chat bubbles |
+| ninchat_color_chat_bubble_left_text | Text in others' chat messages |
+| ninchat_color_chat_bubble_right_text | Text in my chat messages |
+| ninchat_color_textarea_text | Chat input text |
+| ninchat_color_textarea_submit_text | Message submit button title |
+| ninchat_color_chat_bubble_left_link | Link color in others' messages |
+| ninchat_color_chat_bubble_right_link | Link color in my messages |
+| ninchat_color_modal_background | Background in 'modal dialogs' |
+| ninchat_color_modal_title_text | Text in 'modal dialogs' |
+| ninchat_color_background_top | Background of the top part in some views |
+| ninchat_color_text_top | Text in top parts of some views |
+| ninchat_color_link | Link color (except in chat bubbles) |
+| ninchat_color_background_bottom | Background of the bottom part in some views |
+| ninchat_color_text_bottom | Text in bottom parts of some views |
+| ninchat_color_rating_positive_text | Text on the positive rating button |
+| ninchat_color_rating_neutral_text | Text on the neutral rating button |
+| ninchat_color_rating_negative_text | Text on the negative rating button |
+| ninchat_color_ui_compose_select_unselected_text | Text on the unselected multichoice button |
+| ninchat_color_ui_compose_select_selected_text | Text on the selected multichoice button |
+| ninchat_color_ui_compose_submit_text | Text on the multichoice selection submit button |
 
 ## Building the Go library
 
