@@ -1,8 +1,6 @@
 package com.ninchat.sdk.adapters;
 
 import android.graphics.drawable.AnimationDrawable;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -282,83 +280,6 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         }
     }
 
-    protected static class NotifyType {
-        protected enum Type {
-            ADDED,
-            REMOVED,
-            CHANGED,
-            ADDED_AND_CHANGED,
-            UPDATE
-        }
-
-        protected Type type;
-        protected int position;
-        protected int[] range;
-
-        public NotifyType(Type type, int position) {
-            this.type = type;
-            this.position = position;
-            this.range = null;
-        }
-
-        public NotifyType(Type type) {
-            this(type, -1);
-        }
-
-        public NotifyType(Type type, int startPosition, int range) {
-            this(type, -1);
-            this.range = new int[] {startPosition, range};
-        }
-
-        public NotifyType(Type type, int position, int startPosition, int range) {
-            this(type, position);
-            this.range = new int[] {startPosition, range};
-        }
-    }
-
-    protected NotifyType notifyType = null;
-
-    protected RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
-        @Override
-        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-            if (newState == RecyclerView.SCROLL_STATE_IDLE && notifyType != null) {
-                final int[] range = notifyType.range;
-                switch (notifyType.type) {
-                    case ADDED:
-                        if (range != null) {
-                            notifyItemRangeInserted(range[0], range[1]);
-                        } else {
-                            notifyItemInserted(notifyType.position);
-                        }
-                        break;
-                    case REMOVED:
-                        if (range != null) {
-                            notifyItemRangeRemoved(range[0], range[1]);
-                        } else {
-                            notifyItemRemoved(notifyType.position);
-                        }
-                        break;
-                    case CHANGED:
-                        if (range != null) {
-                            notifyItemRangeChanged(range[0], range[1]);
-                        } else {
-                            notifyItemChanged(notifyType.position);
-                        }
-                        break;
-                    case ADDED_AND_CHANGED:
-                        notifyItemInserted(notifyType.position);
-                        notifyItemRangeChanged(range[0], range[1]);
-                        break;
-                    default:
-                        notifyDataSetChanged();
-                }
-            }
-            notifyType = null;
-            scrollToLastMessage();
-            super.onScrollStateChanged(recyclerView, newState);
-        }
-    };
-
     protected static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:mm", new Locale("fi-FI"));
 
     protected WeakReference<NinchatChatActivity> activityWeakReference;
@@ -420,55 +341,23 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         return -1;
     }
 
-    private void scrollToLastMessage() {
+    public void messagesUpdated(final int index, final boolean updated, final boolean removed) {
+        if (index < 0) {
+            notifyDataSetChanged();
+        } else if (updated) {
+            notifyItemChanged(index);
+        } else if (removed) {
+            notifyItemRemoved(index);
+        } else {
+            notifyItemInserted(index);
+            if (index < getItemCount() - 2) {
+                notifyItemRangeChanged(index + 1, getItemCount() - index);
+            }
+        }
         final int position = getItemCount() - 1;
         final RecyclerView recyclerView = recyclerViewWeakReference.get();
         if (recyclerView != null) {
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    recyclerView.smoothScrollToPosition(position);
-                }
-            }, 200);
-        }
-    }
-
-    public void messagesUpdated(final int index, final boolean updated, final boolean removed) {
-        final RecyclerView recyclerView = recyclerViewWeakReference.get();
-        final boolean postPone = recyclerView != null && recyclerView.getScrollState() != RecyclerView.SCROLL_STATE_IDLE;
-        if (index < 0) {
-            if (postPone) {
-                notifyType = new NotifyType(NotifyType.Type.UPDATE);
-            } else {
-                notifyDataSetChanged();
-            }
-        } else if (updated) {
-            if (postPone) {
-                notifyType = new NotifyType(NotifyType.Type.CHANGED, index);
-            } else {
-                notifyItemChanged(index);
-            }
-        } else if (removed) {
-            if (postPone) {
-                notifyType = new NotifyType(NotifyType.Type.REMOVED, index);
-            } else {
-                notifyItemRemoved(index);
-            }
-        } else {
-            if (postPone) {
-                notifyType = new NotifyType(NotifyType.Type.ADDED, index);
-                if (index < getItemCount() - 1) {
-                    notifyType = new NotifyType(NotifyType.Type.ADDED_AND_CHANGED, index, index + 1, getItemCount() - index);
-                }
-            } else {
-                notifyItemInserted(index);
-                if (index < getItemCount() - 2) {
-                    notifyItemRangeChanged(index + 1, getItemCount() - index);
-                }
-            }
-        }
-        if (!postPone) {
-            scrollToLastMessage();
+            recyclerView.smoothScrollToPosition(position);
         }
     }
 
@@ -477,26 +366,22 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         final int index = getItemCount() - 1;
         messages.add(index > 0 ? index : getItemCount(), new NinchatMessage(NinchatMessage.Type.END));
         final int position = getItemCount() - (index > 0 ? 2 : 1);
+        notifyItemInserted(position);
         final RecyclerView recyclerView = recyclerViewWeakReference.get();
-        if (recyclerView != null && recyclerView.getScrollState() != RecyclerView.SCROLL_STATE_IDLE) {
-            notifyType = new NotifyType(NotifyType.Type.ADDED, position);
-        } else {
-            notifyItemInserted(position);
-            scrollToLastMessage();
+        if (recyclerView != null) {
+            recyclerView.smoothScrollToPosition(position);
         }
     }
 
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
-        recyclerView.addOnScrollListener(this.scrollListener);
         this.recyclerViewWeakReference = new WeakReference<>(recyclerView);
     }
 
     @Override
     public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
-        recyclerView.removeOnScrollListener(this.scrollListener);
         this.recyclerViewWeakReference = new WeakReference<>(null);
     }
 
