@@ -39,19 +39,35 @@ public final class NinchatSession {
     private String siteSecret = null;
 
     public NinchatSession(final Context applicationContext, final String configurationKey) {
-        this(applicationContext, configurationKey, null, null);
+        this(applicationContext, configurationKey, null, null, null);
+    }
+
+    public NinchatSession(final Context applicationContext, final String configurationKey, final String[] preferredConfigurations) {
+        this(applicationContext, configurationKey, preferredConfigurations, null, null);
     }
 
     public NinchatSession(final Context applicationContext, final String configurationKey, final NinchatSDKEventListener eventListener) {
-        this(applicationContext, configurationKey, eventListener, null);
+        this(applicationContext, configurationKey, null, eventListener, null);
+    }
+
+    public NinchatSession(final Context applicationContext, final String configurationKey, final String[] preferredConfigurations, final NinchatSDKEventListener eventListener) {
+        this(applicationContext, configurationKey, preferredConfigurations, eventListener, null);
     }
 
     public NinchatSession(final Context applicationContext, final String configurationKey, final NinchatSDKLogListener logListener) {
-        this(applicationContext, configurationKey, null, logListener);
+        this(applicationContext, configurationKey, null, null, logListener);
+    }
+
+    public NinchatSession(final Context applicationContext, final String configurationKey, final String[] preferredConfigurations, final NinchatSDKLogListener logListener) {
+        this(applicationContext, configurationKey, preferredConfigurations, null, logListener);
     }
 
     public NinchatSession(final Context applicationContext, final String configurationKey, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
-        this.sessionManager = NinchatSessionManager.init(applicationContext, configurationKey, eventListener, logListener);
+        this(applicationContext, configurationKey, null, eventListener, logListener);
+    }
+
+    public NinchatSession(final Context applicationContext, final String configurationKey, final String[] preferredConfigurations, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+        this.sessionManager = NinchatSessionManager.init(applicationContext, configurationKey, preferredConfigurations, eventListener, logListener);
     }
 
     public void setServerAddress(final String serverAddress) {

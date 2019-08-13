@@ -49,6 +49,12 @@ The `NinchatSession` class has a setter for audience metadata (i.e. user informa
 
 ### <a name="optionalparameters"></a>Optional parameters
 
+The API client accepts a list of preferred configurations when it is created as a `String` *array*:
+
+    NinchatSession session = new NinchatSession(applicationContext, configurationKey, preferredConfigurations); 
+
+With this array, the various parameters used by the SDK are read from the preferred configuration data the SDK loads when it is started. Should a parameter be missing from the preferred configuration data, the SDK tries to read it from the next preferred configuration. If the parameter is not found in any preferred configurations, the SDK uses the `default` configuration or the parameter key (or a sensible default value) as its value.
+
 The start method can take the request code (`int`) as optional parameters:
 
     session.start(activity, requestCode);
@@ -69,8 +75,11 @@ The SDK exposes the low-level communication interface with the method `getSessio
 Furthermore, the host application can register itself (or its property/properties) as a listener to the low-level API events and/or logs by creating the `NinchatSession` instance with the listeners as constructor arguments:
 
     session = new NinchatSession(applicationContext, configurationKey, eventListener);
+    session = new NinchatSession(applicationContext, configurationKey, preferredConfigurations, eventListener);
     session = new NinchatSession(applicationContext, configurationKey, logListener);
+    session = new NinchatSession(applicationContext, configurationKey, preferredConfigurations, logListener);
     session = new NinchatSession(applicationContext, configurationKey, eventListener, logListener);
+    session = new NinchatSession(applicationContext, configurationKey, preferredConfigurations, eventListener, logListener);
 
 The argument `eventListener`, when non-null, must be an instance of the `NinchatSDKEventListener` class and the `logListener` an instance of the `NinchatSDKLogListener`interface.
 

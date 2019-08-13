@@ -104,8 +104,8 @@ public final class NinchatSessionManager {
         }
     }
 
-    static NinchatSessionManager init(final Context context, final String configurationKey, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
-        instance = new NinchatSessionManager(context, eventListener, logListener);
+    static NinchatSessionManager init(final Context context, final String configurationKey, final String[] preferredConfigurations, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+        instance = new NinchatSessionManager(context, preferredConfigurations, eventListener, logListener);
         NinchatConfigurationFetchTask.start(configurationKey);
         return instance;
     }
@@ -153,9 +153,11 @@ public final class NinchatSessionManager {
 
     protected static NinchatSessionManager instance;
     protected static final String TAG = NinchatSessionManager.class.getSimpleName();
+    private String[] preferredConfigurations;
 
-    protected NinchatSessionManager(final Context context, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+    protected NinchatSessionManager(final Context context, final String[] preferredConfigurations, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
         this.contextWeakReference = new WeakReference<>(context);
+        this.preferredConfigurations = preferredConfigurations;
         this.eventListenerWeakReference = new WeakReference<>(eventListener);
         this.logListenerWeakReference = new WeakReference<>(logListener);
         this.configuration = null;
@@ -983,6 +985,79 @@ public final class NinchatSessionManager {
         }
     }
 
+    private JSONArray getArrayFromConfiguration(final String key) {
+        JSONArray array = null;
+        if (configuration != null) {
+            if (preferredConfigurations != null) {
+                for (final String configuration : preferredConfigurations) {
+                    try {
+                        array = this.configuration.getJSONObject(configuration).getJSONArray(key);
+                    } catch (final Exception e) {
+                        // Ignore…
+                    }
+                    if (array != null) {
+                        return array;
+                    }
+                }
+            }
+            try {
+                return getDefault().getJSONArray(key);
+            } catch (final Exception e) {
+                // Ignore…
+            }
+        }
+        return array;
+    }
+
+    private boolean getBooleanFromConfiguration(final String key) throws JSONException {
+        Boolean value = null;
+        if (configuration != null) {
+            if (preferredConfigurations != null) {
+                for (final String configuration : preferredConfigurations) {
+                    try {
+                        value = this.configuration.getJSONObject(configuration).getBoolean(key);
+                    } catch (final Exception e) {
+                        // Ignore…
+                    }
+                    if (value != null) {
+                        return value;
+                    }
+                }
+            }
+            try {
+                return getDefault().getBoolean(key);
+            } catch (final Exception e) {
+                throw new JSONException("");
+            }
+        }
+        throw new JSONException("");
+    }
+
+    private String getStringFromConfiguration(final String key) throws JSONException {
+        String value = null;
+        if (configuration != null) {
+            if (preferredConfigurations != null) {
+                for (final String configuration : preferredConfigurations) {
+                    try {
+                        value = this.configuration.getJSONObject(configuration).getString(key);
+                    } catch (final Exception e) {
+                        // Ignore…
+                    }
+                    if (value != null) {
+                        return value;
+                    }
+                }
+            }
+            try {
+                return getDefault().getString(key);
+            } catch (final Exception e) {
+                throw new JSONException("");
+            }
+        }
+        throw new JSONException("");
+
+    }
+
     private JSONObject getDefault() throws JSONException {
         if (configuration != null) {
             return configuration.getJSONObject("default");
@@ -993,7 +1068,7 @@ public final class NinchatSessionManager {
     private List<String> getAudienceQueues() {
         final List<String> queues = new ArrayList<>();
         try {
-            final JSONArray array = getDefault().getJSONArray("audienceQueues");
+            final JSONArray array = getArrayFromConfiguration("audienceQueues");
             for (int i = 0; i < array.length(); ++i) {
                 queues.add(array.getString(i));
             }
@@ -1005,7 +1080,7 @@ public final class NinchatSessionManager {
 
     public String getRealmId() {
         try {
-            return getDefault().getString("audienceRealmId");
+            return getStringFromConfiguration("audienceRealmId");
         } catch (final Exception e) {
             return null;
         }
@@ -1026,7 +1101,7 @@ public final class NinchatSessionManager {
         final String key = "welcome";
         String welcomeText = key;
         try {
-                welcomeText = getDefault().getString(key);
+                welcomeText = getStringFromConfiguration(key);
         } catch (final Exception e) {
         }
         return toSpanned(welcomeText);
@@ -1035,38 +1110,49 @@ public final class NinchatSessionManager {
     public Spanned getNoQueues() {
         final String key = "noQueuesText";
         try {
-            return toSpanned(getDefault().getString(key));
+            return toSpanned(getStringFromConfiguration(key));
         } catch (final Exception e) {
             return toSpanned(key);
         }
     }
 
-    private JSONObject getTranslations() throws JSONException, NullPointerException {
-        return getDefault().getJSONObject("translations");
+    private String getTranslation(final String key) {
+        if (configuration != null) {
+            if (preferredConfigurations != null) {
+                for (final String configuration : preferredConfigurations) {
+                    try {
+                        return this.configuration.getJSONObject(configuration).getJSONObject("translations").getString(key);
+                    } catch (final Exception e) {
+                        // Ignore…
+                    }
+                }
+            }
+            try {
+                return getDefault().getJSONObject("translations").getString(key);
+            } catch (final Exception e) {
+                // Ignore…
+            }
+        }
+        return key;
     }
 
     public boolean showNoThanksButton() {
         final String key = "noThanksButton";
         try {
-            return getDefault().getBoolean(key);
+            return getBooleanFromConfiguration(key);
         } catch (final Exception e) {
             return true;
         }
     }
 
     public String getCloseWindow() {
-        final String key = "Close window";
-        try {
-            return getTranslations().getString(key);
-        } catch (final Exception e) {
-            return key;
-        }
+        return getTranslation("Close window");
     }
 
     public String getUserName() {
         final String key = "userName";
         try {
-            return getDefault().getString(key);
+            return getStringFromConfiguration(key);
         } catch (final Exception e) {
             return null;
         }
@@ -1075,25 +1161,20 @@ public final class NinchatSessionManager {
     public String getSendButtonText() {
         final String key = "sendButtonText";
         try {
-            return getDefault().getString(key);
+            return getStringFromConfiguration(key);
         } catch (final Exception e) {
             return null;
         }
     }
 
     public String getSubmitButtonText() {
-        final String key = "Submit";
-        try {
-            return getTranslations().getString(key);
-        } catch (final Exception e) {
-            return key;
-        }
+        return getTranslation("Submit");
     }
 
     public boolean isAttachmentsEnabled() {
         final String key = "supportFiles";
         try {
-            return getDefault().getBoolean(key);
+            return getBooleanFromConfiguration(key);
         } catch (final Exception e) {
             return false;
         }
@@ -1102,7 +1183,7 @@ public final class NinchatSessionManager {
     public boolean isVideoEnabled() {
         final String key = "supportVideo";
         try {
-            return getDefault().getBoolean(key);
+            return getBooleanFromConfiguration(key);
         } catch (final Exception e) {
             return false;
         }
@@ -1111,7 +1192,7 @@ public final class NinchatSessionManager {
     public boolean showAvatars(final boolean agentAvatar) {
         final String key = agentAvatar ? "agentAvatar" : "userAvatar";
         try {
-            return getDefault().getBoolean(key);
+            return getBooleanFromConfiguration(key);
         } catch (final Exception e) {
             return getDefaultAvatar(agentAvatar) != null;
         }
@@ -1120,7 +1201,7 @@ public final class NinchatSessionManager {
     public String getDefaultAvatar(final boolean agentAvatar) {
         final String key = agentAvatar ? "agentAvatar" : "userAvatar";
         try {
-            return getDefault().getString(key);
+            return getStringFromConfiguration(key);
         } catch (final Exception e) {
             return null;
         }
@@ -1132,12 +1213,7 @@ public final class NinchatSessionManager {
 
     public String getChatStarted() {
         final String key = "Audience in queue {{queue}} accepted.";
-        String chatStarted = key;
-        try {
-            chatStarted = getTranslations().getString(key);
-        } catch (final Exception e) {
-            // Ignore
-        }
+        String chatStarted = getTranslation(key);
         final NinchatQueue queue = getQueue(this.queueId);
         String name = "";
         if (queue != null) {
@@ -1147,132 +1223,70 @@ public final class NinchatSessionManager {
     }
 
     public Spanned getChatEnded() {
-        final String key = "Conversation ended";
-        try {
-            return toSpanned(getTranslations().getString(key));
-        } catch (final Exception e) {
-            return toSpanned(key);
-        }
+        return toSpanned(getTranslation("Conversation ended"));
     }
 
     public String getCloseChat() {
-        final String key = "Close chat";
-        try {
-            return getTranslations().getString(key);
-        } catch (final Exception e) {
-            return key;
-        }
+        return getTranslation("Close chat");
     }
 
     public String getCloseChatDescription() {
         final String key = "closeConfirmText";
         try {
-            return getDefault().getString(key);
+            return getStringFromConfiguration(key);
         } catch (final Exception e) {
             return key;
         }
     }
 
     public String getContinueChat() {
-        final String key = "Continue chat";
-        try {
-            return getTranslations().getString(key);
-        } catch (final Exception e) {
-            return key;
-        }
+        return getTranslation("Continue chat");
     }
 
     public String getEnterMessage() {
-        final String key = "Enter your message";
-        try {
-            return getTranslations().getString(key);
-        } catch (final Exception e) {
-            return key;
-        }
+        return getTranslation("Enter your message");
     }
 
     public String getVideoChatTitle() {
-        final String key = "You are invited to a video chat";
-        try {
-            return getTranslations().getString(key);
-        } catch (final Exception e) {
-            return key;
-        }
+        return getTranslation("You are invited to a video chat");
     }
 
     public String getVideoChatDescription() {
-        final String key = "wants to video chat with you";
-        try {
-            return getTranslations().getString(key);
-        } catch (final Exception e) {
-            return key;
-        }
+        return getTranslation("wants to video chat with you");
     }
 
     public String getVideoCallAccept() {
-        final String key = "Accept";
-        try {
-            return getTranslations().getString(key);
-        } catch (final Exception e) {
-            return key;
-        }
+        return getTranslation("Accept");
     }
 
     public String getVideoCallDecline() {
-        final String key = "Decline";
-        try {
-            return getTranslations().getString(key);
-        } catch (final Exception e) {
-            return key;
-        }
+        return getTranslation("Decline");
     }
 
     public String getVideoCallMetaMessage() {
-        final String key = "You are invited to a video chat";
-        try {
-            return center(getTranslations().getString(key));
-        } catch (final Exception e) {
-            return center(key);
-        }
+        return center(getTranslation("You are invited to a video chat"));
     }
 
     public String getVideoCallAccepted() {
-        final String key = "Video chat answered";
-        try {
-            return center(getTranslations().getString(key));
-        } catch (final Exception e) {
-            return center(key);
-        }
+        return center(getTranslation("Video chat answered"));
     }
 
     public String getVideoCallRejected() {
-        final String key = "Video chat declined";
-        try {
-            return center(getTranslations().getString(key));
-        } catch (final Exception e) {
-            return center(key);
-        }
+        return center(getTranslation("Video chat declined"));
     }
 
     public Spanned getMOTD() {
         final String key = "motd";
         String motd = key;
         try {
-            motd = getDefault().getString(key);
+            motd = getStringFromConfiguration(key);
         } catch (final Exception e) {
         }
         return toSpanned(motd);
     }
 
     public String getQueueName(final String name) {
-        final String key = "Join audience queue {{audienceQueue.queue_attrs.name}}";
-        String queueName = key;
-        try {
-            queueName = getTranslations().getString(key);
-        } catch (final Exception e) {
-            // Ignore
-        }
-        return replacePlaceholder(queueName, name);
+        return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
     }
 
     public Spanned  getQueueStatus(final String queueId) {
@@ -1284,11 +1298,7 @@ public final class NinchatSessionManager {
         final String key = position == 1
                 ? "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are next."
                 : "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are at position {{audienceQueue.queue_position}}.";
-        String queueStatus = key;
-        try {
-            queueStatus = getTranslations().getString(key);
-        } catch (final Exception e) {
-        }
+        String queueStatus = getTranslation(key);
         if (queueStatus.contains("audienceQueue.queue_attrs.name")) {
             queueStatus = replacePlaceholder(queueStatus, selectedQueue.getName());
         }
@@ -1302,7 +1312,7 @@ public final class NinchatSessionManager {
         final String key = "inQueueText";
         String queueMessage = null;
         try {
-            queueMessage = getDefault().getString(key);
+            queueMessage = getStringFromConfiguration(key);
         } catch (final Exception e) {
         }
         return toSpanned(queueMessage);
@@ -1310,55 +1320,30 @@ public final class NinchatSessionManager {
 
     public boolean showRating() {
         try {
-            return getDefault().getBoolean("audienceRating");
+            return getBooleanFromConfiguration("audienceRating");
         } catch (final Exception e) {
             return false;
         }
     }
 
     public Spanned getFeedbackTitle() {
-        final String key = "How was our customer service?";
-        try {
-            return toSpanned(getTranslations().getString(key));
-        } catch (final Exception e) {
-            return toSpanned(key);
-        }
+        return toSpanned(getTranslation("How was our customer service?"));
     }
 
     public String getFeedbackPositive() {
-        final String key = "Good";
-        try {
-            return getTranslations().getString(key);
-        } catch (final Exception e) {
-            return key;
-        }
+        return getTranslation("Good");
     }
 
     public String getFeedbackNeutral() {
-        final String key = "Okay";
-        try {
-            return getTranslations().getString(key);
-        } catch (final Exception e) {
-            return key;
-        }
+        return getTranslation("Okay");
     }
 
     public String getFeedbackNegative() {
-        final String key = "Poor";
-        try {
-            return getTranslations().getString(key);
-        } catch (final Exception e) {
-            return key;
-        }
+        return getTranslation("Poor");
     }
 
     public String getFeedbackSkip() {
-        final String key = "Skip";
-        try {
-            return getTranslations().getString(key);
-        } catch (final Exception e) {
-            return key;
-        }
+        return getTranslation("Skip");
     }
 
     public void close() {
