@@ -20,7 +20,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.AudioSource;
 import org.webrtc.AudioTrack;
+import org.webrtc.Camera1Enumerator;
 import org.webrtc.Camera2Enumerator;
+import org.webrtc.CameraEnumerator;
 import org.webrtc.DataChannel;
 import org.webrtc.DefaultVideoDecoderFactory;
 import org.webrtc.DefaultVideoEncoderFactory;
@@ -292,29 +294,41 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         return videoTrack;
     }
 
-    // Hackity hack, copy-pasted from https://github.com/pristineio/apprtc-android/blob/master/app/src/main/java/org/appspot/apprtc/AppRTCDemoActivity.java
-    // This works, while all the other solutions do not for some reason
-    private VideoCapturer getVideoCapturer() {
-        final Camera2Enumerator enumerator = new Camera2Enumerator(videoContainer.getContext());
-        final String[] deviceNames = enumerator.getDeviceNames();
-        for (final String deviceName : deviceNames) {
-            if (enumerator.isFrontFacing(deviceName)) {
-                final VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
-                if (videoCapturer != null) {
-                    return videoCapturer;
-                }
-            }
-        }
-        // Front facing camera not found, try something else
-        for (final String deviceName : deviceNames) {
-            if (!enumerator.isFrontFacing(deviceName)) {
-                VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
+    private VideoCapturer getVideoCapturerForCameraType(final CameraEnumerator cameraEnumerator, final boolean isFrontCamera) {
+        for (final String deviceName : cameraEnumerator.getDeviceNames()) {
+            if (cameraEnumerator.isFrontFacing(deviceName) == isFrontCamera) {
+                final VideoCapturer videoCapturer = cameraEnumerator.createCapturer(deviceName, null);
                 if (videoCapturer != null) {
                     return videoCapturer;
                 }
             }
         }
         return null;
+    }
+
+    private VideoCapturer getVideoCapturer() {
+        final Camera2Enumerator camera2Enumerator = new Camera2Enumerator(videoContainer.getContext());
+        final Camera1Enumerator camera1Enumerator = new Camera1Enumerator();
+
+        // Try to use Camera2 front camera
+        VideoCapturer videoCapturer = getVideoCapturerForCameraType(camera2Enumerator, true);
+
+        if (videoCapturer == null) {
+            // Camera2 front camera not found, try Camera1 front camera
+            videoCapturer = getVideoCapturerForCameraType(camera1Enumerator, true);
+        }
+
+        if (videoCapturer == null) {
+            // Use Camera2 back camera
+            videoCapturer = getVideoCapturerForCameraType(camera2Enumerator, false);
+        }
+
+        if (videoCapturer == null) {
+            // Last resort, try Camera1 back camera
+            videoCapturer = getVideoCapturerForCameraType(camera1Enumerator, false);
+        }
+
+        return videoCapturer;
     }
 
     @Override
