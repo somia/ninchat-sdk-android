@@ -276,9 +276,39 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
             }
             message.toggleOption(position);
-            notifyItemChanged(getAdapterPosition());
+            if (recyclerView == null || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+                notifyItemChanged(getAdapterPosition());
+            } else {
+                scrollListener.setData(getAdapterPosition(), true, false);
+            }
         }
     }
+
+    protected class ScrollListener extends RecyclerView.OnScrollListener {
+
+        private boolean updateData = false;
+        private int index;
+        private boolean updated;
+        private boolean removed;
+
+        protected void setData(final int index, final boolean updated, final boolean removed) {
+            updateData = true;
+            this.index = index;
+            this.updated = updated;
+            this.removed = removed;
+        }
+
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            if (recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE && updateData) {
+                messagesUpdated(index, updated, removed);
+                updateData = false;
+            }
+            super.onScrollStateChanged(recyclerView, newState);
+        }
+    }
+
+    protected ScrollListener scrollListener = new ScrollListener();
 
     protected static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:mm", new Locale("fi-FI"));
 
@@ -342,22 +372,26 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     }
 
     public void messagesUpdated(final int index, final boolean updated, final boolean removed) {
-        if (index < 0) {
-            notifyDataSetChanged();
-        } else if (updated) {
-            notifyItemChanged(index);
-        } else if (removed) {
-            notifyItemRemoved(index);
-        } else {
-            notifyItemInserted(index);
-            if (index < getItemCount() - 2) {
-                notifyItemRangeChanged(index + 1, getItemCount() - index);
-            }
-        }
-        final int position = getItemCount() - 1;
         final RecyclerView recyclerView = recyclerViewWeakReference.get();
-        if (recyclerView != null) {
-            recyclerView.smoothScrollToPosition(position);
+        if (recyclerView == null || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+            if (index < 0) {
+                notifyDataSetChanged();
+            } else if (updated) {
+                notifyItemChanged(index);
+            } else if (removed) {
+                notifyItemRemoved(index);
+            } else {
+                notifyItemInserted(index);
+                if (index < getItemCount() - 2) {
+                    notifyItemRangeChanged(index + 1, getItemCount() - index);
+                }
+            }
+            final int position = getItemCount() - 1;
+            if (recyclerView != null) {
+                recyclerView.smoothScrollToPosition(position);
+            }
+        } else {
+            scrollListener.setData(index, updated, removed);
         }
     }
 
@@ -366,22 +400,28 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         final int index = getItemCount() - 1;
         messages.add(index > 0 ? index : getItemCount(), new NinchatMessage(NinchatMessage.Type.END));
         final int position = getItemCount() - (index > 0 ? 2 : 1);
-        notifyItemInserted(position);
         final RecyclerView recyclerView = recyclerViewWeakReference.get();
-        if (recyclerView != null) {
-            recyclerView.smoothScrollToPosition(position);
+        if (recyclerView == null || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+            notifyItemInserted(position);
+            if (recyclerView != null) {
+                recyclerView.smoothScrollToPosition(position);
+            }
+        } else {
+            scrollListener.setData(position, false, false);
         }
     }
 
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
+        recyclerView.addOnScrollListener(scrollListener);
         this.recyclerViewWeakReference = new WeakReference<>(recyclerView);
     }
 
     @Override
     public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
+        recyclerView.removeOnScrollListener(scrollListener);
         this.recyclerViewWeakReference = new WeakReference<>(null);
     }
 
