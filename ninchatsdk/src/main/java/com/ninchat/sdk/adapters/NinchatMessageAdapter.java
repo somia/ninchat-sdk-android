@@ -27,6 +27,7 @@ import com.ninchat.sdk.activities.NinchatChatActivity;
 import com.ninchat.sdk.activities.NinchatMediaActivity;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
+import com.ninchat.sdk.models.NinchatUser;
 
 import org.json.JSONException;
 
@@ -50,7 +51,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         }
 
         private void setAvatar(final ImageView avatar, final NinchatMessage ninchatMessage, final boolean hideAvatar) {
-            String userAvatar = NinchatSessionManager.getInstance().getMember(ninchatMessage.getSenderId()).getAvatar();
+            String userAvatar = null;
+            final NinchatUser user = NinchatSessionManager.getInstance().getMember(ninchatMessage.getSenderId());
+            if (user != null) {
+                userAvatar = user.getAvatar();
+            }
             if (TextUtils.isEmpty(userAvatar)) {
                 userAvatar = NinchatSessionManager.getInstance().getDefaultAvatar(ninchatMessage.isRemoteMessage());
             }
