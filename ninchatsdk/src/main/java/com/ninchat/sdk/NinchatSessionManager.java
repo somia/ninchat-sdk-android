@@ -104,8 +104,8 @@ public final class NinchatSessionManager {
         }
     }
 
-    static NinchatSessionManager init(final Context context, final String configurationKey, final String[] preferredConfigurations, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
-        instance = new NinchatSessionManager(context, preferredConfigurations, eventListener, logListener);
+    static NinchatSessionManager init(final Context context, final String configurationKey, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+        instance = new NinchatSessionManager(context, preferredEnvironments, eventListener, logListener);
         NinchatConfigurationFetchTask.start(configurationKey);
         return instance;
     }
@@ -153,11 +153,11 @@ public final class NinchatSessionManager {
 
     protected static NinchatSessionManager instance;
     protected static final String TAG = NinchatSessionManager.class.getSimpleName();
-    private String[] preferredConfigurations;
+    private String[] preferredEnvironments;
 
-    protected NinchatSessionManager(final Context context, final String[] preferredConfigurations, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+    protected NinchatSessionManager(final Context context, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
         this.contextWeakReference = new WeakReference<>(context);
-        this.preferredConfigurations = preferredConfigurations;
+        this.preferredEnvironments = preferredEnvironments;
         this.eventListenerWeakReference = new WeakReference<>(eventListener);
         this.logListenerWeakReference = new WeakReference<>(logListener);
         this.configuration = null;
@@ -988,8 +988,8 @@ public final class NinchatSessionManager {
     private JSONArray getArrayFromConfiguration(final String key) {
         JSONArray array = null;
         if (configuration != null) {
-            if (preferredConfigurations != null) {
-                for (final String configuration : preferredConfigurations) {
+            if (preferredEnvironments != null) {
+                for (final String configuration : preferredEnvironments) {
                     try {
                         array = this.configuration.getJSONObject(configuration).getJSONArray(key);
                     } catch (final Exception e) {
@@ -1012,8 +1012,8 @@ public final class NinchatSessionManager {
     private boolean getBooleanFromConfiguration(final String key) throws JSONException {
         Boolean value = null;
         if (configuration != null) {
-            if (preferredConfigurations != null) {
-                for (final String configuration : preferredConfigurations) {
+            if (preferredEnvironments != null) {
+                for (final String configuration : preferredEnvironments) {
                     try {
                         value = this.configuration.getJSONObject(configuration).getBoolean(key);
                     } catch (final Exception e) {
@@ -1036,8 +1036,8 @@ public final class NinchatSessionManager {
     private String getStringFromConfiguration(final String key) throws JSONException {
         String value = null;
         if (configuration != null) {
-            if (preferredConfigurations != null) {
-                for (final String configuration : preferredConfigurations) {
+            if (preferredEnvironments != null) {
+                for (final String configuration : preferredEnvironments) {
                     try {
                         value = this.configuration.getJSONObject(configuration).getString(key);
                     } catch (final Exception e) {
@@ -1118,8 +1118,8 @@ public final class NinchatSessionManager {
 
     private String getTranslation(final String key) {
         if (configuration != null) {
-            if (preferredConfigurations != null) {
-                for (final String configuration : preferredConfigurations) {
+            if (preferredEnvironments != null) {
+                for (final String configuration : preferredEnvironments) {
                     try {
                         return this.configuration.getJSONObject(configuration).getJSONObject("translations").getString(key);
                     } catch (final Exception e) {

@@ -42,32 +42,32 @@ public final class NinchatSession {
         this(applicationContext, configurationKey, null, null, null);
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, final String[] preferredConfigurations) {
-        this(applicationContext, configurationKey, preferredConfigurations, null, null);
+    public NinchatSession(final Context applicationContext, final String configurationKey, final String[] preferredEnvironments) {
+        this(applicationContext, configurationKey, preferredEnvironments, null, null);
     }
 
     public NinchatSession(final Context applicationContext, final String configurationKey, final NinchatSDKEventListener eventListener) {
         this(applicationContext, configurationKey, null, eventListener, null);
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, final String[] preferredConfigurations, final NinchatSDKEventListener eventListener) {
-        this(applicationContext, configurationKey, preferredConfigurations, eventListener, null);
+    public NinchatSession(final Context applicationContext, final String configurationKey, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener) {
+        this(applicationContext, configurationKey, preferredEnvironments, eventListener, null);
     }
 
     public NinchatSession(final Context applicationContext, final String configurationKey, final NinchatSDKLogListener logListener) {
         this(applicationContext, configurationKey, null, null, logListener);
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, final String[] preferredConfigurations, final NinchatSDKLogListener logListener) {
-        this(applicationContext, configurationKey, preferredConfigurations, null, logListener);
+    public NinchatSession(final Context applicationContext, final String configurationKey, final String[] preferredEnvironments, final NinchatSDKLogListener logListener) {
+        this(applicationContext, configurationKey, preferredEnvironments, null, logListener);
     }
 
     public NinchatSession(final Context applicationContext, final String configurationKey, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
         this(applicationContext, configurationKey, null, eventListener, logListener);
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, final String[] preferredConfigurations, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
-        this.sessionManager = NinchatSessionManager.init(applicationContext, configurationKey, preferredConfigurations, eventListener, logListener);
+    public NinchatSession(final Context applicationContext, final String configurationKey, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+        this.sessionManager = NinchatSessionManager.init(applicationContext, configurationKey, preferredEnvironments, eventListener, logListener);
     }
 
     public void setServerAddress(final String serverAddress) {
