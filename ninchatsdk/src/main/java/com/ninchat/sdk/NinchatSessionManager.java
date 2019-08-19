@@ -1065,7 +1065,7 @@ public final class NinchatSessionManager {
         return null;
     }
 
-    private List<String> getAudienceQueues() {
+    public List<String> getAudienceQueues() {
         final List<String> queues = new ArrayList<>();
         try {
             final JSONArray array = getArrayFromConfiguration("audienceQueues");

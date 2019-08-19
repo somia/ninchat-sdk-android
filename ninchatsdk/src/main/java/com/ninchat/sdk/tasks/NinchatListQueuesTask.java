@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 
 import com.ninchat.client.Props;
 import com.ninchat.client.Session;
+import com.ninchat.client.Strings;
 import com.ninchat.sdk.NinchatSessionManager;
 
 /**
@@ -25,6 +26,11 @@ public final class NinchatListQueuesTask extends NinchatBaseTask {
         final Props params = new Props();
         params.setString("action", "describe_realm_queues");
         params.setString("realm_id", sessionManager.getRealmId());
+        final Strings queues = new Strings();
+        for (final String queue : sessionManager.getAudienceQueues()) {
+            queues.append(queue);
+        }
+        params.setStringArray("queue_ids", queues);
         try {
             session.send(params, null);
         } catch (final Exception e) {
