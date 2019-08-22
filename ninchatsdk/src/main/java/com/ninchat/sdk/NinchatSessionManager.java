@@ -433,9 +433,17 @@ public final class NinchatSessionManager {
             if (!openQueues.contains(queueId)) {
                 continue;
             }
-            Props queue;
+            Props info;
             try {
-                queue = (Props) parser.properties.get(queueId);
+                info = (Props) parser.properties.get(queueId);
+            } catch (final Exception e) {
+                sessionError(e);
+                sendQueueParsingError();
+                return;
+            }
+            long position;
+            try {
+                position = info.getInt("position");
             } catch (final Exception e) {
                 sessionError(e);
                 sendQueueParsingError();
@@ -443,7 +451,7 @@ public final class NinchatSessionManager {
             }
             Props queueAttributes;
             try {
-                queueAttributes = queue.getObject("queue_attrs");
+                queueAttributes = info.getObject("queue_attrs");
             } catch (final Exception e) {
                 sessionError(e);
                 sendQueueParsingError();
@@ -457,7 +465,15 @@ public final class NinchatSessionManager {
                 sendQueueParsingError();
                 return;
             }
+            boolean closed = false;
+            try {
+                closed = queueAttributes.getBool("closed");
+            } catch (final Exception e) {
+                // Ignore
+            }
             final NinchatQueue ninchatQueue = new NinchatQueue(queueId, name);
+            ninchatQueue.setPosition(position);
+            ninchatQueue.setClosed(closed);
             queues.add(ninchatQueue);
             if (ninchatQueueListAdapter != null) {
                 ninchatQueueListAdapter.addQueue(ninchatQueue);
@@ -501,13 +517,29 @@ public final class NinchatSessionManager {
             sessionError(e);
             return;
         }
+        Props queueAttributes;
+        try {
+            queueAttributes = params.getObject("queue_attrs");
+        } catch (final Exception e) {
+            sessionError(e);
+            sendQueueParsingError();
+            return;
+        }
+        boolean closed = false;
+        try {
+            closed = queueAttributes.getBool("closed");
+        } catch (final Exception e) {
+            // Ignore
+        }
         final NinchatQueue queue = getQueue(queueId);
         if (queue != null) {
             queue.setPosition(position);
+            queue.setClosed(closed);
         }
         final Context context = contextWeakReference.get();
         if (context != null) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.CHANNEL_UPDATED));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSession.Broadcast.QUEUES_UPDATED));
         }
     }
 

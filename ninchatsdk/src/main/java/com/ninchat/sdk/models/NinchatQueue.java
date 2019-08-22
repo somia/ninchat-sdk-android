@@ -13,6 +13,7 @@ public final class NinchatQueue {
     private String id;
     private String name;
     private long position = Long.MAX_VALUE;
+    private boolean closed = false;
 
     public String getId() {
         return id;
@@ -28,5 +29,13 @@ public final class NinchatQueue {
 
     public void setPosition(long position) {
         this.position = position;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 }
