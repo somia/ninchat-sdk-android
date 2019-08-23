@@ -433,6 +433,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // Refresh the message list, just in case
+        messageAdapter.notifyDataSetChanged();
         webRTCView.onResume();
     }
 
