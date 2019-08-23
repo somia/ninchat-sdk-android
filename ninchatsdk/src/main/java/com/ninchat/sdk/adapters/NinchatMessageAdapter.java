@@ -448,6 +448,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     @Override
     public void onBindViewHolder(@NonNull NinchatMessageViewHolder holder, int position) {
+        if (position >= getItemCount()) {
+            return;
+        }
         boolean isContinuedMessage = false;
         final NinchatMessage message = messages.get(position);
         try {
