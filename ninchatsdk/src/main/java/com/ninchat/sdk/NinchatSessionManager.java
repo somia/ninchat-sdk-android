@@ -63,19 +63,19 @@ import java.util.Map;
 public final class NinchatSessionManager {
 
     public static final class Broadcast {
-        public static final String CHANNEL_JOINED = BuildConfig.APPLICATION_ID + ".channelJoined";
-        public static final String CHANNEL_UPDATED = BuildConfig.APPLICATION_ID + ".channelUpdated";
-        public static final String CHANNEL_CLOSED = BuildConfig.APPLICATION_ID + ".channelClosed";
-        public static final String NEW_MESSAGE = BuildConfig.APPLICATION_ID + ".newMessage";
+        public static final String QUEUE_UPDATED = BuildConfig.LIBRARY_PACKAGE_NAME + ".queueUpdated";
+        public static final String CHANNEL_JOINED = BuildConfig.LIBRARY_PACKAGE_NAME + ".channelJoined";
+        public static final String CHANNEL_CLOSED = BuildConfig.LIBRARY_PACKAGE_NAME + ".channelClosed";
+        public static final String NEW_MESSAGE = BuildConfig.LIBRARY_PACKAGE_NAME + ".newMessage";
         public static final String MESSAGE_INDEX = NEW_MESSAGE + ".index";
         public static final String MESSAGE_UPDATED = NEW_MESSAGE + ".updated";
         public static final String MESSAGE_REMOVED = NEW_MESSAGE + ".removed";
-        public static final String WEBRTC_MESSAGE = BuildConfig.APPLICATION_ID + ".webRTCMessage";
+        public static final String WEBRTC_MESSAGE = BuildConfig.LIBRARY_PACKAGE_NAME + ".webRTCMessage";
         public static final String WEBRTC_MESSAGE_SENDER = WEBRTC_MESSAGE + ".sender";
         public static final String WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type";
         public static final String WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content";
-        public static final String DOWNLOADING_FILE = BuildConfig.APPLICATION_ID + ".downloadingFile";
-        public static final String FILE_DOWNLOADED = BuildConfig.APPLICATION_ID + ".fileDownloaded";
+        public static final String DOWNLOADING_FILE = BuildConfig.LIBRARY_PACKAGE_NAME + ".downloadingFile";
+        public static final String FILE_DOWNLOADED = BuildConfig.LIBRARY_PACKAGE_NAME + ".fileDownloaded";
     }
 
     public static final class MessageTypes {
@@ -538,7 +538,7 @@ public final class NinchatSessionManager {
         }
         final Context context = contextWeakReference.get();
         if (context != null) {
-            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.CHANNEL_UPDATED));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.QUEUE_UPDATED));
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSession.Broadcast.QUEUES_UPDATED));
         }
     }

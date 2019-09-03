@@ -27,10 +27,10 @@ public final class NinchatSession {
     }
 
     public static final class Broadcast {
-        public static final String CONFIGURATION_FETCHED = BuildConfig.APPLICATION_ID + ".CONFIGURATION_FETCHED";
-        public static final String SESSION_CREATED = BuildConfig.APPLICATION_ID + ".SESSION_CREATED";
-        public static final String QUEUES_UPDATED = BuildConfig.APPLICATION_ID + ".QUEUES_UPDATED";
-        public static final String START_FAILED = BuildConfig.APPLICATION_ID + ".START_FAILED";
+        public static final String CONFIGURATION_FETCHED = BuildConfig.LIBRARY_PACKAGE_NAME + ".CONFIGURATION_FETCHED";
+        public static final String SESSION_CREATED = BuildConfig.LIBRARY_PACKAGE_NAME + ".SESSION_CREATED";
+        public static final String QUEUES_UPDATED = BuildConfig.LIBRARY_PACKAGE_NAME + ".QUEUES_UPDATED";
+        public static final String START_FAILED = BuildConfig.LIBRARY_PACKAGE_NAME + ".START_FAILED";
     }
 
     public static final int NINCHAT_SESSION_REQUEST_CODE = NinchatSession.class.hashCode() & 0xffff;

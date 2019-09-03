@@ -57,7 +57,7 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (NinchatSessionManager.Broadcast.CHANNEL_UPDATED.equals(action)) {
+            if (NinchatSessionManager.Broadcast.QUEUE_UPDATED.equals(action)) {
                 updateQueueStatus();
             }
         }
@@ -88,7 +88,7 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         closeButton.setText(sessionManager.getCloseChat());
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         broadcastManager.registerReceiver(channelJoinedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_JOINED));
-        broadcastManager.registerReceiver(channelUpdatedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_UPDATED));
+        broadcastManager.registerReceiver(channelUpdatedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.QUEUE_UPDATED));
         NinchatSessionManager.joinQueue(queueId);
     }
 
