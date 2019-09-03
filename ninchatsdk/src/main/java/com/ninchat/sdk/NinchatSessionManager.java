@@ -600,7 +600,12 @@ public final class NinchatSessionManager {
             }
             this.members.put(userId, new NinchatUser(displayName, realName, avatar, guest));
         }
-        this.messageAdapter.addMetaMessage(getChatStarted());
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                messageAdapter.addMetaMessage(getChatStarted());
+            }
+        });
         final Context context = contextWeakReference.get();
         if (context != null) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.CHANNEL_JOINED));
