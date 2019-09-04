@@ -632,6 +632,16 @@ public final class NinchatSessionManager {
         if (context != null) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.CHANNEL_JOINED));
         }
+        final Props load = new Props();
+        load.setString("action", "load_history");
+        load.setString("channel_id", channelId);
+        load.setInt("history_order", 1);
+        load.setString("message_id", "");
+        try {
+            session.send(load, null);
+        } catch (final Exception e) {
+            // Ignore
+        }
     }
 
     private void channelUpdated(final Props params) {
