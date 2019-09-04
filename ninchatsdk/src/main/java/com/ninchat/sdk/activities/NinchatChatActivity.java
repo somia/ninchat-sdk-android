@@ -141,6 +141,17 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         }
     };
 
+    protected BroadcastReceiver transferReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (NinchatSessionManager.Broadcast.AUDIENCE_ENQUEUED.equals(action)) {
+                sessionManager.partChannel();
+                quit(intent);
+            }
+        }
+    };
+
     public void onCloseChat(final View view) {
         final AlertDialog dialog = new AlertDialog.Builder(this, R.style.NinchatTheme_Dialog)
                 .setView(R.layout.dialog_close_chat)
@@ -403,6 +414,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         webRTCView = new NinchatWebRTCView(videoContainer);
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.registerReceiver(channelClosedReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_CLOSED));
+        localBroadcastManager.registerReceiver(transferReceiver, new IntentFilter(NinchatSessionManager.Broadcast.AUDIENCE_ENQUEUED));
         localBroadcastManager.registerReceiver(messageReceiver, new IntentFilter(NinchatSessionManager.Broadcast.NEW_MESSAGE));
         localBroadcastManager.registerReceiver(webRTCMessageReceiver, new IntentFilter(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE));
         final RecyclerView messages = findViewById(R.id.message_list);
@@ -450,6 +462,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         webRTCView.hangUp();
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.unregisterReceiver(channelClosedReceiver);
+        localBroadcastManager.unregisterReceiver(transferReceiver);
         localBroadcastManager.unregisterReceiver(messageReceiver);
         localBroadcastManager.unregisterReceiver(webRTCMessageReceiver);
     }

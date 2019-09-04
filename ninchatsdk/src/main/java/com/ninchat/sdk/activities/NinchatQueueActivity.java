@@ -38,8 +38,13 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NinchatChatActivity.REQUEST_CODE) {
-            setResult(RESULT_OK, data);
-            finish();
+            final String queueId = data.getStringExtra(NinchatSessionManager.Parameter.QUEUE_ID);
+            if (queueId == null) {
+                setResult(RESULT_OK, data);
+                finish();
+            } else {
+                this.queueId = queueId;
+            }
         }
     }
 

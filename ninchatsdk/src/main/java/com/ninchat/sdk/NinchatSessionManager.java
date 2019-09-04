@@ -64,6 +64,7 @@ public final class NinchatSessionManager {
 
     public static final class Broadcast {
         public static final String QUEUE_UPDATED = BuildConfig.LIBRARY_PACKAGE_NAME + ".queueUpdated";
+        public static final String AUDIENCE_ENQUEUED = BuildConfig.LIBRARY_PACKAGE_NAME + ".audienceEnqueued";
         public static final String CHANNEL_JOINED = BuildConfig.LIBRARY_PACKAGE_NAME + ".channelJoined";
         public static final String CHANNEL_CLOSED = BuildConfig.LIBRARY_PACKAGE_NAME + ".channelClosed";
         public static final String NEW_MESSAGE = BuildConfig.LIBRARY_PACKAGE_NAME + ".newMessage";
@@ -76,6 +77,10 @@ public final class NinchatSessionManager {
         public static final String WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content";
         public static final String DOWNLOADING_FILE = BuildConfig.LIBRARY_PACKAGE_NAME + ".downloadingFile";
         public static final String FILE_DOWNLOADED = BuildConfig.LIBRARY_PACKAGE_NAME + ".fileDownloaded";
+    }
+
+    public static final class Parameter {
+        public static final String QUEUE_ID = "queueId";
     }
 
     public static final class MessageTypes {
@@ -163,7 +168,7 @@ public final class NinchatSessionManager {
         this.configuration = null;
         this.session = null;
         this.queues = new ArrayList<>();
-        this.messageAdapter = new NinchatMessageAdapter();
+        this.messageAdapter = null;
         this.members = new HashMap<>();
         this.ninchatQueueListAdapter = null;
         this.files = new HashMap<>();
@@ -273,8 +278,10 @@ public final class NinchatSessionManager {
                     final String event = params.getString("event");
                     if (event.equals("realm_queues_found")) {
                         NinchatSessionManager.getInstance().parseQueues(params);
-                    } else if (event.equals("queue_found") || event.equals("queue_updated") || event.equals("audience_enqueued")) {
+                    } else if (event.equals("queue_found") || event.equals("queue_updated")) {
                         NinchatSessionManager.getInstance().queueUpdated(params);
+                    } else if (event.equals("audience_enqueued")) {
+                        NinchatSessionManager.getInstance().audienceEnqueued(params);
                     } else if (event.equals("channel_joined")) {
                         NinchatSessionManager.getInstance().channelJoined(params);
                     } else if (event.equals("channel_found") || event.equals("channel_updated")) {
@@ -502,20 +509,20 @@ public final class NinchatSessionManager {
         return null;
     }
 
-    private void queueUpdated(final Props params) {
+    private String parseQueue(final Props params) {
         String queueId;
         try {
             queueId = params.getString("queue_id");
         } catch (final Exception e) {
             sessionError(e);
-            return;
+            return null;
         }
         long position;
         try {
             position = params.getInt("queue_position");
         } catch (final Exception e) {
             sessionError(e);
-            return;
+            return null;
         }
         Props queueAttributes;
         try {
@@ -523,7 +530,7 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             sessionError(e);
             sendQueueParsingError();
-            return;
+            return null;
         }
         boolean closed = false;
         try {
@@ -536,10 +543,24 @@ public final class NinchatSessionManager {
             queue.setPosition(position);
             queue.setClosed(closed);
         }
+        return queueId;
+    }
+
+    private void queueUpdated(final Props params) {
+        parseQueue(params);
         final Context context = contextWeakReference.get();
         if (context != null) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.QUEUE_UPDATED));
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSession.Broadcast.QUEUES_UPDATED));
+        }
+    }
+
+    private void audienceEnqueued(final Props params) {
+        final String queueId = parseQueue(params);
+        final Context context = contextWeakReference.get();
+        if (context != null) {
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.AUDIENCE_ENQUEUED).putExtra(Parameter.QUEUE_ID, queueId));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.QUEUE_UPDATED));
         }
     }
 
@@ -603,6 +624,7 @@ public final class NinchatSessionManager {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
+                messageAdapter = new NinchatMessageAdapter();
                 messageAdapter.addMetaMessage(getChatStarted());
             }
         });
