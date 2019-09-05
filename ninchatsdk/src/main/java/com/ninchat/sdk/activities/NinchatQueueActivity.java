@@ -44,6 +44,7 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
                 finish();
             } else {
                 this.queueId = queueId;
+                updateQueueStatus();
             }
         }
     }
