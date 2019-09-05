@@ -632,6 +632,9 @@ public final class NinchatSessionManager {
         if (context != null) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.CHANNEL_JOINED));
         }
+    }
+
+    public void loadChannelHistory() {
         final Props load = new Props();
         load.setString("action", "load_history");
         load.setString("channel_id", channelId);

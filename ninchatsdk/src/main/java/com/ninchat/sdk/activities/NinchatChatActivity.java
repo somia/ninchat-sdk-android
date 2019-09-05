@@ -440,6 +440,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (sessionManager.isVideoEnabled() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
             findViewById(R.id.video_call).setVisibility(View.VISIBLE);
         }
+        sessionManager.loadChannelHistory();
     }
 
     @Override
