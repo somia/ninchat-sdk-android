@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
@@ -14,7 +13,6 @@ import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.support.annotation.NonNull;
@@ -27,7 +25,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,6 +40,7 @@ import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.views.NinchatWebRTCView;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -203,7 +201,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     private void sendPickUpAnswer(final boolean answer) {
         sessionManager.sendWebRTCCallAnswer(answer);
-        messageAdapter.addMetaMessage(answer ? sessionManager.getVideoCallAccepted() : sessionManager.getVideoCallRejected());
+        final String lastMessageId = messageAdapter.getLastMessageId();
+        messageAdapter.addMetaMessage(lastMessageId + (new Date()).getTime(),
+                answer ? sessionManager.getVideoCallAccepted() : sessionManager.getVideoCallRejected());
     }
 
     private View videoContainer;
@@ -262,7 +262,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                         }
                     });
                     hideKeyboard();
-                    messageAdapter.addMetaMessage(sessionManager.getVideoCallMetaMessage());
+                    messageAdapter.addMetaMessage(intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_ID), sessionManager.getVideoCallMetaMessage());
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT))) {
                     if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType)) {
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);

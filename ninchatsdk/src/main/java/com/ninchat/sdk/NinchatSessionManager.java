@@ -10,7 +10,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
-import android.util.Pair;
 import android.webkit.MimeTypeMap;
 
 import com.ninchat.client.CloseHandler;
@@ -68,6 +67,7 @@ public final class NinchatSessionManager {
         public static final String CHANNEL_JOINED = BuildConfig.LIBRARY_PACKAGE_NAME + ".channelJoined";
         public static final String CHANNEL_CLOSED = BuildConfig.LIBRARY_PACKAGE_NAME + ".channelClosed";
         public static final String WEBRTC_MESSAGE = BuildConfig.LIBRARY_PACKAGE_NAME + ".webRTCMessage";
+        public static final String WEBRTC_MESSAGE_ID = WEBRTC_MESSAGE + ".messageId";
         public static final String WEBRTC_MESSAGE_SENDER = WEBRTC_MESSAGE + ".sender";
         public static final String WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type";
         public static final String WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content";
@@ -619,7 +619,7 @@ public final class NinchatSessionManager {
             @Override
             public void run() {
                 messageAdapter = new NinchatMessageAdapter();
-                messageAdapter.addMetaMessage(getChatStarted());
+                messageAdapter.addMetaMessage("00000000000000", getChatStarted());
             }
         });
         final Context context = contextWeakReference.get();
@@ -695,6 +695,12 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             return;
         }
+        String messageId;
+        try {
+            messageId = params.getString("message_id");
+        } catch (final Exception e) {
+            return;
+        }
         if (MessageTypes.WEBRTC_MESSAGE_TYPES.contains(messageType) && !sender.equals(userId)) {
             final StringBuilder builder = new StringBuilder();
             for (int i = 0; i < payload.length(); ++i) {
@@ -706,6 +712,7 @@ public final class NinchatSessionManager {
             }
             LocalBroadcastManager.getInstance(context)
                     .sendBroadcast(new Intent(Broadcast.WEBRTC_MESSAGE)
+                            .putExtra(Broadcast.WEBRTC_MESSAGE_ID, messageId)
                             .putExtra(Broadcast.WEBRTC_MESSAGE_TYPE, messageType)
                             .putExtra(Broadcast.WEBRTC_MESSAGE_SENDER, sender)
                             .putExtra(Broadcast.WEBRTC_MESSAGE_CONTENT, builder.toString()));
@@ -724,7 +731,7 @@ public final class NinchatSessionManager {
                     for (int k = 0; k < options.length(); ++k) {
                         messageOptions.add(new NinchatOption(options.getJSONObject(k)));
                     }
-                    messageAdapter.add(new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, message.getString("label"), message, messageOptions));
+                    messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, message.getString("label"), message, messageOptions));
                 }
             } catch (final JSONException e) {
                 // Ignore
@@ -749,12 +756,12 @@ public final class NinchatSessionManager {
                     if (filetype != null && (filetype.startsWith("image/") ||
                             filetype.startsWith("video/") || filetype.equals("application/pdf"))) {
                         final String fileId = file.getString("file_id");
-                        final NinchatFile ninchatFile = new NinchatFile(fileId, filename, filesize, filetype, timestamp, sender, actionId == 0);
+                        final NinchatFile ninchatFile = new NinchatFile(messageId, fileId, filename, filesize, filetype, timestamp, sender, actionId == 0);
                         this.files.put(fileId, ninchatFile);
                         NinchatDescribeFileTask.start(fileId);
                     }
                 } else {
-                    messageAdapter.add(new NinchatMessage(message.getString("text"), null, sender, System.currentTimeMillis(), !sender.equals(userId)));
+                    messageAdapter.add(messageId, new NinchatMessage(message.getString("text"), null, sender, System.currentTimeMillis(), !sender.equals(userId)));
                 }
             } catch (final JSONException e) {
                 // Ignore
@@ -813,8 +820,7 @@ public final class NinchatSessionManager {
         file.setAspectRatio(aspectRatio);
         file.setWidth(width);
         file.setHeight(height);
-        final Context context = contextWeakReference.get();
-        messageAdapter.add(new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
+        messageAdapter.add(file.getMessageId(), new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
     }
 
     private void memberUpdated(final Props params) {

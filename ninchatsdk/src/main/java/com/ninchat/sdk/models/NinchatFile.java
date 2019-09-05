@@ -8,6 +8,7 @@ import java.util.Date;
 
 public final class NinchatFile {
 
+    private String messageId;
     private String fileId;
     private String name;
     private int size;
@@ -23,7 +24,8 @@ public final class NinchatFile {
 
     private boolean isDownloaded = false;
 
-    public NinchatFile(final String fileId, final String name, int size, final String type, final long timestamp, final String sender, final boolean isRemote) {
+    public NinchatFile(final String messageId, final String fileId, final String name, int size, final String type, final long timestamp, final String sender, final boolean isRemote) {
+        this.messageId = messageId;
         this.fileId = fileId;
         this.name = name;
         this.size = size;
@@ -67,6 +69,10 @@ public final class NinchatFile {
 
     public boolean isDownloaded() {
         return isDownloaded;
+    }
+
+    public String getMessageId() {
+        return messageId;
     }
 
     public String getId() {
