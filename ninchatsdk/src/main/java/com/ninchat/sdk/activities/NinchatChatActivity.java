@@ -196,18 +196,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         }
     }
 
-    protected BroadcastReceiver messageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (NinchatSessionManager.Broadcast.NEW_MESSAGE.equals(action)) {
-                messageAdapter.messagesUpdated(intent.getIntExtra(NinchatSessionManager.Broadcast.MESSAGE_INDEX, -1),
-                        intent.getBooleanExtra(NinchatSessionManager.Broadcast.MESSAGE_UPDATED, false),
-                        intent.getBooleanExtra(NinchatSessionManager.Broadcast.MESSAGE_REMOVED, false));
-            }
-        }
-    };
-
     private boolean hasVideoCallPermissions() {
         return checkCallingOrSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
                 checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
@@ -415,7 +403,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.registerReceiver(channelClosedReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_CLOSED));
         localBroadcastManager.registerReceiver(transferReceiver, new IntentFilter(NinchatSessionManager.Broadcast.AUDIENCE_ENQUEUED));
-        localBroadcastManager.registerReceiver(messageReceiver, new IntentFilter(NinchatSessionManager.Broadcast.NEW_MESSAGE));
         localBroadcastManager.registerReceiver(webRTCMessageReceiver, new IntentFilter(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE));
         final RecyclerView messages = findViewById(R.id.message_list);
         messages.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -464,7 +451,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.unregisterReceiver(channelClosedReceiver);
         localBroadcastManager.unregisterReceiver(transferReceiver);
-        localBroadcastManager.unregisterReceiver(messageReceiver);
         localBroadcastManager.unregisterReceiver(webRTCMessageReceiver);
     }
 

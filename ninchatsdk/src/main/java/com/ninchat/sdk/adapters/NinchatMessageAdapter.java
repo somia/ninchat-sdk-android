@@ -1,6 +1,8 @@
 package com.ninchat.sdk.adapters;
 
 import android.graphics.drawable.AnimationDrawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
@@ -322,12 +324,18 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         this.recyclerViewWeakReference = new WeakReference<>(null);
     }
 
-    public int addWriting(final String sender) {
-        messages.add(getItemCount() - 1, new NinchatMessage(NinchatMessage.Type.WRITING, sender));
-        return getItemCount() - 2;
+    public void addWriting(final String sender) {
+        final int position = getItemCount() - 1;
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                messages.add(position, new NinchatMessage(NinchatMessage.Type.WRITING, sender));
+                messagesUpdated(position, false, false);
+            }
+        });
     }
 
-    public Pair<Integer, Boolean> add(final NinchatMessage message) {
+    public void add(final NinchatMessage message) {
         int index = getItemCount() - 1;
         boolean updated = false;
         if (!message.getType().equals(NinchatMessage.Type.WRITING) && index > 0) {
@@ -345,30 +353,48 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 }
             }
         }
-        messages.add(index, message);
-        return new Pair<>(index, updated);
+        final int position = index;
+        final boolean messageUpdated = updated;
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                messages.add(position, message);
+                messagesUpdated(position, messageUpdated, false);
+            }
+        });
     }
 
     public void addMetaMessage(final String message) {
-        messages.add(getItemCount() - 1, new NinchatMessage(NinchatMessage.Type.META, message));
-        messagesUpdated(getItemCount() - 2, false, false);
+        final int position = getItemCount() - 1;
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                messages.add(position, new NinchatMessage(NinchatMessage.Type.META, message));
+                messagesUpdated(position, false, false);
+            }
+        });
     }
 
     public void clear() {
         messages.clear();
     }
 
-    public int removeWritingMessage(final String sender) {
+    public void removeWritingMessage(final String sender) {
         final ListIterator<NinchatMessage> iterator = messages.listIterator(getItemCount() - 1);
         while (iterator.hasPrevious()) {
             final NinchatMessage message = iterator.previous();
             if (message.getType().equals(NinchatMessage.Type.WRITING) && sender.equals(message.getSenderId())) {
-                messages.remove(message);
-
-                return iterator.nextIndex();
+                final int position = iterator.nextIndex();
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        messages.remove(message);
+                        messagesUpdated(position, false, true);
+                    }
+                });
+                return;
             }
         }
-        return -1;
     }
 
     public void messagesUpdated(final int index, final boolean updated, final boolean removed) {
@@ -398,17 +424,22 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     public void close(final NinchatChatActivity activity) {
         activityWeakReference = new WeakReference<>(activity);
         final int index = getItemCount() - 1;
-        messages.add(index > 0 ? index : getItemCount(), new NinchatMessage(NinchatMessage.Type.END));
-        final int position = getItemCount() - (index > 0 ? 2 : 1);
-        final RecyclerView recyclerView = recyclerViewWeakReference.get();
-        if (recyclerView == null || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
-            notifyItemInserted(position);
-            if (recyclerView != null) {
-                recyclerView.smoothScrollToPosition(position);
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                messages.add(index > 0 ? index : getItemCount(), new NinchatMessage(NinchatMessage.Type.END));
+                final int position = getItemCount() - (index > 0 ? 2 : 1);
+                final RecyclerView recyclerView = recyclerViewWeakReference.get();
+                if (recyclerView == null || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
+                    notifyItemInserted(position);
+                    if (recyclerView != null) {
+                        recyclerView.smoothScrollToPosition(position);
+                    }
+                } else {
+                    scrollListener.setData(position, false, false);
+                }
             }
-        } else {
-            scrollListener.setData(position, false, false);
-        }
+        });
     }
 
     @Override

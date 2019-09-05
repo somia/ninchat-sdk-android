@@ -67,16 +67,10 @@ public final class NinchatSessionManager {
         public static final String AUDIENCE_ENQUEUED = BuildConfig.LIBRARY_PACKAGE_NAME + ".audienceEnqueued";
         public static final String CHANNEL_JOINED = BuildConfig.LIBRARY_PACKAGE_NAME + ".channelJoined";
         public static final String CHANNEL_CLOSED = BuildConfig.LIBRARY_PACKAGE_NAME + ".channelClosed";
-        public static final String NEW_MESSAGE = BuildConfig.LIBRARY_PACKAGE_NAME + ".newMessage";
-        public static final String MESSAGE_INDEX = NEW_MESSAGE + ".index";
-        public static final String MESSAGE_UPDATED = NEW_MESSAGE + ".updated";
-        public static final String MESSAGE_REMOVED = NEW_MESSAGE + ".removed";
         public static final String WEBRTC_MESSAGE = BuildConfig.LIBRARY_PACKAGE_NAME + ".webRTCMessage";
         public static final String WEBRTC_MESSAGE_SENDER = WEBRTC_MESSAGE + ".sender";
         public static final String WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type";
         public static final String WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content";
-        public static final String DOWNLOADING_FILE = BuildConfig.LIBRARY_PACKAGE_NAME + ".downloadingFile";
-        public static final String FILE_DOWNLOADED = BuildConfig.LIBRARY_PACKAGE_NAME + ".fileDownloaded";
     }
 
     public static final class Parameter {
@@ -730,19 +724,7 @@ public final class NinchatSessionManager {
                     for (int k = 0; k < options.length(); ++k) {
                         messageOptions.add(new NinchatOption(options.getJSONObject(k)));
                     }
-                    final Pair<Integer, Boolean> result = messageAdapter.add(new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, message.getString("label"), message, messageOptions));
-                    final Context context = contextWeakReference.get();
-                    if (context != null) {
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                LocalBroadcastManager.getInstance(context)
-                                        .sendBroadcastSync(new Intent(Broadcast.NEW_MESSAGE)
-                                                .putExtra(Broadcast.MESSAGE_INDEX, result.first)
-                                                .putExtra(Broadcast.MESSAGE_UPDATED, result.second));
-                            }
-                        });
-                    }
+                    messageAdapter.add(new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, message.getString("label"), message, messageOptions));
                 }
             } catch (final JSONException e) {
                 // Ignore
@@ -772,19 +754,7 @@ public final class NinchatSessionManager {
                         NinchatDescribeFileTask.start(fileId);
                     }
                 } else {
-                    final Pair<Integer, Boolean> result = messageAdapter.add(new NinchatMessage(message.getString("text"), null, sender, System.currentTimeMillis(), !sender.equals(userId)));
-                    final Context context = contextWeakReference.get();
-                    if (context != null) {
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                LocalBroadcastManager.getInstance(context)
-                                        .sendBroadcastSync(new Intent(Broadcast.NEW_MESSAGE)
-                                                .putExtra(Broadcast.MESSAGE_INDEX, result.first)
-                                                .putExtra(Broadcast.MESSAGE_UPDATED, result.second));
-                            }
-                        });
-                    }
+                    messageAdapter.add(new NinchatMessage(message.getString("text"), null, sender, System.currentTimeMillis(), !sender.equals(userId)));
                 }
             } catch (final JSONException e) {
                 // Ignore
@@ -844,18 +814,7 @@ public final class NinchatSessionManager {
         file.setWidth(width);
         file.setHeight(height);
         final Context context = contextWeakReference.get();
-        final Pair<Integer, Boolean> result = messageAdapter.add(new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
-        if (context != null) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    LocalBroadcastManager.getInstance(context)
-                            .sendBroadcastSync(new Intent(Broadcast.NEW_MESSAGE)
-                                    .putExtra(Broadcast.MESSAGE_INDEX, result.first)
-                                    .putExtra(Broadcast.MESSAGE_UPDATED, result.second));
-                }
-            });
-        }
+        messageAdapter.add(new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
     }
 
     private void memberUpdated(final Props params) {
@@ -881,24 +840,10 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             return;
         }
-        int index = -1;
         if (addWritingMessage) {
-            index = messageAdapter.addWriting(sender);
+            messageAdapter.addWriting(sender);
         } else {
-            index = messageAdapter.removeWritingMessage(sender);
-        }
-        final Context context = contextWeakReference.get();
-        if (context != null) {
-            final Pair<Integer, Boolean> data = new Pair<>(index, !addWritingMessage);
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    LocalBroadcastManager.getInstance(context)
-                            .sendBroadcastSync(new Intent(Broadcast.NEW_MESSAGE)
-                                    .putExtra(Broadcast.MESSAGE_INDEX, data.first)
-                                    .putExtra(Broadcast.MESSAGE_REMOVED, data.second));
-                }
-            });
+            messageAdapter.removeWritingMessage(sender);
         }
     }
 
