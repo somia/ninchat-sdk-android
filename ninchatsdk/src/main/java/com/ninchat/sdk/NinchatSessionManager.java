@@ -619,7 +619,7 @@ public final class NinchatSessionManager {
             @Override
             public void run() {
                 messageAdapter = new NinchatMessageAdapter();
-                messageAdapter.addMetaMessage("00000000000000", getChatStarted());
+                messageAdapter.addMetaMessage("", getChatStarted());
             }
         });
         final Context context = contextWeakReference.get();

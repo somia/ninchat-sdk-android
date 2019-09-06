@@ -323,13 +323,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     public NinchatMessageAdapter() {
         this.messageIds = new ArrayList<>();
         this.messageMap = new HashMap<>();
-        final String paddingId = "zzzzzzzzzzzzzzz";
-        this.messageIds.add(paddingId);
-        this.messageMap.put(paddingId, new NinchatMessage(NinchatMessage.Type.PADDING));
         this.recyclerViewWeakReference = new WeakReference<>(null);
     }
 
-    protected static final String WRITING_MESSAGE_ID_PREFIX = "zzzzz";
+    protected static final String WRITING_MESSAGE_ID_PREFIX = "zzzzzwriting";
 
     public void addWriting(final String sender) {
         final String writingId = WRITING_MESSAGE_ID_PREFIX + sender;
@@ -420,7 +417,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                final String endMessageId = "zzzzzzzzzzzzzzy";
+                final String endMessageId = getLastMessageId() + "zzzzz";
                 messageIds.add(endMessageId);
                 Collections.sort(messageIds);
                 messageMap.put(endMessageId, new NinchatMessage(NinchatMessage.Type.END));
@@ -464,7 +461,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     @Override
     public int getItemCount() {
-        return messageIds.size();
+        return messageIds.size() + 1;
     }
 
     @NonNull
@@ -476,6 +473,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     @Override
     public void onBindViewHolder(@NonNull NinchatMessageViewHolder holder, int position) {
         if (position >= getItemCount()) {
+            return;
+        }
+        if (position == messageIds.size()) {
+            holder.bind(new NinchatMessage(NinchatMessage.Type.PADDING), false);
             return;
         }
         boolean isContinuedMessage = false;

@@ -40,7 +40,6 @@ import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.views.NinchatWebRTCView;
 
 import java.io.InputStream;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -202,7 +201,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     private void sendPickUpAnswer(final boolean answer) {
         sessionManager.sendWebRTCCallAnswer(answer);
         final String lastMessageId = messageAdapter.getLastMessageId();
-        messageAdapter.addMetaMessage(lastMessageId + (new Date()).getTime(),
+        messageAdapter.addMetaMessage(lastMessageId + "answer",
                 answer ? sessionManager.getVideoCallAccepted() : sessionManager.getVideoCallRejected());
     }
 
