@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -342,6 +343,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     }
 
     public void add(final String messageId, final NinchatMessage message) {
+        if (messageIds.contains(messageId)) {
+            return;
+        }
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
@@ -355,7 +359,17 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         });
     }
 
-    public String getLastMessageId() {
+    public String getLastMessageId(final boolean allowMeta) {
+        final ListIterator<String> iterator = messageIds.listIterator(getItemCount() - 2);
+        while (iterator.hasPrevious() && !allowMeta) {
+            final String id = iterator.previous();
+            final NinchatMessage message = messageMap.get(id);
+            if (message != null &&
+                    (message.getType() == NinchatMessage.Type.MESSAGE ||
+                            message.getType() == NinchatMessage.Type.MULTICHOICE)) {
+                return id;
+            }
+        }
         return messageIds.get(getItemCount() - 2);
     }
 
@@ -417,7 +431,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                final String endMessageId = getLastMessageId() + "zzzzz";
+                final String endMessageId = getLastMessageId(true) + "zzzzz";
                 messageIds.add(endMessageId);
                 Collections.sort(messageIds);
                 messageMap.put(endMessageId, new NinchatMessage(NinchatMessage.Type.END));

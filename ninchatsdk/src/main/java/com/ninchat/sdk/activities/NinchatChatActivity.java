@@ -200,8 +200,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     private void sendPickUpAnswer(final boolean answer) {
         sessionManager.sendWebRTCCallAnswer(answer);
-        final String lastMessageId = messageAdapter.getLastMessageId();
-        messageAdapter.addMetaMessage(lastMessageId + "answer",
+        messageAdapter.addMetaMessage(messageAdapter.getLastMessageId(true) + "answer",
                 answer ? sessionManager.getVideoCallAccepted() : sessionManager.getVideoCallRejected());
     }
 
@@ -426,7 +425,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (sessionManager.isVideoEnabled() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
             findViewById(R.id.video_call).setVisibility(View.VISIBLE);
         }
-        sessionManager.loadChannelHistory();
     }
 
     @Override
@@ -435,6 +433,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         // Refresh the message list, just in case
         messageAdapter.notifyDataSetChanged();
         webRTCView.onResume();
+        sessionManager.loadChannelHistory(messageAdapter.getLastMessageId(false));
     }
 
     @Override

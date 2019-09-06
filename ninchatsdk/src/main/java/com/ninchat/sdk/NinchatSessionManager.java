@@ -628,12 +628,12 @@ public final class NinchatSessionManager {
         }
     }
 
-    public void loadChannelHistory() {
+    public void loadChannelHistory(final String messageId) {
         final Props load = new Props();
         load.setString("action", "load_history");
         load.setString("channel_id", channelId);
         load.setInt("history_order", 1);
-        load.setString("message_id", "");
+        load.setString("message_id", messageId);
         try {
             session.send(load, null);
         } catch (final Exception e) {
