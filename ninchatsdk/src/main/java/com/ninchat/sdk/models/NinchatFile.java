@@ -108,14 +108,14 @@ public final class NinchatFile {
     }
 
     private String getFileSize() {
-        if (size % 1024 == 0) {
+        if (size / 1024 == 0) {
             return size + "B";
         }
-        int kiloBytes = size % 1024;
-        if (kiloBytes % 1024 == 0) {
+        int kiloBytes = size / 1024;
+        if (kiloBytes / 1024 == 0) {
             return kiloBytes + "kB";
         }
-        int megaBytes = kiloBytes % 1024;
+        int megaBytes = kiloBytes / 1024;
         // TODO: Should we support gigabytes and terabytes too?
         return megaBytes + "MB";
     }
