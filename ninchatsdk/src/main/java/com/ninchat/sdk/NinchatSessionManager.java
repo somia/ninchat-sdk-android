@@ -104,8 +104,7 @@ public final class NinchatSessionManager {
     }
 
     static NinchatSessionManager init(final Context context, final String configurationKey, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
-        instance = new NinchatSessionManager(context, preferredEnvironments, eventListener, logListener);
-        NinchatConfigurationFetchTask.start(configurationKey);
+        instance = new NinchatSessionManager(context, configurationKey, preferredEnvironments, eventListener, logListener);
         return instance;
     }
 
@@ -152,10 +151,13 @@ public final class NinchatSessionManager {
 
     protected static NinchatSessionManager instance;
     protected static final String TAG = NinchatSessionManager.class.getSimpleName();
+    protected String configurationKey;
     private String[] preferredEnvironments;
+    protected String siteSecret;
 
-    protected NinchatSessionManager(final Context context, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+    protected NinchatSessionManager(final Context context, final String configurationKey, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
         this.contextWeakReference = new WeakReference<>(context);
+        this.configurationKey = configurationKey;
         this.preferredEnvironments = preferredEnvironments;
         this.eventListenerWeakReference = new WeakReference<>(eventListener);
         this.logListenerWeakReference = new WeakReference<>(logListener);
@@ -190,9 +192,10 @@ public final class NinchatSessionManager {
 
     public void start(final Activity activity, final String siteSecret, final int requestCode, final String queueId) {
         this.activityWeakReference = new WeakReference<>(activity);
+        this.siteSecret = siteSecret;
         this.requestCode = requestCode;
         this.queueId = queueId;
-        NinchatOpenSessionTask.start(siteSecret);
+        NinchatConfigurationFetchTask.start(configurationKey);
     }
 
     public NinchatMessageAdapter getMessageAdapter() {
@@ -213,14 +216,7 @@ public final class NinchatSessionManager {
             LocalBroadcastManager.getInstance(context)
                     .sendBroadcast(new Intent(NinchatSession.Broadcast.CONFIGURATION_FETCHED));
         }
-        final NinchatSDKEventListener listener = eventListenerWeakReference.get();
-        if (listener != null) {
-            if (configuration != null) {
-                listener.onSessionInitiated();
-            } else {
-                listener.onSessionInitFailed();
-            }
-        }
+        NinchatOpenSessionTask.start(siteSecret);
     }
 
     public void sessionError(final Exception error) {
@@ -325,6 +321,15 @@ public final class NinchatSessionManager {
         if (context != null) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSession.Broadcast.SESSION_CREATED));
         }
+        final NinchatSDKEventListener listener = eventListenerWeakReference.get();
+        if (listener != null) {
+            if (configuration != null) {
+                listener.onSessionInitiated();
+            } else {
+                listener.onSessionInitFailed();
+            }
+        }
+
     }
 
     public Session getSession() {
