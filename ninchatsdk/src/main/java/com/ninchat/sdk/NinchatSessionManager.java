@@ -724,17 +724,27 @@ public final class NinchatSessionManager {
             }
             try {
                 final JSONArray messages = new JSONArray(builder.toString());
+                List<NinchatOption> messageOptions = new ArrayList<>();
+                boolean simpleButtonChoice = false;
                 for (int j = 0; j < messages.length(); ++j) {
                     final JSONObject message = messages.getJSONObject(j);
-                    final List<NinchatOption> messageOptions = new ArrayList<>();
-                    final JSONArray options = message.getJSONArray("options");
-                    for (int k = 0; k < options.length(); ++k) {
-                        messageOptions.add(new NinchatOption(options.getJSONObject(k)));
+                    final JSONArray options = message.optJSONArray("options");
+                    if (options != null) {
+                        messageOptions = new ArrayList<>();
+                        for (int k = 0; k < options.length(); ++k) {
+                            messageOptions.add(new NinchatOption(options.getJSONObject(k)));
+                        }
+                        messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, message.getString("label"), message, messageOptions));
+                    } else {
+                        simpleButtonChoice = true;
+                        messageOptions.add(new NinchatOption(message));
                     }
-                    messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, message.getString("label"), message, messageOptions));
+                }
+                if (simpleButtonChoice) {
+                    messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, null,  null, messageOptions));
                 }
             } catch (final JSONException e) {
-                // Ignore
+                // Ignore message
             }
         }
         if (!messageType.equals(MessageTypes.TEXT) && !messageType.equals(MessageTypes.FILE)) {

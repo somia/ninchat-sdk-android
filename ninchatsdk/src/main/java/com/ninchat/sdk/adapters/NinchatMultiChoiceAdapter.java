@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatOption;
@@ -21,7 +22,7 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
             super(itemView);
         }
 
-        public void bind(final NinchatMessage message, final int position) {
+        public void bind(final NinchatMessage message, final int position, final boolean sendAction) {
             final Button button = (Button) itemView;
             final List<NinchatOption> options = message.getOptions();
             final NinchatOption option = options.get(position);
@@ -33,6 +34,13 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
                     if (viewHolder != null) {
                         viewHolder.optionToggled(message, position);
                     }
+                    if (sendAction) {
+                        try {
+                            NinchatSessionManager.getInstance().sendUIAction(option.toJSON());
+                        } catch (final Exception e) {
+                            // Ignore
+                        }
+                    }
                 }
             });
         }
@@ -40,10 +48,12 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
 
     private NinchatMessage message;
     private WeakReference<NinchatMessageAdapter.NinchatMessageViewHolder> viewHolderWeakReference;
+    private boolean sendActionImmediately;
 
-    public NinchatMultiChoiceAdapter(final NinchatMessage message, final NinchatMessageAdapter.NinchatMessageViewHolder viewHolder) {
+    public NinchatMultiChoiceAdapter(final NinchatMessage message, final NinchatMessageAdapter.NinchatMessageViewHolder viewHolder, final boolean sendActionImmediately) {
         this.message = message;
         this.viewHolderWeakReference = new WeakReference<>(viewHolder);
+        this.sendActionImmediately = sendActionImmediately;
     }
 
     @Override
@@ -60,7 +70,7 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
 
     @Override
     public void onBindViewHolder(@NonNull NinchatMultiChoiceViewholder ninchatMultiChoiceViewholder, int position) {
-        ninchatMultiChoiceViewholder.bind(message, position);
+        ninchatMultiChoiceViewholder.bind(message, position, sendActionImmediately);
     }
 
     @Override

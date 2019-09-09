@@ -6,12 +6,12 @@ import org.json.JSONObject;
 public final class NinchatOption {
 
     private String label;
-    private String value;
+    private JSONObject data;
     private boolean selected = false;
 
     public NinchatOption(final JSONObject json) throws JSONException {
         this.label = json.getString("label");
-        this.value = json.getString("value");
+        this.data = json;
     }
 
     public void toggle() {
@@ -27,9 +27,6 @@ public final class NinchatOption {
     }
 
     public JSONObject toJSON() throws JSONException {
-        return new JSONObject()
-                .put("label", label)
-                .put("value", value)
-                .put("selected", selected);
+        return this.data.put("selected", selected);
     }
 }

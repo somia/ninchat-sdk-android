@@ -1,11 +1,13 @@
 package com.ninchat.sdk.adapters;
 
+import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SimpleItemAnimator;
@@ -211,12 +213,27 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                                 R.drawable.ninchat_chat_bubble_left_repeated :
                                 R.drawable.ninchat_chat_bubble_left);
                 final TextView message = itemView.findViewById(R.id.ninchat_chat_message_agent_message);
-                message.setVisibility(View.VISIBLE);
-                message.setText(data.getMessage());
+                final Spanned messageText = data.getMessage();
+                message.setText(messageText);
+                message.setVisibility(messageText != null ? View.VISIBLE : View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice).setVisibility(View.VISIBLE);
                 final RecyclerView options = itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice_options);
-                options.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
-                options.setAdapter(new NinchatMultiChoiceAdapter(data, this));
+                options.setLayoutManager(messageText != null ? new LinearLayoutManager(itemView.getContext()) : new GridLayoutManager(itemView.getContext(), 2));
+                options.addItemDecoration(new RecyclerView.ItemDecoration() {
+                    @Override
+                    public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                        outRect.top = 0;
+                        outRect.bottom = 0;
+                        if (parent.getChildLayoutPosition(view) % 2 == 0) {
+                            outRect.left = 0;
+                            outRect.right = 2;
+                        } else {
+                            outRect.left = 2;
+                            outRect.right = 0;
+                        }
+                    }
+                });
+                options.setAdapter(new NinchatMultiChoiceAdapter(data, this, messageText == null));
                 final Button sendButton = itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice_send);
                 sendButton.setText(NinchatSessionManager.getInstance().getSubmitButtonText());
                 sendButton.setOnClickListener(new View.OnClickListener() {
@@ -229,6 +246,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         }
                     }
                 });
+                sendButton.setVisibility(messageText != null ? View.VISIBLE : View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_wrapper).getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
                 if (isContinuedMessage) {
                     itemView.findViewById(R.id.ninchat_chat_message_agent).setPadding(0, 0, 0, 0);
