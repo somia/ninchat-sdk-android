@@ -30,15 +30,18 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final NinchatMessageAdapter.NinchatMessageViewHolder viewHolder = viewHolderWeakReference.get();
-                    if (viewHolder != null) {
-                        viewHolder.optionToggled(message, position);
-                    }
                     if (sendAction) {
                         try {
+                            option.toggle();
                             NinchatSessionManager.getInstance().sendUIAction(option.toJSON());
+                            option.toggle();
                         } catch (final Exception e) {
                             // Ignore
+                        }
+                    } else {
+                        final NinchatMessageAdapter.NinchatMessageViewHolder viewHolder = viewHolderWeakReference.get();
+                        if (viewHolder != null) {
+                            viewHolder.optionToggled(message, position);
                         }
                     }
                 }
