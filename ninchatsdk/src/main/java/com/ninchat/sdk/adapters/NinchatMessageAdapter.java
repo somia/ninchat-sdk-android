@@ -205,6 +205,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.VISIBLE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_image).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(isContinuedMessage ? View.GONE : View.VISIBLE);
+                itemView.findViewById(R.id.ninchat_chat_message_agent_writing).setVisibility(View.GONE);
                 setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
                 final TextView agentName = itemView.findViewById(R.id.ninchat_chat_message_agent_name);
                 agentName.setText(data.getSender());

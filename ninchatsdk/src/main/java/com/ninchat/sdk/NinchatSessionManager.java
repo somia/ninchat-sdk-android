@@ -857,9 +857,9 @@ public final class NinchatSessionManager {
         }
         boolean addWritingMessage = false;
         try {
-            addWritingMessage = memberAttrs.getBool("writing") && messageAdapter.getItemCount() > 2;
+            addWritingMessage = memberAttrs.getBool("writing");
         } catch (final Exception e) {
-            return;
+            // Ignore
         }
         if (addWritingMessage) {
             messageAdapter.addWriting(sender);
