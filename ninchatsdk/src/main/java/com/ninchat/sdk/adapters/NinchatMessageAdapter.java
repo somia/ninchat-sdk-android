@@ -220,20 +220,22 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice).setVisibility(View.VISIBLE);
                 final RecyclerView options = itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice_options);
                 options.setLayoutManager(messageText != null ? new LinearLayoutManager(itemView.getContext()) : new GridLayoutManager(itemView.getContext(), 2));
-                options.addItemDecoration(new RecyclerView.ItemDecoration() {
-                    @Override
-                    public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-                        outRect.top = 0;
-                        outRect.bottom = 0;
-                        if (parent.getChildLayoutPosition(view) % 2 == 0) {
-                            outRect.left = 0;
-                            outRect.right = 2;
-                        } else {
-                            outRect.left = 2;
-                            outRect.right = 0;
+                if (messageText == null) {
+                    options.addItemDecoration(new RecyclerView.ItemDecoration() {
+                        @Override
+                        public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                            outRect.top = 0;
+                            outRect.bottom = 0;
+                            if (parent.getChildLayoutPosition(view) % 2 == 0) {
+                                outRect.left = 0;
+                                outRect.right = 2;
+                            } else {
+                                outRect.left = 2;
+                                outRect.right = 0;
+                            }
                         }
-                    }
-                });
+                    });
+                }
                 options.setAdapter(new NinchatMultiChoiceAdapter(data, this, messageText == null));
                 final Button sendButton = itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice_send);
                 sendButton.setText(NinchatSessionManager.getInstance().getSubmitButtonText());
