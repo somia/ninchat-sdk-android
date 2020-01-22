@@ -110,10 +110,23 @@ public final class NinchatSessionManager {
         return instance;
     }
 
+    private String appDetails = null;
     private String serverAddress = null;
 
+    public void setAppDetails(final String appDetails) {
+        this.appDetails = appDetails;
+    }
+
+    public String getAppDetails() {
+        return appDetails;
+    }
+
     public String getUserAgent() {
-        return DEFAULT_USER_AGENT;
+        String s = DEFAULT_USER_AGENT;
+        if (appDetails != null) {
+            s += " " + appDetails;
+        }
+        return s;
     }
 
     public void setServerAddress(final String serverAddress) {
