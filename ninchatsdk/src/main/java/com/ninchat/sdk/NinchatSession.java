@@ -70,6 +70,14 @@ public final class NinchatSession {
         this.sessionManager = NinchatSessionManager.init(applicationContext, configurationKey, preferredEnvironments, eventListener, logListener);
     }
 
+    /**
+     * Append information to the User-Agent string.  The string should be in
+     * the form "app-name/version" or "app-name/version (more; details)".
+     */
+    public void setAppDetails(final String appDetails) {
+        NinchatSessionManager.getInstance().setAppDetails(appDetails);
+    }
+
     public void setServerAddress(final String serverAddress) {
         NinchatSessionManager.getInstance().setServerAddress(serverAddress);
     }

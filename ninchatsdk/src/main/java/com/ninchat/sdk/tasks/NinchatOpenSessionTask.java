@@ -41,6 +41,7 @@ public final class NinchatOpenSessionTask extends NinchatBaseTask {
         }
         sessionParams.setStringArray("message_types", messageTypes);
         final Session session = new Session();
+        session.setHeader("User-Agent", NinchatSessionManager.getInstance().getUserAgent());
         session.setAddress(NinchatSessionManager.getInstance().getServerAddress());
         try {
             session.setParams(sessionParams);

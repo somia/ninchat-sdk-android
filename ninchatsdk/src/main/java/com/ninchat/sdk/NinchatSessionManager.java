@@ -103,12 +103,31 @@ public final class NinchatSessionManager {
         }
     }
 
+    public static final String DEFAULT_USER_AGENT = "ninchat-sdk-android/0 (Android " + Build.VERSION.RELEASE + "; " + Build.MANUFACTURER + " " + Build.MODEL + ")";
+
     static NinchatSessionManager init(final Context context, final String configurationKey, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
         instance = new NinchatSessionManager(context, configurationKey, preferredEnvironments, eventListener, logListener);
         return instance;
     }
 
+    private String appDetails = null;
     private String serverAddress = null;
+
+    public void setAppDetails(final String appDetails) {
+        this.appDetails = appDetails;
+    }
+
+    public String getAppDetails() {
+        return appDetails;
+    }
+
+    public String getUserAgent() {
+        String s = DEFAULT_USER_AGENT;
+        if (appDetails != null) {
+            s += " " + appDetails;
+        }
+        return s;
+    }
 
     public void setServerAddress(final String serverAddress) {
         this.serverAddress = serverAddress;
