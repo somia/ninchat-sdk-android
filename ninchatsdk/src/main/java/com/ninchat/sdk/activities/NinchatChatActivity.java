@@ -280,7 +280,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     public void onVideoHangUp(final View view) {
-        webRTCView.hangUp();
+        hangUp();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
     }
 
@@ -445,7 +445,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        webRTCView.hangUp();
+        hangUp();
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.unregisterReceiver(channelClosedReceiver);
         localBroadcastManager.unregisterReceiver(transferReceiver);
@@ -467,5 +467,11 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         }
         videoContainer.setLayoutParams(layoutParams);
         webRTCView.onResume();
+    }
+
+    // Reinitialize webRTC on hangup for possible new connection
+    private void hangUp() {
+        webRTCView.hangUp();
+        webRTCView = new NinchatWebRTCView(videoContainer);
     }
 }
