@@ -33,6 +33,7 @@ import com.ninchat.sdk.models.NinchatQueue;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
+import com.ninchat.sdk.tasks.NinchatDeleteUserTask;
 import com.ninchat.sdk.tasks.NinchatDescribeFileTask;
 import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
 import com.ninchat.sdk.tasks.NinchatListQueuesTask;
@@ -162,6 +163,10 @@ public final class NinchatSessionManager {
     public static void joinQueue(final String queueId) {
         instance.queueId = queueId;
         NinchatJoinQueueTask.start(queueId);
+    }
+
+    public static void exitQueue() {
+        NinchatDeleteUserTask.start();
     }
 
     public void partChannel() {
