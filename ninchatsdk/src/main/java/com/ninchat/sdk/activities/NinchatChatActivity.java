@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
@@ -36,6 +37,7 @@ import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
+import com.ninchat.sdk.managers.OrientationManager;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.views.NinchatWebRTCView;
 
@@ -51,6 +53,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     protected static final int CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE = "WebRTCVideoAudio".hashCode() & 0xffff;
     protected static final int PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() & 0xffff;
+    private OrientationManager orientationManager;
 
     private NinchatMessageAdapter messageAdapter = sessionManager.getMessageAdapter();
 
@@ -285,8 +288,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     public void onToggleFullScreen(final View view) {
+
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         }
@@ -393,6 +397,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        orientationManager = new OrientationManager(this, SensorManager.SENSOR_DELAY_UI);
+        orientationManager.enable();
+
         if (getResources().getBoolean(R.bool.ninchat_chat_background_not_tiled)) {
             findViewById(R.id.ninchat_chat_root).setBackgroundResource(R.drawable.ninchat_chat_background);
         }
@@ -450,6 +458,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         localBroadcastManager.unregisterReceiver(channelClosedReceiver);
         localBroadcastManager.unregisterReceiver(transferReceiver);
         localBroadcastManager.unregisterReceiver(webRTCMessageReceiver);
+
+        orientationManager.disable();
     }
 
     @Override
