@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSession;
-import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 
@@ -117,6 +116,8 @@ public final class NinchatActivity extends NinchatBaseActivity {
             if (resultCode == RESULT_OK || queueId != null) {
                 sessionManager.close();
                 setResult(resultCode, data);
+                finish();
+            } else if (resultCode == RESULT_CANCELED) {
                 finish();
             }
         }

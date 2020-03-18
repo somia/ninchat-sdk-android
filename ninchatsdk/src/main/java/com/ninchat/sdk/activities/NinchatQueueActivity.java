@@ -107,7 +107,8 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
     }
 
     public void onClose(final View view) {
-        setResult(RESULT_CANCELED);
+        NinchatSessionManager.exitQueue();
+        setResult(RESULT_CANCELED, null);
         finish();
     }
 }

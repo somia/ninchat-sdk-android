@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="ninchat_review_activity_skip_bottom_margin">15dp</dimen>
+    <dimen name="ninchat_chat_activity_pip_video_height">72dp</dimen>
+    <dimen name="ninchat_chat_activity_pip_video_width">126dp</dimen>
 </resources>

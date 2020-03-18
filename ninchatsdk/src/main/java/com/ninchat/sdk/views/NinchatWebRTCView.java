@@ -93,6 +93,10 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     private PeerConnectionFactory peerConnectionFactory;
 
     public NinchatWebRTCView(final View view) {
+        init(view);
+    }
+
+    private void init(View view) {
         videoContainer = view;
         eglBase = EglBase.create();
         remoteVideo = view.findViewById(R.id.video);
@@ -210,6 +214,9 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                 @Override
                 public void run() {
                     hangUp(false);
+
+                    // Reinitialize for possible new connection
+                    init(videoContainer);
                 }
             });
             return true;
