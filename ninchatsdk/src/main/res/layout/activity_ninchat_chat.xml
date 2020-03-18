@@ -131,8 +131,8 @@
 
         <org.webrtc.SurfaceViewRenderer
             android:id="@+id/pip_video"
-            android:layout_height="72dp"
-            android:layout_width="126dp"
+            android:layout_height="@dimen/ninchat_chat_activity_pip_video_height"
+            android:layout_width="@dimen/ninchat_chat_activity_pip_video_width"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true" />
 

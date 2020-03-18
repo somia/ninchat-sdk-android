@@ -476,6 +476,14 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             image.setImageResource(R.drawable.ninchat_icon_video_toggle_full);
         }
         videoContainer.setLayoutParams(layoutParams);
+
+        // Update pip video orientation
+        final View pip = videoContainer.findViewById(R.id.pip_video);
+        final ViewGroup.LayoutParams pipLayoutParams = pip.getLayoutParams();
+        pipLayoutParams.height = getResources().getDimensionPixelSize(R.dimen.ninchat_chat_activity_pip_video_height);
+        pipLayoutParams.width = getResources().getDimensionPixelSize(R.dimen.ninchat_chat_activity_pip_video_width);
+        pip.setLayoutParams(pipLayoutParams);
+
         webRTCView.onResume();
     }
 

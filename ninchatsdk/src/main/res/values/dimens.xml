@@ -51,6 +51,8 @@
     <dimen name="ninchat_chat_activity_video_control_padding">15dp</dimen>
     <dimen name="ninchat_chat_activity_video_control_icon_size">35dp</dimen>
     <dimen name="ninchat_chat_activity_video_control_icon_margin">8dp</dimen>
+    <dimen name="ninchat_chat_activity_pip_video_height">126dp</dimen>
+    <dimen name="ninchat_chat_activity_pip_video_width">72dp</dimen>
 
     <dimen name="ninchat_chat_activity_dialog_horizontal_padding">40dp</dimen>
 
