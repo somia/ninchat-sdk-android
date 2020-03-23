@@ -115,6 +115,8 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         remoteVideo.setEnableHardwareScaler(false);
         remoteRender.setTarget(remoteVideo);
         remoteSinks.add(remoteRender);
+        localVideo.setZOrderOnTop(true);
+        localVideo.setZOrderMediaOverlay(true);
     }
 
     private void animateSpinner() {
