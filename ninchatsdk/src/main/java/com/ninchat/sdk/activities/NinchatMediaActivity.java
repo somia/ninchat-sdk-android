@@ -75,6 +75,8 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
         request.setTitle(file.getName());
         request.setDescription(file.getUrl());
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, file.getName());
+        request.allowScanningByMediaScanner();
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         final DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         downloadManager.enqueue(request);
         findViewById(R.id.ninchat_media_download).setVisibility(View.GONE);
