@@ -54,6 +54,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     protected static final int CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE = "WebRTCVideoAudio".hashCode() & 0xffff;
     protected static final int PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() & 0xffff;
     private OrientationManager orientationManager;
+    private boolean historyLoaded = false;
 
     private NinchatMessageAdapter messageAdapter = sessionManager.getMessageAdapter();
 
@@ -433,6 +434,30 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (sessionManager.isVideoEnabled() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
             findViewById(R.id.video_call).setVisibility(View.VISIBLE);
         }
+
+        if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(NinchatSessionManager.Parameter.CHAT_IS_CLOSED)) {
+            initializeClosedChat(messages);
+        }
+    }
+
+    private void initializeClosedChat(RecyclerView messages) {
+
+        // Wait for RecyclerView to be initialized
+        messages.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+
+            // Close chat if it hasn't been closed yet
+            if (!chatClosed && historyLoaded) {
+                messageAdapter.close(NinchatChatActivity.this);
+                chatClosed = true;
+                hideKeyboard();
+            }
+
+            // Initialize closed chat with recent messages only
+            if (!historyLoaded) {
+                sessionManager.loadChannelHistory(null);
+                historyLoaded = true;
+            }
+        });
     }
 
     @Override
@@ -441,7 +466,11 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         // Refresh the message list, just in case
         messageAdapter.notifyDataSetChanged();
         webRTCView.onResume();
-        sessionManager.loadChannelHistory(messageAdapter.getLastMessageId(false));
+
+        // Don't load first messages if chat is closed, we want to load the latest messages only
+        if (getIntent().getExtras() == null || !(getIntent().getExtras() != null && getIntent().getExtras().getBoolean(NinchatSessionManager.Parameter.CHAT_IS_CLOSED))) {
+            sessionManager.loadChannelHistory(messageAdapter.getLastMessageId(false));
+        }
     }
 
     @Override

@@ -2,9 +2,10 @@ package com.ninchat.sdk;
 
 import com.ninchat.client.Payload;
 import com.ninchat.client.Props;
+import com.ninchat.sdk.models.NinchatSessionCredentials;
 
 public abstract class NinchatSDKEventListener {
-    public void onSessionInitiated() {}
+    public void onSessionInitiated(NinchatSessionCredentials sessionCredentials) {}
     public void onSessionStarted() {}
     public void onSessionInitFailed() {}
     public void onSessionEvent(final Props params) {}

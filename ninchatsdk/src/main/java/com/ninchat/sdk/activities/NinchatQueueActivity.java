@@ -54,7 +54,13 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (NinchatSessionManager.Broadcast.CHANNEL_JOINED.equals(action)) {
-                startActivityForResult(new Intent(NinchatQueueActivity.this, NinchatChatActivity.class), NinchatChatActivity.REQUEST_CODE);
+                Intent i = new Intent(NinchatQueueActivity.this, NinchatChatActivity.class);
+
+                if (intent.getExtras() != null && intent.getExtras().getBoolean(NinchatSessionManager.Parameter.CHAT_IS_CLOSED)) {
+                    i.putExtra(NinchatSessionManager.Parameter.CHAT_IS_CLOSED, intent.getExtras().getBoolean(NinchatSessionManager.Parameter.CHAT_IS_CLOSED));
+                }
+
+                startActivityForResult(i, NinchatChatActivity.REQUEST_CODE);
             }
         }
     };
