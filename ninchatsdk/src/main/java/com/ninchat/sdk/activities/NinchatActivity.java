@@ -1,5 +1,6 @@
 package com.ninchat.sdk.activities;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 public final class NinchatActivity extends NinchatBaseActivity {
 
     protected static final String QUEUE_ID = "queueId";
+    private final int TRANSITION_DELAY = 300;
 
     public static Intent getLaunchIntent(final Context context, final String queueId) {
         return new Intent(context, NinchatActivity.class)
@@ -80,15 +82,33 @@ public final class NinchatActivity extends NinchatBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Intent intent = getIntent();
+
+        // If the app is killed in the background sessionManager is not initialized the SDK must
+        // be exited and the NinchatSession needs to be initialzed again
+        if (sessionManager == null) {
+
+            // Use a small delay before transition for UX purposes. Without the delay the app looks
+            // like it's crashing since there can be 3 activities that will be finished.
+            new android.os.Handler().postDelayed(() -> {
+                setResult(Activity.RESULT_CANCELED, null);
+                finish();
+                this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            }, TRANSITION_DELAY);
+
+            return;
+        }
+
         if (intent != null) {
             queueId = intent.getStringExtra(QUEUE_ID);
             if (queueId != null) {
                 openQueueActivity();
             }
         }
+
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         broadcastManager.registerReceiver(queuesUpdatedReceiver, new IntentFilter(NinchatSession.Broadcast.QUEUES_UPDATED));
         broadcastManager.registerReceiver(configurationFetchedReceiver, new IntentFilter(NinchatSession.Broadcast.CONFIGURATION_FETCHED));
+        findViewById(R.id.ninchat_activity_close).setVisibility(View.VISIBLE);
         setQueueAdapter();
         setTexts();
     }

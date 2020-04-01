@@ -1,5 +1,6 @@
 package com.ninchat.sdk.activities;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -86,9 +87,20 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Intent intent = getIntent();
+
+        // If the app is killed in the background sessionManager is not initialized the SDK must
+        // be exited and the NinchatSession needs to be initialzed again
+        if (sessionManager == null) {
+            setResult(Activity.RESULT_CANCELED, null);
+            finish();
+            this.overridePendingTransition(0, 0);
+            return;
+        }
+
         if (intent != null) {
             queueId = intent.getStringExtra(QUEUE_ID);
         }
+
         final RotateAnimation animation = new RotateAnimation(0f, 359f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         animation.setInterpolator(new LinearInterpolator());
         animation.setRepeatCount(Animation.INFINITE);
