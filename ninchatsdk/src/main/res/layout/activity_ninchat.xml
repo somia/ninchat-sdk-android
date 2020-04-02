@@ -67,6 +67,7 @@
                 android:layout_marginEnd="@dimen/ninchat_button_queue_horizontal_margin"
                 android:layout_marginBottom="@dimen/ninchat_button_vertical_margin"
                 android:onClick="onCloseClick"
+                android:visibility="gone"
                 tools:text="Close chat" />
 
         </LinearLayout>

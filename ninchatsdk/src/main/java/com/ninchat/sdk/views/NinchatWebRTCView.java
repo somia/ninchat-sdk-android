@@ -115,6 +115,8 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         remoteVideo.setEnableHardwareScaler(false);
         remoteRender.setTarget(remoteVideo);
         remoteSinks.add(remoteRender);
+        localVideo.setZOrderOnTop(true);
+        localVideo.setZOrderMediaOverlay(true);
     }
 
     private void animateSpinner() {
@@ -527,6 +529,8 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         final ImageView image = videoContainer.findViewById(R.id.microphone_on_off);
         image.setImageResource(isMicrophoneMuted ? R.drawable.ninchat_icon_video_microphone_off : R.drawable.ninchat_icon_video_microphone_on);
         localAudioTrack.setEnabled(!isMicrophoneMuted);
+        AudioManager audioManager = (AudioManager) videoContainer.getContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager.setMicrophoneMute(isMicrophoneMuted);
     }
 
     private boolean isVideoDisabled = false;

@@ -54,8 +54,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     protected static final int CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE = "WebRTCVideoAudio".hashCode() & 0xffff;
     protected static final int PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() & 0xffff;
     private OrientationManager orientationManager;
+    private boolean historyLoaded = false;
 
-    private NinchatMessageAdapter messageAdapter = sessionManager.getMessageAdapter();
+    private NinchatMessageAdapter messageAdapter = sessionManager != null ? sessionManager.getMessageAdapter() : new NinchatMessageAdapter();
 
     @Override
     protected int getLayoutRes() {
@@ -398,12 +399,22 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        orientationManager = new OrientationManager(this, SensorManager.SENSOR_DELAY_UI);
-        orientationManager.enable();
-
         if (getResources().getBoolean(R.bool.ninchat_chat_background_not_tiled)) {
             findViewById(R.id.ninchat_chat_root).setBackgroundResource(R.drawable.ninchat_chat_background);
         }
+
+        // If the app is killed in the background sessionManager is not initialized the SDK must
+        // be exited and the NinchatSession needs to be initialzed again
+        if (sessionManager == null) {
+            setResult(Activity.RESULT_CANCELED, null);
+            finish();
+            this.overridePendingTransition(0, 0);
+            return;
+        }
+
+        orientationManager = new OrientationManager(this, SensorManager.SENSOR_DELAY_UI);
+        orientationManager.enable();
+
         videoContainer = findViewById(R.id.videoContainer);
         webRTCView = new NinchatWebRTCView(videoContainer);
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
@@ -433,6 +444,30 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (sessionManager.isVideoEnabled() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
             findViewById(R.id.video_call).setVisibility(View.VISIBLE);
         }
+
+        if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(NinchatSessionManager.Parameter.CHAT_IS_CLOSED)) {
+            initializeClosedChat(messages);
+        }
+    }
+
+    private void initializeClosedChat(RecyclerView messages) {
+
+        // Wait for RecyclerView to be initialized
+        messages.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+
+            // Close chat if it hasn't been closed yet
+            if (!chatClosed && historyLoaded) {
+                messageAdapter.close(NinchatChatActivity.this);
+                chatClosed = true;
+                hideKeyboard();
+            }
+
+            // Initialize closed chat with recent messages only
+            if (!historyLoaded) {
+                sessionManager.loadChannelHistory(null);
+                historyLoaded = true;
+            }
+        });
     }
 
     @Override
@@ -440,14 +475,27 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         super.onResume();
         // Refresh the message list, just in case
         messageAdapter.notifyDataSetChanged();
-        webRTCView.onResume();
-        sessionManager.loadChannelHistory(messageAdapter.getLastMessageId(false));
+
+        if (webRTCView != null && sessionManager != null) {
+            webRTCView.onResume();
+        }
+
+        // Don't load first messages if chat is closed, we want to load the latest messages only
+        if (getIntent().getExtras() == null || !(getIntent().getExtras() != null && getIntent().getExtras().getBoolean(NinchatSessionManager.Parameter.CHAT_IS_CLOSED))) {
+
+            if (sessionManager != null) {
+                sessionManager.loadChannelHistory(messageAdapter.getLastMessageId(false));
+            }
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        webRTCView.onPause();
+
+        if (webRTCView != null && sessionManager != null) {
+            webRTCView.onPause();
+        }
     }
 
     @Override
@@ -459,7 +507,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         localBroadcastManager.unregisterReceiver(transferReceiver);
         localBroadcastManager.unregisterReceiver(webRTCMessageReceiver);
 
-        orientationManager.disable();
+        if (orientationManager != null) {
+            orientationManager.disable();
+        }
     }
 
     @Override
@@ -489,7 +539,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     // Reinitialize webRTC on hangup for possible new connection
     private void hangUp() {
-        webRTCView.hangUp();
-        webRTCView = new NinchatWebRTCView(videoContainer);
+        if (sessionManager != null && webRTCView != null) {
+            webRTCView.hangUp();
+            webRTCView = new NinchatWebRTCView(videoContainer);
+        }
     }
 }

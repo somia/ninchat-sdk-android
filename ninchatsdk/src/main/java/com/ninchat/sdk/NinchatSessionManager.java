@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.text.Spanned;
@@ -30,6 +31,7 @@ import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatOption;
 import com.ninchat.sdk.models.NinchatQueue;
+import com.ninchat.sdk.models.NinchatSessionCredentials;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
@@ -76,6 +78,7 @@ public final class NinchatSessionManager {
 
     public static final class Parameter {
         public static final String QUEUE_ID = "queueId";
+        public static final String CHAT_IS_CLOSED = "isClosed";
     }
 
     public static final class MessageTypes {
@@ -106,8 +109,8 @@ public final class NinchatSessionManager {
 
     public static final String DEFAULT_USER_AGENT = "ninchat-sdk-android/" + BuildConfig.VERSION_NAME + " (Android " + Build.VERSION.RELEASE + "; " + Build.MANUFACTURER + " " + Build.MODEL + ")";
 
-    static NinchatSessionManager init(final Context context, final String configurationKey, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
-        instance = new NinchatSessionManager(context, configurationKey, preferredEnvironments, eventListener, logListener);
+    static NinchatSessionManager init(final Context context, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+        instance = new NinchatSessionManager(context, configurationKey, sessionCredentials, preferredEnvironments, eventListener, logListener);
         return instance;
     }
 
@@ -179,7 +182,7 @@ public final class NinchatSessionManager {
     private String[] preferredEnvironments;
     protected String siteSecret;
 
-    protected NinchatSessionManager(final Context context, final String configurationKey, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+    protected NinchatSessionManager(final Context context, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
         this.contextWeakReference = new WeakReference<>(context);
         this.configurationKey = configurationKey;
         this.preferredEnvironments = preferredEnvironments;
@@ -193,6 +196,7 @@ public final class NinchatSessionManager {
         this.ninchatQueueListAdapter = null;
         this.files = new HashMap<>();
         this.activityWeakReference = new WeakReference<>(null);
+        this.sessionCredentials = sessionCredentials;
     }
 
     protected WeakReference<Context> contextWeakReference;
@@ -213,6 +217,7 @@ public final class NinchatSessionManager {
     protected List<NinchatWebRTCServerInfo> stunServers;
     protected List<NinchatWebRTCServerInfo> turnServers;
     protected Map<String, NinchatFile> files;
+    private NinchatSessionCredentials sessionCredentials;
 
     public void start(final Activity activity, final String siteSecret, final int requestCode, final String queueId) {
         this.activityWeakReference = new WeakReference<>(activity);
@@ -240,7 +245,7 @@ public final class NinchatSessionManager {
             LocalBroadcastManager.getInstance(context)
                     .sendBroadcast(new Intent(NinchatSession.Broadcast.CONFIGURATION_FETCHED));
         }
-        NinchatOpenSessionTask.start(siteSecret);
+        NinchatOpenSessionTask.start(siteSecret, sessionCredentials);
     }
 
     public void sessionError(final Exception error) {
@@ -260,18 +265,47 @@ public final class NinchatSessionManager {
 
     public void setSession(final Session session) {
         this.session = session;
+        final NinchatSDKEventListener listener = eventListenerWeakReference.get();
+
         this.session.setOnSessionEvent(new SessionEventHandler() {
             @Override
             public void onSessionEvent(Props params) {
                 try {
                     Log.v(TAG, "onSessionEvent: " + params.string());
                     final String event = params.getString("event");
+
                     if (event.equals("session_created")) {
                         userId = params.getString("user_id");
+
+                        String userAuth = sessionCredentials != null ? sessionCredentials.getUserAuth() : params.getString("user_auth");
+                        String oldSessionId = sessionCredentials != null ? sessionCredentials.getSessionId() : null;
+
+                        sessionCredentials = new NinchatSessionCredentials(
+                            params.getString("user_id"),
+                            userAuth,
+                            params.getString("session_id")
+                        );
+
                         NinchatListQueuesTask.start();
+
+                        if (listener != null) {
+
+                            // TODO: Close previous session, hasn't been added since it didn't work
+                            if (configuration != null && sessionCredentials != null) {
+                                listener.onSessionInitiated(sessionCredentials);
+                                sessionCredentials = null;
+                            } else if (configuration != null) {
+                                listener.onSessionInitiated(sessionCredentials);
+                            } else {
+                                listener.onSessionInitFailed();
+                            }
+                        }
+                    } else {
+                        listener.onSessionInitFailed();
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);
+                    listener.onSessionInitFailed();
                 }
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
@@ -344,14 +378,6 @@ public final class NinchatSessionManager {
         final Context context = contextWeakReference.get();
         if (context != null) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSession.Broadcast.SESSION_CREATED));
-        }
-        final NinchatSDKEventListener listener = eventListenerWeakReference.get();
-        if (listener != null) {
-            if (configuration != null) {
-                listener.onSessionInitiated();
-            } else {
-                listener.onSessionInitFailed();
-            }
         }
 
     }
@@ -588,6 +614,15 @@ public final class NinchatSessionManager {
     }
 
     private void channelJoined(final Props params) {
+        boolean isClosed = false;
+
+        try {
+            Props channelAttrs = params.getObject("channel_attrs");
+            isClosed = channelAttrs.getBool("closed");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         try {
             channelId = params.getString("channel_id");
         } catch (final Exception e) {
@@ -653,7 +688,9 @@ public final class NinchatSessionManager {
         });
         final Context context = contextWeakReference.get();
         if (context != null) {
-            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.CHANNEL_JOINED));
+            Intent i = new Intent(Broadcast.CHANNEL_JOINED);
+            i.putExtra(Parameter.CHAT_IS_CLOSED, isClosed);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(i);
         }
     }
 
@@ -662,7 +699,11 @@ public final class NinchatSessionManager {
         load.setString("action", "load_history");
         load.setString("channel_id", channelId);
         load.setInt("history_order", 1);
-        load.setString("message_id", messageId);
+
+        if (messageId != null) {
+            load.setString("message_id", messageId);
+        }
+
         try {
             session.send(load, null);
         } catch (final Exception e) {

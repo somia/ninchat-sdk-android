@@ -20,7 +20,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ninchat.sdk.GlideApp;
@@ -449,6 +451,13 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     public void close(final NinchatChatActivity activity) {
         activityWeakReference = new WeakReference<>(activity);
+
+        // Disable text input after chat has ended
+        EditText editText = activity.findViewById(R.id.message);
+        editText.setEnabled(false);
+        LinearLayout linearLayout = activity.findViewById(R.id.send_message_container);
+        linearLayout.setOnClickListener(null);
+
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {

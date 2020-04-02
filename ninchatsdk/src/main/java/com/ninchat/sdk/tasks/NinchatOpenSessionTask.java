@@ -7,22 +7,25 @@ import com.ninchat.client.Props;
 import com.ninchat.client.Session;
 import com.ninchat.client.Strings;
 import com.ninchat.sdk.NinchatSessionManager;
+import com.ninchat.sdk.models.NinchatSessionCredentials;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 27/08/2018.
  */
 public final class NinchatOpenSessionTask extends NinchatBaseTask {
 
-    public static void start(final String siteSecret) {
-        new NinchatOpenSessionTask(siteSecret).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    public static void start(final String siteSecret, NinchatSessionCredentials sessionCredentials) {
+        new NinchatOpenSessionTask(siteSecret, sessionCredentials).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     protected static final String TAG = NinchatOpenSessionTask.class.getSimpleName();
 
     protected String siteSecret;
+    private NinchatSessionCredentials sessionCredentials;
 
-    protected NinchatOpenSessionTask(final String siteSecret) {
+    protected NinchatOpenSessionTask(final String siteSecret, NinchatSessionCredentials sessionCredentials) {
         this.siteSecret = siteSecret;
+        this.sessionCredentials = sessionCredentials;
     }
 
     @Override
@@ -40,6 +43,13 @@ public final class NinchatOpenSessionTask extends NinchatBaseTask {
             sessionParams.setObject("user_attrs", attrs);
         }
         sessionParams.setStringArray("message_types", messageTypes);
+
+        // Session persistence
+        if (sessionCredentials != null) {
+            sessionParams.setString("user_id", sessionCredentials.getUserId());
+            sessionParams.setString("user_auth", sessionCredentials.getUserAuth());
+        }
+
         final Session session = new Session();
         session.setHeader("User-Agent", NinchatSessionManager.getInstance().getUserAgent());
         session.setAddress(NinchatSessionManager.getInstance().getServerAddress());
