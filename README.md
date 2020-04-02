@@ -12,7 +12,7 @@ Add the following maven repository to the project dependency repositories:
 
 Then you need to add the following dependency to the project dependencies:
 
-    implementation 'com.ninchat:sdk:0.4.4'
+    implementation 'com.ninchat:sdk:0.5.0'
 
 ## Usage
 
@@ -22,7 +22,7 @@ In order to use the SDK you need to create an instance of the `NinchatSession` c
 
     import com.ninchat.sdk.NinchatSession;
     ...
-    NinchatSession session = new NinchatSession(applicationContext, configurationKey);
+    NinchatSession session = new NinchatSession(applicationContext, configurationKey, sessionCredentials);
 
 ### Starting the API client
 
@@ -38,6 +38,8 @@ The SDK does some things asynchronously before the SDK UI opens. Therefore it is
 
 Should there be any issues with the SDK init, the `NinchatSDKEventListener`'s `onSessionInitFailed` method will be called. The `NinchatSDKEventListener` class has also a method `onSessionInitiated` that gets called when the SDK has successfully fetched the configuration.
 
+As of 0.5.0 `onSessionInitiated` will return a `NinchatSessionCredentials` object which client should store in case the app crashes/process is killed. When passing this object to `NinchatSession` constructor the previous session will be opened. If `null` is passed a new session will be opened. If the session is not valid `onSessionInitFailed` will be called and the saved object should be cleared. Saved object should also be cleared every time `onActivityResult` is invoked.
+
 ### Setting metadata
 
 The `NinchatSession` class has a setter for audience metadata (i.e. user information).  It's specified as a `com.ninchat.client.Props` object:
@@ -51,7 +53,7 @@ The `NinchatSession` class has a setter for audience metadata (i.e. user informa
 
 The API client accepts a list of preferred environments when it is created as a `String` *array*:
 
-    NinchatSession session = new NinchatSession(applicationContext, configurationKey, preferredEnvironments);
+    NinchatSession session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, preferredEnvironments);
 
 With this array, the various parameters used by the SDK are read from the preferred environment data the SDK loads when it is started. Should a parameter be missing from the preferred environment data, the SDK tries to read it from the next preferred environment. If the parameter is not found in any preferred environments, the SDK uses the `default` environment or the parameter key (or a sensible default value) as its value.
 
@@ -74,14 +76,16 @@ The SDK exposes the low-level communication interface with the method `getSessio
 
 Furthermore, the host application can register itself (or its property/properties) as a listener to the low-level API events and/or logs by creating the `NinchatSession` instance with the listeners as constructor arguments:
 
-    session = new NinchatSession(applicationContext, configurationKey, eventListener);
-    session = new NinchatSession(applicationContext, configurationKey, preferredEnvironments, eventListener);
-    session = new NinchatSession(applicationContext, configurationKey, logListener);
-    session = new NinchatSession(applicationContext, configurationKey, preferredEnvironments, logListener);
-    session = new NinchatSession(applicationContext, configurationKey, eventListener, logListener);
-    session = new NinchatSession(applicationContext, configurationKey, preferredEnvironments, eventListener, logListener);
+    session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, eventListener);
+    session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, eventListener);
+    session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, logListener);
+    session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, logListener);
+    session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, eventListener, logListener);
+    session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, eventListener, logListener);
 
 The argument `eventListener`, when non-null, must be an instance of the `NinchatSDKEventListener` class and the `logListener` an instance of the `NinchatSDKLogListener`interface.
+
+As of version 0.5.0 `sessionCredentials` can be added to open up a previous session. Passing `null` will open a new session. Passing invalid/outdated `sessionCredentials` will cause `onSessionInitFailed` to be invoked.
 
 See [Ninchat API Reference](https://github.com/ninchat/ninchat-api/blob/v2/api.md) for information about the API's outbound Actions and inbound Events.
 
