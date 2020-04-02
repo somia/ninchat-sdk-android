@@ -92,6 +92,8 @@ public final class NinchatActivity extends NinchatBaseActivity {
             new android.os.Handler().postDelayed(() -> {
                 setResult(Activity.RESULT_CANCELED, null);
                 finish();
+
+                // Use a slide transition just to minimize the impression that the app has crashed
                 this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             }, TRANSITION_DELAY);
 
