@@ -517,9 +517,19 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     private void toggleAudio(final boolean mute) {
-        final AudioManager audioManager = (AudioManager) videoContainer.getContext().getSystemService(Context.AUDIO_SERVICE);
-        audioManager.adjustStreamVolume(AudioManager.STREAM_MUSIC, mute ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE, 0);
-        audioManager.adjustStreamVolume(AudioManager.STREAM_SYSTEM, mute ? AudioManager.ADJUST_MUTE : AudioManager.ADJUST_UNMUTE, 0);
+        // sanity check
+        if (peerConnection == null) {
+            return;
+        }
+        // https://w3c.github.io/webrtc-pc/#rtcrtpreceiver-interface
+        for (final RtpTransceiver transceiver : peerConnection.getTransceivers()) {
+            if (transceiver.getMediaType() == MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO) {
+                final MediaStreamTrack mediaStreamTrack = transceiver.getReceiver().track();
+                if (mediaStreamTrack != null) {
+                    mediaStreamTrack.setEnabled(!mute);
+                }
+            }
+        }
     }
 
     private boolean isMicrophoneMuted = false;
