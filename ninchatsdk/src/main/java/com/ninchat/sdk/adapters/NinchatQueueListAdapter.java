@@ -29,16 +29,22 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
 
         void bind(final NinchatQueue queue) {
             final Button button = itemView.findViewById(R.id.queue_name);
-            button.setText(NinchatSessionManager.getInstance().getQueueName(queue.getName()));
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+
+            // If queue is closed, disable button and set alpha for look & feel
+            if (queue.isClosed()) {
+                button.setEnabled(false);
+                button.setAlpha(0.5f);
+                button.setText(NinchatSessionManager.getInstance().getQueueName(queue.getName(), queue.isClosed()));
+            } else {
+                button.setAlpha(1f);
+                button.setText(NinchatSessionManager.getInstance().getQueueName(queue.getName()));
+                button.setOnClickListener(v -> {
                     final Activity activity = activityWeakReference.get();
                     if (activity != null) {
                         activity.startActivityForResult(NinchatQueueActivity.getLaunchIntent(activity, queue.getId()),  NinchatQueueActivity.REQUEST_CODE);
                     }
-                }
-            });
+                });
+            }
         }
     }
 

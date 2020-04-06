@@ -1392,6 +1392,14 @@ public final class NinchatSessionManager {
         return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
     }
 
+    public String getQueueName(final String name, boolean closed) {
+        if (closed) {
+            return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}} (closed)"), name);
+        }
+
+        return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
+    }
+
     public Spanned  getQueueStatus(final String queueId) {
         NinchatQueue selectedQueue = getQueue(queueId);
         if (selectedQueue == null) {
