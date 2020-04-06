@@ -220,7 +220,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 if (NinchatSessionManager.MessageTypes.CALL.equals(messageType)) {
                     final AlertDialog dialog = new AlertDialog.Builder(NinchatChatActivity.this, R.style.NinchatTheme_Dialog)
                             .setView(R.layout.dialog_video_call_consent)
-                            .setCancelable(true)
+                            .setCancelable(false)
                             .create();
                     dialog.show();
                     final TextView title = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_title);
