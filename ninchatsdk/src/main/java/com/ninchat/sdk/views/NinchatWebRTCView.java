@@ -14,7 +14,7 @@ import android.widget.ImageView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.managers.NinAudioManager;
+import com.ninchat.sdk.managers.webrtc.NinchatAudioManager;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
 
 import org.json.JSONException;
@@ -91,7 +91,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     private JSONObject offer;
     private JSONObject answer;
 
-    private NinAudioManager ninAudioManager;
+    private NinchatAudioManager ninchatAudioManager;
     private PeerConnection peerConnection;
     private PeerConnectionFactory peerConnectionFactory;
 
@@ -264,15 +264,14 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     private void initializeAudioManager() {
         // Create and audio manager that will take care of audio routing,
         // audio modes, audio device enumeration etc.
-        ninAudioManager = NinAudioManager.create(videoContainer.getContext().getApplicationContext());
+        ninchatAudioManager = NinchatAudioManager.create(videoContainer.getContext().getApplicationContext());
         // Store existing audio settings and change audio mode to
         // MODE_IN_COMMUNICATION for best possible VoIP performance.
-        Log.e(TAG, "Starting the audio manager...");
-        ninAudioManager.start(new NinAudioManager.AudioManagerEvents() {
+        ninchatAudioManager.start(new NinchatAudioManager.AudioManagerEvents() {
             // This method will be called each time the number of available audio
             // devices has changed.
             @Override
-            public void onAudioDeviceChanged(NinAudioManager.AudioDevice audioDevice, Set<NinAudioManager.AudioDevice> availableAudioDevices) {
+            public void onAudioDeviceChanged(NinchatAudioManager.AudioDevice audioDevice, Set<NinchatAudioManager.AudioDevice> availableAudioDevices) {
                 Log.d(TAG, "onAudioManagerDevicesChanged: " + availableAudioDevices + ", "
                         + "selected: " + audioDevice);
             }
@@ -520,9 +519,9 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             eglBase.release();
             eglBase = null;
         }
-        if (ninAudioManager != null) {
-            ninAudioManager.stop();
-            ninAudioManager = null;
+        if (ninchatAudioManager != null) {
+            ninchatAudioManager.stop();
+            ninchatAudioManager = null;
         }
         PeerConnectionFactory.stopInternalTracingCapture();
         PeerConnectionFactory.shutdownInternalTracer();

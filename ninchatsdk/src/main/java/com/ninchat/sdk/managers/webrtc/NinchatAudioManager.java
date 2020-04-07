@@ -1,4 +1,4 @@
-package com.ninchat.sdk.managers;
+package com.ninchat.sdk.managers.webrtc;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,8 +16,8 @@ import org.webrtc.ThreadUtils;
 import java.util.HashSet;
 import java.util.Set;
 
-public class NinAudioManager {
-    private static final String TAG = NinAudioManager.class.getSimpleName();
+public class NinchatAudioManager {
+    private static final String TAG = NinchatAudioManager.class.getSimpleName();
 
     /**
      * AudioDevice is the names of possible audio devices that we currently
@@ -63,7 +63,7 @@ public class NinAudioManager {
     // See |userSelectedAudioDevice| for details.
     private AudioDevice selectedAudioDevice;
     // Handles all tasks related to Bluetooth headset devices.
-    private final NinBluetoothManager bluetoothManager;
+    private final NinchatBluetoothManager bluetoothManager;
 
     // Contains a list of available audio devices. A Set collection is used to
     // avoid duplicate elements.
@@ -97,16 +97,16 @@ public class NinAudioManager {
     /**
      * Construction.
      */
-    public static NinAudioManager create(Context context) {
-        return new NinAudioManager(context);
+    public static NinchatAudioManager create(Context context) {
+        return new NinchatAudioManager(context);
     }
 
-    private NinAudioManager(Context context) {
+    private NinchatAudioManager(Context context) {
         Log.d(TAG, "ctor");
         ThreadUtils.checkIsOnMainThread();
         mContext = context;
         mAudioManager = ((AudioManager) context.getSystemService(Context.AUDIO_SERVICE));
-        bluetoothManager = NinBluetoothManager.create(context, this);
+        bluetoothManager = NinchatBluetoothManager.create(context, this);
         wiredHeadsetReceiver = new WiredHeadsetReceiver();
         audioManagerState = AudioManagerState.UNINITIALIZED;
         defaultAudioDevice = AudioDevice.SPEAKER_PHONE;
@@ -297,18 +297,18 @@ public class NinAudioManager {
         // Check if any Bluetooth headset is connected. The internal BT state will
         // change accordingly.
         // TODO(henrika): perhaps wrap required state into BT manager.
-        if (bluetoothManager.getState() == NinBluetoothManager.State.HEADSET_AVAILABLE
-                || bluetoothManager.getState() == NinBluetoothManager.State.HEADSET_UNAVAILABLE
-                || bluetoothManager.getState() == NinBluetoothManager.State.SCO_DISCONNECTING) {
+        if (bluetoothManager.getState() == NinchatBluetoothManager.State.HEADSET_AVAILABLE
+                || bluetoothManager.getState() == NinchatBluetoothManager.State.HEADSET_UNAVAILABLE
+                || bluetoothManager.getState() == NinchatBluetoothManager.State.SCO_DISCONNECTING) {
             bluetoothManager.updateDevice();
         }
 
         // Update the set of available audio devices.
         Set<AudioDevice> newAudioDevices = new HashSet<>();
 
-        if (bluetoothManager.getState() == NinBluetoothManager.State.SCO_CONNECTED
-                || bluetoothManager.getState() == NinBluetoothManager.State.SCO_CONNECTING
-                || bluetoothManager.getState() == NinBluetoothManager.State.HEADSET_AVAILABLE) {
+        if (bluetoothManager.getState() == NinchatBluetoothManager.State.SCO_CONNECTED
+                || bluetoothManager.getState() == NinchatBluetoothManager.State.SCO_CONNECTING
+                || bluetoothManager.getState() == NinchatBluetoothManager.State.HEADSET_AVAILABLE) {
             newAudioDevices.add(AudioDevice.BLUETOOTH);
         }
 
@@ -329,18 +329,18 @@ public class NinAudioManager {
         audioDevices = newAudioDevices;
 
         boolean needBluetoothAudioStart =
-                bluetoothManager.getState() == NinBluetoothManager.State.HEADSET_AVAILABLE && !hasWiredHeadset;
+                bluetoothManager.getState() == NinchatBluetoothManager.State.HEADSET_AVAILABLE && !hasWiredHeadset;
 
         // Need to stop Bluetooth audio if user selected different device and
         // Bluetooth SCO connection is established or in the process.
         boolean needBluetoothAudioStop =
-                (bluetoothManager.getState() == NinBluetoothManager.State.SCO_CONNECTED
-                        || bluetoothManager.getState() == NinBluetoothManager.State.SCO_CONNECTING)
+                (bluetoothManager.getState() == NinchatBluetoothManager.State.SCO_CONNECTED
+                        || bluetoothManager.getState() == NinchatBluetoothManager.State.SCO_CONNECTING)
                         && (hasWiredHeadset);
 
-        if (bluetoothManager.getState() == NinBluetoothManager.State.HEADSET_AVAILABLE
-                || bluetoothManager.getState() == NinBluetoothManager.State.SCO_CONNECTING
-                || bluetoothManager.getState() == NinBluetoothManager.State.SCO_CONNECTED) {
+        if (bluetoothManager.getState() == NinchatBluetoothManager.State.HEADSET_AVAILABLE
+                || bluetoothManager.getState() == NinchatBluetoothManager.State.SCO_CONNECTING
+                || bluetoothManager.getState() == NinchatBluetoothManager.State.SCO_CONNECTED) {
             Log.d(TAG, "Need BT audio: start=" + needBluetoothAudioStart + ", "
                     + "stop=" + needBluetoothAudioStop + ", "
                     + "BT state=" + bluetoothManager.getState());
@@ -364,7 +364,7 @@ public class NinAudioManager {
         // Update selected audio device.
         final AudioDevice newAudioDevice;
 
-        if (bluetoothManager.getState() == NinBluetoothManager.State.SCO_CONNECTED) {
+        if (bluetoothManager.getState() == NinchatBluetoothManager.State.SCO_CONNECTED) {
             // If a Bluetooth is connected, then it should be used as output audio
             // device. Note that it is not sufficient that a headset is available;
             // an active SCO channel must also be up and running.

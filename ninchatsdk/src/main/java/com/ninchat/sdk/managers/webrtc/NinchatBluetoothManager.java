@@ -1,4 +1,4 @@
-package com.ninchat.sdk.managers;
+package com.ninchat.sdk.managers.webrtc;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
@@ -22,8 +22,8 @@ import org.webrtc.ThreadUtils;
 import java.util.List;
 import java.util.Set;
 
-public class NinBluetoothManager {
-    private static final String TAG = NinBluetoothManager.class.getSimpleName();
+public class NinchatBluetoothManager {
+    private static final String TAG = NinchatBluetoothManager.class.getSimpleName();
 
     // Timeout interval for starting or stopping audio to a Bluetooth SCO device.
     private static final int BLUETOOTH_SCO_TIMEOUT_MS = 4000;
@@ -51,7 +51,7 @@ public class NinBluetoothManager {
     }
 
     private final Context mContext;
-    private final NinAudioManager ninAudioManager;
+    private final NinchatAudioManager ninchatAudioManager;
     @Nullable
     private final AudioManager audioManager;
     private final Handler handler;
@@ -182,15 +182,15 @@ public class NinBluetoothManager {
     /**
      * Construction.
      */
-    static NinBluetoothManager create(Context context, NinAudioManager audioManager) {
-        return new NinBluetoothManager(context, audioManager);
+    static NinchatBluetoothManager create(Context context, NinchatAudioManager audioManager) {
+        return new NinchatBluetoothManager(context, audioManager);
     }
 
-    protected NinBluetoothManager(Context context, NinAudioManager audioManager) {
+    protected NinchatBluetoothManager(Context context, NinchatAudioManager audioManager) {
         Log.d(TAG, "ctor");
         ThreadUtils.checkIsOnMainThread();
         mContext = context;
-        ninAudioManager = audioManager;
+        ninchatAudioManager = audioManager;
         this.audioManager = getAudioManager(context);
         bluetoothState = State.UNINITIALIZED;
         bluetoothServiceListener = new BluetoothServiceListener();
@@ -435,7 +435,7 @@ public class NinBluetoothManager {
      */
     private void updateAudioDeviceState() {
         ThreadUtils.checkIsOnMainThread();
-        ninAudioManager.updateAudioDeviceState();
+        ninchatAudioManager.updateAudioDeviceState();
     }
 
     /**
