@@ -833,8 +833,7 @@ public final class NinchatSessionManager {
                     if (filetype == null || filetype.equals("application/octet-stream")) {
                         filetype = guessMimeTypeFromFileName(filename);
                     }
-                    if (filetype != null && (filetype.startsWith("image/") ||
-                            filetype.startsWith("video/") || filetype.equals("application/pdf"))) {
+                    if (filetype != null) {
                         final String fileId = file.getString("file_id");
                         final NinchatFile ninchatFile = new NinchatFile(messageId, fileId, filename, filesize, filetype, timestamp, sender, actionId == 0);
                         this.files.put(fileId, ninchatFile);
@@ -900,6 +899,8 @@ public final class NinchatSessionManager {
         file.setAspectRatio(aspectRatio);
         file.setWidth(width);
         file.setHeight(height);
+        file.setDownloadableFile(width == -1 || height == -1);
+
         messageAdapter.add(file.getMessageId(), new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
     }
 

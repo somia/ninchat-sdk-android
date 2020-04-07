@@ -104,9 +104,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 message.setVisibility(View.VISIBLE);
                 message.setAutoLinkMask(Linkify.ALL);
                 message.setText(messageContent);
-            } else if (file.isPDF()) {
+            } else if (file.isDownloadableFile()) {
                 message.setVisibility(View.VISIBLE);
-                message.setText(file.getPDFLInk());
+                message.setText(file.getFileLink());
                 message.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
                 final int width = file.getWidth();
