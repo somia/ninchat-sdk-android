@@ -1,7 +1,5 @@
 package com.ninchat.sdk.views;
 
-import android.content.Context;
-import android.media.AudioManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -501,7 +499,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         PeerConnectionFactory.stopInternalTracingCapture();
         PeerConnectionFactory.shutdownInternalTracer();
         videoContainer.setVisibility(View.GONE);
-        resetMediaButton();
+        resetMediaButtons();
     }
 
     private boolean isAudioMuted = false;
@@ -554,7 +552,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     /**
      * Reset media view state
      */
-    public void resetMediaButton() {
+    public void resetMediaButtons() {
         final ImageView microphoneImage = videoContainer.findViewById(R.id.microphone_on_off);
         final ImageView audioImage = videoContainer.findViewById(R.id.audio_on_off);
         final ImageView videoImage = videoContainer.findViewById(R.id.video_on_off);
