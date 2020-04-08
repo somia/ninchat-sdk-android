@@ -501,6 +501,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         PeerConnectionFactory.stopInternalTracingCapture();
         PeerConnectionFactory.shutdownInternalTracer();
         videoContainer.setVisibility(View.GONE);
+        resetMediaButton();
     }
 
     private boolean isAudioMuted = false;
@@ -539,8 +540,6 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         final ImageView image = videoContainer.findViewById(R.id.microphone_on_off);
         image.setImageResource(isMicrophoneMuted ? R.drawable.ninchat_icon_video_microphone_off : R.drawable.ninchat_icon_video_microphone_on);
         localAudioTrack.setEnabled(!isMicrophoneMuted);
-        AudioManager audioManager = (AudioManager) videoContainer.getContext().getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setMicrophoneMute(isMicrophoneMuted);
     }
 
     private boolean isVideoDisabled = false;
@@ -550,6 +549,18 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         final ImageView image = videoContainer.findViewById(R.id.video_on_off);
         image.setImageResource(isVideoDisabled ? R.drawable.ninchat_icon_video_camera_off : R.drawable.ninchat_icon_video_camera_on);
         localVideoTrack.setEnabled(!isVideoDisabled);
+    }
+
+    /**
+     * Reset media view state
+     */
+    public void resetMediaButton() {
+        final ImageView microphoneImage = videoContainer.findViewById(R.id.microphone_on_off);
+        final ImageView audioImage = videoContainer.findViewById(R.id.audio_on_off);
+        final ImageView videoImage = videoContainer.findViewById(R.id.video_on_off);
+        microphoneImage.setImageResource(R.drawable.ninchat_icon_video_microphone_on);
+        audioImage.setImageResource(R.drawable.ninchat_icon_video_sound_on);
+        videoImage.setImageResource(R.drawable.ninchat_icon_video_camera_on);
     }
 
     public void onResume() {
