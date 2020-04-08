@@ -835,7 +835,7 @@ public final class NinchatSessionManager {
                     }
                     if (filetype != null) {
                         final String fileId = file.getString("file_id");
-                        final NinchatFile ninchatFile = new NinchatFile(messageId, fileId, filename, filesize, filetype, timestamp, sender, actionId == 0);
+                        final NinchatFile ninchatFile = new NinchatFile(messageId, fileId, filename, filesize, filetype, timestamp, sender, !sender.equals(userId));
                         this.files.put(fileId, ninchatFile);
                         NinchatDescribeFileTask.start(fileId);
                     }
