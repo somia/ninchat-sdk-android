@@ -12,6 +12,7 @@ import android.widget.ImageView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.managers.webrtc.NinchatAudioManager;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
 
 import org.json.JSONException;
@@ -46,6 +47,7 @@ import org.webrtc.VideoTrack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObserver {
 
@@ -87,6 +89,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     private JSONObject offer;
     private JSONObject answer;
 
+    private NinchatAudioManager ninchatAudioManager;
     private PeerConnection peerConnection;
     private PeerConnectionFactory peerConnectionFactory;
 
@@ -233,6 +236,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     protected void startWithSDP(final JSONObject sdp) {
         try {
+            initializeAudioManager();
             final List<PeerConnection.IceServer> servers = new ArrayList<>();
             for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().getStunServers()) {
                 servers.add(PeerConnection.IceServer.builder(serverInfo.getUrl()).setUsername(serverInfo.getUsername()).setPassword(serverInfo.getCredential()).createIceServer());
@@ -253,6 +257,23 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         } catch (final Exception e) {
             // TODO: Show error?
         }
+    }
+
+    private void initializeAudioManager() {
+        // Create and audio manager that will take care of audio routing,
+        // audio modes, audio device enumeration etc.
+        ninchatAudioManager = NinchatAudioManager.create(videoContainer.getContext().getApplicationContext());
+        // Store existing audio settings and change audio mode to
+        // MODE_IN_COMMUNICATION for best possible VoIP performance.
+        ninchatAudioManager.start(new NinchatAudioManager.AudioManagerEvents() {
+            // This method will be called each time the number of available audio
+            // devices has changed.
+            @Override
+            public void onAudioDeviceChanged(NinchatAudioManager.AudioDevice audioDevice, Set<NinchatAudioManager.AudioDevice> availableAudioDevices) {
+                Log.d(TAG, "onAudioManagerDevicesChanged: " + availableAudioDevices + ", "
+                        + "selected: " + audioDevice);
+            }
+        });
     }
 
     private RtpTransceiver getVideoTransceiver() {
@@ -495,6 +516,10 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         if (eglBase != null) {
             eglBase.release();
             eglBase = null;
+        }
+        if (ninchatAudioManager != null) {
+            ninchatAudioManager.stop();
+            ninchatAudioManager = null;
         }
         PeerConnectionFactory.stopInternalTracingCapture();
         PeerConnectionFactory.shutdownInternalTracer();
