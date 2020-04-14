@@ -3,17 +3,17 @@ package com.ninchat.sdk.managers;
 import android.support.annotation.Nullable;
 
 /**
- * A caller configuration manager
- * With this class we will modify caller configuration related attributes.
+ * Ninchat configuration
+ * With this class we will modify configuration related attributes.
  * todo - An initial version. Add more functionality and remove me
  * The current implementation can change the caller user name attribute so that user can sdk user
  * can change user name during set up
  */
-public class CallerConfigurationManager {
+public class NinchatConfiguration {
     @Nullable
     private String userName;
 
-    private CallerConfigurationManager() {
+    private NinchatConfiguration() {
         // pass
     }
 
@@ -35,8 +35,8 @@ public class CallerConfigurationManager {
             return this;
         }
 
-        public CallerConfigurationManager build() {
-            CallerConfigurationManager configurationManager = new CallerConfigurationManager();
+        public NinchatConfiguration build() {
+            NinchatConfiguration configurationManager = new NinchatConfiguration();
             configurationManager.setUserName(this.userName);
             return configurationManager;
         }

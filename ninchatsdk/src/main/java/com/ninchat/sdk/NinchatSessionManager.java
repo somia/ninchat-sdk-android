@@ -27,7 +27,7 @@ import com.ninchat.client.Strings;
 import com.ninchat.sdk.activities.NinchatActivity;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
-import com.ninchat.sdk.managers.CallerConfigurationManager;
+import com.ninchat.sdk.managers.NinchatConfiguration;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatOption;
@@ -98,6 +98,7 @@ public final class NinchatSessionManager {
         public static final String RATING = "ninchat.com/metadata";
 
         static final List<String> WEBRTC_MESSAGE_TYPES = new ArrayList<>();
+
         static {
             WEBRTC_MESSAGE_TYPES.add(ICE_CANDIDATE);
             WEBRTC_MESSAGE_TYPES.add(ANSWER);
@@ -110,9 +111,13 @@ public final class NinchatSessionManager {
 
     public static final String DEFAULT_USER_AGENT = "ninchat-sdk-android/" + BuildConfig.VERSION_NAME + " (Android " + Build.VERSION.RELEASE + "; " + Build.MANUFACTURER + " " + Build.MODEL + ")";
 
-    static NinchatSessionManager init(final Context context, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials,
-                                      @Nullable final CallerConfigurationManager configurationManager, final String[] preferredEnvironments,
-                                      final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+    static NinchatSessionManager init(final Context context,
+                                      final String configurationKey,
+                                      @Nullable NinchatSessionCredentials sessionCredentials,
+                                      @Nullable final NinchatConfiguration configurationManager,
+                                      final String[] preferredEnvironments,
+                                      final NinchatSDKEventListener eventListener,
+                                      final NinchatSDKLogListener logListener) {
         instance = new NinchatSessionManager(context, configurationKey, sessionCredentials, configurationManager, preferredEnvironments, eventListener, logListener);
         return instance;
     }
@@ -185,8 +190,12 @@ public final class NinchatSessionManager {
     private String[] preferredEnvironments;
     protected String siteSecret;
 
-    protected NinchatSessionManager(final Context context, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials,
-                                    @Nullable CallerConfigurationManager configurationManager, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener,
+    protected NinchatSessionManager(final Context context,
+                                    final String configurationKey,
+                                    @Nullable NinchatSessionCredentials sessionCredentials,
+                                    @Nullable NinchatConfiguration configurationManager,
+                                    final String[] preferredEnvironments,
+                                    final NinchatSDKEventListener eventListener,
                                     final NinchatSDKLogListener logListener) {
         this.contextWeakReference = new WeakReference<>(context);
         this.configurationKey = configurationKey;
@@ -202,7 +211,7 @@ public final class NinchatSessionManager {
         this.files = new HashMap<>();
         this.activityWeakReference = new WeakReference<>(null);
         this.sessionCredentials = sessionCredentials;
-        this.callerConfigurationManager = configurationManager;
+        this.ninchatConfiguration = configurationManager;
     }
 
     protected WeakReference<Context> contextWeakReference;
@@ -227,7 +236,7 @@ public final class NinchatSessionManager {
     @Nullable
     private NinchatSessionCredentials sessionCredentials;
     @Nullable
-    protected CallerConfigurationManager callerConfigurationManager;
+    private NinchatConfiguration ninchatConfiguration;
 
     public void start(final Activity activity, final String siteSecret, final int requestCode, final String queueId) {
         this.activityWeakReference = new WeakReference<>(activity);
@@ -291,9 +300,9 @@ public final class NinchatSessionManager {
                         String oldSessionId = sessionCredentials != null ? sessionCredentials.getSessionId() : null;
 
                         sessionCredentials = new NinchatSessionCredentials(
-                            params.getString("user_id"),
-                            userAuth,
-                            params.getString("session_id")
+                                params.getString("user_id"),
+                                userAuth,
+                                params.getString("session_id")
                         );
 
                         NinchatListQueuesTask.start();
@@ -821,7 +830,7 @@ public final class NinchatSessionManager {
                     }
                 }
                 if (simpleButtonChoice) {
-                    messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, null,  null, messageOptions));
+                    messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, null, null, messageOptions));
                 }
             } catch (final JSONException e) {
                 // Ignore message
@@ -1214,7 +1223,7 @@ public final class NinchatSessionManager {
         final String key = "welcome";
         String welcomeText = key;
         try {
-                welcomeText = getStringFromConfiguration(key);
+            welcomeText = getStringFromConfiguration(key);
         } catch (final Exception e) {
         }
         return toSpanned(welcomeText);
@@ -1263,8 +1272,8 @@ public final class NinchatSessionManager {
     }
 
     public String getUserName() {
-        if (this.callerConfigurationManager != null && this.callerConfigurationManager.getUserName() != null) {
-            return this.callerConfigurationManager.getUserName();
+        if (this.ninchatConfiguration != null && this.ninchatConfiguration.getUserName() != null) {
+            return this.ninchatConfiguration.getUserName();
         }
         final String key = "userName";
         try {
@@ -1405,7 +1414,7 @@ public final class NinchatSessionManager {
         return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
     }
 
-    public Spanned  getQueueStatus(final String queueId) {
+    public Spanned getQueueStatus(final String queueId) {
         NinchatQueue selectedQueue = getQueue(queueId);
         if (selectedQueue == null) {
             return null;
