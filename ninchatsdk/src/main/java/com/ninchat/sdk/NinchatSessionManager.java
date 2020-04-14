@@ -300,9 +300,9 @@ public final class NinchatSessionManager {
                         String oldSessionId = sessionCredentials != null ? sessionCredentials.getSessionId() : null;
 
                         sessionCredentials = new NinchatSessionCredentials(
-                                params.getString("user_id"),
-                                userAuth,
-                                params.getString("session_id")
+                            params.getString("user_id"),
+                            userAuth,
+                            params.getString("session_id")
                         );
 
                         NinchatListQueuesTask.start();
@@ -830,7 +830,7 @@ public final class NinchatSessionManager {
                     }
                 }
                 if (simpleButtonChoice) {
-                    messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, null, null, messageOptions));
+                    messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, null,  null, messageOptions));
                 }
             } catch (final JSONException e) {
                 // Ignore message
@@ -1223,7 +1223,7 @@ public final class NinchatSessionManager {
         final String key = "welcome";
         String welcomeText = key;
         try {
-            welcomeText = getStringFromConfiguration(key);
+                welcomeText = getStringFromConfiguration(key);
         } catch (final Exception e) {
         }
         return toSpanned(welcomeText);
@@ -1414,7 +1414,7 @@ public final class NinchatSessionManager {
         return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
     }
 
-    public Spanned getQueueStatus(final String queueId) {
+    public Spanned  getQueueStatus(final String queueId) {
         NinchatQueue selectedQueue = getQueue(queueId);
         if (selectedQueue == null) {
             return null;
