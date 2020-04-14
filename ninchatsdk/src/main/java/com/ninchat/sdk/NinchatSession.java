@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 
 import com.ninchat.client.Props;
 import com.ninchat.client.Session;
+import com.ninchat.sdk.managers.CallerConfigurationManager;
 import com.ninchat.sdk.models.NinchatSessionCredentials;
 
 /**
@@ -40,36 +41,43 @@ public final class NinchatSession {
     private NinchatSessionManager sessionManager;
     private String siteSecret = null;
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials) {
-        this(applicationContext, configurationKey, sessionCredentials, null, null, null);
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, @Nullable CallerConfigurationManager configurationManager) {
+        this(applicationContext, configurationKey, sessionCredentials, configurationManager, null, null, null);
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final String[] preferredEnvironments) {
-        this(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, null, null);
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, @Nullable CallerConfigurationManager configurationManager,
+                          final String[] preferredEnvironments) {
+        this(applicationContext, configurationKey, sessionCredentials, configurationManager, preferredEnvironments, null, null);
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final NinchatSDKEventListener eventListener) {
-        this(applicationContext, configurationKey, sessionCredentials, null, eventListener, null);
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, @Nullable CallerConfigurationManager configurationManager,
+                          final NinchatSDKEventListener eventListener) {
+        this(applicationContext, configurationKey, sessionCredentials, configurationManager,null, eventListener, null);
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener) {
-        this(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, eventListener, null);
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, @Nullable CallerConfigurationManager configurationManager,
+                          final String[] preferredEnvironments, final NinchatSDKEventListener eventListener) {
+        this(applicationContext, configurationKey, sessionCredentials, configurationManager, preferredEnvironments, eventListener, null);
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final NinchatSDKLogListener logListener) {
-        this(applicationContext, configurationKey, sessionCredentials, null, null, logListener);
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, @Nullable CallerConfigurationManager configurationManager,
+                          final NinchatSDKLogListener logListener) {
+        this(applicationContext, configurationKey, sessionCredentials, configurationManager, null, null, logListener);
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final String[] preferredEnvironments, final NinchatSDKLogListener logListener) {
-        this(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, null, logListener);
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, @Nullable CallerConfigurationManager configurationManager,
+                          final String[] preferredEnvironments, final NinchatSDKLogListener logListener) {
+        this(applicationContext, configurationKey, sessionCredentials, configurationManager, preferredEnvironments, null, logListener);
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
-        this(applicationContext, configurationKey, sessionCredentials, null, eventListener, logListener);
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, @Nullable CallerConfigurationManager configurationManager,
+                          final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+        this(applicationContext, configurationKey, sessionCredentials, configurationManager, null, eventListener, logListener);
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
-        this.sessionManager = NinchatSessionManager.init(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, eventListener, logListener);
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, @Nullable CallerConfigurationManager configurationManager,
+                          final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+        this.sessionManager = NinchatSessionManager.init(applicationContext, configurationKey, sessionCredentials, configurationManager, preferredEnvironments, eventListener, logListener);
     }
 
     /**
