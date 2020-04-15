@@ -451,11 +451,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             initializeClosedChat(messages);
         }
 
-        // For smaller phones, set up a soft keyboard visibility listener so video call container
-        // height can be adjusted
-        if (getResources().getDisplayMetrics().densityDpi < DisplayMetrics.DENSITY_XXHIGH) {
-            setRootViewHeightListener();
-        }
+        // Set up a soft keyboard visibility listener so video call container height can be adjusted
+        setRootViewHeightListener();
     }
 
     private void initializeClosedChat(RecyclerView messages) {
@@ -569,11 +566,11 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             int heightDiff = activityRootView.getHeight() - rootViewHeight;
 
             // Keyboard hidden
-            if (heightDiff > 0) {
+            if (heightDiff > 0 && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                 layoutParams.height = (int) getResources().getDimension(R.dimen.ninchat_chat_activity_video_view_height);
             }
             // Keyboard visible
-            else if (heightDiff < 0) {
+            else if (heightDiff < 0 && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                 layoutParams.height = (int) getResources().getDimension(R.dimen.ninchat_chat_activity_video_view_height_small);
             }
 
