@@ -383,6 +383,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     }
 
     public String getLastMessageId(final boolean allowMeta) {
+        // sanity check to make sure index doesnot goes below 0
+        // and return empty string if that happens
+        if (getItemCount() - 2 < 0) {
+            return "";
+        }
         final ListIterator<String> iterator = messageIds.listIterator(getItemCount() - 2);
         while (iterator.hasPrevious() && !allowMeta) {
             final String id = iterator.previous();
