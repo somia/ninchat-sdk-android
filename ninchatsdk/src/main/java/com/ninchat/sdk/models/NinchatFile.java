@@ -65,7 +65,7 @@ public final class NinchatFile {
     }
 
     public boolean isDownloadableFile() {
-        return this.width == -1 || this.height == -1;
+        return this.isDownloadableFile;
     }
 
     public void setDownloadableFile(boolean downloadableFile) {
