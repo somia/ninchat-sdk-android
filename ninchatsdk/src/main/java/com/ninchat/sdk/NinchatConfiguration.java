@@ -1,4 +1,4 @@
-package com.ninchat.sdk.managers;
+package com.ninchat.sdk;
 
 import android.support.annotation.Nullable;
 

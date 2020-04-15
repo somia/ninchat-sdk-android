@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 
 import com.ninchat.client.Props;
 import com.ninchat.client.Session;
-import com.ninchat.sdk.managers.NinchatConfiguration;
 import com.ninchat.sdk.models.NinchatSessionCredentials;
 
 /**
