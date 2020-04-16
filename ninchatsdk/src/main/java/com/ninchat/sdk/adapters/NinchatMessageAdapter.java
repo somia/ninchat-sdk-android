@@ -104,9 +104,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 message.setVisibility(View.VISIBLE);
                 message.setAutoLinkMask(Linkify.ALL);
                 message.setText(messageContent);
-            } else if (file.isPDF()) {
+            } else if (file.isDownloadableFile()) {
                 message.setVisibility(View.VISIBLE);
-                message.setText(file.getPDFLInk());
+                message.setText(file.getFileLink());
                 message.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
                 final int width = file.getWidth();
@@ -358,7 +358,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             @Override
             public void run() {
                 messageIds.add(writingId);
-                messageMap.put(writingId, new NinchatMessage(NinchatMessage.Type.WRITING, sender));
+                messageMap.put(writingId, new NinchatMessage(NinchatMessage.Type.WRITING, sender, System.currentTimeMillis()));
                 Collections.sort(messageIds);
                 messagesUpdated(messageIds.indexOf(writingId), false, false);
             }
@@ -402,7 +402,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             public void run() {
                 messageIds.add(messageId);
                 Collections.sort(messageIds);
-                messageMap.put(messageId, new NinchatMessage(NinchatMessage.Type.META, message));
+                messageMap.put(messageId, new NinchatMessage(NinchatMessage.Type.META, message, System.currentTimeMillis()));
                 messagesUpdated(messageIds.indexOf(messageId), false, false);
             }
         });
@@ -464,7 +464,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 final String endMessageId = getLastMessageId(true) + "zzzzz";
                 messageIds.add(endMessageId);
                 Collections.sort(messageIds);
-                messageMap.put(endMessageId, new NinchatMessage(NinchatMessage.Type.END));
+                messageMap.put(endMessageId, new NinchatMessage(NinchatMessage.Type.END, System.currentTimeMillis()));
                 final int position = messageIds.indexOf(endMessageId);
                 final RecyclerView recyclerView = recyclerViewWeakReference.get();
                 if (recyclerView == null || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
@@ -520,7 +520,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             return;
         }
         if (position == messageIds.size()) {
-            holder.bind(new NinchatMessage(NinchatMessage.Type.PADDING), false);
+            holder.bind(new NinchatMessage(NinchatMessage.Type.PADDING, System.currentTimeMillis()), false);
             return;
         }
         boolean isContinuedMessage = false;

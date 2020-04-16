@@ -747,30 +747,25 @@ public final class NinchatSessionManager {
         if (channelId == null) {
             return;
         }
+
         long actionId = 0;
+        String messageType;
+        String sender;
+        String messageId;
+        long timestampMs;
+
         try {
             actionId = params.getInt("action_id");
-        } catch (final Exception e) {
-            return;
-        }
-        String messageType;
-        try {
             messageType = params.getString("message_type");
-        } catch (final Exception e) {
-            return;
-        }
-        String sender;
-        try {
             sender = params.getString("message_user_id");
-        } catch (final Exception e) {
-            return;
-        }
-        String messageId;
-        try {
             messageId = params.getString("message_id");
+            double timestampParam = params.getFloat("message_time");
+            timestampMs = (Double.valueOf(timestampParam).longValue()) * 1000;
         } catch (final Exception e) {
+            Log.e(TAG, e.getMessage());
             return;
         }
+
         if (MessageTypes.WEBRTC_MESSAGE_TYPES.contains(messageType) && !sender.equals(userId)) {
             final StringBuilder builder = new StringBuilder();
             for (int i = 0; i < payload.length(); ++i) {
@@ -804,14 +799,14 @@ public final class NinchatSessionManager {
                         for (int k = 0; k < options.length(); ++k) {
                             messageOptions.add(new NinchatOption(options.getJSONObject(k)));
                         }
-                        messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, message.getString("label"), message, messageOptions));
+                        messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, message.getString("label"), message, messageOptions, timestampMs));
                     } else {
                         simpleButtonChoice = true;
                         messageOptions.add(new NinchatOption(message));
                     }
                 }
                 if (simpleButtonChoice) {
-                    messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, null,  null, messageOptions));
+                    messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender,null,  null, messageOptions, timestampMs));
                 }
             } catch (final JSONException e) {
                 // Ignore message
@@ -820,7 +815,7 @@ public final class NinchatSessionManager {
         if (!messageType.equals(MessageTypes.TEXT) && !messageType.equals(MessageTypes.FILE)) {
             return;
         }
-        final long timestamp = System.currentTimeMillis();
+
         for (int i = 0; i < payload.length(); ++i) {
             try {
                 final JSONObject message = new JSONObject(new String(payload.get(i)));
@@ -833,15 +828,14 @@ public final class NinchatSessionManager {
                     if (filetype == null || filetype.equals("application/octet-stream")) {
                         filetype = guessMimeTypeFromFileName(filename);
                     }
-                    if (filetype != null && (filetype.startsWith("image/") ||
-                            filetype.startsWith("video/") || filetype.equals("application/pdf"))) {
+                    if (filetype != null) {
                         final String fileId = file.getString("file_id");
-                        final NinchatFile ninchatFile = new NinchatFile(messageId, fileId, filename, filesize, filetype, timestamp, sender, actionId == 0);
+                        final NinchatFile ninchatFile = new NinchatFile(messageId, fileId, filename, filesize, filetype, timestampMs, sender, !sender.equals(userId));
                         this.files.put(fileId, ninchatFile);
                         NinchatDescribeFileTask.start(fileId);
                     }
                 } else {
-                    messageAdapter.add(messageId, new NinchatMessage(message.getString("text"), null, sender, System.currentTimeMillis(), !sender.equals(userId)));
+                    messageAdapter.add(messageId, new NinchatMessage(message.getString("text"), null, sender, timestampMs, !sender.equals(userId)));
                 }
             } catch (final JSONException e) {
                 // Ignore
@@ -900,6 +894,8 @@ public final class NinchatSessionManager {
         file.setAspectRatio(aspectRatio);
         file.setWidth(width);
         file.setHeight(height);
+        file.setDownloadableFile(width == -1 || height == -1);
+
         messageAdapter.add(file.getMessageId(), new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
     }
 
@@ -1389,6 +1385,14 @@ public final class NinchatSessionManager {
     }
 
     public String getQueueName(final String name) {
+        return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
+    }
+
+    public String getQueueName(final String name, boolean closed) {
+        if (closed) {
+            return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}} (closed)"), name);
+        }
+
         return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
     }
 

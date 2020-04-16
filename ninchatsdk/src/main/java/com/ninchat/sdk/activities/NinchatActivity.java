@@ -55,6 +55,8 @@ public final class NinchatActivity extends NinchatBaseActivity {
             motd.setText(sessionManager.getNoQueues());
             findViewById(R.id.ninchat_activity_close).setVisibility(View.VISIBLE);
         }
+
+        ninchatQueueListAdapter.notifyDataSetChanged();
     }
 
     protected BroadcastReceiver configurationFetchedReceiver = new BroadcastReceiver() {
