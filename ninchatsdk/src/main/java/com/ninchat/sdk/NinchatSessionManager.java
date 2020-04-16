@@ -97,6 +97,7 @@ public final class NinchatSessionManager {
         public static final String RATING = "ninchat.com/metadata";
 
         static final List<String> WEBRTC_MESSAGE_TYPES = new ArrayList<>();
+
         static {
             WEBRTC_MESSAGE_TYPES.add(ICE_CANDIDATE);
             WEBRTC_MESSAGE_TYPES.add(ANSWER);
@@ -109,8 +110,14 @@ public final class NinchatSessionManager {
 
     public static final String DEFAULT_USER_AGENT = "ninchat-sdk-android/" + BuildConfig.VERSION_NAME + " (Android " + Build.VERSION.RELEASE + "; " + Build.MANUFACTURER + " " + Build.MODEL + ")";
 
-    static NinchatSessionManager init(final Context context, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
-        instance = new NinchatSessionManager(context, configurationKey, sessionCredentials, preferredEnvironments, eventListener, logListener);
+    static NinchatSessionManager init(final Context context,
+                                      final String configurationKey,
+                                      @Nullable NinchatSessionCredentials sessionCredentials,
+                                      @Nullable final NinchatConfiguration configurationManager,
+                                      final String[] preferredEnvironments,
+                                      final NinchatSDKEventListener eventListener,
+                                      final NinchatSDKLogListener logListener) {
+        instance = new NinchatSessionManager(context, configurationKey, sessionCredentials, configurationManager, preferredEnvironments, eventListener, logListener);
         return instance;
     }
 
@@ -182,7 +189,13 @@ public final class NinchatSessionManager {
     private String[] preferredEnvironments;
     protected String siteSecret;
 
-    protected NinchatSessionManager(final Context context, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+    protected NinchatSessionManager(final Context context,
+                                    final String configurationKey,
+                                    @Nullable NinchatSessionCredentials sessionCredentials,
+                                    @Nullable NinchatConfiguration configurationManager,
+                                    final String[] preferredEnvironments,
+                                    final NinchatSDKEventListener eventListener,
+                                    final NinchatSDKLogListener logListener) {
         this.contextWeakReference = new WeakReference<>(context);
         this.configurationKey = configurationKey;
         this.preferredEnvironments = preferredEnvironments;
@@ -197,6 +210,7 @@ public final class NinchatSessionManager {
         this.files = new HashMap<>();
         this.activityWeakReference = new WeakReference<>(null);
         this.sessionCredentials = sessionCredentials;
+        this.ninchatConfiguration = configurationManager;
     }
 
     protected WeakReference<Context> contextWeakReference;
@@ -217,7 +231,11 @@ public final class NinchatSessionManager {
     protected List<NinchatWebRTCServerInfo> stunServers;
     protected List<NinchatWebRTCServerInfo> turnServers;
     protected Map<String, NinchatFile> files;
+
+    @Nullable
     private NinchatSessionCredentials sessionCredentials;
+    @Nullable
+    private NinchatConfiguration ninchatConfiguration;
 
     public void start(final Activity activity, final String siteSecret, final int requestCode, final String queueId) {
         this.activityWeakReference = new WeakReference<>(activity);
@@ -1249,6 +1267,9 @@ public final class NinchatSessionManager {
     }
 
     public String getUserName() {
+        if (this.ninchatConfiguration != null && this.ninchatConfiguration.getUserName() != null) {
+            return this.ninchatConfiguration.getUserName();
+        }
         final String key = "userName";
         try {
             return getStringFromConfiguration(key);

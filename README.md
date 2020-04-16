@@ -76,14 +76,24 @@ The SDK exposes the low-level communication interface with the method `getSessio
 
 Furthermore, the host application can register itself (or its property/properties) as a listener to the low-level API events and/or logs by creating the `NinchatSession` instance with the listeners as constructor arguments:
 
-    session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, eventListener);
-    session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, eventListener);
-    session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, logListener);
-    session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, logListener);
-    session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, eventListener, logListener);
-    session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, eventListener, logListener);
+```
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, eventListener);
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, eventListener);
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, logListener);
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, logListener);
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, eventListener, logListener);
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, eventListener, logListener);
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration);
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration, preferredEnvironments);
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration, eventListener);
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration, logListener);
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration, preferredEnvironments, eventListener);
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration, preferredEnvironments, logListener);
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration, eventListener, logListener);
+session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration, preferredEnvironments, eventListener, logListener);
+```
 
-The argument `eventListener`, when non-null, must be an instance of the `NinchatSDKEventListener` class and the `logListener` an instance of the `NinchatSDKLogListener`interface.
+The argument `eventListener`, when non-null, must be an instance of the `NinchatSDKEventListener` class, the `logListener` an instance of the `NinchatSDKLogListener`interface, and `ninchatConfiguration` is an instance of `NinchatConfiguration ` class.
 
 As of version 0.5.0 `sessionCredentials` can be added to open up a previous session. Passing `null` will open a new session. Passing invalid/outdated `sessionCredentials` will cause `onSessionInitFailed` to be invoked.
 
