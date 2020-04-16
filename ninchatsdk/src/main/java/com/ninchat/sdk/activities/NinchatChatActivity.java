@@ -24,6 +24,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -55,6 +56,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     protected static final int PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() & 0xffff;
     private OrientationManager orientationManager;
     private boolean historyLoaded = false;
+    private int rootViewHeight = 0;
 
     private NinchatMessageAdapter messageAdapter = sessionManager != null ? sessionManager.getMessageAdapter() : new NinchatMessageAdapter();
 
@@ -448,6 +450,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(NinchatSessionManager.Parameter.CHAT_IS_CLOSED)) {
             initializeClosedChat(messages);
         }
+
+        // Set up a soft keyboard visibility listener so video call container height can be adjusted
+        setRootViewHeightListener();
     }
 
     private void initializeClosedChat(RecyclerView messages) {
@@ -543,5 +548,35 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             webRTCView.hangUp();
             webRTCView = new NinchatWebRTCView(videoContainer);
         }
+    }
+
+    // Listen for changes in root view height so we can determine when soft keyboard is visible
+    public void setRootViewHeightListener() {
+        final View activityRootView = getWindow().getDecorView().findViewById(android.R.id.content);
+
+        // Set initial rootViewHeight
+        if (rootViewHeight == 0) {
+            rootViewHeight = activityRootView.getHeight();
+        }
+
+        activityRootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            final ViewGroup.LayoutParams layoutParams = videoContainer.getLayoutParams();
+
+            // if new height differs from the cached one, keyboard visibility has changed
+            int heightDiff = activityRootView.getHeight() - rootViewHeight;
+
+            // Keyboard hidden
+            if (heightDiff > 0 && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                layoutParams.height = (int) getResources().getDimension(R.dimen.ninchat_chat_activity_video_view_height);
+            }
+            // Keyboard visible
+            else if (heightDiff < 0 && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                layoutParams.height = (int) getResources().getDimension(R.dimen.ninchat_chat_activity_video_view_height_small);
+            }
+
+            // Update video height and cache current rootview height
+            videoContainer.setLayoutParams(layoutParams);
+            rootViewHeight = activityRootView.getHeight();
+        });
     }
 }

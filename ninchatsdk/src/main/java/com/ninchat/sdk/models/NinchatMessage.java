@@ -33,16 +33,16 @@ public final class NinchatMessage {
     private JSONObject data;
     private List<NinchatOption> options;
 
-    public NinchatMessage(final Type type) {
-        this(type, null, null, null, System.currentTimeMillis(), false);
+    public NinchatMessage(final Type type, long timestamp) {
+        this(type, null, null, null, timestamp, false);
     }
 
-    public NinchatMessage(final Type type, final String data) {
-        this(type, type == Type.WRITING ? null : data, null, type == Type.WRITING ? data : null, System.currentTimeMillis(), true);
+    public NinchatMessage(final Type type, final String data, long timestamp) {
+        this(type, type == Type.WRITING ? null : data, null, type == Type.WRITING ? data : null, timestamp, true);
     }
 
-    public NinchatMessage(final Type type, final String sender, final String label, final JSONObject data, final List<NinchatOption> options) {
-        this(type, label, null, sender, System.currentTimeMillis(), true);
+    public NinchatMessage(final Type type, final String sender, final String label, final JSONObject data, final List<NinchatOption> options, long timestamp) {
+        this(type, label, null, sender, timestamp, true);
         this.data = data;
         this.options = options;
     }
