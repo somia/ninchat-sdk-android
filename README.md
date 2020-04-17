@@ -23,7 +23,7 @@ In order to use the SDK you need to create an instance of the `NinchatSession` c
     import com.ninchat.sdk.NinchatSession;
     ...
     NinchatSession.Builder builder = new NinchatSession.Builder(applicationContext, configurationKey);
-    NinchatSession session = builder.build();
+    NinchatSession session = builder.create();
 
 ### Starting the API client
 
@@ -108,7 +108,7 @@ builder.setConfiguration(ninchatConfiguration); // optional
 builder.setPreferredEnvironments(preferredEnvironments); // optional
 builder.setEventListener(eventListener); // optional
 builder.setLogListener(logListener); // optional
-NinchatSession session = builder.build();
+NinchatSession session = builder.create();
 ```
 
 See [Ninchat API Reference](https://github.com/ninchat/ninchat-api/blob/v2/api.md) for information about the API's outbound Actions and inbound Events.

@@ -33,7 +33,7 @@ public final class NinchatSession {
             this.configurationKey = configurationKey;
         }
 
-        public NinchatSession build() {
+        public NinchatSession create() {
             return new NinchatSession(this);
         }
 
