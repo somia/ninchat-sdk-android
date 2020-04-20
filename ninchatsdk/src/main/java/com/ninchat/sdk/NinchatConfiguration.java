@@ -30,12 +30,12 @@ public class NinchatConfiguration {
         @Nullable
         private String userName;
 
-        public Builder withUserName(String userName) {
+        public Builder setUserName(String userName) {
             this.userName = userName;
             return this;
         }
 
-        public NinchatConfiguration build() {
+        public NinchatConfiguration create() {
             NinchatConfiguration configurationManager = new NinchatConfiguration();
             configurationManager.setUserName(this.userName);
             return configurationManager;
