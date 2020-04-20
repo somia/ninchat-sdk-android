@@ -718,7 +718,7 @@ public final class NinchatSessionManager {
         load.setString("channel_id", channelId);
         load.setInt("history_order", 1);
 
-        if (messageId != null) {
+        if (messageId != null && !messageId.isEmpty() ) {
             load.setString("message_id", messageId);
         }
 
