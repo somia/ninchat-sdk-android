@@ -18,11 +18,12 @@ Then you need to add the following dependency to the project dependencies:
 
 ### Creating the API client
 
-In order to use the SDK you need to create an instance of the `NinchatSession` class. Its constructor takes the application context and configuration key as parameters:
+In order to use the SDK you need to create an instance of the `NinchatSession` class with `NinchatSession.Builder`. Its constructor takes the application context and configuration key as parameters:
 
     import com.ninchat.sdk.NinchatSession;
     ...
-    NinchatSession session = new NinchatSession(applicationContext, configurationKey, sessionCredentials);
+    NinchatSession.Builder builder = new NinchatSession.Builder(applicationContext, configurationKey);
+    NinchatSession session = builder.create();
 
 ### Starting the API client
 
@@ -42,12 +43,13 @@ As of 0.5.0 `onSessionInitiated` will return a `NinchatSessionCredentials` objec
 
 ### Setting metadata
 
-The `NinchatSession` class has a setter for audience metadata (i.e. user information).  It's specified as a `com.ninchat.client.Props` object:
+The `NinchatSession.Builder` class has a setter for audience metadata (i.e. user information).  It's specified as a `com.ninchat.client.Props` object:
 
     Props metadata = new Props();
     metadata.setString("Significant Information", someValue);
     metadata.setString("secure", secureMetadata);
-    session.setAudienceMetadata(metadata);
+    ...
+    builder.setAudienceMetadata(metadata);
 
 ### <a name="optionalparameters"></a>Optional parameters
 
@@ -76,6 +78,7 @@ The SDK exposes the low-level communication interface with the method `getSessio
 
 Furthermore, the host application can register itself (or its property/properties) as a listener to the low-level API events and/or logs by creating the `NinchatSession` instance with the listeners as constructor arguments:
 
+### Following constructors deprecated in 0.6.0
 ```
 session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, eventListener);
 session = new NinchatSession(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, eventListener);
@@ -96,6 +99,17 @@ session = new NinchatSession(applicationContext, configurationKey, sessionCreden
 The argument `eventListener`, when non-null, must be an instance of the `NinchatSDKEventListener` class, the `logListener` an instance of the `NinchatSDKLogListener`interface, and `ninchatConfiguration` is an instance of `NinchatConfiguration ` class.
 
 As of version 0.5.0 `sessionCredentials` can be added to open up a previous session. Passing `null` will open a new session. Passing invalid/outdated `sessionCredentials` will cause `onSessionInitFailed` to be invoked.
+
+As of version 0.6.0 aforementioned `NinchatSession` constructors are deprecated and a builder pattern has been introduced. `NinchatSession` object needs to be initialized the following way:
+```
+NinchatSession.Builder builder = new NinchatSession.Builder(applicationContext, configurationKey);
+builder.setSessionCredentials(sessionCredentials); // optional
+builder.setConfiguration(ninchatConfiguration); // optional
+builder.setPreferredEnvironments(preferredEnvironments); // optional
+builder.setEventListener(eventListener); // optional
+builder.setLogListener(logListener); // optional
+NinchatSession session = builder.create();
+```
 
 See [Ninchat API Reference](https://github.com/ninchat/ninchat-api/blob/v2/api.md) for information about the API's outbound Actions and inbound Events.
 
