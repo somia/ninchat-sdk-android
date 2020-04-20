@@ -29,54 +29,63 @@
         android:layout_alignParentTop="true"
         android:background="@android:color/white">
 
-        <TextView
-            android:id="@+id/ninchat_media_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/ninchat_media_activity_top_bar_file_name_margin"
-            tools:text="File name"
-            android:autoLink="none"
-            android:layout_centerVertical="true"/>
-
         <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-            <RelativeLayout
+            <TextView
+                android:id="@+id/ninchat_media_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/ninchat_media_activity_top_bar_file_name_margin"
+                android:maxLines="2"
+                tools:text="File name"
+                android:ellipsize="end"
+                android:autoLink="none"
+                android:layout_weight="1"/>
+
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/ninchat_media_activity_top_bar_button_padding"
-                android:onClick="onDownloadFile">
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true">
 
-                <ImageView
-                    android:id="@+id/ninchat_media_download"
+                <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/ninchat_media_activity_top_bar_button_height"
-                    android:layout_centerInParent="true"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/ninchat_icon_download" />
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/ninchat_media_activity_top_bar_button_padding"
+                    android:onClick="onDownloadFile">
 
-            </RelativeLayout>
+                    <ImageView
+                        android:id="@+id/ninchat_media_download"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/ninchat_media_activity_top_bar_button_height"
+                        android:layout_centerInParent="true"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/ninchat_icon_download" />
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/ninchat_media_activity_top_bar_button_padding"
-                android:layout_marginEnd="@dimen/ninchat_media_activity_top_bar_button_end_margin"
-                android:onClick="onClose">
+                </RelativeLayout>
 
-                <ImageView
+                <RelativeLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/ninchat_media_activity_top_bar_button_height"
-                    android:src="@drawable/ninchat_icon_chat_close_button"
-                    android:adjustViewBounds="true"
-                    android:layout_centerInParent="true" />
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/ninchat_media_activity_top_bar_button_padding"
+                    android:layout_marginEnd="@dimen/ninchat_media_activity_top_bar_button_end_margin"
+                    android:onClick="onClose">
 
-            </RelativeLayout>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/ninchat_media_activity_top_bar_button_height"
+                        android:src="@drawable/ninchat_icon_chat_close_button"
+                        android:adjustViewBounds="true"
+                        android:layout_centerInParent="true" />
 
+                </RelativeLayout>
+
+            </LinearLayout>
         </LinearLayout>
 
     </RelativeLayout>
