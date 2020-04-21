@@ -540,6 +540,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         pip.setLayoutParams(pipLayoutParams);
 
         webRTCView.onResume();
+        messageAdapter.scrollToBottom();
     }
 
     // Reinitialize webRTC on hangup for possible new connection
@@ -568,14 +569,17 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             // Keyboard hidden
             if (heightDiff > 0 && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                 layoutParams.height = (int) getResources().getDimension(R.dimen.ninchat_chat_activity_video_view_height);
+                // Update video height and cache current rootview height
+                videoContainer.setLayoutParams(layoutParams);
             }
             // Keyboard visible
             else if (heightDiff < 0 && getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
                 layoutParams.height = (int) getResources().getDimension(R.dimen.ninchat_chat_activity_video_view_height_small);
+                // Update video height and cache current rootview height
+                videoContainer.setLayoutParams(layoutParams);
+                // push messages on top of soft keyboard
+                messageAdapter.scrollToBottom();
             }
-
-            // Update video height and cache current rootview height
-            videoContainer.setLayoutParams(layoutParams);
             rootViewHeight = activityRootView.getHeight();
         });
     }
