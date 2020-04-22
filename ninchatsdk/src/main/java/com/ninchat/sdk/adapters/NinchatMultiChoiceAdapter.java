@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
@@ -23,7 +24,7 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
         }
 
         public void bind(final NinchatMessage message, final int position, final boolean sendAction) {
-            final Button button = (Button) itemView;
+            final TextView button = (TextView) itemView;
             final List<NinchatOption> options = message.getOptions();
             final NinchatOption option = options.get(position);
             button.setText(option.getLabel());
