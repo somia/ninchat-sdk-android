@@ -1278,6 +1278,17 @@ public final class NinchatSessionManager {
         }
     }
 
+    // Get username or agentname if it is set in configuration
+    public String getName(boolean agentName) {
+        final String key = agentName ? "agentName" : "userName";
+
+        try {
+            return getStringFromConfiguration(key);
+        } catch (final Exception e) {
+            return null;
+        }
+    }
+
     public String getSendButtonText() {
         final String key = "sendButtonText";
         try {
