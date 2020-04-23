@@ -446,12 +446,20 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                     notifyItemRangeChanged(nextIndex, messageIds.size() - nextIndex);
                 }
             }
-
-            if (recyclerView != null) {
-                recyclerView.smoothScrollToPosition(messageIds.size()); // Position at the synthetic item.
-            }
+            scrollToBottom(true);
         } else {
             scrollListener.setData(index, updated, removed);
+        }
+    }
+
+    public void scrollToBottom(boolean requireSmooth) {
+        final RecyclerView recyclerView = recyclerViewWeakReference.get();
+        if (recyclerView != null) {
+            if (requireSmooth) {
+                recyclerView.smoothScrollToPosition(messageIds.size());
+            } else {
+                recyclerView.scrollToPosition(messageIds.size());
+            }
         }
     }
 
@@ -475,9 +483,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 final RecyclerView recyclerView = recyclerViewWeakReference.get();
                 if (recyclerView == null || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
                     notifyItemInserted(position);
-                    if (recyclerView != null) {
-                        recyclerView.smoothScrollToPosition(messageIds.size()); // Position at the synthetic item.
-                    }
+                    scrollToBottom(true);
                 } else {
                     scrollListener.setData(position, false, false);
                 }
