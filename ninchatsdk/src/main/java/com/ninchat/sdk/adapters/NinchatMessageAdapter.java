@@ -87,8 +87,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             itemView.findViewById(headerId).setVisibility(View.GONE);
 
             final TextView sender = itemView.findViewById(senderId);
-            String agentNameOverride = NinchatSessionManager.getInstance().getName(senderId == R.id.ninchat_chat_message_agent_name);
-            sender.setText(agentNameOverride != null ? agentNameOverride : ninchatMessage.getSender());
+            String senderNameOverride = NinchatSessionManager.getInstance().getName(senderId == R.id.ninchat_chat_message_agent_name);
+            sender.setText(senderNameOverride != null ? senderNameOverride : ninchatMessage.getSender());
 
             final TextView timestamp = itemView.findViewById(timestampId);
             timestamp.setText(TIMESTAMP_FORMATTER.format(ninchatMessage.getTimestamp()));
