@@ -85,8 +85,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         private void bindMessage(final @IdRes int wrapperId, final @IdRes int headerId, final @IdRes int senderId, final @IdRes int timestampId, final @IdRes int messageView, final @IdRes int imageId, final @IdRes int playIconId, final @IdRes int avatarId, final NinchatMessage ninchatMessage, final boolean isContinuedMessage, int firstMessageBackground, final @DrawableRes int repeatedMessageBackground) {
             itemView.findViewById(wrapperId).setVisibility(View.VISIBLE);
             itemView.findViewById(headerId).setVisibility(View.GONE);
+
             final TextView sender = itemView.findViewById(senderId);
-            sender.setText(ninchatMessage.getSender());
+            String senderNameOverride = NinchatSessionManager.getInstance().getName(senderId == R.id.ninchat_chat_message_agent_name);
+            sender.setText(senderNameOverride != null ? senderNameOverride : ninchatMessage.getSender());
+
             final TextView timestamp = itemView.findViewById(timestampId);
             timestamp.setText(TIMESTAMP_FORMATTER.format(ninchatMessage.getTimestamp()));
             setAvatar(itemView.findViewById(avatarId), ninchatMessage, isContinuedMessage);
@@ -184,8 +187,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(isContinuedMessage ? View.GONE : View.VISIBLE);
                 setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_message).setVisibility(View.GONE);
+
+                String agentNameOverride = NinchatSessionManager.getInstance().getName(true);
                 final TextView agentName = itemView.findViewById(R.id.ninchat_chat_message_agent_name);
-                agentName.setText(data.getSender());
+                agentName.setText(agentNameOverride != null ? agentNameOverride : data.getSender());
+
                 itemView.findViewById(R.id.ninchat_chat_message_agent_wrapper)
                         .setBackgroundResource(isContinuedMessage ?
                                 R.drawable.ninchat_chat_bubble_left_repeated :
@@ -209,8 +215,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(isContinuedMessage ? View.GONE : View.VISIBLE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_writing).setVisibility(View.GONE);
                 setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
+
+                String agentNameOverride = NinchatSessionManager.getInstance().getName(true);
                 final TextView agentName = itemView.findViewById(R.id.ninchat_chat_message_agent_name);
-                agentName.setText(data.getSender());
+                agentName.setText(agentNameOverride != null ? agentNameOverride : data.getSender());
+
                 itemView.findViewById(R.id.ninchat_chat_message_agent_wrapper)
                         .setBackgroundResource(isContinuedMessage ?
                                 R.drawable.ninchat_chat_bubble_left_repeated :
