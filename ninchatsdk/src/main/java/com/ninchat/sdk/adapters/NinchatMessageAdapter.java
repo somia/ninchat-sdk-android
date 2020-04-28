@@ -448,6 +448,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             } else if (removed) {
                 notifyItemRemoved(index);
             } else {
+                //todo I a workaround. Should fix when rewrite the message adapter.
+                notifyDataSetChanged();
                 notifyItemInserted(index);
 
                 final int nextIndex = index + 1;
