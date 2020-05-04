@@ -64,13 +64,24 @@
         <item name="android:background">@drawable/ninchat_ui_compose_select_submit</item>
     </style>
 
-    <style name="NinchatTheme.Button.MultiChoice" parent="NinchatTheme.Button.MultiChoice.Send">
+    <style name="NinchatTheme.MultiChoice">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/ninchat_button_vertical_margin</item>
+        <item name="android:layout_marginBottom">@dimen/ninchat_button_vertical_margin</item>
+        <item name="android:paddingStart">@dimen/ninchat_chat_activity_send_text_padding</item>
+        <item name="android:paddingEnd">@dimen/ninchat_chat_activity_send_text_padding</item>
+        <item name="android:paddingTop">@dimen/ninchat_multichoice_padding</item>
+        <item name="android:paddingBottom">@dimen/ninchat_multichoice_padding</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:elevation">0dp</item>
         <item name="android:background">@drawable/ninchat_ui_compose_select_button</item>
         <item name="android:textColor">@color/ninchat_color_ui_compose_select_unselected_text</item>
-        <item name="android:lines">0</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAlignment">center</item>
     </style>
 
-    <style name="NinchatTheme.Button.MultiChoice.Selected" parent="NinchatTheme.Button.MultiChoice">
+    <style name="NinchatTheme.MultiChoice.Selected" parent="NinchatTheme.MultiChoice">
         <item name="android:background">@drawable/ninchat_ui_compose_select_button_selected</item>
         <item name="android:textColor">@color/ninchat_color_ui_compose_select_selected_text</item>
     </style>

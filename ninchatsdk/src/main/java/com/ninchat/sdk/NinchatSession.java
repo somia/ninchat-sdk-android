@@ -2,7 +2,9 @@ package com.ninchat.sdk;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BaseTransientBottomBar;
 
 import com.ninchat.client.Props;
 import com.ninchat.client.Session;
@@ -12,6 +14,66 @@ import com.ninchat.sdk.models.NinchatSessionCredentials;
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 17/08/2018.
  */
 public final class NinchatSession {
+
+    public static final int NINCHAT_SESSION_REQUEST_CODE = NinchatSession.class.hashCode() & 0xffff;
+    private NinchatSessionManager sessionManager;
+    private String siteSecret = null;
+
+    public static class Builder {
+        private final Context context;
+        private final String configurationKey;
+        private NinchatSessionCredentials sessionCredentials;
+        private NinchatConfiguration configuration;
+        private String[] preferredEnvironments;
+        private NinchatSDKEventListener eventListener;
+        private NinchatSDKLogListener logListener;
+
+        public Builder(Context context, String configurationKey) {
+            this.context = context;
+            this.configurationKey = configurationKey;
+        }
+
+        public NinchatSession create() {
+            return new NinchatSession(this);
+        }
+
+        public Builder setSessionCredentials(NinchatSessionCredentials sessionCredentials) {
+            this.sessionCredentials = sessionCredentials;
+            return this;
+        }
+
+        public Builder setConfiguration(NinchatConfiguration configuration) {
+            this.configuration = configuration;
+            return this;
+        }
+
+        public Builder setPreferredEnvironments(String[] preferredEnvironments) {
+            this.preferredEnvironments = preferredEnvironments;
+            return this;
+        }
+
+        public Builder setEventListener(NinchatSDKEventListener eventListener) {
+            this.eventListener = eventListener;
+            return this;
+        }
+
+        public Builder setLogListener(NinchatSDKLogListener logListener) {
+            this.logListener = logListener;
+            return this;
+        }
+    }
+
+    private NinchatSession(Builder builder) {
+        Context context = builder.context;
+        String configurationKey = builder.configurationKey;
+        NinchatSessionCredentials sessionCredentials = builder.sessionCredentials;
+        NinchatConfiguration configuration = builder.configuration;
+        String[] preferredEnvironments = builder.preferredEnvironments;
+        NinchatSDKEventListener eventListener = builder.eventListener;
+        NinchatSDKLogListener logListener = builder.logListener;
+
+        this.sessionManager = NinchatSessionManager.init(context, configurationKey, sessionCredentials, configuration, preferredEnvironments, eventListener, logListener);
+    }
 
     public static final class Analytics {
 
@@ -35,41 +97,80 @@ public final class NinchatSession {
         public static final String START_FAILED = BuildConfig.LIBRARY_PACKAGE_NAME + ".START_FAILED";
     }
 
-    public static final int NINCHAT_SESSION_REQUEST_CODE = NinchatSession.class.hashCode() & 0xffff;
-
-    private NinchatSessionManager sessionManager;
-    private String siteSecret = null;
-
+    @Deprecated
     public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials) {
-        this(applicationContext, configurationKey, sessionCredentials, null, null, null);
+        this(applicationContext, configurationKey, sessionCredentials, null, null, null, null);
     }
 
+    @Deprecated
     public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final String[] preferredEnvironments) {
-        this(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, null, null);
+        this(applicationContext, configurationKey, sessionCredentials, null, preferredEnvironments, null, null);
     }
 
+    @Deprecated
     public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final NinchatSDKEventListener eventListener) {
-        this(applicationContext, configurationKey, sessionCredentials, null, eventListener, null);
+        this(applicationContext, configurationKey, sessionCredentials, null,null, eventListener, null);
     }
 
+    @Deprecated
     public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener) {
-        this(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, eventListener, null);
+        this(applicationContext, configurationKey, sessionCredentials, null, preferredEnvironments, eventListener, null);
     }
 
+    @Deprecated
     public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final NinchatSDKLogListener logListener) {
-        this(applicationContext, configurationKey, sessionCredentials, null, null, logListener);
+        this(applicationContext, configurationKey, sessionCredentials, null, null, null, logListener);
     }
 
+    @Deprecated
     public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final String[] preferredEnvironments, final NinchatSDKLogListener logListener) {
-        this(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, null, logListener);
+        this(applicationContext, configurationKey, sessionCredentials, null, preferredEnvironments, null, logListener);
     }
 
+    @Deprecated
     public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
-        this(applicationContext, configurationKey, sessionCredentials, null, eventListener, logListener);
+        this(applicationContext, configurationKey, sessionCredentials, null, null, eventListener, logListener);
     }
 
-    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
-        this.sessionManager = NinchatSessionManager.init(applicationContext, configurationKey, sessionCredentials, preferredEnvironments, eventListener, logListener);
+    @Deprecated
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final NinchatConfiguration ninchatConfiguration) {
+        this(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration, null, null, null);
+    }
+
+    @Deprecated
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final NinchatConfiguration ninchatConfiguration, final String[] preferredEnvironments) {
+        this(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration, preferredEnvironments, null, null);
+    }
+
+    @Deprecated
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final NinchatConfiguration ninchatConfiguration, final NinchatSDKEventListener eventListener) {
+        this(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration,null, eventListener, null);
+    }
+
+    @Deprecated
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final NinchatConfiguration ninchatConfiguration, final NinchatSDKLogListener logListener) {
+        this(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration, null, null, logListener);
+    }
+
+    @Deprecated
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final NinchatConfiguration ninchatConfiguration, final String[] preferredEnvironments, final NinchatSDKEventListener eventListener) {
+        this(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration, preferredEnvironments, eventListener, null);
+    }
+
+    @Deprecated
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final NinchatConfiguration ninchatConfiguration, final String[] preferredEnvironments, final NinchatSDKLogListener logListener) {
+        this(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration, preferredEnvironments, null, logListener);
+    }
+
+    @Deprecated
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, final NinchatConfiguration ninchatConfiguration, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+        this(applicationContext, configurationKey, sessionCredentials, ninchatConfiguration, null, eventListener, logListener);
+    }
+
+    @Deprecated
+    public NinchatSession(final Context applicationContext, final String configurationKey, @Nullable NinchatSessionCredentials sessionCredentials, @Nullable NinchatConfiguration configurationManager,
+                          final String[] preferredEnvironments, final NinchatSDKEventListener eventListener, final NinchatSDKLogListener logListener) {
+        this.sessionManager = NinchatSessionManager.init(applicationContext, configurationKey, sessionCredentials, configurationManager, preferredEnvironments, eventListener, logListener);
     }
 
     /**

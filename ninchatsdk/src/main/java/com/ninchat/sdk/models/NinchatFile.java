@@ -21,6 +21,7 @@ public final class NinchatFile {
     private float aspectRatio;
     private long width;
     private long height;
+    private boolean isDownloadableFile;
 
     private boolean isDownloaded = false;
 
@@ -63,8 +64,12 @@ public final class NinchatFile {
         return type.startsWith("video/");
     }
 
-    public boolean isPDF() {
-        return type.equals("application/pdf");
+    public boolean isDownloadableFile() {
+        return this.isDownloadableFile;
+    }
+
+    public void setDownloadableFile(boolean downloadableFile) {
+        isDownloadableFile = downloadableFile;
     }
 
     public boolean isDownloaded() {
@@ -120,7 +125,7 @@ public final class NinchatFile {
         return megaBytes + "MB";
     }
 
-    public Spanned getPDFLInk() {
+    public Spanned getFileLink() {
         final String link = "<a href='" + url + "'>" + name + "</a> (" + getFileSize() + ")";
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(link, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(link);
     }
