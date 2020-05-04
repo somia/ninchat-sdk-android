@@ -9,6 +9,7 @@ class NinchatConfigurationTest {
         val ninchatConfiguration = NinchatConfiguration.Builder().create()
         assertNull(ninchatConfiguration.userName)
     }
+
     @Test
     fun `would give a non emtpy user name`() {
         val userName = "test-user-name"
