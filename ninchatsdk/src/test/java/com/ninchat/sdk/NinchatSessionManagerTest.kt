@@ -1,11 +1,14 @@
 package com.ninchat.sdk
 
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.whenever
+import android.app.Activity
 import com.ninchat.sdk.NinchatSessionManager.init
+import com.ninchat.sdk.models.NinchatFile
+import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.*
+
 
 class NinchatSessionManagerTest {
 
@@ -24,7 +27,7 @@ class NinchatSessionManagerTest {
     @Test
     fun `should get app details`() {
         val appDetails = "app-details"
-        ninchatSessionManager.setAppDetails(appDetails)
+        ninchatSessionManager.appDetails = appDetails
         Assert.assertEquals(appDetails, ninchatSessionManager.appDetails)
     }
 
@@ -59,19 +62,41 @@ class NinchatSessionManagerTest {
     }
 
     @Test
-    fun `should return provided audience metadata`() {
-        // todo pass now - native method mocked
-    }
-
-    @Test
-    fun `should return empty NinchatSessionManager instance if init is not called`() {
-        Assert.assertNull(NinchatSessionManager.getInstance())
-    }
-
-    @Test
     fun `should return non empty NinchatSessionManager instance after init is called`() {
-        NinchatSessionManager.init(null, null, null, null, null, null, null)
+        init(null, null, null, null, null, null, null)
         Assert.assertNotNull(NinchatSessionManager.getInstance())
+    }
+
+    @Test
+    fun `should throw null context`() {
+        Assert.assertNull(ninchatSessionManager.context)
+    }
+
+    @Test
+    fun `should not be able to find a file with given fileId from files map`() {
+        Assert.assertNull(ninchatSessionManager.getFile("testFileId"))
+    }
+
+    @Test
+    fun `should not be able to find file with given fileId after setting it in the files map`() {
+        val ninchatFile = mock(NinchatFile::class.java)
+        ninchatSessionManager.files["testFileId"] = ninchatFile
+        Assert.assertNotNull(ninchatSessionManager.getFile("testFileId"))
+        Assert.assertNull(ninchatSessionManager.getFile("testFileIdElse"))
+    }
+
+    @Test
+    fun `should return non empty ninchat queue list adapter`() {
+        val mActivity = mock(Activity::class.java)
+        Assert.assertNotNull(ninchatSessionManager.getNinchatQueueListAdapter(mActivity))
+    }
+
+    @Test
+    fun `should return user name where user is not an agent`() {
+        val mockNinchatSessionManager = mock(NinchatSessionManager::class.java)
+        val mockedSssionManager = spy(mockNinchatSessionManager);
+        `when`(mockedSssionManager.userName).thenReturn("test-user")
+        Assert.assertEquals("test-user", mockedSssionManager.getName(false));
     }
 
     @Test
