@@ -3,12 +3,10 @@ package com.ninchat.sdk
 import android.app.Activity
 import com.ninchat.sdk.NinchatSessionManager.init
 import com.ninchat.sdk.models.NinchatFile
-import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.*
-
 
 class NinchatSessionManagerTest {
 
@@ -94,9 +92,19 @@ class NinchatSessionManagerTest {
     @Test
     fun `should return user name where user is not an agent`() {
         val mockNinchatSessionManager = mock(NinchatSessionManager::class.java)
-        val mockedSssionManager = spy(mockNinchatSessionManager);
-        `when`(mockedSssionManager.userName).thenReturn("test-user")
-        Assert.assertEquals("test-user", mockedSssionManager.getName(false));
+        val mockedSessionManager = spy(mockNinchatSessionManager)
+        `when`(mockedSessionManager.userName).thenReturn("test-user")
+        Assert.assertEquals("test-user", mockedSessionManager.getName(false));
+        verify(mockedSessionManager, times(1)).getName(false)
+    }
+
+    @Test
+    fun `should not return user name name where user is an agent`() {
+        val mockNinchatSessionManager = mock(NinchatSessionManager::class.java)
+        val mockedSessionManager = spy(mockNinchatSessionManager)
+        `when`(mockedSessionManager.userName).thenReturn("test-user")
+        Assert.assertNotEquals("test-user", mockedSessionManager.getName(true));
+        verify(mockedSessionManager, times(1)).getName(true)
     }
 
     @Test
