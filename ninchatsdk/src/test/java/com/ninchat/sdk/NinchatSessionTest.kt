@@ -87,9 +87,4 @@ class NinchatSessionTest {
     fun `should match the Rating keys 'rating' `() {
         Assert.assertEquals("rating", NinchatSession.Analytics.Keys.RATING)
     }
-
-    @Test
-    fun `copyme_test_template`() {
-        // todo implements me
-    }
 }
