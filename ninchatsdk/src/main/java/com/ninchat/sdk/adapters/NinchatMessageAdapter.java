@@ -30,7 +30,7 @@ import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatChatActivity;
 import com.ninchat.sdk.activities.NinchatMediaActivity;
-import com.ninchat.sdk.helper.EndlessRecyclerViewScrollListener;
+import com.ninchat.sdk.helper.NinchatEndlessRecyclerViewScrollListener;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatUser;
@@ -321,7 +321,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         }
     }
 
-    protected EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener((index, updated, removed) -> messagesUpdated(index, updated, removed));
+    protected NinchatEndlessRecyclerViewScrollListener scrollListener = new NinchatEndlessRecyclerViewScrollListener((index, updated, removed) -> messagesUpdated(index, updated, removed));
 
     protected static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:mm", new Locale("fi-FI"));
 

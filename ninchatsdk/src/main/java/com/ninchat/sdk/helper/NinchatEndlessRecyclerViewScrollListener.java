@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
-public class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollListener {
+public class NinchatEndlessRecyclerViewScrollListener extends RecyclerView.OnScrollListener {
     private boolean updateData = false;
     private int index;
     private boolean updated;
@@ -14,7 +14,7 @@ public class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollList
     @NonNull
     private final Callback callback;
 
-    public EndlessRecyclerViewScrollListener(@NotNull Callback callback) {
+    public NinchatEndlessRecyclerViewScrollListener(@NotNull Callback callback) {
         this.callback = callback;
     }
 
