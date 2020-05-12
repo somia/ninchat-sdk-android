@@ -11,16 +11,17 @@ import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.*
 
 class NinchatQueueViewHolderTest {
-    @Test
-    fun `should create a NinchatQueueViewHolder class`() {
-        val viewItem = mock(View::class.java)
-        NinchatQueueViewHolder(viewItem)
-    }
 
     lateinit var mItemView: View
     @Before
     fun setup() {
         mItemView = mock(View::class.java)
+    }
+
+    @Test
+    fun `should create a NinchatQueueViewHolder class`() {
+        val viewItem = mock(View::class.java)
+        NinchatQueueViewHolder(viewItem)
     }
 
     @Test
