@@ -500,7 +500,7 @@ public final class NinchatSessionManager {
         }
         queues.clear();
         if (ninchatQueueListAdapter != null) {
-            ninchatQueueListAdapter.clear();
+            ninchatQueueListAdapter.clearData();
         }
         final List<String> openQueues = getAudienceQueues();
         for (String queueId : parser.properties.keySet()) {
@@ -550,7 +550,7 @@ public final class NinchatSessionManager {
             ninchatQueue.setClosed(closed);
             queues.add(ninchatQueue);
             if (ninchatQueueListAdapter != null) {
-                ninchatQueueListAdapter.addQueue(ninchatQueue);
+                ninchatQueueListAdapter.addData(ninchatQueue);
             }
         }
         final Context context = contextWeakReference.get();

@@ -9,51 +9,21 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.adapters.holders.NinchatMessageViewHolder;
+import com.ninchat.sdk.adapters.holders.NinchatMultiChoiceViewholder;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatOption;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<NinchatMultiChoiceAdapter.NinchatMultiChoiceViewholder> {
-
-    public final class NinchatMultiChoiceViewholder extends RecyclerView.ViewHolder {
-        public NinchatMultiChoiceViewholder(@NonNull View itemView, final NinchatMessage message) {
-            super(itemView);
-        }
-
-        public void bind(final NinchatMessage message, final int position, final boolean sendAction) {
-            final TextView button = (TextView) itemView;
-            final List<NinchatOption> options = message.getOptions();
-            final NinchatOption option = options.get(position);
-            button.setText(option.getLabel());
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (sendAction) {
-                        try {
-                            option.toggle();
-                            NinchatSessionManager.getInstance().sendUIAction(option.toJSON());
-                            option.toggle();
-                        } catch (final Exception e) {
-                            // Ignore
-                        }
-                    } else {
-                        final NinchatMessageAdapter.NinchatMessageViewHolder viewHolder = viewHolderWeakReference.get();
-                        if (viewHolder != null) {
-                            viewHolder.optionToggled(message, position);
-                        }
-                    }
-                }
-            });
-        }
-    }
+public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<NinchatMultiChoiceViewholder> {
 
     private NinchatMessage message;
-    private WeakReference<NinchatMessageAdapter.NinchatMessageViewHolder> viewHolderWeakReference;
+    private WeakReference<NinchatMessageViewHolder> viewHolderWeakReference;
     private boolean sendActionImmediately;
 
-    public NinchatMultiChoiceAdapter(final NinchatMessage message, final NinchatMessageAdapter.NinchatMessageViewHolder viewHolder, final boolean sendActionImmediately) {
+    public NinchatMultiChoiceAdapter(final NinchatMessage message, final NinchatMessageViewHolder viewHolder, final boolean sendActionImmediately) {
         this.message = message;
         this.viewHolderWeakReference = new WeakReference<>(viewHolder);
         this.sendActionImmediately = sendActionImmediately;
@@ -68,7 +38,15 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
     @Override
     public NinchatMultiChoiceViewholder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
         final NinchatOption option = message.getOptions().get(position);
-        return new NinchatMultiChoiceViewholder(LayoutInflater.from(viewGroup.getContext()).inflate(option.isSelected() ? R.layout.item_chat_multichoice_selected : R.layout.item_chat_multichoice_unselected, viewGroup, false), message);
+        return new NinchatMultiChoiceViewholder(LayoutInflater.from(viewGroup.getContext()).inflate(option.isSelected() ? R.layout.item_chat_multichoice_selected : R.layout.item_chat_multichoice_unselected, viewGroup, false), new NinchatMultiChoiceViewholder.Callback() {
+            @Override
+            public void onClickListener(NinchatMessage message, int position) {
+                final NinchatMessageViewHolder viewHolder = viewHolderWeakReference.get();
+                if (viewHolder != null) {
+                    viewHolder.optionToggled(message, position);
+                }
+            }
+        });
     }
 
     @Override
