@@ -8,9 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SimpleItemAnimator;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.util.Log;
@@ -21,18 +19,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ninchat.sdk.GlideApp;
-import com.ninchat.sdk.GlideOptions;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.activities.NinchatChatActivity;
 import com.ninchat.sdk.activities.NinchatMediaActivity;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatMultiChoiceAdapter;
 import com.ninchat.sdk.helper.NinchatAvatar;
-import com.ninchat.sdk.helper.NinchatEndlessRecyclerViewScrollListener;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
-import com.ninchat.sdk.models.NinchatUser;
 
 import org.json.JSONException;
 

@@ -8,12 +8,14 @@ import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.NinchatQueue;
 
+import org.jetbrains.annotations.NotNull;
+
 public class NinchatQueueViewHolder extends RecyclerView.ViewHolder {
     public NinchatQueueViewHolder(final View itemView) {
         super(itemView);
     }
 
-    public void bind(final NinchatQueue queue, final Callback callback) {
+    public void bind(@NotNull final NinchatQueue queue, final Callback callback) {
         final Button button = this.getButtonItem();
         // If queue is closed, disable button and set alpha for look & feel
         if (queue.isClosed()) {
