@@ -17,13 +17,11 @@ import com.ninchat.sdk.helper.NinchatEndlessRecyclerViewScrollListener;
 import com.ninchat.sdk.models.NinchatMessage;
 
 import java.lang.ref.WeakReference;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Locale;
 import java.util.Map;
 
 
@@ -220,7 +218,6 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     @Override
     public NinchatMessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return new NinchatMessageViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chat_message, parent, false),
-                scrollListener,
                 new NinchatMessageViewHolder.Callback() {
                     @Override
                     public void onClickListener() {

@@ -28,6 +28,7 @@ import com.ninchat.sdk.activities.NinchatChatActivity;
 import com.ninchat.sdk.activities.NinchatMediaActivity;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatMultiChoiceAdapter;
+import com.ninchat.sdk.helper.NinchatAvatar;
 import com.ninchat.sdk.helper.NinchatEndlessRecyclerViewScrollListener;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
@@ -41,37 +42,13 @@ import java.util.Locale;
 public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
 
     protected static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:mm", new Locale("fi-FI"));
-    private final NinchatEndlessRecyclerViewScrollListener scrollListener;
+    protected final NinchatAvatar ninchatAvatar;
     private final Callback callback;
 
-    public NinchatMessageViewHolder(View itemView, NinchatEndlessRecyclerViewScrollListener scrollListener, Callback callback) {
+    public NinchatMessageViewHolder(View itemView, Callback callback) {
         super(itemView);
-        this.scrollListener = scrollListener;
         this.callback = callback;
-    }
-
-    private void setAvatar(final ImageView avatar, final NinchatMessage ninchatMessage, final boolean hideAvatar) {
-        String userAvatar = null;
-        final NinchatUser user = NinchatSessionManager.getInstance().getMember(ninchatMessage.getSenderId());
-        if (user != null) {
-            userAvatar = user.getAvatar();
-        }
-        if (TextUtils.isEmpty(userAvatar)) {
-            userAvatar = NinchatSessionManager.getInstance().getDefaultAvatar(ninchatMessage.isRemoteMessage());
-        }
-        if (!TextUtils.isEmpty(userAvatar)) {
-            GlideApp.with(itemView.getContext())
-                    .load(userAvatar)
-                    .circleCrop()
-                    .into(avatar);
-        }
-        final boolean showAvatars = NinchatSessionManager.getInstance().showAvatars(ninchatMessage.isRemoteMessage());
-        if (!showAvatars) {
-            avatar.setVisibility(View.GONE);
-        } else if (hideAvatar) {
-            avatar.setVisibility(showAvatars ? View.INVISIBLE : View.GONE);
-            return;
-        }
+        ninchatAvatar = new NinchatAvatar();
     }
 
     private void bindMessage(final @IdRes int wrapperId, final @IdRes int headerId, final @IdRes int senderId, final @IdRes int timestampId, final @IdRes int messageView, final @IdRes int imageId, final @IdRes int playIconId, final @IdRes int avatarId, final NinchatMessage ninchatMessage, final boolean isContinuedMessage, int firstMessageBackground, final @DrawableRes int repeatedMessageBackground) {
@@ -84,7 +61,7 @@ public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
 
         final TextView timestamp = itemView.findViewById(timestampId);
         timestamp.setText(TIMESTAMP_FORMATTER.format(ninchatMessage.getTimestamp()));
-        setAvatar(itemView.findViewById(avatarId), ninchatMessage, isContinuedMessage);
+        ninchatAvatar.setAvatar(itemView.getContext(), itemView.findViewById(avatarId), ninchatMessage, isContinuedMessage);
         final TextView message = itemView.findViewById(messageView);
         message.setVisibility(View.GONE);
         final Spanned messageContent = ninchatMessage.getMessage();
@@ -174,7 +151,7 @@ public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
             itemView.findViewById(R.id.ninchat_chat_message_agent_image).setVisibility(View.GONE);
             itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice).setVisibility(View.GONE);
             itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(isContinuedMessage ? View.GONE : View.VISIBLE);
-            setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
+            ninchatAvatar.setAvatar(itemView.getContext(),itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
             itemView.findViewById(R.id.ninchat_chat_message_agent_message).setVisibility(View.GONE);
 
             String agentNameOverride = NinchatSessionManager.getInstance().getName(true);
@@ -203,7 +180,7 @@ public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
             itemView.findViewById(R.id.ninchat_chat_message_agent_image).setVisibility(View.GONE);
             itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(isContinuedMessage ? View.GONE : View.VISIBLE);
             itemView.findViewById(R.id.ninchat_chat_message_agent_writing).setVisibility(View.GONE);
-            setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
+            ninchatAvatar.setAvatar(itemView.getContext(),itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
 
             String agentNameOverride = NinchatSessionManager.getInstance().getName(true);
             final TextView agentName = itemView.findViewById(R.id.ninchat_chat_message_agent_name);
