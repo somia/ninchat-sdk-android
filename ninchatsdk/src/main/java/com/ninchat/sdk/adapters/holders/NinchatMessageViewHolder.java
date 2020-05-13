@@ -293,7 +293,7 @@ public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void optionToggled(final NinchatMessage message, final int position) {
-        this.callback.onOptionToggled(message, getAdapterPosition());
+        this.callback.onOptionToggled(message, position);
     }
 
 

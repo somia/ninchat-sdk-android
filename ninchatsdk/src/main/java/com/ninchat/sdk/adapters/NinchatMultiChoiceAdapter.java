@@ -1,7 +1,9 @@
 package com.ninchat.sdk.adapters;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,20 +40,12 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
     @Override
     public NinchatMultiChoiceViewholder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
         final NinchatOption option = message.getOptions().get(position);
-        return new NinchatMultiChoiceViewholder(LayoutInflater.from(viewGroup.getContext()).inflate(option.isSelected() ? R.layout.item_chat_multichoice_selected : R.layout.item_chat_multichoice_unselected, viewGroup, false), new NinchatMultiChoiceViewholder.Callback() {
-            @Override
-            public void onClickListener(NinchatMessage message, int position) {
-                final NinchatMessageViewHolder viewHolder = viewHolderWeakReference.get();
-                if (viewHolder != null) {
-                    viewHolder.optionToggled(message, position);
-                }
-            }
-        });
+        return new NinchatMultiChoiceViewholder(LayoutInflater.from(viewGroup.getContext()).inflate(option.isSelected() ? R.layout.item_chat_multichoice_selected : R.layout.item_chat_multichoice_unselected, viewGroup, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull NinchatMultiChoiceViewholder ninchatMultiChoiceViewholder, int position) {
-        ninchatMultiChoiceViewholder.bind(message, position, sendActionImmediately);
+        ninchatMultiChoiceViewholder.bind(message, position, sendActionImmediately, callback);
     }
 
     @Override
@@ -59,4 +53,14 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
         final List<NinchatOption> options = message.getOptions();
         return options != null ? options.size() : 0;
     }
+
+    private final NinchatMultiChoiceViewholder.Callback callback = new NinchatMultiChoiceViewholder.Callback() {
+        @Override
+        public void onClickListener(NinchatMessage message, int position) {
+            final NinchatMessageViewHolder viewHolder = viewHolderWeakReference.get();
+            if (viewHolder != null) {
+                viewHolder.optionToggled(message, position);
+            }
+        }
+    };
 }
