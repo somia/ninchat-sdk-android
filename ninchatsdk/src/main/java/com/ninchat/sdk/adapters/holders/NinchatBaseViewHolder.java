@@ -16,16 +16,17 @@ import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatMediaActivity;
+import com.ninchat.sdk.helper.NinchatAvatar;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.Date;
 
 public abstract class NinchatBaseViewHolder extends RecyclerView.ViewHolder {
     private static final String TAG = NinchatBaseViewHolder.class.getSimpleName();
-
-    protected static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:mm", new Locale("fi-FI"));
+    private static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:mm", new Locale("fi-FI"));
 
     NinchatBaseViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -33,6 +34,7 @@ public abstract class NinchatBaseViewHolder extends RecyclerView.ViewHolder {
 
     public abstract void bind(final NinchatMessage data, final boolean isContinuedMessage) throws Exception;
 
+    // todo separate responsibilities
     public void bindMessage(
             final @IdRes int wrapperId,
             final @IdRes int headerId,
@@ -45,18 +47,20 @@ public abstract class NinchatBaseViewHolder extends RecyclerView.ViewHolder {
             final NinchatMessage ninchatMessage,
             final boolean isContinuedMessage,
             int firstMessageBackground,
-            @DrawableRes int repeatedMessageBackground
+            @DrawableRes int repeatedMessageBackground,
+            final NinchatAvatar ninchatAvatar
     ) {
         itemView.findViewById(wrapperId).setVisibility(View.VISIBLE);
         itemView.findViewById(headerId).setVisibility(View.GONE);
 
-        final TextView sender = itemView.findViewById(senderId);
-        String senderNameOverride = NinchatSessionManager.getInstance().getName(senderId == R.id.ninchat_chat_message_agent_name);
-        sender.setText(senderNameOverride != null ? senderNameOverride : ninchatMessage.getSender());
+        updateSenderView(senderId, ninchatMessage.getSender());
+        updateTimestamp(timestampId, ninchatMessage.getTimestamp());
 
-        final TextView timestamp = itemView.findViewById(timestampId);
-        timestamp.setText(TIMESTAMP_FORMATTER.format(ninchatMessage.getTimestamp()));
-        //ninchatAvatar.setAvatar(itemView.getContext(), itemView.findViewById(avatarId), ninchatMessage, isContinuedMessage);
+        ninchatAvatar.setAvatar(itemView.getContext(),
+                itemView.findViewById(avatarId),
+                ninchatMessage,
+                isContinuedMessage);
+
         final TextView message = itemView.findViewById(messageView);
         message.setVisibility(View.GONE);
         final Spanned messageContent = ninchatMessage.getMessage();
@@ -72,9 +76,7 @@ public abstract class NinchatBaseViewHolder extends RecyclerView.ViewHolder {
             message.setAutoLinkMask(Linkify.ALL);
             message.setText(messageContent);
         } else if (file.isDownloadableFile()) {
-            message.setVisibility(View.VISIBLE);
-            message.setText(file.getFileLink());
-            message.setMovementMethod(LinkMovementMethod.getInstance());
+            setDownloadable(message, file.getFileLink());
         } else {
             final int width = file.getWidth();
             final int height = file.getHeight();
@@ -104,5 +106,22 @@ public abstract class NinchatBaseViewHolder extends RecyclerView.ViewHolder {
         } else {
             itemView.findViewById(headerId).setVisibility(View.VISIBLE);
         }
+    }
+
+    protected void updateSenderView(final @IdRes int senderId, final String senderName) {
+        final TextView sender = itemView.findViewById(senderId);
+        String senderNameOverride = NinchatSessionManager.getInstance().getName(senderId == R.id.ninchat_chat_message_agent_name);
+        sender.setText(senderNameOverride != null ? senderNameOverride : senderName);
+    }
+
+    protected void updateTimestamp(final @IdRes int timestampId, final Date currentTime) {
+        final TextView timestamp = itemView.findViewById(timestampId);
+        timestamp.setText(TIMESTAMP_FORMATTER.format(currentTime));
+    }
+
+    protected void setDownloadable(final TextView message, final Spanned fileLink) {
+        message.setVisibility(View.VISIBLE);
+        message.setText(fileLink);
+        message.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }

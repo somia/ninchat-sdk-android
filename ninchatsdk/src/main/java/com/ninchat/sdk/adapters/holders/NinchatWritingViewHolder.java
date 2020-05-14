@@ -28,7 +28,7 @@ public class NinchatWritingViewHolder extends NinchatBaseViewHolder {
     private final NinchatAvatar ninchatAvatar;
 
     public NinchatWritingViewHolder(@NonNull View itemView,
-                                    NinchatAvatar ninchatAvatar) {
+                                    final NinchatAvatar ninchatAvatar) {
         super(itemView);
         this.ninchatAvatar = ninchatAvatar;
     }
