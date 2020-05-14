@@ -25,8 +25,8 @@ import java.util.Locale;
 import java.util.Date;
 
 public abstract class NinchatBaseViewHolder extends RecyclerView.ViewHolder {
-    private static final String TAG = NinchatBaseViewHolder.class.getSimpleName();
-    private static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:mm", new Locale("fi-FI"));
+    private final String TAG = NinchatBaseViewHolder.class.getSimpleName();
+    private final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:mm", new Locale("fi-FI"));
 
     NinchatBaseViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -52,7 +52,6 @@ public abstract class NinchatBaseViewHolder extends RecyclerView.ViewHolder {
     ) {
         itemView.findViewById(wrapperId).setVisibility(View.VISIBLE);
         itemView.findViewById(headerId).setVisibility(View.GONE);
-
         updateSenderView(senderId, ninchatMessage.getSender());
         updateTimestamp(timestampId, ninchatMessage.getTimestamp());
 
@@ -63,12 +62,15 @@ public abstract class NinchatBaseViewHolder extends RecyclerView.ViewHolder {
 
         final TextView message = itemView.findViewById(messageView);
         message.setVisibility(View.GONE);
+
         final Spanned messageContent = ninchatMessage.getMessage();
         final NinchatFile file = NinchatSessionManager.getInstance().getFile(ninchatMessage.getFileId());
         final ImageView image = itemView.findViewById(imageId);
         image.setVisibility(View.GONE);
+
         final View playIcon = itemView.findViewById(playIconId);
         playIcon.setVisibility(View.GONE);
+
         GlideApp.with(image.getContext()).clear(image);
         image.setBackground(null);
         if (messageContent != null) {
@@ -93,12 +95,7 @@ public abstract class NinchatBaseViewHolder extends RecyclerView.ViewHolder {
             if (file.isVideo()) {
                 playIcon.setVisibility(View.VISIBLE);
             }
-            image.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    v.getContext().startActivity(NinchatMediaActivity.getLaunchIntent(v.getContext(), ninchatMessage.getFileId()));
-                }
-            });
+            image.setOnClickListener(v -> v.getContext().startActivity(NinchatMediaActivity.getLaunchIntent(v.getContext(), ninchatMessage.getFileId())));
         }
         itemView.findViewById(messageView).setBackgroundResource(isContinuedMessage ? repeatedMessageBackground : firstMessageBackground);
         if (isContinuedMessage) {
