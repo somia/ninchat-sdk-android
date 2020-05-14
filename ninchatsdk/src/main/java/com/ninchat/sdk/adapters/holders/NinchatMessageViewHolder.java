@@ -5,12 +5,8 @@ import android.view.View;
 import com.ninchat.sdk.helper.NinchatAvatar;
 import com.ninchat.sdk.models.NinchatMessage;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-
 public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
-
-    protected static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:mm", new Locale("fi-FI"));
+    private final String TAG = NinchatMessageViewHolder.class.getSimpleName();
     protected final NinchatAvatar ninchatAvatar;
     protected final NinchatPaddingViewHolder paddingViewHolder;
     protected final NinchatMetaViewHolder metaViewHolder;
@@ -27,28 +23,28 @@ public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
         ninchatAvatar = new NinchatAvatar();
         paddingViewHolder = new NinchatPaddingViewHolder(itemView);
         metaViewHolder = new NinchatMetaViewHolder(itemView);
-        endViewHolder = new NinchatEndViewHolder(itemView, callback);
-        writingViewHolder = new NinchatWritingViewHolder(itemView, ninchatAvatar);
-        multipleChoiceViewHolder = new NinchatMultipleChoiceViewHolder(itemView, ninchatAvatar, callback);
-        remoteMessageViewHolder = new NinchatRemoteMessageViewHolder(itemView, callback);
+        endViewHolder = new NinchatEndViewHolder(itemView);
+        writingViewHolder = new NinchatWritingViewHolder(itemView);
+        multipleChoiceViewHolder = new NinchatMultipleChoiceViewHolder(itemView);
+        remoteMessageViewHolder = new NinchatRemoteMessageViewHolder(itemView);
         generalViewHolder = new NinchatGeneralViewHolder(itemView);
     }
 
     public void bind(final NinchatMessage data, final boolean isContinuedMessage) {
         if (data.getType() == NinchatMessage.Type.PADDING) {
-            paddingViewHolder.bind(data, false);
+            paddingViewHolder.bind();
         } else if (data.getType() == NinchatMessage.Type.META) {
-            metaViewHolder.bind(data, false);
+            metaViewHolder.bind(data);
         } else if (data.getType() == NinchatMessage.Type.END) {
-            endViewHolder.bind(data, false);
+            endViewHolder.bind(callback);
         } else if (data.getType().equals(NinchatMessage.Type.WRITING)) {
-            writingViewHolder.bind(data, isContinuedMessage);
+            writingViewHolder.bind(data, ninchatAvatar, this, isContinuedMessage);
         } else if (data.getType().equals(NinchatMessage.Type.MULTICHOICE)) {
-            multipleChoiceViewHolder.bind(data, isContinuedMessage);
+            multipleChoiceViewHolder.bind(data, ninchatAvatar, this, isContinuedMessage);
         } else if (data.isRemoteMessage()) {
-            remoteMessageViewHolder.bind(data, isContinuedMessage);
+            remoteMessageViewHolder.bind(data, ninchatAvatar, isContinuedMessage);
         } else {
-            generalViewHolder.bind(data, isContinuedMessage);
+            generalViewHolder.bind(data, ninchatAvatar, isContinuedMessage);
         }
         this.callback.onRequiredAnimationChange();
     }

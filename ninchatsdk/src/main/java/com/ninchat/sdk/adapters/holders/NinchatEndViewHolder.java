@@ -10,21 +10,18 @@ import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.NinchatMessage;
 
 public class NinchatEndViewHolder extends NinchatBaseViewHolder {
-    private final NinchatMessageViewHolder.Callback callback;
-
-    public NinchatEndViewHolder(@NonNull View itemView, NinchatMessageViewHolder.Callback callback) {
+    public NinchatEndViewHolder(@NonNull View itemView) {
         super(itemView);
-        this.callback = callback;
     }
 
-    public void bind(final NinchatMessage data, final boolean isContinuedMessage) {
+    public void bind(final NinchatMessageViewHolder.Callback callback) {
         itemView.findViewById(R.id.ninchat_chat_message_meta).setVisibility(View.GONE);
         itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.GONE);
         itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
         itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
         //todo fix ordering beautify
         setEndText();
-        setButtonListener();
+        setButtonListener(callback);
         itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.VISIBLE);
 
     }
@@ -34,7 +31,7 @@ public class NinchatEndViewHolder extends NinchatBaseViewHolder {
         end.setText(NinchatSessionManager.getInstance().getChatEnded());
     }
 
-    protected void setButtonListener() {
+    protected void setButtonListener(final NinchatMessageViewHolder.Callback callback) {
         final Button closeButton = itemView.findViewById(R.id.ninchat_chat_message_close);
         closeButton.setText(NinchatSessionManager.getInstance().getCloseChat());
         closeButton.setOnClickListener(v -> callback.onClickListener());

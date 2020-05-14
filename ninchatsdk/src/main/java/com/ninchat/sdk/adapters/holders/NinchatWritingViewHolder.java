@@ -25,15 +25,15 @@ import com.ninchat.sdk.models.NinchatMessage;
 import org.json.JSONException;
 
 public class NinchatWritingViewHolder extends NinchatBaseViewHolder {
-    private final NinchatAvatar ninchatAvatar;
 
-    public NinchatWritingViewHolder(@NonNull View itemView,
-                                    final NinchatAvatar ninchatAvatar) {
+    public NinchatWritingViewHolder(@NonNull View itemView) {
         super(itemView);
-        this.ninchatAvatar = ninchatAvatar;
     }
 
-    public void bind(final NinchatMessage data, final boolean isContinuedMessage) {
+    public void bind(final NinchatMessage data,
+                     final NinchatAvatar ninchatAvatar,
+                     final NinchatMessageViewHolder messageViewHolder,
+                     final boolean isContinuedMessage) {
         itemView.findViewById(R.id.ninchat_chat_message_meta).setVisibility(View.GONE);
         itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
         itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
@@ -75,7 +75,7 @@ public class NinchatWritingViewHolder extends NinchatBaseViewHolder {
                 }
             });
         }
-        // options.setAdapter(new NinchatMultiChoiceAdapter(data, this, messageText == null));
+        options.setAdapter(new NinchatMultiChoiceAdapter(data, messageViewHolder, messageText == null));
         final Button sendButton = itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice_send);
         sendButton.setText(NinchatSessionManager.getInstance().getSubmitButtonText());
         sendButton.setOnClickListener(new View.OnClickListener() {

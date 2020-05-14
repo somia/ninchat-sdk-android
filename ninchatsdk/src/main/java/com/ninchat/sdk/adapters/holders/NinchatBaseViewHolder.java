@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -31,8 +30,6 @@ public abstract class NinchatBaseViewHolder extends RecyclerView.ViewHolder {
     NinchatBaseViewHolder(@NonNull View itemView) {
         super(itemView);
     }
-
-    public abstract void bind(final NinchatMessage data, final boolean isContinuedMessage) throws Exception;
 
     // todo separate responsibilities
     public void bindMessage(

@@ -16,7 +16,7 @@ public class NinchatMetaViewHolder extends NinchatBaseViewHolder {
         super(itemView);
     }
 
-    public void bind(@NotNull final NinchatMessage data, final boolean isContinuedMessage) {
+    public void bind(@NotNull final NinchatMessage data) {
         itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.GONE);
         itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
         itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);

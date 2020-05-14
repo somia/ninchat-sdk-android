@@ -11,7 +11,7 @@ public class NinchatPaddingViewHolder extends NinchatBaseViewHolder {
         super(itemView);
     }
 
-    public void bind(final NinchatMessage data, final boolean isContinuedMessage) {
+    public void bind() {
         itemView.findViewById(R.id.ninchat_chat_message_meta).setVisibility(View.GONE);
         itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.GONE);
         itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);

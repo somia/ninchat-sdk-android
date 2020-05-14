@@ -7,17 +7,18 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.helper.NinchatAvatar;
 import com.ninchat.sdk.models.NinchatMessage;
 
 public class NinchatRemoteMessageViewHolder extends NinchatBaseViewHolder {
-    private final NinchatMessageViewHolder.Callback callback;
 
-    public NinchatRemoteMessageViewHolder(@NonNull View itemView, NinchatMessageViewHolder.Callback callback) {
+    public NinchatRemoteMessageViewHolder(@NonNull View itemView) {
         super(itemView);
-        this.callback = callback;
     }
 
-    public void bind(final NinchatMessage data, final boolean isContinuedMessage) {
+    public void bind(final NinchatMessage data,
+                     final NinchatAvatar ninchatAvatar,
+                     final boolean isContinuedMessage) {
         itemView.findViewById(R.id.ninchat_chat_message_meta).setVisibility(View.GONE);
         itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
         itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.GONE);
@@ -25,7 +26,7 @@ public class NinchatRemoteMessageViewHolder extends NinchatBaseViewHolder {
         itemView.findViewById(R.id.ninchat_chat_message_agent_writing).setVisibility(View.GONE);
         itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice).setVisibility(View.GONE);
 
-        /*bindMessage(R.id.ninchat_chat_message_agent,
+        bindMessage(R.id.ninchat_chat_message_agent,
                 R.id.ninchat_chat_message_agent_title,
                 R.id.ninchat_chat_message_agent_name,
                 R.id.ninchat_chat_message_agent_timestamp,
@@ -35,7 +36,8 @@ public class NinchatRemoteMessageViewHolder extends NinchatBaseViewHolder {
                 R.id.ninchat_chat_message_agent_avatar,
                 data, isContinuedMessage,
                 R.drawable.ninchat_chat_bubble_left,
-                R.drawable.ninchat_chat_bubble_left_repeated);*/
+                R.drawable.ninchat_chat_bubble_left_repeated,
+                ninchatAvatar);
 
     }
 }
