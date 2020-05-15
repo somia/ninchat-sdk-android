@@ -38,7 +38,7 @@ public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
         } else if (data.getType() == NinchatMessage.Type.END) {
             endViewHolder.bind(callback);
         } else if (data.getType().equals(NinchatMessage.Type.WRITING)) {
-            writingViewHolder.bind(data, ninchatAvatar, this, isContinuedMessage);
+            writingViewHolder.bind(data, ninchatAvatar, isContinuedMessage);
         } else if (data.getType().equals(NinchatMessage.Type.MULTICHOICE)) {
             multipleChoiceViewHolder.bind(data, ninchatAvatar, this, isContinuedMessage);
         } else if (data.isRemoteMessage()) {
