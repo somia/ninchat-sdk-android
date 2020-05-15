@@ -26,7 +26,7 @@ public class NinchatQueueViewHolder extends RecyclerView.ViewHolder {
             button.setAlpha(1f);
             button.setText(this.getText(queue));
             button.setOnClickListener(v -> {
-                callback.onClickListener(queue.getId());
+                callback.onQueueSelected(queue.getId());
             });
         }
     }
@@ -49,6 +49,6 @@ public class NinchatQueueViewHolder extends RecyclerView.ViewHolder {
     }
 
     public interface Callback {
-        void onClickListener(String queueId);
+        void onQueueSelected(String queueId);
     }
 }

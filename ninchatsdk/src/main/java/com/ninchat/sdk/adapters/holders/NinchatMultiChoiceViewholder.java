@@ -35,7 +35,7 @@ public class NinchatMultiChoiceViewholder extends RecyclerView.ViewHolder {
                     option.toggle();
                 }
             } else {
-                callback.onClickListener(message, position);
+                callback.onMultiChoiceOptionToggled(message, position);
             }
         });
     }
@@ -61,6 +61,6 @@ public class NinchatMultiChoiceViewholder extends RecyclerView.ViewHolder {
     }
 
     public interface Callback {
-        void onClickListener(final NinchatMessage message, final int position);
+        void onMultiChoiceOptionToggled(final NinchatMessage message, final int position);
     }
 }

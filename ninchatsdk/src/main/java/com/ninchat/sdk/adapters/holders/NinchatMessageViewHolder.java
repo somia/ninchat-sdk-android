@@ -49,15 +49,15 @@ public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
         this.callback.onRequiredAnimationChange();
     }
 
-    public void optionToggled(final NinchatMessage message, final int position) {
-        this.callback.onOptionToggled(message, position);
+    public void onMultiChoiceOptionToggled(final NinchatMessage message, final int position) {
+        this.callback.onMultiChoiceOptionToggled(message, position);
     }
 
 
     public interface Callback {
-        void onClickListener();
+        void onChatClosed();
 
-        void onOptionToggled(final NinchatMessage message, final int position);
+        void onMultiChoiceOptionToggled(final NinchatMessage message, final int position);
 
         void onRequiredAnimationChange();
     }

@@ -81,14 +81,11 @@ public class NinchatMultipleChoiceViewHolder extends NinchatBaseViewHolder {
         options.setAdapter(new NinchatMultiChoiceAdapter(data, messageViewHolder, messageText == null));
         final Button sendButton = itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice_send);
         sendButton.setText(NinchatSessionManager.getInstance().getSubmitButtonText());
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    NinchatSessionManager.getInstance().sendUIAction(data.getMultiChoiceData());
-                } catch (final JSONException e) {
-                    Log.e(NinchatMessageAdapter.class.getSimpleName(), "Error when sending multichoice answer!", e);
-                }
+        sendButton.setOnClickListener(v -> {
+            try {
+                NinchatSessionManager.getInstance().sendUIAction(data.getMultiChoiceData());
+            } catch (final JSONException e) {
+                Log.e(NinchatMessageAdapter.class.getSimpleName(), "Error when sending multichoice answer!", e);
             }
         });
         sendButton.setVisibility(messageText != null ? View.VISIBLE : View.GONE);
