@@ -25,6 +25,7 @@ import com.ninchat.sdk.models.NinchatMessage;
 import org.json.JSONException;
 
 public class NinchatMultipleChoiceViewHolder extends NinchatBaseViewHolder {
+    private final String TAG = NinchatMultipleChoiceViewHolder.class.getSimpleName();
 
     public NinchatMultipleChoiceViewHolder(@NonNull View itemView) {
         super(itemView);

@@ -40,7 +40,7 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
 
     @Override
     public void onBindViewHolder(@NonNull NinchatMultiChoiceViewholder ninchatMultiChoiceViewholder, int position) {
-        ninchatMultiChoiceViewholder.bind(message, position, sendActionImmediately, callback);
+        ninchatMultiChoiceViewholder.bind(message, sendActionImmediately, callback);
     }
 
     @Override
@@ -51,10 +51,11 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
 
     private final NinchatMultiChoiceViewholder.Callback callback = new NinchatMultiChoiceViewholder.Callback() {
         @Override
-        public void onMultiChoiceOptionToggled(NinchatMessage message, int position) {
+        public void onMultiChoiceOptionToggled(NinchatMessage message, final int choiceIndex) {
+            // notifyDataSetChanged();
             final NinchatMessageViewHolder viewHolder = viewHolderWeakReference.get();
             if (viewHolder != null) {
-                viewHolder.onMultiChoiceOptionToggled(message, position);
+                viewHolder.onMultiChoiceOptionToggled(message, choiceIndex);
             }
         }
     };

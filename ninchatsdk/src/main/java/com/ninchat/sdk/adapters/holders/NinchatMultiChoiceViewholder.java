@@ -19,10 +19,10 @@ public class NinchatMultiChoiceViewholder extends RecyclerView.ViewHolder {
         super(itemView);
     }
 
-    public void bind(final NinchatMessage message, final int position, final boolean sendAction, final Callback callback) {
+    public void bind(final NinchatMessage message, final boolean sendAction, final Callback callback) {
         final TextView button = this.getButtonItem();
         final List<NinchatOption> options = getNinchatOptions(message);
-        final NinchatOption option = getNinchatOption(options, position);
+        final NinchatOption option = getNinchatOption(options, getAdapterPosition());
         button.setText(option.getLabel());
         button.setOnClickListener(v -> {
             if (sendAction) {
@@ -35,7 +35,7 @@ public class NinchatMultiChoiceViewholder extends RecyclerView.ViewHolder {
                     option.toggle();
                 }
             } else {
-                callback.onMultiChoiceOptionToggled(message, position);
+                callback.onMultiChoiceOptionToggled(message, getAdapterPosition());
             }
         });
     }
@@ -61,6 +61,6 @@ public class NinchatMultiChoiceViewholder extends RecyclerView.ViewHolder {
     }
 
     public interface Callback {
-        void onMultiChoiceOptionToggled(final NinchatMessage message, final int position);
+        void onMultiChoiceOptionToggled(final NinchatMessage message, final int choiceIndex);
     }
 }

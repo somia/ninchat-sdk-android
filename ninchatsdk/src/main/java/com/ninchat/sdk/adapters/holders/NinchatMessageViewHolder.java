@@ -2,6 +2,7 @@ package com.ninchat.sdk.adapters.holders;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
 import com.ninchat.sdk.helper.NinchatAvatar;
 import com.ninchat.sdk.models.NinchatMessage;
 
@@ -49,15 +50,15 @@ public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
         this.callback.onRequiredAnimationChange();
     }
 
-    public void onMultiChoiceOptionToggled(final NinchatMessage message, final int position) {
-        this.callback.onMultiChoiceOptionToggled(message, position);
+    public void onMultiChoiceOptionToggled(final NinchatMessage message, final int choiceIndex) {
+        this.callback.onMultiChoiceOptionToggled(message, choiceIndex, getAdapterPosition());
     }
 
 
     public interface Callback {
         void onChatClosed();
 
-        void onMultiChoiceOptionToggled(final NinchatMessage message, final int position);
+        void onMultiChoiceOptionToggled(final NinchatMessage message, final int choiceIndex, final int position);
 
         void onRequiredAnimationChange();
     }
