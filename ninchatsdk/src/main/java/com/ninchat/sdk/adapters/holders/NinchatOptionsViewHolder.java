@@ -1,7 +1,6 @@
 package com.ninchat.sdk.adapters.holders;
 
 import android.graphics.Rect;
-import android.graphics.drawable.AnimationDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,10 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
@@ -24,10 +21,10 @@ import com.ninchat.sdk.models.NinchatMessage;
 
 import org.json.JSONException;
 
-public class NinchatMultipleChoiceViewHolder extends NinchatBaseViewHolder {
-    private final String TAG = NinchatMultipleChoiceViewHolder.class.getSimpleName();
+public class NinchatOptionsViewHolder extends NinchatBaseViewHolder {
+    private final String TAG = NinchatOptionsViewHolder.class.getSimpleName();
 
-    public NinchatMultipleChoiceViewHolder(@NonNull View itemView) {
+    public NinchatOptionsViewHolder(@NonNull View itemView) {
         super(itemView);
     }
 

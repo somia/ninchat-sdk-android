@@ -46,27 +46,21 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     public void addWriting(final String sender) {
         final String writingId = WRITING_MESSAGE_ID_PREFIX + sender;
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                final int index = ninchatMessageList.add(writingId, new NinchatMessage(NinchatMessage.Type.WRITING, sender, System.currentTimeMillis()));
-                messagesUpdated(index, false, false);
-            }
+        new Handler(Looper.getMainLooper()).post(() -> {
+            final int index = ninchatMessageList.add(writingId, new NinchatMessage(NinchatMessage.Type.WRITING, sender, System.currentTimeMillis()));
+            messagesUpdated(index, false, false);
         });
     }
 
-    public void add(final String messageId, final NinchatMessage message) {
+    public void addMessage(final String messageId, final NinchatMessage message) {
         if (ninchatMessageList.contains(messageId)) {
             return;
         }
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                final int oldNumberOfMessages = ninchatMessageList.size();
-                ninchatMessageList.remove(WRITING_MESSAGE_ID_PREFIX, message.getSenderId());
-                final int index = ninchatMessageList.add(messageId, message);
-                messagesUpdated(index, ninchatMessageList.size() == oldNumberOfMessages, false);
-            }
+        new Handler(Looper.getMainLooper()).post(() -> {
+            final int oldNumberOfMessages = ninchatMessageList.size();
+            ninchatMessageList.remove(WRITING_MESSAGE_ID_PREFIX, message.getSenderId());
+            final int index = ninchatMessageList.add(messageId, message);
+            messagesUpdated(index, ninchatMessageList.size() == oldNumberOfMessages, false);
         });
     }
 
@@ -75,12 +69,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     }
 
     public void addMetaMessage(final String messageId, final String message) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                final int index = ninchatMessageList.add(messageId, new NinchatMessage(NinchatMessage.Type.META, message, System.currentTimeMillis()));
-                messagesUpdated(index, false, false);
-            }
+        new Handler(Looper.getMainLooper()).post(() -> {
+            final int index = ninchatMessageList.add(messageId, new NinchatMessage(NinchatMessage.Type.META, message, System.currentTimeMillis()));
+            messagesUpdated(index, false, false);
         });
     }
 
@@ -90,13 +81,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     public void removeWritingMessage(final String sender) {
         final String writingId = WRITING_MESSAGE_ID_PREFIX + sender;
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                final int position = ninchatMessageList.getPosition(writingId);
-                ninchatMessageList.remove(null, writingId);
-                messagesUpdated(position, false, true);
-            }
+        new Handler(Looper.getMainLooper()).post(() -> {
+            final int position = ninchatMessageList.getPosition(writingId);
+            ninchatMessageList.remove(null, writingId);
+            messagesUpdated(position, false, true);
         });
     }
 
@@ -223,12 +211,12 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         }
 
         @Override
-        public void onMultiChoiceOptionToggled(NinchatMessage message, int position) {
+        public void onOptionsToggled(NinchatMessage message, final int choiceIndex, final int position){
             final RecyclerView recyclerView = recyclerViewWeakReference.get();
             if (recyclerView != null) {
                 ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
             }
-            message.toggleOption(position);
+            message.toggleOption(choiceIndex);
             if (recyclerView == null || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
                 notifyItemChanged(position);
             } else {

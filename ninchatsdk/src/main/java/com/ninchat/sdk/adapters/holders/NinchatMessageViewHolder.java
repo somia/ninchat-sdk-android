@@ -13,7 +13,7 @@ public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
     protected final NinchatMetaViewHolder metaViewHolder;
     protected final NinchatEndViewHolder endViewHolder;
     protected final NinchatWritingViewHolder writingViewHolder;
-    protected final NinchatMultipleChoiceViewHolder multipleChoiceViewHolder;
+    protected final NinchatOptionsViewHolder multipleChoiceViewHolder;
     protected final NinchatRemoteMessageViewHolder remoteMessageViewHolder;
     protected final NinchatGeneralViewHolder generalViewHolder;
     private final Callback callback;
@@ -26,7 +26,7 @@ public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
         metaViewHolder = new NinchatMetaViewHolder(itemView);
         endViewHolder = new NinchatEndViewHolder(itemView);
         writingViewHolder = new NinchatWritingViewHolder(itemView);
-        multipleChoiceViewHolder = new NinchatMultipleChoiceViewHolder(itemView);
+        multipleChoiceViewHolder = new NinchatOptionsViewHolder(itemView);
         remoteMessageViewHolder = new NinchatRemoteMessageViewHolder(itemView);
         generalViewHolder = new NinchatGeneralViewHolder(itemView);
     }
@@ -51,14 +51,14 @@ public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void onMultiChoiceOptionToggled(final NinchatMessage message, final int choiceIndex) {
-        this.callback.onMultiChoiceOptionToggled(message, choiceIndex, getAdapterPosition());
+        this.callback.onOptionsToggled(message, choiceIndex, getAdapterPosition());
     }
 
 
     public interface Callback {
         void onChatClosed();
 
-        void onMultiChoiceOptionToggled(final NinchatMessage message, final int choiceIndex, final int position);
+        void onOptionsToggled(final NinchatMessage message, final int choiceIndex, final int position);
 
         void onRequiredAnimationChange();
     }
