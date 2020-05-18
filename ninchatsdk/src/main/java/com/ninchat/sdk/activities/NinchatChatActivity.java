@@ -540,7 +540,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         pip.setLayoutParams(pipLayoutParams);
 
         webRTCView.onResume();
-        messageAdapter.scrollToBottom(false);
+        messageAdapter.scrollToBottom(true);
     }
 
     // Reinitialize webRTC on hangup for possible new connection
@@ -578,7 +578,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 // Update video height and cache current rootview height
                 videoContainer.setLayoutParams(layoutParams);
                 // push messages on top of soft keyboard
-                messageAdapter.scrollToBottom(false);
+                messageAdapter.scrollToBottom(true);
             }
             rootViewHeight = activityRootView.getHeight();
         });
