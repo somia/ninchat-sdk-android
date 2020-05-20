@@ -500,7 +500,7 @@ public final class NinchatSessionManager {
         }
         queues.clear();
         if (ninchatQueueListAdapter != null) {
-            ninchatQueueListAdapter.clear();
+            ninchatQueueListAdapter.clearData();
         }
         final List<String> openQueues = getAudienceQueues();
         for (String queueId : parser.properties.keySet()) {
@@ -550,7 +550,7 @@ public final class NinchatSessionManager {
             ninchatQueue.setClosed(closed);
             queues.add(ninchatQueue);
             if (ninchatQueueListAdapter != null) {
-                ninchatQueueListAdapter.addQueue(ninchatQueue);
+                ninchatQueueListAdapter.addData(ninchatQueue);
             }
         }
         final Context context = contextWeakReference.get();
@@ -817,14 +817,14 @@ public final class NinchatSessionManager {
                         for (int k = 0; k < options.length(); ++k) {
                             messageOptions.add(new NinchatOption(options.getJSONObject(k)));
                         }
-                        messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, message.getString("label"), message, messageOptions, timestampMs));
+                        messageAdapter.addMessage(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, message.getString("label"), message, messageOptions, timestampMs));
                     } else {
                         simpleButtonChoice = true;
                         messageOptions.add(new NinchatOption(message));
                     }
                 }
                 if (simpleButtonChoice) {
-                    messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender,null,  null, messageOptions, timestampMs));
+                    messageAdapter.addMessage(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender,null,  null, messageOptions, timestampMs));
                 }
             } catch (final JSONException e) {
                 // Ignore message
@@ -853,7 +853,7 @@ public final class NinchatSessionManager {
                         NinchatDescribeFileTask.start(fileId);
                     }
                 } else {
-                    messageAdapter.add(messageId, new NinchatMessage(message.getString("text"), null, sender, timestampMs, !sender.equals(userId)));
+                    messageAdapter.addMessage(messageId, new NinchatMessage(message.getString("text"), null, sender, timestampMs, !sender.equals(userId)));
                 }
             } catch (final JSONException e) {
                 // Ignore
@@ -914,7 +914,7 @@ public final class NinchatSessionManager {
         file.setHeight(height);
         file.setDownloadableFile(width == -1 || height == -1);
 
-        messageAdapter.add(file.getMessageId(), new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
+        messageAdapter.addMessage(file.getMessageId(), new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
     }
 
     private void memberUpdated(final Props params) {
