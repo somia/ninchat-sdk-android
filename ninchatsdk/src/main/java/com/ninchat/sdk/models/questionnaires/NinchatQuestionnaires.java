@@ -1,4 +1,4 @@
-package com.ninchat.sdk.models;
+package com.ninchat.sdk.models.questionnaires;
 
 import org.json.JSONObject;
 
