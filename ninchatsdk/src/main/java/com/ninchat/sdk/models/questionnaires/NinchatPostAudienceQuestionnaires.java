@@ -1,6 +1,5 @@
 package com.ninchat.sdk.models.questionnaires;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class NinchatPostAudienceQuestionnaires extends NinchatQuestionnairesBase{
@@ -8,5 +7,9 @@ public class NinchatPostAudienceQuestionnaires extends NinchatQuestionnairesBase
 
     public NinchatPostAudienceQuestionnaires(final JSONObject configuration) {
         this.questionnaires = this.parse(configuration, QuestionnairesType.POST_AUDIENCE_QUESTIONNAIRES);
+    }
+
+    public JSONObject getQuestionnaires() {
+        return questionnaires;
     }
 }
