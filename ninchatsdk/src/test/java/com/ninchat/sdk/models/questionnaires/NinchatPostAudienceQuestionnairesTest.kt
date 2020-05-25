@@ -1,14 +1,19 @@
 package com.ninchat.sdk.models.questionnaires
 
+import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
+import org.mockito.Mockito
 
 class NinchatPostAudienceQuestionnairesTest{
     @Test
-    fun `should take a json object as construction parameter`() {
-    }
-
-    @Test
-    fun `should assign null if there is no post audience questionarries`() {
+    fun `should parse preAudienceQuestionnaire from configuration json with given type`() {
+        val configuration = Mockito.mock(JSONObject::class.java)
+        val postAudienceQuestionnairesJson = Mockito.mock(JSONObject::class.java)
+        Mockito.doReturn(postAudienceQuestionnairesJson).`when`(configuration).getJSONObject(
+                NinchatQuestionnairesBase.QuestionnairesType.POST_AUDIENCE_QUESTIONNAIRES.toString()
+        )
+        val ninchatPostAudienceQuestionnairesTest = NinchatPostAudienceQuestionnaires(configuration)
+        Assert.assertEquals(postAudienceQuestionnairesJson, ninchatPostAudienceQuestionnairesTest.questionnaires)
     }
 }
