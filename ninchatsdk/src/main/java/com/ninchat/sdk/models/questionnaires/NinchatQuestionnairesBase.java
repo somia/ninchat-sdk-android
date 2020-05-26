@@ -24,11 +24,35 @@ public class NinchatQuestionnairesBase {
             final JSONObject buttons = currentElement.optJSONObject("buttons");
             final String elementType = currentElement.optString("type");
 
-            if (redirects != null || logic != null || buttons != null || elementType.equals("group")) {
+            if (redirects != null || logic != null || buttons != null || "group".equals(elementType)) {
                 return false;
             }
         }
         return true;
+    }
+
+    protected JSONObject getQuestionnairesElementByName(final JSONArray questionnaires, final String name) {
+        if (questionnaires == null) {
+            return null;
+        }
+        for (int i = 0; i < questionnaires.length(); i += 1) {
+            final JSONObject currentElement = questionnaires.optJSONObject(i);
+            if (name.equals(currentElement.optString("name"))) {
+                return currentElement;
+            }
+        }
+        return null;
+    }
+
+    protected boolean isGroupElement(final JSONObject element) {
+        if (element == null) {
+            return false;
+        }
+        final String elementType = element.optString("type");
+        if ("group".equals(elementType) && element.has("elements")) {
+            return true;
+        }
+        return false;
     }
 
     protected enum QuestionnairesType {

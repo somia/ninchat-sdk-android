@@ -16,7 +16,6 @@ class QuestionnariesSimpleFormLike {
                "label":"Hello! How can we help?",
                "name":"intro"
             },
-            {},
             {
                 "element":"radio",
                 "name":"Aiheet",
