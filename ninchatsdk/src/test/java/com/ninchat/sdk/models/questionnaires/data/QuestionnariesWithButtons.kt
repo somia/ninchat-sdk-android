@@ -2,7 +2,7 @@ package com.ninchat.sdk.models.questionnaires.data
 
 import org.json.JSONArray
 
-class QuestionnariesWithRedirects {
+class QuestionnariesWithButtons {
     companion object Factory {
         fun getQuestionnaires(): JSONArray {
             val questionnaires = """[
@@ -17,20 +17,10 @@ class QuestionnariesWithRedirects {
                     "value":"Mikä on koronavirus"
                     },
                 ],
-                "redirects":[
-                    {
-                        "pattern":"Mikä on koronavirus",
-                        "target":"Koronavirus"
-                    },
-                    {
-                        "pattern":"Mitä teen jos epäilen koronavirusta",
-                        "target":"Epäilys"
-                    },
-                    {
-                        "pattern":"Minulla on sovittuja vastaanottoja miten toimin",
-                        "target":"Sovitut"
-                    }
-                ]
+                "buttons":{
+                    "back":false,
+                    "next":false
+                },
             }
         ]"""
 

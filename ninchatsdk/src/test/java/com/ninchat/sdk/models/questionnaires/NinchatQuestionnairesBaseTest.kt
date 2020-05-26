@@ -1,5 +1,9 @@
 package com.ninchat.sdk.models.questionnaires
 
+import com.ninchat.sdk.models.questionnaires.data.QuestionnariesWithButtons
+import com.ninchat.sdk.models.questionnaires.data.QuestionnariesWithGroupElements
+import com.ninchat.sdk.models.questionnaires.data.QuestionnariesWithLogic
+import com.ninchat.sdk.models.questionnaires.data.QuestionnariesWithRedirects
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert
@@ -12,6 +16,7 @@ class NinchatQuestionnairesBaseTest {
     lateinit var configuration: JSONObject
     lateinit var preAudienceQuestionnairesJson: JSONArray
     lateinit var postAudienceQuestionnairesJson: JSONArray
+
     @Before
     fun setUp() {
         configuration = mock(JSONObject::class.java)
@@ -58,11 +63,32 @@ class NinchatQuestionnairesBaseTest {
     @Test
     fun `should not be a simple form if questionnaires has redirects`() {
         val ninchatQuestionnairesBase = NinchatQuestionnairesBase()
-        val sampleQuestionnairesWithRedirects = JSONArray("""{}""")
-        doReturn(sampleQuestionnairesWithRedirects).`when`(configuration).optJSONArray(
-                NinchatQuestionnairesBase.QuestionnairesType.POST_AUDIENCE_QUESTIONNAIRES.toString()
-        )
-        val isSimpleForm = ninchatQuestionnairesBase.simpleForm(null)
+        val questionnaires = QuestionnariesWithRedirects.getQuestionnaires()
+        val isSimpleForm = ninchatQuestionnairesBase.simpleForm(questionnaires)
+        Assert.assertEquals(false, isSimpleForm)
+    }
+
+    @Test
+    fun `should not be a simple form if questionnaires has logic`() {
+        val ninchatQuestionnairesBase = NinchatQuestionnairesBase()
+        val questionnaires = QuestionnariesWithLogic.getQuestionnaires()
+        val isSimpleForm = ninchatQuestionnairesBase.simpleForm(questionnaires)
+        Assert.assertEquals(false, isSimpleForm)
+    }
+
+    @Test
+    fun `should not be a simple form if questionnaires has buttons`() {
+        val ninchatQuestionnairesBase = NinchatQuestionnairesBase()
+        val questionnaires = QuestionnariesWithButtons.getQuestionnaires()
+        val isSimpleForm = ninchatQuestionnairesBase.simpleForm(questionnaires)
+        Assert.assertEquals(false, isSimpleForm)
+    }
+
+    @Test
+    fun `should not be a simple form if questionnaires is a group element`() {
+        val ninchatQuestionnairesBase = NinchatQuestionnairesBase()
+        val questionnaires = QuestionnariesWithGroupElements.getQuestionnaires()
+        val isSimpleForm = ninchatQuestionnairesBase.simpleForm(questionnaires)
         Assert.assertEquals(false, isSimpleForm)
     }
 }

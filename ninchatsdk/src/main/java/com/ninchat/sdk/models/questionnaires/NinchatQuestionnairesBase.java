@@ -13,12 +13,12 @@ public class NinchatQuestionnairesBase {
         return configuration.optJSONArray(questionnairesType.toString());
     }
 
-    protected boolean simpleForm(final JSONArray questionnaire) {
-        if (questionnaire == null) {
+    protected boolean simpleForm(final JSONArray questionnaires) {
+        if (questionnaires == null) {
             return false;
         }
-        for (int i = 0; i < questionnaire.length(); i += 1) {
-            final JSONObject currentElement = questionnaire.optJSONObject(i);
+        for (int i = 0; i < questionnaires.length(); i += 1) {
+            final JSONObject currentElement = questionnaires.optJSONObject(i);
             if (currentElement == null) {
                 continue;
             }
