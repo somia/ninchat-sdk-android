@@ -1,5 +1,6 @@
 package com.ninchat.sdk.models.questionnaires
 
+import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
@@ -10,10 +11,10 @@ class NinchatQuestionnairesBaseTest {
     @Test
     fun `should parse preAudienceQuestionnaire from configuration json with given type`() {
         val configuration = mock(JSONObject::class.java)
-        val preAudienceQuestionnairesJson = mock(JSONObject::class.java)
-        val postAudienceQuestionnairesJson = mock(JSONObject::class.java)
+        val preAudienceQuestionnairesJson = mock(JSONArray::class.java)
+        val postAudienceQuestionnairesJson = mock(JSONArray::class.java)
 
-        doReturn(preAudienceQuestionnairesJson).`when`(configuration).getJSONObject(
+        doReturn(preAudienceQuestionnairesJson).`when`(configuration).getJSONArray(
                 NinchatQuestionnairesBase.QuestionnairesType.PRE_AUDIENCE_QUESTIONNAIRES.toString()
         )
         val ninchatQuestionnairesBase = NinchatQuestionnairesBase()
@@ -25,10 +26,10 @@ class NinchatQuestionnairesBaseTest {
     @Test
     fun `should parse postAudienceQuestionnaire from configuration json with given type`() {
         val configuration = mock(JSONObject::class.java)
-        val preAudienceQuestionnairesJson = mock(JSONObject::class.java)
-        val postAudienceQuestionnairesJson = mock(JSONObject::class.java)
+        val preAudienceQuestionnairesJson = mock(JSONArray::class.java)
+        val postAudienceQuestionnairesJson = mock(JSONArray::class.java)
 
-        doReturn(postAudienceQuestionnairesJson).`when`(configuration).getJSONObject(
+        doReturn(postAudienceQuestionnairesJson).`when`(configuration).getJSONArray(
                 NinchatQuestionnairesBase.QuestionnairesType.POST_AUDIENCE_QUESTIONNAIRES.toString()
         )
         val ninchatQuestionnairesBase = NinchatQuestionnairesBase()
