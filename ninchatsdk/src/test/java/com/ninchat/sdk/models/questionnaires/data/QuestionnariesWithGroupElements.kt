@@ -1,6 +1,7 @@
 package com.ninchat.sdk.models.questionnaires.data
 
 import org.json.JSONArray
+import org.json.JSONObject
 
 class QuestionnariesWithGroupElements {
     companion object Factory {
@@ -42,6 +43,35 @@ class QuestionnariesWithGroupElements {
         ]"""
 
             return JSONArray(questionnaires)
+        }
+
+        fun groupElementWithElements(): JSONObject {
+            val element = """
+            {
+                "type": "group",
+                "elements": []
             }
+            """.trimIndent()
+            return JSONObject(element)
+        }
+
+        fun groupElementWithElement(): JSONObject {
+            val element = """
+            {
+                "type": "group",
+                "element": {}
+            }
+            """.trimIndent()
+            return JSONObject(element)
+        }
+
+        fun nonGroupElement(): JSONObject {
+            val element = """
+            {
+                "type": "button"
+            }
+            """.trimIndent()
+            return JSONObject(element)
+        }
     }
 }

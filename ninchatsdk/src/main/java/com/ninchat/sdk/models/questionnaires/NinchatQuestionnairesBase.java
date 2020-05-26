@@ -31,19 +31,6 @@ public class NinchatQuestionnairesBase {
         return true;
     }
 
-    protected JSONObject getQuestionnairesElementByName(final JSONArray questionnaires, final String name) {
-        if (questionnaires == null) {
-            return null;
-        }
-        for (int i = 0; i < questionnaires.length(); i += 1) {
-            final JSONObject currentElement = questionnaires.optJSONObject(i);
-            if (name.equals(currentElement.optString("name"))) {
-                return currentElement;
-            }
-        }
-        return null;
-    }
-
     protected boolean isGroupElement(final JSONObject element) {
         if (element == null) {
             return false;
@@ -53,6 +40,22 @@ public class NinchatQuestionnairesBase {
             return true;
         }
         return false;
+    }
+
+    protected JSONObject getQuestionnairesElementByName(final JSONArray questionnaires, final String name) {
+        if (questionnaires == null) {
+            return null;
+        }
+        if (name == null) {
+            return null;
+        }
+        for (int i = 0; i < questionnaires.length(); i += 1) {
+            final JSONObject currentElement = questionnaires.optJSONObject(i);
+            if (name.equals(currentElement.optString("name"))) {
+                return currentElement;
+            }
+        }
+        return null;
     }
 
     protected enum QuestionnairesType {
