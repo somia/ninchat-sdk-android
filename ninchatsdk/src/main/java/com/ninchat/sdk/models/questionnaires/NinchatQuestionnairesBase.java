@@ -19,9 +19,6 @@ public class NinchatQuestionnairesBase {
         }
         for (int i = 0; i < questionnaires.length(); i += 1) {
             final JSONObject currentElement = questionnaires.optJSONObject(i);
-            if (currentElement == null) {
-                continue;
-            }
             final JSONArray redirects = currentElement.optJSONArray("redirects");
             final JSONObject logic = currentElement.optJSONObject("logic");
             final JSONObject buttons = currentElement.optJSONObject("buttons");

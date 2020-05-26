@@ -1,9 +1,6 @@
 package com.ninchat.sdk.models.questionnaires
 
-import com.ninchat.sdk.models.questionnaires.data.QuestionnariesWithButtons
-import com.ninchat.sdk.models.questionnaires.data.QuestionnariesWithGroupElements
-import com.ninchat.sdk.models.questionnaires.data.QuestionnariesWithLogic
-import com.ninchat.sdk.models.questionnaires.data.QuestionnariesWithRedirects
+import com.ninchat.sdk.models.questionnaires.data.*
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert
@@ -90,5 +87,13 @@ class NinchatQuestionnairesBaseTest {
         val questionnaires = QuestionnariesWithGroupElements.getQuestionnaires()
         val isSimpleForm = ninchatQuestionnairesBase.simpleForm(questionnaires)
         Assert.assertEquals(false, isSimpleForm)
+    }
+
+    @Test
+    fun `should not be a simple form with no redirects, logic, buttons or group type`() {
+        val ninchatQuestionnairesBase = NinchatQuestionnairesBase()
+        val questionnaires = QuestionnariesSimpleFormLike.getQuestionnaires()
+        val isSimpleForm = ninchatQuestionnairesBase.simpleForm(questionnaires)
+        Assert.assertEquals(true, isSimpleForm)
     }
 }
