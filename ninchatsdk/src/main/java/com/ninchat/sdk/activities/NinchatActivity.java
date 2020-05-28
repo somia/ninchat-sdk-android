@@ -107,7 +107,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
             queueId = intent.getStringExtra(QUEUE_ID);
             if (queueId != null) {
                 final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
-                if (ninchatSessionManager.getNinchatQuestionnaires() != null) {
+                if (ninchatSessionManager.getNinchatQuestionnaires().hasPreAudienceQuestionnaires()) {
                     openPreAudienceQuestionnairesActivity();
                 } else {
                     openQueueActivity();

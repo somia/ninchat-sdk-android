@@ -12,11 +12,11 @@ public class NinchatQuestionnaires {
     }
 
     public boolean hasPreAudienceQuestionnaires() {
-        return this.ninchatPreAudienceQuestionnaires != null;
+        return this.ninchatPreAudienceQuestionnaires.getQuestionnaires() != null;
     }
 
     public boolean hasPostAudienceQuestionnaires() {
-        return this.ninchatPostAudienceQuestionnaires != null;
+        return this.ninchatPostAudienceQuestionnaires.getQuestionnaires() != null;
     }
 
 }
