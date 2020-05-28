@@ -9,11 +9,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSession;
+import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 
@@ -94,7 +96,6 @@ public final class NinchatActivity extends NinchatBaseActivity {
             new android.os.Handler().postDelayed(() -> {
                 setResult(Activity.RESULT_CANCELED, null);
                 finish();
-
                 // Use a slide transition just to minimize the impression that the app has crashed
                 this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             }, TRANSITION_DELAY);
@@ -105,7 +106,13 @@ public final class NinchatActivity extends NinchatBaseActivity {
         if (intent != null) {
             queueId = intent.getStringExtra(QUEUE_ID);
             if (queueId != null) {
-                openQueueActivity();
+                final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
+                if (ninchatSessionManager.getNinchatQuestionnaires() != null) {
+                    openPreAudienceQuestionnairesActivity();
+                } else {
+                    openQueueActivity();
+                }
+
             }
         }
 
@@ -132,6 +139,10 @@ public final class NinchatActivity extends NinchatBaseActivity {
 
     private void openQueueActivity() {
         startActivityForResult(NinchatQueueActivity.getLaunchIntent(this, queueId), NinchatQueueActivity.REQUEST_CODE);
+    }
+
+    private void openPreAudienceQuestionnairesActivity() {
+        // todo start preaudience questionnaires activity
     }
 
     @Override

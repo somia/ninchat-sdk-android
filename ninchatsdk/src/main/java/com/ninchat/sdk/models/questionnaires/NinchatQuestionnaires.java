@@ -11,4 +11,12 @@ public class NinchatQuestionnaires {
         this.ninchatPostAudienceQuestionnaires = new NinchatPostAudienceQuestionnaires(configuration);
     }
 
+    public boolean hasPreAudienceQuestionnaires() {
+        return this.ninchatPreAudienceQuestionnaires != null;
+    }
+
+    public boolean hasPostAudienceQuestionnaires() {
+        return this.ninchatPostAudienceQuestionnaires != null;
+    }
+
 }
