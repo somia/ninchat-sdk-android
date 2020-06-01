@@ -1,4 +1,4 @@
-package com.ninchat.sdk.models.questionnaires.data
+package com.ninchat.sdk.models.questionnaire.data
 
 import org.json.JSONArray
 

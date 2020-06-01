@@ -1,16 +1,15 @@
-package com.ninchat.sdk.models.questionnaires;
+package com.ninchat.sdk.models.questionnaire;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-public class NinchatQuestionnairesBase {
-    protected JSONArray parse(final JSONObject configuration, final QuestionnairesType questionnairesType) {
+public class NinchatQuestionnaireBase {
+    protected JSONArray parse(final JSONObject configuration, final QuestionnaireType questionnaireType) {
         if (configuration == null) {
             return null;
         }
-        return configuration.optJSONArray(questionnairesType.toString());
+        return configuration.optJSONArray(questionnaireType.toString());
     }
 
     protected boolean simpleForm(final JSONArray questionnaires) {
@@ -42,7 +41,7 @@ public class NinchatQuestionnairesBase {
         return false;
     }
 
-    protected JSONObject getQuestionnairesElementByName(final JSONArray questionnaires, final String name) {
+    protected JSONObject getQuestionnaireElementByName(final JSONArray questionnaires, final String name) {
         if (questionnaires == null) {
             return null;
         }
@@ -58,15 +57,15 @@ public class NinchatQuestionnairesBase {
         return null;
     }
 
-    protected enum QuestionnairesType {
-        PRE_AUDIENCE_QUESTIONNAIRES {
+    protected enum QuestionnaireType {
+        PRE_AUDIENCE_QUESTIONNAIRE {
             @NotNull
             @Override
             public String toString() {
                 return "preAudienceQuestionnaire";
             }
         },
-        POST_AUDIENCE_QUESTIONNAIRES {
+        POST_AUDIENCE_QUESTIONNAIRE {
             @NotNull
             @Override
             public String toString() {

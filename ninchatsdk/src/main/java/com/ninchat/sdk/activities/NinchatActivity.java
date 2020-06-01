@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -107,7 +106,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
             queueId = intent.getStringExtra(QUEUE_ID);
             if (queueId != null) {
                 final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
-                if (ninchatSessionManager.getNinchatQuestionnaires().hasPreAudienceQuestionnaires()) {
+                if (ninchatSessionManager.getNinchatQuestionnaire().hasPreAudienceQuestionnaire()) {
                     openPreAudienceQuestionnairesActivity();
                 } else {
                     openQueueActivity();

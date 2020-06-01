@@ -58,7 +58,7 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
     private final NinchatQueueViewHolder.Callback callback = queueId -> {
         final Activity activity = activityWeakReference.get();
         final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
-        if (ninchatSessionManager.getNinchatQuestionnaires().hasPreAudienceQuestionnaires()) {
+        if (ninchatSessionManager.getNinchatQuestionnaire().hasPreAudienceQuestionnaire()) {
             Log.e("NinchatQueueListAdapter", "open pre audience questionnaires");
             return;
         }
