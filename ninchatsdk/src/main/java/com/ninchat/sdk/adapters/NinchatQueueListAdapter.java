@@ -3,8 +3,11 @@ package com.ninchat.sdk.adapters;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+
+import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatQueueActivity;
 import com.ninchat.sdk.adapters.holders.NinchatQueueViewHolder;
@@ -54,6 +57,12 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
 
     private final NinchatQueueViewHolder.Callback callback = queueId -> {
         final Activity activity = activityWeakReference.get();
+        final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
+        if (ninchatSessionManager.getNinchatQuestionnaire().hasPreAudienceQuestionnaire()) {
+            Log.e("NinchatQueueListAdapter", "open pre audience questionnaires");
+            return;
+        }
+        // after click a particular queue we should check if there are pre-audience questionnaires
         if (activity != null) {
             activity.startActivityForResult(
                     NinchatQueueActivity.getLaunchIntent(activity, queueId),

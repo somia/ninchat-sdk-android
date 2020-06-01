@@ -34,6 +34,7 @@ import com.ninchat.sdk.models.NinchatQueue;
 import com.ninchat.sdk.models.NinchatSessionCredentials;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
 import com.ninchat.sdk.tasks.NinchatDeleteUserTask;
 import com.ninchat.sdk.tasks.NinchatDescribeFileTask;
@@ -218,6 +219,7 @@ public final class NinchatSessionManager {
     protected WeakReference<NinchatSDKLogListener> logListenerWeakReference;
 
     protected JSONObject configuration;
+    protected NinchatQuestionnaire ninchatQuestionnaire;
     protected Session session;
     protected WeakReference<Activity> activityWeakReference;
     protected int requestCode;
@@ -253,6 +255,7 @@ public final class NinchatSessionManager {
         try {
             Log.v(TAG, "Got configuration: " + config);
             this.configuration = new JSONObject(config);
+            this.ninchatQuestionnaire = new NinchatQuestionnaire(this.getDefault());
             Log.i(TAG, "Configuration fetched successfully!");
         } catch (final JSONException e) {
             this.configuration = null;
@@ -718,7 +721,7 @@ public final class NinchatSessionManager {
         load.setString("channel_id", channelId);
         load.setInt("history_order", 1);
 
-        if (messageId != null && !messageId.isEmpty() ) {
+        if (messageId != null && !messageId.isEmpty()) {
             load.setString("message_id", messageId);
         }
 
@@ -824,7 +827,7 @@ public final class NinchatSessionManager {
                     }
                 }
                 if (simpleButtonChoice) {
-                    messageAdapter.addMessage(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender,null,  null, messageOptions, timestampMs));
+                    messageAdapter.addMessage(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, null, null, messageOptions, timestampMs));
                 }
             } catch (final JSONException e) {
                 // Ignore message
@@ -1218,7 +1221,7 @@ public final class NinchatSessionManager {
         final String key = "welcome";
         String welcomeText = key;
         try {
-                welcomeText = getStringFromConfiguration(key);
+            welcomeText = getStringFromConfiguration(key);
         } catch (final Exception e) {
         }
         return toSpanned(welcomeText);
@@ -1429,7 +1432,7 @@ public final class NinchatSessionManager {
         return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
     }
 
-    public Spanned  getQueueStatus(final String queueId) {
+    public Spanned getQueueStatus(final String queueId) {
         NinchatQueue selectedQueue = getQueue(queueId);
         if (selectedQueue == null) {
             return null;
@@ -1484,6 +1487,10 @@ public final class NinchatSessionManager {
 
     public String getFeedbackSkip() {
         return getTranslation("Skip");
+    }
+
+    public NinchatQuestionnaire getNinchatQuestionnaire() {
+        return ninchatQuestionnaire;
     }
 
     public void close() {
