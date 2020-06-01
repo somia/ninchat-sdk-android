@@ -2,14 +2,15 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/ninchat_color_background_bottom"
     android:fadeScrollbars="false">
 
-    <LinearLayout
-        android:orientation="vertical"
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/questionnaire_form_rview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        tools:itemCount="3"/>
 </ScrollView>
