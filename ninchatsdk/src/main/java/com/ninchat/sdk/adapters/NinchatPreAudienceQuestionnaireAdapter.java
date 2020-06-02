@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.adapters.holders.formview.NinchatDropDownSelectViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatRadioButtonViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatTextAreaViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatTextFieldViewHolder;
@@ -54,6 +55,10 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
             case NinchatQuestionnaire.RADIO:
                 return new NinchatRadioButtonViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.radio_button_group, parent, false),
+                        currentItem);
+            case NinchatQuestionnaire.SELECT:
+                return new NinchatDropDownSelectViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.dropdown_with_label, parent, false),
                         currentItem);
         }
         return null;
