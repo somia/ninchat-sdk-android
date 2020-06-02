@@ -19,4 +19,11 @@ public class NinchatQuestionnaire {
         return this.ninchatPostAudienceQuestionnaire.getQuestionnaireList() != null;
     }
 
+    public NinchatPreAudienceQuestionnaire getNinchatPreAudienceQuestionnaire() {
+        return ninchatPreAudienceQuestionnaire;
+    }
+
+    public NinchatPostAudienceQuestionnaire getNinchatPostAudienceQuestionnaire() {
+        return ninchatPostAudienceQuestionnaire;
+    }
 }

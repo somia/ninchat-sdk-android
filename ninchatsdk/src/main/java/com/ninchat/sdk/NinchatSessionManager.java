@@ -25,6 +25,7 @@ import com.ninchat.client.Session;
 import com.ninchat.client.SessionEventHandler;
 import com.ninchat.client.Strings;
 import com.ninchat.sdk.activities.NinchatActivity;
+import com.ninchat.sdk.activities.NinchatPreAudienceQuestionnaireActivity;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 import com.ninchat.sdk.models.NinchatFile;
@@ -302,9 +303,9 @@ public final class NinchatSessionManager {
                         String oldSessionId = sessionCredentials != null ? sessionCredentials.getSessionId() : null;
 
                         sessionCredentials = new NinchatSessionCredentials(
-                            params.getString("user_id"),
-                            userAuth,
-                            params.getString("session_id")
+                                params.getString("user_id"),
+                                userAuth,
+                                params.getString("session_id")
                         );
 
                         NinchatListQueuesTask.start();
@@ -562,7 +563,11 @@ public final class NinchatSessionManager {
         }
         final Activity activity = activityWeakReference.get();
         if (activity != null) {
-            activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, queueId), requestCode);
+            if (queueId != null && ninchatQuestionnaire.hasPreAudienceQuestionnaire()) {
+                activity.startActivityForResult(NinchatPreAudienceQuestionnaireActivity.getLaunchIntent(activity), NinchatPreAudienceQuestionnaireActivity.REQUEST_CODE);
+            } else {
+                activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, queueId), requestCode);
+            }
         }
         final NinchatSDKEventListener listener = eventListenerWeakReference.get();
         if (listener != null) {

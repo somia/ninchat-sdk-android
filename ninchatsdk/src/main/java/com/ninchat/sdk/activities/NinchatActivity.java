@@ -17,6 +17,7 @@ import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
+import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
 
 
 public final class NinchatActivity extends NinchatBaseActivity {
@@ -47,7 +48,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
     };
 
     private void setQueueAdapter() {
-        final RecyclerView queueList = findViewById(R.id.ninchat_activity_queue_list);
+        final RecyclerView queueList = (RecyclerView)findViewById(R.id.ninchat_activity_queue_list);
         final NinchatQueueListAdapter ninchatQueueListAdapter = sessionManager.getNinchatQueueListAdapter(NinchatActivity.this);
         queueList.setAdapter(ninchatQueueListAdapter);
         if (ninchatQueueListAdapter.getItemCount() == 0) {
@@ -105,13 +106,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
         if (intent != null) {
             queueId = intent.getStringExtra(QUEUE_ID);
             if (queueId != null) {
-                final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
-                if (ninchatSessionManager.getNinchatQuestionnaire().hasPreAudienceQuestionnaire()) {
-                    openPreAudienceQuestionnairesActivity();
-                } else {
-                    openQueueActivity();
-                }
-
+                openQueueActivity();
             }
         }
 
@@ -141,7 +136,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
     }
 
     private void openPreAudienceQuestionnairesActivity() {
-        // todo start preaudience questionnaires activity
+        startActivityForResult(NinchatPreAudienceQuestionnaireActivity.getLaunchIntent(this), NinchatPreAudienceQuestionnaireActivity.REQUEST_CODE);
     }
 
     @Override

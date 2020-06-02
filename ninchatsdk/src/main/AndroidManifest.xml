@@ -33,6 +33,10 @@
         <activity
             android:name=".activities.NinchatMediaActivity"
             android:theme="@style/NinchatTheme" />
+
+        <activity
+            android:name=".activities.NinchatPreAudienceQuestionnaireActivity"
+            android:theme="@style/NinchatTheme" />
     </application>
 
 </manifest>

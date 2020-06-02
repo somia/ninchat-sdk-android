@@ -1,6 +1,6 @@
 <EditText android:autofillHints="..."
     android:background="@drawable/ninchat_border_with_ok"
-    android:id="@+id/multiline_text_area_ok"
+    android:id="@+id/multiline_text_area"
     android:inputType="textMultiLine"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"

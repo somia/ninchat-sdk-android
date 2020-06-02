@@ -22,6 +22,4 @@
         android:text="First, tell a bit about your situation so we can help you better."
         android:textColor="@color/ninchat_color_info_text" />
 
-
-
 </LinearLayout>

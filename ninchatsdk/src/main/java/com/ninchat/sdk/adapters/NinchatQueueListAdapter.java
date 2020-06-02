@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.activities.NinchatPreAudienceQuestionnaireActivity;
 import com.ninchat.sdk.activities.NinchatQueueActivity;
 import com.ninchat.sdk.adapters.holders.NinchatQueueViewHolder;
 import com.ninchat.sdk.models.NinchatQueue;
@@ -59,7 +60,7 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
         final Activity activity = activityWeakReference.get();
         final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
         if (ninchatSessionManager.getNinchatQuestionnaire().hasPreAudienceQuestionnaire()) {
-            Log.e("NinchatQueueListAdapter", "open pre audience questionnaires");
+            activity.startActivityForResult(NinchatPreAudienceQuestionnaireActivity.getLaunchIntent(activity), NinchatPreAudienceQuestionnaireActivity.REQUEST_CODE);
             return;
         }
         // after click a particular queue we should check if there are pre-audience questionnaires
