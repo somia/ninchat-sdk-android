@@ -1,7 +1,13 @@
 <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/checkbox_radio_btn_group"
+    android:id="@+id/radio_btn_group"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <include layout="@layout/radio_button" />
+    <TextView
+        android:id="@+id/radio_button_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Element label"
+        android:textColor="@color/ninchat_color_info_text" />
+
 </RadioGroup>

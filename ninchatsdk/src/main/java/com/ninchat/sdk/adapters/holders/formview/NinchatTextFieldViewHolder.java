@@ -10,16 +10,16 @@ import com.ninchat.sdk.R;
 
 import org.json.JSONObject;
 
-public class NinchatTextAreaViewHolder extends RecyclerView.ViewHolder {
-    private final String TAG = NinchatTextAreaViewHolder.class.getSimpleName();
+public class NinchatTextFieldViewHolder extends RecyclerView.ViewHolder {
+    private final String TAG = NinchatTextFieldViewHolder.class.getSimpleName();
 
     private final TextView mLabel;
     private final EditText mEditText;
 
-    public NinchatTextAreaViewHolder(@NonNull View itemView, final JSONObject item) {
+    public NinchatTextFieldViewHolder(@NonNull View itemView, final JSONObject item) {
         super(itemView);
-        mLabel = (TextView) itemView.findViewById(R.id.multiline_text_label);
-        mEditText = (EditText) itemView.findViewById(R.id.multiline_text_area);
+        mLabel = (TextView) itemView.findViewById(R.id.simple_text_label);
+        mEditText = (EditText) itemView.findViewById(R.id.simple_text_field);
         this.bind(item);
     }
 

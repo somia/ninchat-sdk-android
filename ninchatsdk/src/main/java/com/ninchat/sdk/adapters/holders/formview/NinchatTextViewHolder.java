@@ -2,17 +2,15 @@ package com.ninchat.sdk.adapters.holders.formview;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.adapters.holders.NinchatMessageViewHolder;
 
 import org.json.JSONObject;
 
 public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
-    private final String TAG = NinchatMessageViewHolder.class.getSimpleName();
+    private final String TAG = NinchatTextViewHolder.class.getSimpleName();
 
     private final TextView mLabel;
     private final TextView mContent;

@@ -7,7 +7,9 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.adapters.holders.formview.NinchatRadioButtonViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatTextAreaViewHolder;
+import com.ninchat.sdk.adapters.holders.formview.NinchatTextFieldViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatTextViewHolder;
 import com.ninchat.sdk.helper.NinchatQuestionnaire;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
@@ -44,6 +46,14 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
             case NinchatQuestionnaire.TEXT_AREA:
                 return new NinchatTextAreaViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.text_area_with_label, parent, false),
+                        currentItem);
+            case NinchatQuestionnaire.INPUT:
+                return new NinchatTextFieldViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.text_field_with_label, parent, false),
+                        currentItem);
+            case NinchatQuestionnaire.RADIO:
+                return new NinchatRadioButtonViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.radio_button_group, parent, false),
                         currentItem);
         }
         return null;
