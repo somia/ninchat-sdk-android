@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/ninchat_color_background_bottom"
+    android:background="@color/ninchat_background"
     android:id="@+id/ninchat_preaudience_q_root"
     tools:context=".activities.NinchatPreAudienceQuestionnaireActivity"
     android:fadeScrollbars="false">
