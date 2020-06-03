@@ -87,4 +87,9 @@
     <dimen name="ninchat_review_activity_icon_size">80dp</dimen>
     <dimen name="ninchat_review_activity_icon_text_margin">14dp</dimen>
     <dimen name="ninchat_review_activity_skip_bottom_margin">60dp</dimen>
+
+
+    <dimen name="ninchat_chat_control_follow_button_height">70dp</dimen>
+    <dimen name="ninchat_chat_control_follow_button_outer_margin">21dp</dimen>
+    <dimen name="ninchat_chat_control_follow_button_width">180dp</dimen>
 </resources>

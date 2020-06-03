@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="NinchatTheme" parent="android:Theme.Material.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:colorPrimary">@color/ninchat_colorPrimary</item>
@@ -47,7 +48,8 @@
         <item name="android:layout_height">@dimen/ninchat_close_button_height</item>
         <item name="android:background">@drawable/ninchat_chat_close_button</item>
         <item name="android:drawableEnd">@drawable/ninchat_icon_chat_close_button</item>
-        <item name="android:drawablePadding">@dimen/ninchat_chat_activity_close_button_end_margin</item>
+        <item name="android:drawablePadding">@dimen/ninchat_chat_activity_close_button_end_margin
+        </item>
     </style>
 
     <style name="NinchatTheme.Button.Send" parent="NinchatTheme.Button.Close">
@@ -88,7 +90,7 @@
 
     <style name="NinchatTheme.Dialog" parent="android:Theme.Material.Dialog.Alert">
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowContentOverlay" >@null</item >
+        <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:backgroundDimEnabled">false</item>
         <item name="android:background">@android:color/transparent</item>
@@ -98,6 +100,11 @@
         <!--<item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>-->
         <!--<item name="android:windowNoTitle">true</item>-->
+    </style>
+
+    <style name="NinchatTheme.RadioButton" parent="Theme.AppCompat.Light">
+        <item name="android:colorControlActivated">@color/ninchat_colorAccent</item>
+        <item name="android:colorControlNormal">@android:color/white</item>
     </style>
 
 </resources>

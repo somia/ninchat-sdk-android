@@ -16,4 +16,13 @@
     <string name="ninchat_review_positive">Good</string>
     <string name="ninchat_review_neutral">Okay</string>
     <string name="ninchat_review_sad">Poor</string>
+
+    <string name="app_name">Ahotbrew.com - Dropdown</string>
+    <string-array name="brew_array">
+        <item>Cappuccino</item>
+        <item>Espresso</item>
+        <item>Mocha</item>
+        <item>Caffè Americano</item>
+        <item>Cafe Zorro</item>
+    </string-array>
 </resources>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/text_view_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="30dp"
+        android:textStyle="bold"
+        android:textColor="@color/ninchat_color_text_top"
+        android:text="Welcome to helpdesk!" />
+
+    <TextView
+        android:id="@+id/text_view_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:minHeight="30dp"
+        android:text="First, tell a bit about your situation so we can help you better."
+        android:textColor="@color/ninchat_color_info_text" />
+
+
+
+</LinearLayout>
