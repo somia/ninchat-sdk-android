@@ -2,6 +2,5 @@
     android:layout_height="wrap_content"
     android:checked="true"
     android:text="Checkbox label"
-    android:layout_marginTop="10dp"
     android:theme="@style/NinchatTheme.RadioButton"
     xmlns:android="http://schemas.android.com/apk/res/android" />

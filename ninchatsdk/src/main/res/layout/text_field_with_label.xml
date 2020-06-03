@@ -5,10 +5,11 @@
     android:orientation="vertical">
 
     <TextView
+        android:theme="@style/NinchatTheme.Questionnaire.Label"
+        android:layout_marginBottom="@dimen/margin_bottom"
         android:id="@+id/simple_text_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/ninchat_color_info_text"
         tools:text="Element label" />
 
     <include layout="@layout/text_field_ok"/>

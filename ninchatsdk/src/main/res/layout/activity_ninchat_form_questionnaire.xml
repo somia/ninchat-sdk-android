@@ -3,15 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/ninchat_background"
     android:id="@+id/ninchat_preaudience_q_root"
     tools:context=".activities.NinchatPreAudienceQuestionnaireActivity"
+    android:theme="@style/NinchatTheme.Questionnaire"
+    android:paddingTop="10dp"
     android:fadeScrollbars="false">
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/questionnaire_form_rview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/margin_start"
+        android:layout_marginEnd="@dimen/margin_end"
         android:overScrollMode="never" />
 </RelativeLayout>

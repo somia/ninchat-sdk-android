@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatPreAudienceQuestionnaireAdapter;
+import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
 public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseActivity {
@@ -37,6 +38,8 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
         final NinchatPreAudienceQuestionnaireAdapter mPreAudienceQuestionnaireAdapter = new NinchatPreAudienceQuestionnaireAdapter(
                 ninchatQuestionnaire.getNinchatPreAudienceQuestionnaire()
         );
+        final int spaceInPixel = getResources().getDimensionPixelSize(R.dimen.items_margin);
+        mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(spaceInPixel));
         mRecyclerView.setAdapter(mPreAudienceQuestionnaireAdapter);
     }
 

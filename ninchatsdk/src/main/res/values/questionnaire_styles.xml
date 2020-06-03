@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="NinchatTheme.Questionnaire" parent="@style/NinchatTheme">
+        <!-- Customize your theme here. -->
+        <item name="android:colorPrimary">@color/ninchat_colorPrimary</item>
+        <item name="android:colorPrimaryDark">@color/ninchat_colorPrimaryDark</item>
+        <item name="android:colorAccent">@color/ninchat_colorAccent</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/ninchat_colorPrimary</item>
+        <item name="android:linksClickable">true</item>
+        <item name="android:autoLink">all</item>
+        <item name="android:textColorLink">@color/ninchat_color_link</item>
+        <item name="android:buttonStyle">@style/NinchatTheme.Button</item>
+        <item name="android:background">@color/white</item>
+    </style>
+
+
+    <style name="NinchatTheme.Questionnaire.Label" parent="Theme.AppCompat.Light">
+        <item name="android:textColor">@color/ninchat_colorPrimary</item>
+        <item name="android:textSize">@dimen/label_text_size</item>
+    </style>
+</resources>

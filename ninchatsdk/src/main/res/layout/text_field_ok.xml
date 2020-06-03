@@ -3,7 +3,6 @@
     android:id="@+id/simple_text_field"
     android:inputType="text|number|textEmailAddress|phone|textAutoComplete|textUri|textAutoCorrect"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
     android:layout_width="match_parent"
     android:minHeight="40dp"
     tools:hint="Enter text"

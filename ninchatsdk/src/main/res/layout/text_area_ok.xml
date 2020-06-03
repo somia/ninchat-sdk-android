@@ -3,7 +3,6 @@
     android:id="@+id/multiline_text_area"
     android:inputType="textMultiLine"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp"
     android:layout_width="match_parent"
     android:minHeight="70dp"
     tools:hint="Enter text"
