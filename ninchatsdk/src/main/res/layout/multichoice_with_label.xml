@@ -11,9 +11,12 @@
         android:textColor="@color/ninchat_color_info_text"
         tools:text="Element label"/>
 
-    <include layout="@layout/item_chat_multichoice_selected"/>
-    <include layout="@layout/item_chat_multichoice_selected"/>
-    <include layout="@layout/item_chat_multichoice_selected"/>
-    <include layout="@layout/item_chat_multichoice_selected"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/ninchat_chat_form_multichoice_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:orientation="vertical"
+        tools:listitem="@layout/item_chat_multichoice_selected"
+        tools:itemCount="3"/>
 </LinearLayout>
 
