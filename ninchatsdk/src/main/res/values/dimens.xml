@@ -100,5 +100,7 @@
     <dimen name="margin_bottom">10dp</dimen>
     <dimen name="items_margin">25dp</dimen>
     <dimen name="label_text_size">20sp</dimen>
+    <dimen name="radio_btn_margin_start">8dp</dimen>
+    <dimen name="radio_btn_padding_start">10dp</dimen>
 
 </resources>
