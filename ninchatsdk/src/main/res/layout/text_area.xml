@@ -1,0 +1,13 @@
+<EditText xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/multiline_text_area"
+    style="@style/NinchatTheme.Questionnaire.InputText"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:autofillHints="..."
+    android:gravity="top"
+    android:inputType="textMultiLine"
+    android:minHeight="80dp"
+    android:maxLines="4"
+    tools:hint="Enter text" />
+

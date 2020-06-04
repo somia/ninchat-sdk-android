@@ -1,5 +1,5 @@
 <EditText android:autofillHints="..."
-    android:background="@drawable/ninchat_border_with_ok"
+    style="@style/NinchatTheme.Questionnaire.InputText"
     android:id="@+id/simple_text_field"
     android:inputType="text|number|textEmailAddress|phone|textAutoComplete|textUri|textAutoCorrect"
     android:layout_height="wrap_content"

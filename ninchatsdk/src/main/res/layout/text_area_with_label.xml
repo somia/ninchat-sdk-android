@@ -12,6 +12,6 @@
         android:layout_height="wrap_content"
         tools:text="Element label"/>
 
-    <include layout="@layout/text_area_ok"/>
+    <include layout="@layout/text_area"/>
 </LinearLayout>
 
