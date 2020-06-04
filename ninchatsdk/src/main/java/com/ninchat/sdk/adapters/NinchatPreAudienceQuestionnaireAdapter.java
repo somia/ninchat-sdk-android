@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.holders.formview.NinchatCheckboxViewHolder;
+import com.ninchat.sdk.adapters.holders.formview.NinchatControlFlowViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatDropDownSelectViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatRadioBtnViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatTextAreaViewHolder;
@@ -65,6 +66,10 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
             case NinchatQuestionnaire.CHECKBOX:
                 return new NinchatCheckboxViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.checkbox_group, parent, false),
+                        currentItem);
+            case NinchatQuestionnaire.EOF:
+                return new NinchatControlFlowViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.control_buttons, parent, false),
                         currentItem);
 
         }

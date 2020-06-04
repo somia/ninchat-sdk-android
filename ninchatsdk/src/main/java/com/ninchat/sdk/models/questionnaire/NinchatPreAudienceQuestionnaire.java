@@ -1,6 +1,7 @@
 package com.ninchat.sdk.models.questionnaire;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class NinchatPreAudienceQuestionnaire extends NinchatQuestionnaireBase {
@@ -8,6 +9,7 @@ public class NinchatPreAudienceQuestionnaire extends NinchatQuestionnaireBase {
 
     public NinchatPreAudienceQuestionnaire(final JSONObject configuration) {
         this.questionnaireList = this.parse(configuration, QuestionnaireType.PRE_AUDIENCE_QUESTIONNAIRE);
+        this.addEOF();
     }
 
     public long getItemId(final int position) {
@@ -20,6 +22,15 @@ public class NinchatPreAudienceQuestionnaire extends NinchatQuestionnaireBase {
             return null;
         }
         return questionnaireList.optJSONObject(position);
+    }
+
+    private void addEOF() {
+        final String jsonString = "{\"element\":\"eof\"}";
+        try {
+            questionnaireList.put(new JSONObject(jsonString));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public int size() {
