@@ -35,6 +35,7 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
         if (options == null) {
             return;
         }
+        dataAdapter.add("Select");
         for (int i = 0; i < options.length(); i += 1) {
             final JSONObject curOption = options.optJSONObject(i);
             final String label = curOption.optString("label");

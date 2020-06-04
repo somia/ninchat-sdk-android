@@ -17,6 +17,7 @@ public class NinchatQuestionnaire {
     public static final int RADIO = 5;
     public static final int LIKERT = 6;
     public static final int CHECKBOX = 7;
+    public static final int OPTIONS = 8;
 
     public static boolean isText(final JSONObject jsonObject) {
         return "text".equalsIgnoreCase(jsonObject.optString("element"));
@@ -46,6 +47,10 @@ public class NinchatQuestionnaire {
         return "checkbox".equalsIgnoreCase(jsonObject.optString("element"));
     }
 
+    public static boolean isOptions(final JSONObject jsonObject) {
+        return "options".equalsIgnoreCase(jsonObject.optString("element"));
+    }
+
     public static int getItemType(final JSONObject jsonObject) {
         if (jsonObject == null) {
             return NinchatQuestionnaire.UNKNOWN;
@@ -63,6 +68,8 @@ public class NinchatQuestionnaire {
             return NinchatQuestionnaire.LIKERT;
         } else if (NinchatQuestionnaire.isCheckBox(jsonObject)) {
             return NinchatQuestionnaire.CHECKBOX;
+        } else if (NinchatQuestionnaire.isOptions(jsonObject)) {
+            return NinchatQuestionnaire.OPTIONS;
         }
         return NinchatQuestionnaire.UNKNOWN;
     }

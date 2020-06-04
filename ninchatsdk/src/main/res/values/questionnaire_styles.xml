@@ -26,5 +26,4 @@
         <item name="android:textColorHint">@color/ninchat_color_textarea_text</item>
         <item name="android:padding">5dp</item>
     </style>
-
 </resources>

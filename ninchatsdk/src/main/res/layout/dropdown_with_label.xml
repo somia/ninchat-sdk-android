@@ -5,11 +5,12 @@
     android:orientation="vertical">
 
     <TextView
-        android:text="Label Name"
         android:id="@+id/dropdown_text_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/ninchat_color_info_text" />
+        android:layout_marginBottom="@dimen/margin_bottom"
+        android:text="Label Name"
+        android:theme="@style/NinchatTheme.Questionnaire.Label" />
 
     <include layout="@layout/dropdown_list" />
 </LinearLayout>
