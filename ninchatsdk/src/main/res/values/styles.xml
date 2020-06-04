@@ -102,7 +102,7 @@
         <!--<item name="android:windowNoTitle">true</item>-->
     </style>
 
-    <style name="NinchatTheme.RadioButton" parent="Theme.AppCompat.Light">
+    <style name="NinchatTheme.Checkbox" parent="Theme.AppCompat.Light">
         <item name="android:colorControlActivated">@color/ninchat_colorAccent</item>
         <item name="android:colorControlNormal">@android:color/white</item>
     </style>
