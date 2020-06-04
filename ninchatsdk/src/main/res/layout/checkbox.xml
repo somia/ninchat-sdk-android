@@ -2,7 +2,8 @@
     android:id="@+id/checkbox_single"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:checked="true"
+    android:checked="false"
+    android:background="@android:color/transparent"
     android:paddingStart="10dp"
     android:text="Checkbox label"
     android:theme="@style/NinchatTheme.Checkbox" />
