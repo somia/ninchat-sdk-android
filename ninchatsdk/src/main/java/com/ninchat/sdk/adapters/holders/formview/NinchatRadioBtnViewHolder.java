@@ -13,13 +13,13 @@ import com.ninchat.sdk.R;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class NinchatMultichoiceViewHolder extends RecyclerView.ViewHolder {
-    private final String TAG = NinchatMultichoiceViewHolder.class.getSimpleName();
+public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
+    private final String TAG = NinchatRadioBtnViewHolder.class.getSimpleName();
 
     private final TextView mLabel;
     private final RecyclerView mRecycleView;
 
-    public NinchatMultichoiceViewHolder(@NonNull View itemView, final JSONObject item) {
+    public NinchatRadioBtnViewHolder(@NonNull View itemView, final JSONObject item) {
         super(itemView);
         mLabel = (TextView) itemView.findViewById(R.id.multichoice_label);
         mRecycleView = (RecyclerView) itemView.findViewById(R.id.ninchat_chat_form_multichoice_options);
@@ -33,12 +33,12 @@ public class NinchatMultichoiceViewHolder extends RecyclerView.ViewHolder {
             return;
         }
         mRecycleView.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
-        mRecycleView.setAdapter(new NinchatMultichoiceAdapter(options));
+        mRecycleView.setAdapter(new NinchatRadioBtnAdapter(options));
     }
 
-    public class NinchatMultichoiceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public class NinchatRadioBtnAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private JSONArray options;
-        public NinchatMultichoiceAdapter(final JSONArray options) {
+        public NinchatRadioBtnAdapter(final JSONArray options) {
             this.options = options;
         }
         @Override
@@ -50,7 +50,7 @@ public class NinchatMultichoiceViewHolder extends RecyclerView.ViewHolder {
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int position) {
             final JSONObject currentItem = this.options.optJSONObject(position);
-            return new NinchatMultichoiceTextViewHolder(
+            return new NinchatRadioBtnTextViewHolder(
                     LayoutInflater.from(viewGroup.getContext())
                             .inflate(R.layout.item_chat_multichoice_selected, viewGroup, false),
                     currentItem);
@@ -59,8 +59,8 @@ public class NinchatMultichoiceViewHolder extends RecyclerView.ViewHolder {
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
             final JSONObject currentItem = this.options.optJSONObject(position);
-            if( viewHolder instanceof NinchatMultichoiceTextViewHolder) {
-                ((NinchatMultichoiceTextViewHolder)viewHolder).bind(currentItem);
+            if( viewHolder instanceof NinchatRadioBtnTextViewHolder) {
+                ((NinchatRadioBtnTextViewHolder)viewHolder).bind(currentItem);
             }
         }
 
@@ -69,10 +69,10 @@ public class NinchatMultichoiceViewHolder extends RecyclerView.ViewHolder {
             return options.length();
         }
 
-        public class NinchatMultichoiceTextViewHolder extends RecyclerView.ViewHolder {
+        public class NinchatRadioBtnTextViewHolder extends RecyclerView.ViewHolder {
             private final TextView mOptionLabel;
 
-            public NinchatMultichoiceTextViewHolder(@NonNull View itemView, final JSONObject items) {
+            public NinchatRadioBtnTextViewHolder(@NonNull View itemView, final JSONObject items) {
                 super(itemView);
                 mOptionLabel = (TextView) itemView.findViewById(R.id.text_view_options_label);
                 this.bind(items);

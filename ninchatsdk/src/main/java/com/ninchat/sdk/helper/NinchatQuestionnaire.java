@@ -47,10 +47,6 @@ public class NinchatQuestionnaire {
         return "checkbox".equalsIgnoreCase(jsonObject.optString("element"));
     }
 
-    public static boolean isOptions(final JSONObject jsonObject) {
-        return "options".equalsIgnoreCase(jsonObject.optString("element"));
-    }
-
     public static int getItemType(final JSONObject jsonObject) {
         if (jsonObject == null) {
             return NinchatQuestionnaire.UNKNOWN;
@@ -68,8 +64,6 @@ public class NinchatQuestionnaire {
             return NinchatQuestionnaire.LIKERT;
         } else if (NinchatQuestionnaire.isCheckBox(jsonObject)) {
             return NinchatQuestionnaire.CHECKBOX;
-        } else if (NinchatQuestionnaire.isOptions(jsonObject)) {
-            return NinchatQuestionnaire.OPTIONS;
         }
         return NinchatQuestionnaire.UNKNOWN;
     }
