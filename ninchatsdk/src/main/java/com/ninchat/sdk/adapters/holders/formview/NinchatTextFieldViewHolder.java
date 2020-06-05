@@ -3,6 +3,7 @@ package com.ninchat.sdk.adapters.holders.formview;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -57,6 +58,7 @@ public class NinchatTextFieldViewHolder extends RecyclerView.ViewHolder {
         public void afterTextChanged(Editable s) {
             // try to validate the current input if there is a pattern
             final String pattern = questionnaireWeakReference.get().getPattern(currentItem);
+            final boolean isRequired = questionnaireWeakReference.get().isRequired(currentItem);
             final boolean isValid = questionnaireWeakReference.get().isValidInput(s == null ? null : s.toString(), pattern);
             mEditText.setBackgroundResource(isValid ?
                     R.drawable.ninchat_border_with_focus : R.drawable.ninchat_border_with_error);

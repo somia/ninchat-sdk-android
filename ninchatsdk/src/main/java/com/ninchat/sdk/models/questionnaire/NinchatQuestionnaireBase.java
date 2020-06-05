@@ -66,6 +66,13 @@ public class NinchatQuestionnaireBase {
         return element.optString("pattern");
     }
 
+    public boolean isRequired(final JSONObject element) {
+        if (element == null) {
+            return false;
+        }
+        return element.optBoolean("required", false);
+    }
+
     public boolean isValidInput(final String currentInput, final String pattern) {
         // no pattern given. so everything is valid
         if (TextUtils.isEmpty(pattern)) {
