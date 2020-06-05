@@ -38,7 +38,7 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
         final NinchatPreAudienceQuestionnaireAdapter mPreAudienceQuestionnaireAdapter = new NinchatPreAudienceQuestionnaireAdapter(
                 ninchatQuestionnaire.getNinchatPreAudienceQuestionnaire()
         );
-        final int spaceInPixel = getResources().getDimensionPixelSize(R.dimen.items_margin);
+        final int spaceInPixel = getResources().getDimensionPixelSize(R.dimen.items_margin_top);
         mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(spaceInPixel));
         mRecyclerView.setAdapter(mPreAudienceQuestionnaireAdapter);
     }
