@@ -1,5 +1,7 @@
 package com.ninchat.sdk.models.questionnaire;
 
+import android.text.TextUtils;
+
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,6 +58,25 @@ public class NinchatQuestionnaireBase {
         }
         return null;
     }
+
+    public String getPattern(final JSONObject element) {
+        if (element == null) {
+            return null;
+        }
+        return element.optString("pattern");
+    }
+
+    public boolean isValidInput(final String currentInput, final String pattern) {
+        // no pattern given. so everything is valid
+        if (TextUtils.isEmpty(pattern)) {
+            return true;
+        }
+        if (TextUtils.isEmpty(currentInput)) {
+            return true;
+        }
+        return currentInput.matches(pattern);
+    }
+
 
     protected enum QuestionnaireType {
         PRE_AUDIENCE_QUESTIONNAIRE {

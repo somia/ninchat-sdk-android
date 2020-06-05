@@ -26,4 +26,9 @@
         <item name="android:textColorHint">@color/ninchat_color_textarea_text</item>
         <item name="android:padding">5dp</item>
     </style>
+
+    <style name="NinchatTheme.Questionnaire.InputText.Cursor" parent="NinchatTheme.Questionnaire">
+        <item name="android:colorControlActivated">@color/ninchat_colorPrimary</item>
+    </style>
+
 </resources>

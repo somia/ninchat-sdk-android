@@ -1,5 +1,7 @@
 package com.ninchat.sdk.helper;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
@@ -78,5 +80,4 @@ public class NinchatQuestionnaire {
     public static Spanned fromHTML(String source) {
         return source == null ? null : Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(source, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(source);
     }
-
 }
