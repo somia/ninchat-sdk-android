@@ -32,4 +32,9 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="NinchatTheme.Checkbox" parent="Theme.AppCompat.Light">
+        <item name="android:colorControlActivated">@color/checkbox_selected</item>
+        <item name="android:colorControlNormal">@color/checkbox_not_selected</item>
+    </style>
+
 </resources>

@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="white">@android:color/white</color>
+    <color name="checkbox_selected">@color/ninchat_colorAccent</color>
+    <color name="checkbox_not_selected">#A2A2A2</color>
+    <color name="checkbox_text_selected">@color/checkbox_selected</color>
+    <color name="checkbox_text_not_selected">@color/ninchat_colorPrimary</color>
 </resources>

@@ -102,9 +102,4 @@
         <!--<item name="android:windowNoTitle">true</item>-->
     </style>
 
-    <style name="NinchatTheme.Checkbox" parent="Theme.AppCompat.Light">
-        <item name="android:colorControlActivated">@color/ninchat_colorAccent</item>
-        <item name="android:colorControlNormal">#A2A2A2</item>
-    </style>
-
 </resources>
