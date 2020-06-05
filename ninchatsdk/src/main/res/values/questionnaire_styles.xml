@@ -29,6 +29,7 @@
 
     <style name="NinchatTheme.Questionnaire.InputText.Cursor" parent="NinchatTheme.Questionnaire">
         <item name="android:colorControlActivated">@color/ninchat_colorPrimary</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
 </resources>
