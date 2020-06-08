@@ -1,5 +1,6 @@
 package com.ninchat.sdk.adapters.holders.formview;
 
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -53,10 +54,11 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 selectedIndex = position;
+                final TextView mTextView = (TextView) parent.getChildAt(0);
                 if (position != 0) {
-                    onSelected(true);
+                    onSelected(true, mTextView);
                 } else {
-                    onSelected(false);
+                    onSelected(false, mTextView);
                 }
             }
 
@@ -67,15 +69,21 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void onSelected(boolean isSelected) {
+    public void onSelected(boolean selected, final TextView mTextView) {
         ((RelativeLayout) itemView.findViewById(R.id.dropdown_select_layout)).setBackground(
                 ContextCompat.getDrawable(itemView.getContext(),
-                        isSelected ? R.drawable.ninchat_dropdown_select : R.drawable.ninchat_dropdown_not_selected));
+                        selected ? R.drawable.ninchat_dropdown_select : R.drawable.ninchat_dropdown_not_selected));
 
         ((ImageView) itemView.findViewById(R.id.ninchat_dropdown_list_icon)).setColorFilter(
                 ContextCompat.getColor(itemView.getContext(),
-                        isSelected ? R.color.checkbox_selected : R.color.checkbox_not_selected)
+                        selected ? R.color.checkbox_selected : R.color.checkbox_not_selected)
         );
+
+        mTextView.setTextColor(ContextCompat.getColor(
+                itemView.getContext(),
+                selected ?
+                        R.color.checkbox_selected :
+                        R.color.ninchat_color_ui_compose_select_unselected_text));
 
     }
 }
