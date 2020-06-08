@@ -45,4 +45,5 @@
     <style name="NinchatTheme.Dropdown.Spinner" parent="Theme.AppCompat.Light">
         <item name="android:dropDownListViewStyle">@style/NinchatTheme.Dropdown.Item</item>
     </style>
+
 </resources>

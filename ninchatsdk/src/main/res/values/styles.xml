@@ -102,4 +102,6 @@
         <!--<item name="android:windowNoTitle">true</item>-->
     </style>
 
+    <style name="NinchatTheme.Radio.NotSelected" parent="NinchatTheme.MultiChoice" />
+
 </resources>

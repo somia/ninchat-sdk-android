@@ -7,17 +7,17 @@
     <TextView
         android:theme="@style/NinchatTheme.Questionnaire.Label"
         android:layout_marginBottom="@dimen/margin_bottom"
-        android:id="@+id/multichoice_label"
+        android:id="@+id/radio_option_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="Element label"/>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/ninchat_chat_form_multichoice_options"
+        android:id="@+id/ninchat_chat_radio_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:orientation="vertical"
-        tools:listitem="@layout/item_chat_multichoice_selected"
+        tools:listitem="@layout/radio_item"
         tools:itemCount="3"/>
 </LinearLayout>
 

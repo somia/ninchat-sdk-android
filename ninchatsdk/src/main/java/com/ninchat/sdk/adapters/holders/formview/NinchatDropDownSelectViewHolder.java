@@ -35,7 +35,7 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
     public void bind(JSONObject item) {
         mLabel.setText(item.optString("label", ""));
         selectedIndex = 0;
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(itemView.getContext(), android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(itemView.getContext(), R.layout.dropdown_item_text_view);
         final JSONArray options = item.optJSONArray("options");
         if (options == null) {
             return;
@@ -52,7 +52,6 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "" + position + " " + id);
                 selectedIndex = position;
                 if (position != 0) {
                     onSelected(true);
@@ -77,5 +76,6 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
                 ContextCompat.getColor(itemView.getContext(),
                         isSelected ? R.color.checkbox_selected : R.color.checkbox_not_selected)
         );
+
     }
 }

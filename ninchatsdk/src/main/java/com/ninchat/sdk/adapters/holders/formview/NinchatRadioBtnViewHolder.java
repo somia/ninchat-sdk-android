@@ -1,8 +1,10 @@
 package com.ninchat.sdk.adapters.holders.formview;
 
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +23,8 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
 
     public NinchatRadioBtnViewHolder(@NonNull View itemView, final JSONObject item) {
         super(itemView);
-        mLabel = (TextView) itemView.findViewById(R.id.multichoice_label);
-        mRecycleView = (RecyclerView) itemView.findViewById(R.id.ninchat_chat_form_multichoice_options);
+        mLabel = (TextView) itemView.findViewById(R.id.radio_option_label);
+        mRecycleView = (RecyclerView) itemView.findViewById(R.id.ninchat_chat_radio_options);
         this.bind(item);
     }
 
@@ -38,9 +40,11 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
 
     public class NinchatRadioBtnAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private JSONArray options;
+
         public NinchatRadioBtnAdapter(final JSONArray options) {
             this.options = options;
         }
+
         @Override
         public int getItemViewType(int position) {
             return position;
@@ -52,15 +56,15 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
             final JSONObject currentItem = this.options.optJSONObject(position);
             return new NinchatRadioBtnTextViewHolder(
                     LayoutInflater.from(viewGroup.getContext())
-                            .inflate(R.layout.item_chat_multichoice_selected, viewGroup, false),
+                            .inflate(R.layout.radio_item, viewGroup, false),
                     currentItem);
         }
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
             final JSONObject currentItem = this.options.optJSONObject(position);
-            if( viewHolder instanceof NinchatRadioBtnTextViewHolder) {
-                ((NinchatRadioBtnTextViewHolder)viewHolder).bind(currentItem);
+            if (viewHolder instanceof NinchatRadioBtnTextViewHolder) {
+                ((NinchatRadioBtnTextViewHolder) viewHolder).bind(currentItem);
             }
         }
 
@@ -71,15 +75,41 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
 
         public class NinchatRadioBtnTextViewHolder extends RecyclerView.ViewHolder {
             private final TextView mOptionLabel;
+            private boolean selected = false;
 
             public NinchatRadioBtnTextViewHolder(@NonNull View itemView, final JSONObject items) {
                 super(itemView);
-                mOptionLabel = (TextView) itemView.findViewById(R.id.text_view_options_label);
+                mOptionLabel = (TextView) itemView.findViewById(R.id.single_radio_item);
                 this.bind(items);
             }
 
             public void bind(final JSONObject items) {
+                selected = false;
                 mOptionLabel.setText(items.optString("label"));
+                mOptionLabel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        selected = !selected;
+                        onSelectionChange(selected);
+                    }
+                });
+            }
+
+            public void onSelectionChange(boolean isSelected) {
+                mOptionLabel.setTextColor(
+                        ContextCompat.getColor(
+                                itemView.getContext(),
+                                selected ?
+                                        R.color.checkbox_selected :
+                                        R.color.ninchat_color_ui_compose_select_unselected_text)
+                );
+                mOptionLabel.setBackground(
+                        ContextCompat.getDrawable(
+                                itemView.getContext(),
+                                selected ?
+                                        R.drawable.ninchat_radio_select_button :
+                                        R.drawable.ninchat_ui_compose_select_button)
+                );
             }
         }
     }
