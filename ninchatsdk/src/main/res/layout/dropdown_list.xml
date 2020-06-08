@@ -1,14 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/ninchat_dropdown_select_border"
+    android:id="@+id/dropdown_select_layout"
+    android:background="@drawable/ninchat_dropdown_not_selected"
     android:orientation="horizontal">
 
     <Spinner
         android:id="@+id/ninchat_dropdown_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:overlapAnchor="false"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent"
+        android:theme="@style/NinchatTheme.Dropdown.Spinner"
+        android:gravity="center"
         android:spinnerMode="dropdown" />
-</LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:tint="@color/checkbox_not_selected"
+        android:id="@+id/ninchat_dropdown_list_icon"
+        android:src="@drawable/ninchat_dropdown_spinner_arrow"
+        android:contentDescription="arrow" />
+
+</RelativeLayout>
