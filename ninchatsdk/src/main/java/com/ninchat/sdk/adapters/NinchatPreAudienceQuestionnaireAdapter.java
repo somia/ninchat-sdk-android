@@ -86,6 +86,20 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
         final JSONObject currentItem = ninchatPreAudienceQuestionnaire.getItem(position);
         if (viewHolder instanceof NinchatTextViewHolder) {
             ((NinchatTextViewHolder) viewHolder).bind(currentItem);
+        } else if (viewHolder instanceof NinchatTextAreaViewHolder) {
+            ((NinchatTextAreaViewHolder) viewHolder).bind(currentItem);
+        } else if (viewHolder instanceof NinchatTextFieldViewHolder) {
+            ((NinchatTextFieldViewHolder) viewHolder).bind(currentItem);
+        } else if (viewHolder instanceof NinchatRadioBtnViewHolder) {
+            ((NinchatRadioBtnViewHolder) viewHolder).bind(currentItem);
+        } else if (viewHolder instanceof NinchatDropDownSelectViewHolder) {
+            ((NinchatDropDownSelectViewHolder) viewHolder).bind(currentItem);
+        } else if (viewHolder instanceof NinchatCheckboxViewHolder) {
+            ((NinchatCheckboxViewHolder) viewHolder).bind(currentItem);
+        } else if (viewHolder instanceof NinchatLikeRtViewHolder) {
+            ((NinchatLikeRtViewHolder) viewHolder).bind(currentItem);
+        } else if (viewHolder instanceof NinchatControlFlowViewHolder) {
+            ((NinchatControlFlowViewHolder) viewHolder).bind(currentItem);
         } else {
             Log.d(TAG, "Unknown view type");
         }

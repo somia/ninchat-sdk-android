@@ -1,5 +1,7 @@
 <TextView android:id="@+id/text_view_content"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
+    android:clickable="true"
     android:text="First, tell a bit about your situation so we can help you better."
-    xmlns:android="http://schemas.android.com/apk/res/android" />
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:focusable="true" />

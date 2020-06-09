@@ -78,6 +78,6 @@ public class NinchatQuestionnaire {
     }
 
     public static Spanned fromHTML(String source) {
-        return source == null ? null : Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(source, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(source);
+        return source == null ? null : Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(source, Html.FROM_HTML_MODE_COMPACT) : Html.fromHtml(source);
     }
 }
