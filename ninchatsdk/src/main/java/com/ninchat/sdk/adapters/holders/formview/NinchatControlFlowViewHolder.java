@@ -26,7 +26,7 @@ public class NinchatControlFlowViewHolder extends RecyclerView.ViewHolder {
 
 
     public void bind(JSONObject item) {
-        mPrevious.setText("Previous");
-        mNext.setText("Continue");
+        mPrevious.setText("");
+        mNext.setText("Continue to chat");
     }
 }

@@ -95,7 +95,7 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                 });
             }
 
-            public void onSelectionChange(boolean isSelected) {
+            public void onSelectionChange(boolean selected) {
                 mOptionLabel.setTextColor(
                         ContextCompat.getColor(
                                 itemView.getContext(),
