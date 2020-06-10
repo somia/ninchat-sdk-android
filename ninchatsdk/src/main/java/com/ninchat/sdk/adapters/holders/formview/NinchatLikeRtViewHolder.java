@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.ninchat.sdk.R;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
@@ -36,7 +37,11 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
         mLabel.setText(item.optString("label", ""));
         selectedIndex = 0;
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(itemView.getContext(), R.layout.dropdown_item_text_view);
-        final JSONArray options = item.optJSONArray("options");
+        JSONArray options = null;
+        try {
+            options = new JSONArray("[{\"label\":\"Strongly disagree\",\"value\":\"strongly_disagree\"},{\"label\":\"Disagree\",\"value\":\"disagree\"},{\"label\":\"Neither agree nor disagree\",\"value\":\"neither_agree_nor_disagree\"},{\"label\":\"Agree\",\"value\":\"agree\"},{\"label\":\"Strongly agree\",\"value\":\"strongly_agree\"}]");
+        } catch (JSONException e) {
+        }
         if (options == null) {
             return;
         }
