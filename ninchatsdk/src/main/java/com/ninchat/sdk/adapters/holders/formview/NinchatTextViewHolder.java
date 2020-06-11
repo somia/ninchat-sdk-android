@@ -18,20 +18,17 @@ import java.lang.ref.WeakReference;
 public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatTextViewHolder.class.getSimpleName();
     private final TextView mContent;
-    private final WeakReference<NinchatPreAudienceQuestionnaire> preAudienceQuestionnaire;
 
     public NinchatTextViewHolder(@NonNull View itemView, final int position,
                                  final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire) {
         super(itemView);
-        preAudienceQuestionnaire = new WeakReference<>(ninchatPreAudienceQuestionnaire);
         mContent = (TextView) itemView.findViewById(R.id.text_view_content);
-        this.bind(position);
+        this.bind(position, ninchatPreAudienceQuestionnaire);
     }
 
-
-    public void bind(final int position) {
-        final JSONObject item = preAudienceQuestionnaire.get().getItem(position);
-        final String text = preAudienceQuestionnaire.get().getLabel(item);
+    public void bind(final int position, final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire) {
+        final JSONObject item = ninchatPreAudienceQuestionnaire.getItem(position);
+        final String text = ninchatPreAudienceQuestionnaire.getLabel(item);
         mContent.setAutoLinkMask(0);
         mContent.setMovementMethod(LinkMovementMethod.getInstance());
         // there might be some images images

@@ -36,14 +36,8 @@ public class NinchatTextFieldViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(final int position) {
-        final JSONObject item = preAudienceQuestionnaire.get().getItem(position);
-        final String label = preAudienceQuestionnaire.get().getLabel(item);
-        final String result = preAudienceQuestionnaire.get().getResult(item);
-
-        mLabel.setText(label);
         mEditText.addTextChangedListener(onTextChange);
         mEditText.setOnFocusChangeListener(onFocusChangeListener);
-
         preFill();
     }
 
@@ -84,7 +78,9 @@ public class NinchatTextFieldViewHolder extends RecyclerView.ViewHolder {
     private void preFill() {
         final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
         final String pattern = preAudienceQuestionnaire.get().getPattern(item);
+        final String label = preAudienceQuestionnaire.get().getLabel(item);
         final String result = preAudienceQuestionnaire.get().getResult(item);
+        mLabel.setText(label);
         if (result == null) {
             return;
         }
