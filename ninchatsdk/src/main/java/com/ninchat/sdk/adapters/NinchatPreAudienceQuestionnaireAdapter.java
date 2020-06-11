@@ -55,7 +55,7 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
             case NinchatQuestionnaire.TEXT_AREA:
                 return new NinchatTextAreaViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.text_area_with_label, parent, false),
-                        currentItem, ninchatPreAudienceQuestionnaire);
+                        position, ninchatPreAudienceQuestionnaire);
             case NinchatQuestionnaire.RADIO:
                 // a button like element with single choice
                 return new NinchatRadioBtnViewHolder(
