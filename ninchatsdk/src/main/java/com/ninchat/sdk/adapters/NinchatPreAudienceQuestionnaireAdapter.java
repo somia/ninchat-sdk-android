@@ -38,6 +38,7 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
+        Log.d(TAG, "Item position onCreateViewHolder "+position);
         final JSONObject currentItem = ninchatPreAudienceQuestionnaire.getItem(position);
         final int viewType = NinchatQuestionnaire.getItemType(currentItem);
         switch (viewType) {
@@ -46,14 +47,14 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
             case NinchatQuestionnaire.TEXT:
                 return new NinchatTextViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.text_view, parent, false),
-                        currentItem);
-            case NinchatQuestionnaire.TEXT_AREA:
-                return new NinchatTextAreaViewHolder(
-                        LayoutInflater.from(parent.getContext()).inflate(R.layout.text_area_with_label, parent, false),
-                        currentItem, ninchatPreAudienceQuestionnaire);
+                        position, ninchatPreAudienceQuestionnaire);
             case NinchatQuestionnaire.INPUT:
                 return new NinchatTextFieldViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.text_field_with_label, parent, false),
+                        position, ninchatPreAudienceQuestionnaire);
+            case NinchatQuestionnaire.TEXT_AREA:
+                return new NinchatTextAreaViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.text_area_with_label, parent, false),
                         currentItem, ninchatPreAudienceQuestionnaire);
             case NinchatQuestionnaire.RADIO:
                 // a button like element with single choice
@@ -83,26 +84,7 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        final JSONObject currentItem = ninchatPreAudienceQuestionnaire.getItem(position);
-        if (viewHolder instanceof NinchatTextViewHolder) {
-            ((NinchatTextViewHolder) viewHolder).bind(currentItem);
-        } else if (viewHolder instanceof NinchatTextAreaViewHolder) {
-            ((NinchatTextAreaViewHolder) viewHolder).bind(currentItem);
-        } else if (viewHolder instanceof NinchatTextFieldViewHolder) {
-            ((NinchatTextFieldViewHolder) viewHolder).bind(currentItem);
-        } else if (viewHolder instanceof NinchatRadioBtnViewHolder) {
-            ((NinchatRadioBtnViewHolder) viewHolder).bind(currentItem);
-        } else if (viewHolder instanceof NinchatDropDownSelectViewHolder) {
-            ((NinchatDropDownSelectViewHolder) viewHolder).bind(currentItem);
-        } else if (viewHolder instanceof NinchatCheckboxViewHolder) {
-            ((NinchatCheckboxViewHolder) viewHolder).bind(currentItem);
-        } else if (viewHolder instanceof NinchatLikeRtViewHolder) {
-            ((NinchatLikeRtViewHolder) viewHolder).bind(currentItem);
-        } else if (viewHolder instanceof NinchatControlFlowViewHolder) {
-            ((NinchatControlFlowViewHolder) viewHolder).bind(currentItem);
-        } else {
-            Log.d(TAG, "Unknown view type");
-        }
+       Log.d(TAG, "Item position onBindViewHolder "+position);
     }
 
     @Override

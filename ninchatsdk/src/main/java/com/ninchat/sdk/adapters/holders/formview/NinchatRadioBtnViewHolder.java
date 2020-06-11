@@ -86,12 +86,9 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
             public void bind(final JSONObject items) {
                 selected = false;
                 mOptionLabel.setText(items.optString("label"));
-                mOptionLabel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        selected = !selected;
-                        onSelectionChange(selected);
-                    }
+                mOptionLabel.setOnClickListener(v -> {
+                    selected = !selected;
+                    onSelectionChange(selected);
                 });
             }
 

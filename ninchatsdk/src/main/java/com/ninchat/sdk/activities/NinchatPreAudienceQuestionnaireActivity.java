@@ -41,6 +41,7 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
         final int spaceInPixel = getResources().getDimensionPixelSize(R.dimen.items_margin_top);
         mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(spaceInPixel));
         mRecyclerView.setAdapter(mPreAudienceQuestionnaireAdapter);
+        mRecyclerView.setItemViewCacheSize(mPreAudienceQuestionnaireAdapter.getItemCount());
     }
 
     @Override

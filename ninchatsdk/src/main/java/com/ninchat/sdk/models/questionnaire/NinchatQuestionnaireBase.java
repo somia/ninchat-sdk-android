@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class NinchatQuestionnaireBase {
@@ -71,6 +72,31 @@ public class NinchatQuestionnaireBase {
             return false;
         }
         return element.optBoolean("required", false);
+    }
+
+    public String getLabel(final JSONObject element) {
+        if (element == null) {
+            return "";
+        }
+        return element.optString("label", "");
+    }
+
+    public String getResult(final JSONObject element) {
+        if (element == null) {
+            return null;
+        }
+        return element.optString("result", null);
+    }
+
+    public void setResult(final JSONObject element, final String result) {
+        if (element == null) {
+            return;
+        }
+        try {
+            element.put("result", result);
+        } catch (Exception e) {
+            // pass
+        }
     }
 
     public boolean isValidInput(final String currentInput, final String pattern) {
