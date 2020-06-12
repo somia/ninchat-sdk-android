@@ -60,7 +60,7 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
                 // a button like element with single choice
                 return new NinchatRadioBtnViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.multichoice_with_label, parent, false),
-                        currentItem);
+                        position, ninchatPreAudienceQuestionnaire);
             case NinchatQuestionnaire.SELECT:
                 return new NinchatDropDownSelectViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.dropdown_with_label, parent, false),
@@ -72,7 +72,7 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
             case NinchatQuestionnaire.LIKERT:
                 return new NinchatLikeRtViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.dropdown_with_label, parent, false),
-                        currentItem);
+                        position, ninchatPreAudienceQuestionnaire);
             case NinchatQuestionnaire.EOF:
                 return new NinchatControlFlowViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.control_buttons, parent, false),

@@ -79,7 +79,7 @@ public class NinchatTextFieldViewHolder extends RecyclerView.ViewHolder {
         final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
         final String pattern = preAudienceQuestionnaire.get().getPattern(item);
         final String label = preAudienceQuestionnaire.get().getLabel(item);
-        final String result = preAudienceQuestionnaire.get().getResult(item);
+        final String result = preAudienceQuestionnaire.get().getResultString(item);
         mLabel.setText(label);
         if (result == null) {
             return;

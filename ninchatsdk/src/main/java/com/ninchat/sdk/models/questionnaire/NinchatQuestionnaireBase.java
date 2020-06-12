@@ -81,14 +81,41 @@ public class NinchatQuestionnaireBase {
         return element.optString("label", "");
     }
 
-    public String getResult(final JSONObject element) {
+    public JSONArray getOptions(final JSONObject element) {
+        if (element == null) {
+            return null;
+        }
+        return element.optJSONArray("options");
+    }
+
+    public String getResultString(final JSONObject element) {
         if (element == null) {
             return null;
         }
         return element.optString("result", null);
     }
 
+
+    public int getResultInt(final JSONObject element) {
+        if (element == null) {
+            return -1;
+        }
+        return element.optInt("result", -1);
+    }
+
+
     public void setResult(final JSONObject element, final String result) {
+        if (element == null) {
+            return;
+        }
+        try {
+            element.put("result", result);
+        } catch (Exception e) {
+            // pass
+        }
+    }
+
+    public void setResult(final JSONObject element, final int result) {
         if (element == null) {
             return;
         }
