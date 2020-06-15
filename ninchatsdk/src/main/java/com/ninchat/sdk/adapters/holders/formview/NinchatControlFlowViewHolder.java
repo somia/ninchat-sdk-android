@@ -16,11 +16,12 @@ public class NinchatControlFlowViewHolder extends RecyclerView.ViewHolder {
 
     private final Button mPrevious;
     private final Button mNext;
-
-    public NinchatControlFlowViewHolder(@NonNull View itemView, final JSONObject item) {
+    private Callback callback;
+    public NinchatControlFlowViewHolder(@NonNull View itemView, final JSONObject item, final Callback callback) {
         super(itemView);
         mPrevious = (Button) itemView.findViewById(R.id.ninchat_button_previous);
         mNext = (Button) itemView.findViewById(R.id.ninchat_button_next);
+        this.callback = callback;
         this.bind(item);
     }
 
@@ -28,5 +29,12 @@ public class NinchatControlFlowViewHolder extends RecyclerView.ViewHolder {
     public void bind(JSONObject item) {
         mPrevious.setText("");
         mNext.setText("Continue to chat");
+        mNext.setOnClickListener(v -> {
+            callback.onClickNext();
+        });
+    }
+
+    public interface Callback {
+        void onClickNext();
     }
 }

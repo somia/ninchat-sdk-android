@@ -24,9 +24,12 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
 
     private final String TAG = NinchatPreAudienceQuestionnaireAdapter.class.getSimpleName();
     private NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire;
+    private Callback callback;
 
-    public NinchatPreAudienceQuestionnaireAdapter(final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire) {
+    public NinchatPreAudienceQuestionnaireAdapter(final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire,
+                                                  final Callback callback) {
         this.ninchatPreAudienceQuestionnaire = ninchatPreAudienceQuestionnaire;
+        this.callback = callback;
     }
 
 
@@ -38,7 +41,7 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
-        Log.d(TAG, "Item position onCreateViewHolder "+position);
+        Log.d(TAG, "Item position onCreateViewHolder " + position);
         final JSONObject currentItem = ninchatPreAudienceQuestionnaire.getItem(position);
         final int viewType = NinchatQuestionnaire.getItemType(currentItem);
         switch (viewType) {
@@ -76,7 +79,7 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
             case NinchatQuestionnaire.EOF:
                 return new NinchatControlFlowViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.control_buttons, parent, false),
-                        currentItem);
+                        currentItem, controlFlowCallback);
 
         }
         return null;
@@ -84,7 +87,21 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-       Log.d(TAG, "Item position onBindViewHolder "+position);
+        if (viewHolder instanceof NinchatTextViewHolder) {
+            ((NinchatTextViewHolder) viewHolder).bind(position, ninchatPreAudienceQuestionnaire);
+        } else if (viewHolder instanceof NinchatTextFieldViewHolder) {
+            ((NinchatTextFieldViewHolder) viewHolder).bind();
+        } else if (viewHolder instanceof NinchatTextAreaViewHolder) {
+            ((NinchatTextAreaViewHolder) viewHolder).update();
+        } else if (viewHolder instanceof NinchatRadioBtnViewHolder) {
+            ((NinchatRadioBtnViewHolder) viewHolder).update();
+        } else if (viewHolder instanceof NinchatDropDownSelectViewHolder) {
+            ((NinchatDropDownSelectViewHolder) viewHolder).bind();
+        } else if (viewHolder instanceof NinchatCheckboxViewHolder) {
+            ((NinchatCheckboxViewHolder) viewHolder).update();
+        } else if (viewHolder instanceof NinchatLikeRtViewHolder) {
+            ((NinchatLikeRtViewHolder) viewHolder).bind();
+        }
     }
 
     @Override
@@ -92,5 +109,18 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
         return ninchatPreAudienceQuestionnaire.size();
     }
 
+    private NinchatControlFlowViewHolder.Callback controlFlowCallback = new NinchatControlFlowViewHolder.Callback() {
+        @Override
+        public void onClickNext() {
+            final int errorIndex = ninchatPreAudienceQuestionnaire.checkRequiredFields();
+            if (errorIndex != -1 ) {
+                notifyDataSetChanged();
+                callback.onRequiredScroll(errorIndex);
+            }
+        }
+    };
 
+    public interface Callback {
+        void onRequiredScroll(final int position);
+    }
 }

@@ -51,6 +51,7 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
                 preAudienceQuestionnaire.get().setResult(rootItem, position);
                 final TextView mTextView = (TextView) parent.getChildAt(0);
                 if (position != 0) {
+                    preAudienceQuestionnaire.get().setError(rootItem, false);
                     onSelected(true, mTextView);
                 } else {
                     onSelected(false, mTextView);
@@ -65,6 +66,10 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void onSelected(boolean selected, final TextView mTextView) {
+        final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
+        final boolean hasError = preAudienceQuestionnaire.get().getError(item);
+
+
         ((RelativeLayout) itemView.findViewById(R.id.dropdown_select_layout)).setBackground(
                 ContextCompat.getDrawable(itemView.getContext(),
                         selected ? R.drawable.ninchat_dropdown_select : R.drawable.ninchat_dropdown_not_selected));
@@ -80,6 +85,15 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
                         R.color.checkbox_selected :
                         R.color.ninchat_color_ui_compose_select_unselected_text));
 
+        if (hasError) {
+            ((RelativeLayout) itemView.findViewById(R.id.dropdown_select_layout)).setBackground(
+                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_dropdown_with_error));
+            ((ImageView) itemView.findViewById(R.id.ninchat_dropdown_list_icon)).setColorFilter(
+                    ContextCompat.getColor(itemView.getContext(), R.color.ninchat_color_error_background)
+            );
+            mTextView.setTextColor(ContextCompat.getColor(
+                    itemView.getContext(), R.color.ninchat_color_error_background));
+        }
     }
 
     private int preFill() {

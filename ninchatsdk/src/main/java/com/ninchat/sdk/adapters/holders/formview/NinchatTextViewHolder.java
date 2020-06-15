@@ -13,8 +13,6 @@ import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
 
 import org.json.JSONObject;
 
-import java.lang.ref.WeakReference;
-
 public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatTextViewHolder.class.getSimpleName();
     private final TextView mContent;
@@ -23,7 +21,7 @@ public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
                                  final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire) {
         super(itemView);
         mContent = (TextView) itemView.findViewById(R.id.text_view_content);
-        this.bind(position, ninchatPreAudienceQuestionnaire);
+        bind(position, ninchatPreAudienceQuestionnaire);
     }
 
     public void bind(final int position, final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire) {

@@ -4,8 +4,14 @@ import android.text.TextUtils;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
+
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.isCheckBox;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.isInput;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.isLikeRT;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.isRadio;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.isSelect;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.isTextArea;
 
 public class NinchatQuestionnaireBase {
     protected JSONArray parse(final JSONObject configuration, final QuestionnaireType questionnaireType) {
@@ -110,6 +116,12 @@ public class NinchatQuestionnaireBase {
         return element.optBoolean("result", false);
     }
 
+    public boolean getError(final JSONObject element) {
+        if (element == null) {
+            return false;
+        }
+        return element.optBoolean("hasError", false);
+    }
 
     public void setResult(final JSONObject element, final String result) {
         if (element == null) {
@@ -144,17 +156,46 @@ public class NinchatQuestionnaireBase {
         }
     }
 
+    public void setError(final JSONObject element, final boolean hasError) {
+        if (element == null) {
+            return;
+        }
+        try {
+            element.put("hasError", hasError);
+        } catch (Exception e) {
+            // pass
+        }
+    }
+
+    public boolean hasResult(final JSONObject element) {
+        if (!element.has("result")) {
+            return false;
+        }
+        if ((isInput(element) || isTextArea(element)) && TextUtils.isEmpty(getResultString(element))) {
+            return false;
+        }
+        if ((isSelect(element) || isRadio(element) || isLikeRT(element)) && getResultInt(element) <= 0) {
+            return false;
+        }
+        if (isCheckBox(element) && !getResultBoolean(element)) {
+            return false;
+        }
+        return true;
+    }
+
     public boolean isValidInput(final String currentInput, final String pattern) {
         // no pattern given. so everything is valid
         if (TextUtils.isEmpty(pattern)) {
             return true;
         }
-        if (TextUtils.isEmpty(currentInput)) {
-            return true;
-        }
-        return currentInput.matches(pattern);
+        return (currentInput == null ? "" : currentInput).matches(pattern);
     }
 
+    public boolean hasError(final JSONObject element) {
+        final boolean isRequired = isRequired(element);
+        final boolean hasResult = hasResult(element);
+        return isRequired && !hasResult;
+    }
 
     protected enum QuestionnaireType {
         PRE_AUDIENCE_QUESTIONNAIRE {

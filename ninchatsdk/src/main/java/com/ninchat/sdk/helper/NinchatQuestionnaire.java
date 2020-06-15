@@ -1,12 +1,10 @@
 package com.ninchat.sdk.helper;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
 
-import com.ninchat.sdk.adapters.NinchatPreAudienceQuestionnaireAdapter;
 
 import org.json.JSONObject;
 

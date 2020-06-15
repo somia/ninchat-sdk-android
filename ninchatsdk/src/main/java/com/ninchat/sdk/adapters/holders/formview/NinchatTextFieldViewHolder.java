@@ -3,6 +3,7 @@ package com.ninchat.sdk.adapters.holders.formview;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
@@ -20,25 +21,19 @@ public class NinchatTextFieldViewHolder extends RecyclerView.ViewHolder {
 
     private final TextView mLabel;
     private final EditText mEditText;
-    private Boolean hasError;
     private final int itemPosition;
     WeakReference<NinchatPreAudienceQuestionnaire> preAudienceQuestionnaire;
 
     public NinchatTextFieldViewHolder(@NonNull View itemView, final int position,
                                       final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire) {
         super(itemView);
-        hasError = false;
         itemPosition = position;
         preAudienceQuestionnaire = new WeakReference<>(ninchatPreAudienceQuestionnaire);
         mLabel = (TextView) itemView.findViewById(R.id.simple_text_label);
         mEditText = (EditText) itemView.findViewById(R.id.simple_text_field);
-        this.bind(position);
-    }
-
-    public void bind(final int position) {
         mEditText.addTextChangedListener(onTextChange);
         mEditText.setOnFocusChangeListener(onFocusChangeListener);
-        preFill();
+        bind();
     }
 
     public final TextWatcher onTextChange = new TextWatcher() {
@@ -55,39 +50,52 @@ public class NinchatTextFieldViewHolder extends RecyclerView.ViewHolder {
             // try to validate the current input if there is a pattern
             final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
             final String pattern = preAudienceQuestionnaire.get().getPattern(item);
-            final boolean isValid = preAudienceQuestionnaire.get().isValidInput(s == null ? null : s.toString(), pattern);
+            final boolean isValid = preAudienceQuestionnaire.get().isValidInput(s.toString(), pattern);
             preAudienceQuestionnaire.get().setResult(item, s.toString());
-            mEditText.setBackgroundResource(isValid ?
-                    R.drawable.ninchat_border_with_focus : R.drawable.ninchat_border_with_error);
-            hasError = !isValid;
+            preAudienceQuestionnaire.get().setError(item, !isValid);
+            updateUI(item, true);
         }
     };
 
     private final View.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
-            mEditText.setBackgroundResource(hasFocus ?
-                    R.drawable.ninchat_border_with_focus : R.drawable.ninchat_border_with_unfocus);
-
-            if (hasError) {
-                mEditText.setBackgroundResource(R.drawable.ninchat_border_with_error);
-            }
+            // update to error if input is not valid
+            final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
+            updateUI(item, hasFocus);
         }
     };
 
-    private void preFill() {
+    public void bind() {
         final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
-        final String pattern = preAudienceQuestionnaire.get().getPattern(item);
-        final String label = preAudienceQuestionnaire.get().getLabel(item);
-        final String result = preAudienceQuestionnaire.get().getResultString(item);
-        mLabel.setText(label);
-        if (result == null) {
+        setLabel(item);
+        setText(item);
+        updateUI(item, false);
+    }
+
+    private void setLabel(final JSONObject item) {
+        final String text = preAudienceQuestionnaire.get().getLabel(item);
+        if (TextUtils.isEmpty(text)) {
             return;
         }
-        mEditText.setText(result);
-        final boolean isValid = preAudienceQuestionnaire.get().isValidInput(result, pattern);
-        hasError = !isValid;
-        mEditText.setBackgroundResource(hasError ?
-                R.drawable.ninchat_border_with_error : R.drawable.ninchat_border_with_unfocus);
+        mLabel.setText(text);
+    }
+
+    private void setText(final JSONObject item) {
+        final String text = preAudienceQuestionnaire.get().getResultString(item);
+        if (TextUtils.isEmpty(text)) {
+            return;
+        }
+        mEditText.setText(text);
+    }
+
+    private void updateUI(final JSONObject item, final boolean hasFocus) {
+        final boolean hasError = preAudienceQuestionnaire.get().getError(item);
+        mEditText.setBackgroundResource(hasFocus ?
+                R.drawable.ninchat_border_with_focus : R.drawable.ninchat_border_with_unfocus);
+
+        if (hasError) {
+            mEditText.setBackgroundResource(R.drawable.ninchat_border_with_error);
+        }
     }
 }
