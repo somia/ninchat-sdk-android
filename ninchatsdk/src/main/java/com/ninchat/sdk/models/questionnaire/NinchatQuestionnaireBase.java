@@ -103,6 +103,13 @@ public class NinchatQuestionnaireBase {
         return element.optInt("result", -1);
     }
 
+    public boolean getResultBoolean(final JSONObject element) {
+        if (element == null) {
+            return false;
+        }
+        return element.optBoolean("result", false);
+    }
+
 
     public void setResult(final JSONObject element, final String result) {
         if (element == null) {
@@ -116,6 +123,17 @@ public class NinchatQuestionnaireBase {
     }
 
     public void setResult(final JSONObject element, final int result) {
+        if (element == null) {
+            return;
+        }
+        try {
+            element.put("result", result);
+        } catch (Exception e) {
+            // pass
+        }
+    }
+
+    public void setResult(final JSONObject element, final boolean result) {
         if (element == null) {
             return;
         }

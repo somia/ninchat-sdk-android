@@ -68,7 +68,7 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
             case NinchatQuestionnaire.CHECKBOX:
                 return new NinchatCheckboxViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.checkbox_simple, parent, false),
-                        currentItem);
+                        position, ninchatPreAudienceQuestionnaire);
             case NinchatQuestionnaire.LIKERT:
                 return new NinchatLikeRtViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.dropdown_with_label, parent, false),
