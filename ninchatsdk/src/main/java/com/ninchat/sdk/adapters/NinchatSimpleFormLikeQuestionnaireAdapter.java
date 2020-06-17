@@ -19,14 +19,14 @@ import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
 
 import org.json.JSONObject;
 
-public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class NinchatSimpleFormLikeQuestionnaireAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final String TAG = NinchatPreAudienceQuestionnaireAdapter.class.getSimpleName();
+    private final String TAG = NinchatSimpleFormLikeQuestionnaireAdapter.class.getSimpleName();
     private NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire;
     private Callback callback;
 
-    public NinchatPreAudienceQuestionnaireAdapter(final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire,
-                                                  final Callback callback) {
+    public NinchatSimpleFormLikeQuestionnaireAdapter(final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire,
+                                                     final Callback callback) {
         this.ninchatPreAudienceQuestionnaire = ninchatPreAudienceQuestionnaire;
         this.callback = callback;
     }
@@ -113,11 +113,19 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
             if (errorIndex != -1) {
                 notifyDataSetChanged();
                 callback.onRequiredScroll(errorIndex);
+            } else {
+                callback.onComplete(ninchatPreAudienceQuestionnaire);
             }
+        }
+
+        @Override
+        public void onClickPrevious() {
+            // todo implement
         }
     };
 
     public interface Callback {
         void onRequiredScroll(final int position);
+        void onComplete(final NinchatPreAudienceQuestionnaire preAudienceQuestionnaire);
     }
 }
