@@ -22,6 +22,11 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getError;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getOptions;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultInt;
+
 public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatDropDownSelectViewHolder.class.getSimpleName();
 
@@ -70,7 +75,7 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
 
     public void onSelected(boolean selected, final TextView mTextView) {
         final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
-        final boolean hasError = preAudienceQuestionnaire.get().getError(item);
+        final boolean hasError = getError(item);
 
         ((RelativeLayout) itemView.findViewById(R.id.dropdown_select_layout)).setBackground(
                 ContextCompat.getDrawable(itemView.getContext(),
@@ -100,8 +105,8 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
 
     private int preFill() {
         final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
-        final String label = preAudienceQuestionnaire.get().getLabel(item);
-        final int result = preAudienceQuestionnaire.get().getResultInt(item);
+        final String label = getLabel(item);
+        final int result = getResultInt(item);
         mLabel.setText(label);
         return Math.max(result, 0);
     }
@@ -109,7 +114,7 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
     private ArrayAdapter<String> getRTDataAdapter() {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(itemView.getContext(), R.layout.dropdown_item_text_view);
         final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
-        final JSONArray options = preAudienceQuestionnaire.get().getOptions(item);
+        final JSONArray options = getOptions(item);
         dataAdapter.add("Select");
         for (int i = 0; i < options.length(); i += 1) {
             final JSONObject curOption = options.optJSONObject(i);

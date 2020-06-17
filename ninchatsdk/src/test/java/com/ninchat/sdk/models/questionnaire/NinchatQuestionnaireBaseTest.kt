@@ -1,5 +1,6 @@
 package com.ninchat.sdk.models.questionnaire
 
+import com.ninchat.sdk.helper.NinchatQuestionnaire.*
 import com.ninchat.sdk.models.questionnaire.data.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -53,7 +54,7 @@ class NinchatQuestionnaireBaseTest {
     @Test
     fun `should not be a simple form if questionnaires is null`() {
         val ninchatQuestionnairesBase = NinchatQuestionnaireBase()
-        val isSimpleForm = ninchatQuestionnairesBase.simpleForm(null)
+        val isSimpleForm = isSimpleForm(null)
         Assert.assertEquals(false, isSimpleForm)
     }
 
@@ -61,7 +62,7 @@ class NinchatQuestionnaireBaseTest {
     fun `should not be a simple form if questionnaires has redirects`() {
         val ninchatQuestionnairesBase = NinchatQuestionnaireBase()
         val questionnaires = QuestionnariesWithRedirects.getQuestionnaires()
-        val isSimpleForm = ninchatQuestionnairesBase.simpleForm(questionnaires)
+        val isSimpleForm = isSimpleForm(questionnaires)
         Assert.assertEquals(false, isSimpleForm)
     }
 
@@ -69,7 +70,7 @@ class NinchatQuestionnaireBaseTest {
     fun `should not be a simple form if questionnaires has logic`() {
         val ninchatQuestionnairesBase = NinchatQuestionnaireBase()
         val questionnaires = QuestionnariesWithLogic.getQuestionnaires()
-        val isSimpleForm = ninchatQuestionnairesBase.simpleForm(questionnaires)
+        val isSimpleForm = isSimpleForm(questionnaires)
         Assert.assertEquals(false, isSimpleForm)
     }
 
@@ -77,7 +78,7 @@ class NinchatQuestionnaireBaseTest {
     fun `should not be a simple form if questionnaires has buttons`() {
         val ninchatQuestionnairesBase = NinchatQuestionnaireBase()
         val questionnaires = QuestionnariesWithButtons.getQuestionnaires()
-        val isSimpleForm = ninchatQuestionnairesBase.simpleForm(questionnaires)
+        val isSimpleForm = isSimpleForm(questionnaires)
         Assert.assertEquals(false, isSimpleForm)
     }
 
@@ -85,7 +86,7 @@ class NinchatQuestionnaireBaseTest {
     fun `should not be a simple form if questionnaires is a group element`() {
         val ninchatQuestionnairesBase = NinchatQuestionnaireBase()
         val questionnaires = QuestionnariesWithGroupElements.getQuestionnaires()
-        val isSimpleForm = ninchatQuestionnairesBase.simpleForm(questionnaires)
+        val isSimpleForm = isSimpleForm(questionnaires)
         Assert.assertEquals(false, isSimpleForm)
     }
 
@@ -93,7 +94,7 @@ class NinchatQuestionnaireBaseTest {
     fun `should not be a simple form with no redirects, logic, buttons or group type`() {
         val ninchatQuestionnairesBase = NinchatQuestionnaireBase()
         val questionnaires = QuestionnariesSimpleFormLike.getQuestionnaires()
-        val isSimpleForm = ninchatQuestionnairesBase.simpleForm(questionnaires)
+        val isSimpleForm = isSimpleForm(questionnaires)
         Assert.assertEquals(true, isSimpleForm)
     }
 
@@ -101,7 +102,7 @@ class NinchatQuestionnaireBaseTest {
     fun `should return true for a group element that has more than one element`() {
         val ninchatQuestionnairesBase = NinchatQuestionnaireBase()
         val questionnaires = QuestionnariesWithGroupElements.groupElementWithElements()
-        val groupElement = ninchatQuestionnairesBase.isGroupElement(questionnaires)
+        val groupElement = isGroupElement(questionnaires)
         Assert.assertEquals(true, groupElement)
     }
 
@@ -109,7 +110,7 @@ class NinchatQuestionnaireBaseTest {
     fun `should return false for a group element that has only one element`() {
         val ninchatQuestionnairesBase = NinchatQuestionnaireBase()
         val questionnaires = QuestionnariesWithGroupElements.groupElementWithElement()
-        val groupElement = ninchatQuestionnairesBase.isGroupElement(questionnaires)
+        val groupElement = isGroupElement(questionnaires)
         Assert.assertEquals(false, groupElement)
     }
 
@@ -117,7 +118,7 @@ class NinchatQuestionnaireBaseTest {
     fun `should return false for a non-group element`() {
         val ninchatQuestionnairesBase = NinchatQuestionnaireBase()
         val questionnaires = QuestionnariesWithGroupElements.nonGroupElement()
-        val groupElement = ninchatQuestionnairesBase.isGroupElement(questionnaires)
+        val groupElement = isGroupElement(questionnaires)
         Assert.assertEquals(false, groupElement)
     }
 
@@ -125,7 +126,7 @@ class NinchatQuestionnaireBaseTest {
     fun `should return false for a empty element`() {
         val ninchatQuestionnairesBase = NinchatQuestionnaireBase()
         val questionnaires = QuestionnariesWithGroupElements.nonGroupElement()
-        val groupElement = ninchatQuestionnairesBase.isGroupElement(null)
+        val groupElement = isGroupElement(null)
         Assert.assertEquals(false, groupElement)
     }
 
@@ -133,8 +134,8 @@ class NinchatQuestionnaireBaseTest {
     fun `should find a element from questionnaires by name`() {
         val ninchatQuestionnairesBase = NinchatQuestionnaireBase()
         val questionnaires = QuestionnariesWithGroupElements.getQuestionnaires()
-        val element1 = ninchatQuestionnairesBase.getQuestionnaireElementByName(questionnaires, "Suojautuminen")
-        val element2 = ninchatQuestionnairesBase.getQuestionnaireElementByName(questionnaires, "Aiheet")
+        val element1 = getQuestionnaireElementByName(questionnaires, "Suojautuminen")
+        val element2 = getQuestionnaireElementByName(questionnaires, "Aiheet")
         Assert.assertNotNull(element1)
         Assert.assertNotNull(element2)
     }
@@ -143,8 +144,8 @@ class NinchatQuestionnaireBaseTest {
     fun `should not able to find a element from questionnaires for unknown name`() {
         val ninchatQuestionnairesBase = NinchatQuestionnaireBase()
         val questionnaires = QuestionnariesWithGroupElements.getQuestionnaires()
-        val element1 = ninchatQuestionnairesBase.getQuestionnaireElementByName(questionnaires, "SomethingElse")
-        val element2 = ninchatQuestionnairesBase.getQuestionnaireElementByName(questionnaires, null)
+        val element1 = getQuestionnaireElementByName(questionnaires, "SomethingElse")
+        val element2 = getQuestionnaireElementByName(questionnaires, null)
         Assert.assertNull(element1)
         Assert.assertNull(element2)
     }
@@ -152,7 +153,7 @@ class NinchatQuestionnaireBaseTest {
     @Test
     fun `should not able to find a element from null questionnaries`() {
         val ninchatQuestionnairesBase = NinchatQuestionnaireBase()
-        val element1 = ninchatQuestionnairesBase.getQuestionnaireElementByName(null, "SomethingElse")
+        val element1 = getQuestionnaireElementByName(null, "SomethingElse")
         Assert.assertNull(element1)
     }
 }

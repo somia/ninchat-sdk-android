@@ -37,12 +37,7 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         final NinchatPreAudienceQuestionnaireAdapter mPreAudienceQuestionnaireAdapter = new NinchatPreAudienceQuestionnaireAdapter(
                 ninchatQuestionnaire.getNinchatPreAudienceQuestionnaire(),
-                new NinchatPreAudienceQuestionnaireAdapter.Callback() {
-                    @Override
-                    public void onRequiredScroll(int position) {
-                       mRecyclerView.smoothScrollToPosition(position);
-                    }
-                }
+                position -> mRecyclerView.smoothScrollToPosition(position)
         );
         final int spaceInPixel = getResources().getDimensionPixelSize(R.dimen.items_margin_top);
         mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(spaceInPixel));

@@ -2,6 +2,8 @@ package com.ninchat.sdk.models.questionnaire;
 
 import android.text.TextUtils;
 
+import com.ninchat.client.Strings;
+
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,141 +16,14 @@ import static com.ninchat.sdk.helper.NinchatQuestionnaire.isSelect;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.isTextArea;
 
 public class NinchatQuestionnaireBase {
-    protected JSONArray parse(final JSONObject configuration, final QuestionnaireType questionnaireType) {
+    public JSONArray parse(final JSONObject configuration, final QuestionnaireType questionnaireType) {
         if (configuration == null) {
             return null;
         }
         return configuration.optJSONArray(questionnaireType.toString());
     }
 
-    protected boolean simpleForm(final JSONArray questionnaires) {
-        if (questionnaires == null) {
-            return false;
-        }
-        for (int i = 0; i < questionnaires.length(); i += 1) {
-            final JSONObject currentElement = questionnaires.optJSONObject(i);
-            final JSONArray redirects = currentElement.optJSONArray("redirects");
-            final JSONObject logic = currentElement.optJSONObject("logic");
-            final JSONObject buttons = currentElement.optJSONObject("buttons");
-            final String elementType = currentElement.optString("type");
-
-            if (redirects != null || logic != null || buttons != null || "group".equals(elementType)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    protected boolean isGroupElement(final JSONObject element) {
-        if (element == null) {
-            return false;
-        }
-        final String elementType = element.optString("type");
-        if ("group".equals(elementType) && element.has("elements")) {
-            return true;
-        }
-        return false;
-    }
-
-    protected JSONObject getQuestionnaireElementByName(final JSONArray questionnaires, final String name) {
-        if (questionnaires == null) {
-            return null;
-        }
-        if (name == null) {
-            return null;
-        }
-        for (int i = 0; i < questionnaires.length(); i += 1) {
-            final JSONObject currentElement = questionnaires.optJSONObject(i);
-            if (name.equals(currentElement.optString("name"))) {
-                return currentElement;
-            }
-        }
-        return null;
-    }
-
-    public String getPattern(final JSONObject element) {
-        if (element == null) {
-            return null;
-        }
-        return element.optString("pattern");
-    }
-
-    public boolean isRequired(final JSONObject element) {
-        if (element == null) {
-            return false;
-        }
-        return element.optBoolean("required", false);
-    }
-
-    public String getLabel(final JSONObject element) {
-        if (element == null) {
-            return "";
-        }
-        return element.optString("label", "");
-    }
-
-    public JSONArray getOptions(final JSONObject element) {
-        if (element == null) {
-            return null;
-        }
-        return element.optJSONArray("options");
-    }
-
-    public String getResultString(final JSONObject element) {
-        if (element == null) {
-            return null;
-        }
-        return element.optString("result", null);
-    }
-
-
-    public int getResultInt(final JSONObject element) {
-        if (element == null) {
-            return -1;
-        }
-        return element.optInt("result", -1);
-    }
-
-    public boolean getResultBoolean(final JSONObject element) {
-        if (element == null) {
-            return false;
-        }
-        return element.optBoolean("result", false);
-    }
-
-    public boolean getError(final JSONObject element) {
-        if (element == null) {
-            return false;
-        }
-        return element.optBoolean("hasError", false);
-    }
-
-    public void setResult(final JSONObject element, final String result) {
-        if (element == null) {
-            return;
-        }
-        try {
-            element.put("result", result);
-        } catch (Exception e) {
-            // pass
-        }
-    }
-
-    public void setResult(final JSONObject element, final int result) {
-        if (element == null) {
-            return;
-        }
-        try {
-            element.put("result", result);
-        } catch (Exception e) {
-            // pass
-        }
-    }
-
-    public void setResult(final JSONObject element, final boolean result) {
-        if (element == null) {
-            return;
-        }
+    public <T> void setResult(final JSONObject element, final T result) {
         try {
             element.put("result", result);
         } catch (Exception e) {
@@ -157,44 +32,11 @@ public class NinchatQuestionnaireBase {
     }
 
     public void setError(final JSONObject element, final boolean hasError) {
-        if (element == null) {
-            return;
-        }
         try {
             element.put("hasError", hasError);
         } catch (Exception e) {
             // pass
         }
-    }
-
-    public boolean hasResult(final JSONObject element) {
-        if (!element.has("result")) {
-            return false;
-        }
-        if ((isInput(element) || isTextArea(element)) && TextUtils.isEmpty(getResultString(element))) {
-            return false;
-        }
-        if ((isSelect(element) || isRadio(element) || isLikeRT(element)) && getResultInt(element) <= 0) {
-            return false;
-        }
-        if (isCheckBox(element) && !getResultBoolean(element)) {
-            return false;
-        }
-        return true;
-    }
-
-    public boolean isValidInput(final String currentInput, final String pattern) {
-        // no pattern given. so everything is valid
-        if (TextUtils.isEmpty(pattern)) {
-            return true;
-        }
-        return (currentInput == null ? "" : currentInput).matches(pattern);
-    }
-
-    public boolean hasError(final JSONObject element) {
-        final boolean isRequired = isRequired(element);
-        final boolean hasResult = hasResult(element);
-        return isRequired && !hasResult;
     }
 
     protected enum QuestionnaireType {

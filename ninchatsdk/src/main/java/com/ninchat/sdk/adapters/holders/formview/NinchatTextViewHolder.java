@@ -6,12 +6,11 @@ import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
-
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.helper.NinchatImageGetter;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
-
 import org.json.JSONObject;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
 
 public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatTextViewHolder.class.getSimpleName();
@@ -26,7 +25,7 @@ public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(final int position, final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire) {
         final JSONObject item = ninchatPreAudienceQuestionnaire.getItem(position);
-        final String text = ninchatPreAudienceQuestionnaire.getLabel(item);
+        final String text = getLabel(item);
         mContent.setAutoLinkMask(0);
         mContent.setMovementMethod(LinkMovementMethod.getInstance());
         // there might be some images images

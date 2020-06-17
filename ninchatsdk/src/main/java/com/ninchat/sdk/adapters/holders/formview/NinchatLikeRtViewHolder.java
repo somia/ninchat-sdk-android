@@ -21,6 +21,10 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getError;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultInt;
+
 public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatLikeRtViewHolder.class.getSimpleName();
 
@@ -67,7 +71,7 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
 
     public void onSelected(boolean selected, final TextView mTextView) {
         final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
-        final boolean hasError = preAudienceQuestionnaire.get().getError(item);
+        final boolean hasError = getError(item);
 
 
         ((RelativeLayout) itemView.findViewById(R.id.dropdown_select_layout)).setBackground(
@@ -98,8 +102,8 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
 
     private int preFill() {
         final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
-        final String label = preAudienceQuestionnaire.get().getLabel(item);
-        final int result = preAudienceQuestionnaire.get().getResultInt(item);
+        final String label = getLabel(item);
+        final int result = getResultInt(item);
         mLabel.setText(label);
         return Math.max(result, 0);
     }

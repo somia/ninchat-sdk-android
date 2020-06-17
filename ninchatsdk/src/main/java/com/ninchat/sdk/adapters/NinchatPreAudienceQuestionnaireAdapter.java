@@ -12,8 +12,7 @@ import com.ninchat.sdk.adapters.holders.formview.NinchatControlFlowViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatDropDownSelectViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatLikeRtViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatRadioBtnViewHolder;
-import com.ninchat.sdk.adapters.holders.formview.NinchatTextAreaViewHolder;
-import com.ninchat.sdk.adapters.holders.formview.NinchatTextFieldViewHolder;
+import com.ninchat.sdk.adapters.holders.formview.NinchatInputFieldViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatTextViewHolder;
 import com.ninchat.sdk.helper.NinchatQuestionnaire;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
@@ -52,13 +51,13 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.text_view, parent, false),
                         position, ninchatPreAudienceQuestionnaire);
             case NinchatQuestionnaire.INPUT:
-                return new NinchatTextFieldViewHolder(
+                return new NinchatInputFieldViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.text_field_with_label, parent, false),
-                        position, ninchatPreAudienceQuestionnaire);
+                        position, ninchatPreAudienceQuestionnaire, false);
             case NinchatQuestionnaire.TEXT_AREA:
-                return new NinchatTextAreaViewHolder(
+                return new NinchatInputFieldViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.text_area_with_label, parent, false),
-                        position, ninchatPreAudienceQuestionnaire);
+                        position, ninchatPreAudienceQuestionnaire, true);
             case NinchatQuestionnaire.RADIO:
                 // a button like element with single choice
                 return new NinchatRadioBtnViewHolder(
@@ -89,10 +88,8 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         if (viewHolder instanceof NinchatTextViewHolder) {
             ((NinchatTextViewHolder) viewHolder).bind(position, ninchatPreAudienceQuestionnaire);
-        } else if (viewHolder instanceof NinchatTextFieldViewHolder) {
-            ((NinchatTextFieldViewHolder) viewHolder).bind();
-        } else if (viewHolder instanceof NinchatTextAreaViewHolder) {
-            ((NinchatTextAreaViewHolder) viewHolder).update();
+        } else if (viewHolder instanceof NinchatInputFieldViewHolder) {
+            ((NinchatInputFieldViewHolder) viewHolder).bind();
         } else if (viewHolder instanceof NinchatRadioBtnViewHolder) {
             ((NinchatRadioBtnViewHolder) viewHolder).update();
         } else if (viewHolder instanceof NinchatDropDownSelectViewHolder) {
@@ -112,8 +109,8 @@ public class NinchatPreAudienceQuestionnaireAdapter extends RecyclerView.Adapter
     private NinchatControlFlowViewHolder.Callback controlFlowCallback = new NinchatControlFlowViewHolder.Callback() {
         @Override
         public void onClickNext() {
-            final int errorIndex = ninchatPreAudienceQuestionnaire.checkRequiredFields();
-            if (errorIndex != -1 ) {
+            final int errorIndex = ninchatPreAudienceQuestionnaire.updateRequiredFieldStats();
+            if (errorIndex != -1) {
                 notifyDataSetChanged();
                 callback.onRequiredScroll(errorIndex);
             }

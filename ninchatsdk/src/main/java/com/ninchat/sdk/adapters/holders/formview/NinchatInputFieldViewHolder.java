@@ -16,21 +16,27 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 
-public class NinchatTextFieldViewHolder extends RecyclerView.ViewHolder {
-    private final String TAG = NinchatTextFieldViewHolder.class.getSimpleName();
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getError;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultString;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.matchPattern;
+
+public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
+    private final String TAG = NinchatInputFieldViewHolder.class.getSimpleName();
 
     private final TextView mLabel;
     private final EditText mEditText;
     private final int itemPosition;
     WeakReference<NinchatPreAudienceQuestionnaire> preAudienceQuestionnaire;
 
-    public NinchatTextFieldViewHolder(@NonNull View itemView, final int position,
-                                      final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire) {
+    public NinchatInputFieldViewHolder(@NonNull View itemView, final int position,
+                                       final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire,
+                                       final boolean multilineText) {
         super(itemView);
         itemPosition = position;
         preAudienceQuestionnaire = new WeakReference<>(ninchatPreAudienceQuestionnaire);
-        mLabel = (TextView) itemView.findViewById(R.id.simple_text_label);
-        mEditText = (EditText) itemView.findViewById(R.id.simple_text_field);
+        mLabel = (TextView) itemView.findViewById(multilineText ? R.id.multiline_text_label : R.id.simple_text_label);
+        mEditText = (EditText) itemView.findViewById(multilineText ? R.id.multiline_text_area : R.id.simple_text_field);
         mEditText.addTextChangedListener(onTextChange);
         mEditText.setOnFocusChangeListener(onFocusChangeListener);
         bind();
@@ -49,10 +55,8 @@ public class NinchatTextFieldViewHolder extends RecyclerView.ViewHolder {
         public void afterTextChanged(Editable s) {
             // try to validate the current input if there is a pattern
             final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
-            final String pattern = preAudienceQuestionnaire.get().getPattern(item);
-            final boolean isValid = preAudienceQuestionnaire.get().isValidInput(s.toString(), pattern);
             preAudienceQuestionnaire.get().setResult(item, s.toString());
-            preAudienceQuestionnaire.get().setError(item, !isValid);
+            preAudienceQuestionnaire.get().setError(item, !matchPattern(item));
             updateUI(item, true);
         }
     };
@@ -74,7 +78,7 @@ public class NinchatTextFieldViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setLabel(final JSONObject item) {
-        final String text = preAudienceQuestionnaire.get().getLabel(item);
+        final String text = getLabel(item);
         if (TextUtils.isEmpty(text)) {
             return;
         }
@@ -82,7 +86,7 @@ public class NinchatTextFieldViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setText(final JSONObject item) {
-        final String text = preAudienceQuestionnaire.get().getResultString(item);
+        final String text = getResultString(item);
         if (TextUtils.isEmpty(text)) {
             return;
         }
@@ -90,10 +94,9 @@ public class NinchatTextFieldViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void updateUI(final JSONObject item, final boolean hasFocus) {
-        final boolean hasError = preAudienceQuestionnaire.get().getError(item);
+        final boolean hasError = getError(item);
         mEditText.setBackgroundResource(hasFocus ?
                 R.drawable.ninchat_border_with_focus : R.drawable.ninchat_border_with_unfocus);
-
         if (hasError) {
             mEditText.setBackgroundResource(R.drawable.ninchat_border_with_error);
         }
