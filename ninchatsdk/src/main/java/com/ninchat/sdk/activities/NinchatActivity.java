@@ -17,7 +17,6 @@ import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
-import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
 
 
 public final class NinchatActivity extends NinchatBaseActivity {
@@ -48,7 +47,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
     };
 
     private void setQueueAdapter() {
-        final RecyclerView queueList = (RecyclerView)findViewById(R.id.ninchat_activity_queue_list);
+        final RecyclerView queueList = (RecyclerView) findViewById(R.id.ninchat_activity_queue_list);
         final NinchatQueueListAdapter ninchatQueueListAdapter = sessionManager.getNinchatQueueListAdapter(NinchatActivity.this);
         queueList.setAdapter(ninchatQueueListAdapter);
         if (ninchatQueueListAdapter.getItemCount() == 0) {
@@ -90,7 +89,6 @@ public final class NinchatActivity extends NinchatBaseActivity {
         // If the app is killed in the background sessionManager is not initialized the SDK must
         // be exited and the NinchatSession needs to be initialzed again
         if (sessionManager == null) {
-
             // Use a small delay before transition for UX purposes. Without the delay the app looks
             // like it's crashing since there can be 3 activities that will be finished.
             new android.os.Handler().postDelayed(() -> {
@@ -102,21 +100,20 @@ public final class NinchatActivity extends NinchatBaseActivity {
 
             return;
         }
-
         if (intent != null) {
             queueId = intent.getStringExtra(QUEUE_ID);
-            if (queueId != null) {
+        }
+        if (queueId != null) {
+            final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
+            if (ninchatSessionManager.getNinchatQuestionnaire().hasPreAudienceQuestionnaire()) {
+                openPreAudienceQuestionnairesActivity();
+            } else {
                 openQueueActivity();
             }
         }
-
-        final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-        broadcastManager.registerReceiver(queuesUpdatedReceiver, new IntentFilter(NinchatSession.Broadcast.QUEUES_UPDATED));
-        broadcastManager.registerReceiver(configurationFetchedReceiver, new IntentFilter(NinchatSession.Broadcast.CONFIGURATION_FETCHED));
-        findViewById(R.id.ninchat_activity_close).setVisibility(View.VISIBLE);
-        setQueueAdapter();
-        setTexts();
+        registerQueueListener();
     }
+
 
     @Override
     protected void onDestroy() {
@@ -131,12 +128,21 @@ public final class NinchatActivity extends NinchatBaseActivity {
         finish();
     }
 
+    public void registerQueueListener() {
+        final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+        broadcastManager.registerReceiver(queuesUpdatedReceiver, new IntentFilter(NinchatSession.Broadcast.QUEUES_UPDATED));
+        broadcastManager.registerReceiver(configurationFetchedReceiver, new IntentFilter(NinchatSession.Broadcast.CONFIGURATION_FETCHED));
+        findViewById(R.id.ninchat_activity_close).setVisibility(View.VISIBLE);
+        setQueueAdapter();
+        setTexts();
+    }
+
     private void openQueueActivity() {
         startActivityForResult(NinchatQueueActivity.getLaunchIntent(this, queueId), NinchatQueueActivity.REQUEST_CODE);
     }
 
     private void openPreAudienceQuestionnairesActivity() {
-        startActivityForResult(NinchatPreAudienceQuestionnaireActivity.getLaunchIntent(this), NinchatPreAudienceQuestionnaireActivity.REQUEST_CODE);
+        startActivityForResult(NinchatPreAudienceQuestionnaireActivity.getLaunchIntent(this, queueId), NinchatPreAudienceQuestionnaireActivity.REQUEST_CODE);
     }
 
     @Override
@@ -146,6 +152,16 @@ public final class NinchatActivity extends NinchatBaseActivity {
                 sessionManager.close();
                 setResult(resultCode, data);
                 finish();
+            } else if (resultCode == RESULT_CANCELED) {
+                finish();
+            }
+        } else if (requestCode == NinchatPreAudienceQuestionnaireActivity.REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                if(data.getStringExtra(QUEUE_ID) != null ){
+                    queueId = data.getStringExtra(QUEUE_ID);
+                }
+                setResult(resultCode, data);
+                openQueueActivity();
             } else if (resultCode == RESULT_CANCELED) {
                 finish();
             }

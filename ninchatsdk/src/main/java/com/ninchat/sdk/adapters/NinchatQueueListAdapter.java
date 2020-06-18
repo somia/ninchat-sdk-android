@@ -58,16 +58,19 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
 
     private final NinchatQueueViewHolder.Callback callback = queueId -> {
         final Activity activity = activityWeakReference.get();
+        if(activity == null) {
+            return ;
+        }
         final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
         if (ninchatSessionManager.getNinchatQuestionnaire().hasPreAudienceQuestionnaire()) {
-            activity.startActivityForResult(NinchatPreAudienceQuestionnaireActivity.getLaunchIntent(activity), NinchatPreAudienceQuestionnaireActivity.REQUEST_CODE);
+            activity.startActivityForResult(
+                    NinchatPreAudienceQuestionnaireActivity.getLaunchIntent(activity, queueId),
+                    NinchatPreAudienceQuestionnaireActivity.REQUEST_CODE);
             return;
         }
         // after click a particular queue we should check if there are pre-audience questionnaires
-        if (activity != null) {
-            activity.startActivityForResult(
-                    NinchatQueueActivity.getLaunchIntent(activity, queueId),
-                    NinchatQueueActivity.REQUEST_CODE);
-        }
+        activity.startActivityForResult(
+                NinchatQueueActivity.getLaunchIntent(activity, queueId),
+                NinchatQueueActivity.REQUEST_CODE);
     };
 }

@@ -1,7 +1,5 @@
 package com.ninchat.sdk.models.questionnaire;
 
-import com.ninchat.sdk.helper.NinchatQuestionnaire;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 

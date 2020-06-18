@@ -563,11 +563,7 @@ public final class NinchatSessionManager {
         }
         final Activity activity = activityWeakReference.get();
         if (activity != null) {
-            if (queueId != null && ninchatQuestionnaire.hasPreAudienceQuestionnaire()) {
-                activity.startActivityForResult(NinchatPreAudienceQuestionnaireActivity.getLaunchIntent(activity), NinchatPreAudienceQuestionnaireActivity.REQUEST_CODE);
-            } else {
-                activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, queueId), requestCode);
-            }
+            activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, queueId), requestCode);
         }
         final NinchatSDKEventListener listener = eventListenerWeakReference.get();
         if (listener != null) {

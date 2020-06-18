@@ -31,7 +31,6 @@ public class NinchatSimpleFormLikeQuestionnaireAdapter extends RecyclerView.Adap
         this.callback = callback;
     }
 
-
     @Override
     public int getItemViewType(int position) {
         return position;
@@ -40,7 +39,6 @@ public class NinchatSimpleFormLikeQuestionnaireAdapter extends RecyclerView.Adap
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
-        Log.d(TAG, "Item position onCreateViewHolder " + position);
         final JSONObject currentItem = ninchatPreAudienceQuestionnaire.getItem(position);
         final int viewType = NinchatQuestionnaire.getItemType(currentItem);
         switch (viewType) {
@@ -112,9 +110,9 @@ public class NinchatSimpleFormLikeQuestionnaireAdapter extends RecyclerView.Adap
             final int errorIndex = ninchatPreAudienceQuestionnaire.updateRequiredFieldStats();
             if (errorIndex != -1) {
                 notifyDataSetChanged();
-                callback.onRequiredScroll(errorIndex);
+                callback.onError(errorIndex);
             } else {
-                callback.onComplete(ninchatPreAudienceQuestionnaire);
+                callback.onComplete();
             }
         }
 
@@ -125,7 +123,8 @@ public class NinchatSimpleFormLikeQuestionnaireAdapter extends RecyclerView.Adap
     };
 
     public interface Callback {
-        void onRequiredScroll(final int position);
-        void onComplete(final NinchatPreAudienceQuestionnaire preAudienceQuestionnaire);
+        void onError(final int position);
+
+        void onComplete();
     }
 }
