@@ -1,19 +1,9 @@
 package com.ninchat.sdk.models.questionnaire;
 
-import android.text.TextUtils;
-
-import com.ninchat.client.Strings;
-
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.isCheckBox;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.isInput;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.isLikeRT;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.isRadio;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.isSelect;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.isTextArea;
 
 public class NinchatQuestionnaireBase {
     public JSONArray parse(final JSONObject configuration, final QuestionnaireType questionnaireType) {

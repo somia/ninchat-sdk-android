@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
+import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,20 +31,20 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
     private final RecyclerView mRecycleView;
     private final int rootItemPosition;
 
-    WeakReference<NinchatPreAudienceQuestionnaire> preAudienceQuestionnaire;
+    WeakReference<NinchatQuestionnaire> questionnaire;
 
     public NinchatRadioBtnViewHolder(@NonNull View itemView, final int position,
-                                     final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire) {
+                                     final NinchatQuestionnaire ninchatQuestionnaire) {
         super(itemView);
         rootItemPosition = position;
-        preAudienceQuestionnaire = new WeakReference<>(ninchatPreAudienceQuestionnaire);
+        questionnaire = new WeakReference(ninchatQuestionnaire);
         mLabel = (TextView) itemView.findViewById(R.id.radio_option_label);
         mRecycleView = (RecyclerView) itemView.findViewById(R.id.ninchat_chat_radio_options);
         update();
     }
 
     public void update() {
-        final JSONObject item = preAudienceQuestionnaire.get().getItem(rootItemPosition);
+        final JSONObject item = questionnaire.get().getItem(rootItemPosition);
         setLabel(item);
         mRecycleView.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
         mRecycleView.setAdapter(new NinchatRadioBtnAdapter(getOptions(item)));
@@ -104,10 +105,10 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
 
             public void bind(final JSONObject item, final int currentPosition) {
                 mOptionLabel.setOnClickListener(v -> {
-                    final JSONObject rootItem = preAudienceQuestionnaire.get().getItem(rootItemPosition);
+                    final JSONObject rootItem = questionnaire.get().getItem(rootItemPosition);
                     final int previouslySelected = getResultInt(rootItem);
-                    preAudienceQuestionnaire.get().setResult(rootItem, previouslySelected == currentPosition ? -1 : currentPosition);
-                    preAudienceQuestionnaire.get().setError(rootItem, false);
+                    questionnaire.get().setResult(rootItem, previouslySelected == currentPosition ? -1 : currentPosition);
+                    questionnaire.get().setError(rootItem, false);
                     notifyDataSetChanged();
                 });
                 preFill(item, currentPosition);
@@ -128,7 +129,7 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                                         R.drawable.ninchat_radio_select_button :
                                         R.drawable.ninchat_ui_compose_select_button)
                 );
-                final JSONObject item = preAudienceQuestionnaire.get().getItem(rootItemPosition);
+                final JSONObject item = questionnaire.get().getItem(rootItemPosition);
                 final boolean hasError = getError(item);
                 if (hasError) {
                     mLabel.setTextColor(ContextCompat.getColor(
@@ -141,7 +142,7 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
             }
 
             private void preFill(final JSONObject item, final int currentPosition) {
-                final JSONObject rootItem = preAudienceQuestionnaire.get().getItem(rootItemPosition);
+                final JSONObject rootItem = questionnaire.get().getItem(rootItemPosition);
                 final String label = getLabel(item);
                 mOptionLabel.setText(label);
                 onSelectionChange(getResultInt(rootItem) == currentPosition);

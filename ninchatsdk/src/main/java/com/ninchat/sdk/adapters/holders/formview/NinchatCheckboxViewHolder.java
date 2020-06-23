@@ -10,6 +10,7 @@ import android.widget.CompoundButton;
 
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
+import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
 import org.json.JSONObject;
 
@@ -24,13 +25,13 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
 
     private final CheckBox mCheckbox;
     private final int itemPosition;
-    WeakReference<NinchatPreAudienceQuestionnaire> preAudienceQuestionnaire;
+    WeakReference<NinchatQuestionnaire> questionnaire;
 
     public NinchatCheckboxViewHolder(@NonNull View itemView, final int position,
-                                     final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire) {
+                                     final NinchatQuestionnaire ninchatQuestionnaire) {
         super(itemView);
         itemPosition = position;
-        preAudienceQuestionnaire = new WeakReference<>(ninchatPreAudienceQuestionnaire);
+        questionnaire = new WeakReference(ninchatQuestionnaire);
         mCheckbox = (CheckBox) itemView.findViewById(R.id.ninchat_checkbox);
         mCheckbox.setOnCheckedChangeListener(onCheckedChangeListener);
         update();
@@ -39,15 +40,15 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
     public CompoundButton.OnCheckedChangeListener onCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
-            preAudienceQuestionnaire.get().setResult(item, isChecked);
-            preAudienceQuestionnaire.get().setError(item, false);
+            final JSONObject item = questionnaire.get().getItem(itemPosition);
+            questionnaire.get().setResult(item, isChecked);
+            questionnaire.get().setError(item, false);
             updateUI(item);
         }
     };
 
     public void update() {
-        final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
+        final JSONObject item = questionnaire.get().getItem(itemPosition);
         setLabel(item);
         setChecked(item);
         updateUI(item);

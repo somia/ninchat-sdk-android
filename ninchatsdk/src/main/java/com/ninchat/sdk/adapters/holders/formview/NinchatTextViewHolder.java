@@ -9,6 +9,8 @@ import android.widget.TextView;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.helper.NinchatImageGetter;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
+import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
+
 import org.json.JSONObject;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
 
@@ -17,14 +19,14 @@ public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
     private final TextView mContent;
 
     public NinchatTextViewHolder(@NonNull View itemView, final int position,
-                                 final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire) {
+                                 final NinchatQuestionnaire ninchatQuestionnaire) {
         super(itemView);
         mContent = (TextView) itemView.findViewById(R.id.text_view_content);
-        bind(position, ninchatPreAudienceQuestionnaire);
+        bind(position, ninchatQuestionnaire);
     }
 
-    public void bind(final int position, final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire) {
-        final JSONObject item = ninchatPreAudienceQuestionnaire.getItem(position);
+    public void bind(final int position, final NinchatQuestionnaire ninchatQuestionnaire) {
+        final JSONObject item = ninchatQuestionnaire.getItem(position);
         final String text = getLabel(item);
         mContent.setAutoLinkMask(0);
         mContent.setMovementMethod(LinkMovementMethod.getInstance());

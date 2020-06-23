@@ -36,6 +36,7 @@ import com.ninchat.sdk.models.NinchatSessionCredentials;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
+import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaires;
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
 import com.ninchat.sdk.tasks.NinchatDeleteUserTask;
 import com.ninchat.sdk.tasks.NinchatDescribeFileTask;
@@ -220,7 +221,7 @@ public final class NinchatSessionManager {
     protected WeakReference<NinchatSDKLogListener> logListenerWeakReference;
 
     protected JSONObject configuration;
-    protected NinchatQuestionnaire ninchatQuestionnaire;
+    protected NinchatQuestionnaires ninchatQuestionnaires;
     protected Session session;
     protected WeakReference<Activity> activityWeakReference;
     protected int requestCode;
@@ -256,7 +257,7 @@ public final class NinchatSessionManager {
         try {
             Log.v(TAG, "Got configuration: " + config);
             this.configuration = new JSONObject(config);
-            this.ninchatQuestionnaire = new NinchatQuestionnaire(this.getDefault());
+            this.ninchatQuestionnaires = new NinchatQuestionnaires(this.getDefault());
             Log.i(TAG, "Configuration fetched successfully!");
         } catch (final JSONException e) {
             this.configuration = null;
@@ -1490,8 +1491,8 @@ public final class NinchatSessionManager {
         return getTranslation("Skip");
     }
 
-    public NinchatQuestionnaire getNinchatQuestionnaire() {
-        return ninchatQuestionnaire;
+    public NinchatQuestionnaires getNinchatQuestionnaires() {
+        return ninchatQuestionnaires;
     }
 
     public void close() {

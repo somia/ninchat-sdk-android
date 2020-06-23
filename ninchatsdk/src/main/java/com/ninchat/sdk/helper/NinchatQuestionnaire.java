@@ -109,6 +109,31 @@ public class NinchatQuestionnaire {
         return false;
     }
 
+    public static JSONArray getElements(final JSONObject element) {
+        if (element == null) {
+            return null;
+        }
+        if (isGroupElement(element)) {
+            return element.optJSONArray("elements");
+        }
+        final JSONArray elements = new JSONArray();
+        elements.put(element.optJSONObject("element"));
+        return elements;
+    }
+
+    public static JSONObject getNextElement(final JSONArray questionnaires, final int lastIndex) {
+        if (questionnaires == null) {
+            return null;
+        }
+        for (int i = lastIndex + 1; i < questionnaires.length(); i += 1) {
+            final JSONObject currentElement = questionnaires.optJSONObject(i);
+            if (currentElement.has("elements") || currentElement.has("element")) {
+                return currentElement;
+            }
+        }
+        return null;
+    }
+
     public static JSONObject getQuestionnaireElementByName(final JSONArray questionnaires, final String name) {
         if (questionnaires == null) {
             return null;
@@ -249,6 +274,14 @@ public class NinchatQuestionnaire {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static JSONArray getPreAudienceQuestionnaire(final JSONObject item) {
+        return item.optJSONArray("preAudienceQuestionnaire");
+    }
+
+    public static JSONArray getPostAudienceQuestionnaire(final JSONObject item) {
+        return item.optJSONArray("postAudienceQuestionnaire");
     }
 
 }

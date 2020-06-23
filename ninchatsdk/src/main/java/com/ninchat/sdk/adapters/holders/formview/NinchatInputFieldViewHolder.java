@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
+import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
 import org.json.JSONObject;
 
@@ -27,14 +28,14 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
     private final TextView mLabel;
     private final EditText mEditText;
     private final int itemPosition;
-    WeakReference<NinchatPreAudienceQuestionnaire> preAudienceQuestionnaire;
+    WeakReference<NinchatQuestionnaire> questionnaire;
 
     public NinchatInputFieldViewHolder(@NonNull View itemView, final int position,
-                                       final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire,
+                                       final NinchatQuestionnaire ninchatQuestionnaire,
                                        final boolean multilineText) {
         super(itemView);
         itemPosition = position;
-        preAudienceQuestionnaire = new WeakReference<>(ninchatPreAudienceQuestionnaire);
+        questionnaire = new WeakReference(ninchatQuestionnaire);
         mLabel = (TextView) itemView.findViewById(multilineText ? R.id.multiline_text_label : R.id.simple_text_label);
         mEditText = (EditText) itemView.findViewById(multilineText ? R.id.multiline_text_area : R.id.simple_text_field);
         mEditText.addTextChangedListener(onTextChange);
@@ -54,9 +55,9 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
         @Override
         public void afterTextChanged(Editable s) {
             // try to validate the current input if there is a pattern
-            final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
-            preAudienceQuestionnaire.get().setResult(item, s.toString());
-            preAudienceQuestionnaire.get().setError(item, !matchPattern(item));
+            final JSONObject item = questionnaire.get().getItem(itemPosition);
+            questionnaire.get().setResult(item, s.toString());
+            questionnaire.get().setError(item, !matchPattern(item));
             updateUI(item, true);
         }
     };
@@ -65,13 +66,13 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
         @Override
         public void onFocusChange(View v, boolean hasFocus) {
             // update to error if input is not valid
-            final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
+            final JSONObject item = questionnaire.get().getItem(itemPosition);
             updateUI(item, hasFocus);
         }
     };
 
     public void bind() {
-        final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
+        final JSONObject item = questionnaire.get().getItem(itemPosition);
         setLabel(item);
         setText(item);
         updateUI(item, false);

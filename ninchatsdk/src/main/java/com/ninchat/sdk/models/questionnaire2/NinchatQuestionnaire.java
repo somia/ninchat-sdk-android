@@ -1,4 +1,4 @@
-package com.ninchat.sdk.models.questionnaire;
+package com.ninchat.sdk.models.questionnaire2;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -6,11 +6,27 @@ import org.json.JSONObject;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.isRequiredOK;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.matchPattern;
 
-public class NinchatPreAudienceQuestionnaire extends NinchatQuestionnaireBase {
+public class NinchatQuestionnaire {
     private JSONArray questionnaireList;
 
-    public NinchatPreAudienceQuestionnaire(final JSONObject configuration) {
-        this.questionnaireList = this.parse(configuration, QuestionnaireType.PRE_AUDIENCE_QUESTIONNAIRE);
+    public NinchatQuestionnaire(JSONArray questionnaireList) {
+        this.questionnaireList = questionnaireList;
+    }
+
+    public <T> void setResult(final JSONObject element, final T result) {
+        try {
+            element.put("result", result);
+        } catch (Exception e) {
+            // pass
+        }
+    }
+
+    public void setError(final JSONObject element, final boolean hasError) {
+        try {
+            element.put("hasError", hasError);
+        } catch (Exception e) {
+            // pass
+        }
     }
 
     public JSONObject getItem(final int position) {
@@ -50,4 +66,5 @@ public class NinchatPreAudienceQuestionnaire extends NinchatQuestionnaireBase {
         }
         return index;
     }
+
 }

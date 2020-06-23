@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
+import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,13 +32,13 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
     private final TextView mLabel;
     private final Spinner mSpinner;
     private int itemPosition;
-    WeakReference<NinchatPreAudienceQuestionnaire> preAudienceQuestionnaire;
+    WeakReference<NinchatQuestionnaire> questionnaire;
 
     public NinchatLikeRtViewHolder(@NonNull View itemView, final int position,
-                                   final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire) {
+                                   final NinchatQuestionnaire ninchatQuestionnaire) {
         super(itemView);
         itemPosition = position;
-        preAudienceQuestionnaire = new WeakReference<>(ninchatPreAudienceQuestionnaire);
+        questionnaire = new WeakReference<>(ninchatQuestionnaire);
         mLabel = (TextView) itemView.findViewById(R.id.dropdown_text_label);
         mSpinner = (Spinner) itemView.findViewById(R.id.ninchat_dropdown_list);
         this.bind();
@@ -51,11 +52,11 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                final JSONObject rootItem = preAudienceQuestionnaire.get().getItem(itemPosition);
-                preAudienceQuestionnaire.get().setResult(rootItem, position);
+                final JSONObject rootItem = questionnaire.get().getItem(itemPosition);
+                questionnaire.get().setResult(rootItem, position);
                 final TextView mTextView = (TextView) parent.getChildAt(0);
                 if (position != 0) {
-                    preAudienceQuestionnaire.get().setError(rootItem, false);
+                    questionnaire.get().setError(rootItem, false);
                     onSelected(true, mTextView);
                 } else {
                     onSelected(false, mTextView);
@@ -70,7 +71,7 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void onSelected(boolean selected, final TextView mTextView) {
-        final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
+        final JSONObject item = questionnaire.get().getItem(itemPosition);
         final boolean hasError = getError(item);
 
 
@@ -101,7 +102,7 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
     }
 
     private int preFill() {
-        final JSONObject item = preAudienceQuestionnaire.get().getItem(itemPosition);
+        final JSONObject item = questionnaire.get().getItem(itemPosition);
         final String label = getLabel(item);
         final int result = getResultInt(item);
         mLabel.setText(label);
