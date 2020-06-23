@@ -13,6 +13,7 @@ import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatSimpleFormLikeQuestionnaireAdapter;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
 
+import static com.ninchat.sdk.activities.NinchatComplexQuestionnaireActivity.PAGE_INDEX;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.addEof;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.isSimpleForm;
 
@@ -85,7 +86,10 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NinchatComplexQuestionnaireActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                finish();
+                lastElement += 1;
+                startActivityForResult(
+                        NinchatComplexQuestionnaireActivity.getLaunchIntent(getApplicationContext(), lastElement),
+                        NinchatComplexQuestionnaireActivity.REQUEST_CODE);
             } else if (resultCode == RESULT_CANCELED) {
                 finish();
             }

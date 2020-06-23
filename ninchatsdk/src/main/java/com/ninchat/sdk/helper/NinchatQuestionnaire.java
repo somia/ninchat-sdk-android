@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class NinchatQuestionnaire {
@@ -116,9 +117,9 @@ public class NinchatQuestionnaire {
         if (isGroupElement(element)) {
             return element.optJSONArray("elements");
         }
-        final JSONArray elements = new JSONArray();
-        elements.put(element.optJSONObject("element"));
-        return elements;
+        JSONArray retval = new JSONArray();
+        retval.put(element);
+        return retval;
     }
 
     public static JSONObject getNextElement(final JSONArray questionnaires, final int lastIndex) {

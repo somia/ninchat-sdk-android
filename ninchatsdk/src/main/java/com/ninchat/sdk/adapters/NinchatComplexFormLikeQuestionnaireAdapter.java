@@ -13,19 +13,34 @@ import com.ninchat.sdk.adapters.holders.formview.NinchatInputFieldViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatLikeRtViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatRadioBtnViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatTextViewHolder;
-import com.ninchat.sdk.helper.NinchatQuestionnaire;
-import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
+import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.CHECKBOX;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.EOF;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.INPUT;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.LIKERT;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.RADIO;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.SELECT;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.TEXT;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.TEXT_AREA;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.UNKNOWN;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getElements;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getItemType;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getNextElement;
 
 public class NinchatComplexFormLikeQuestionnaireAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final String TAG = NinchatComplexFormLikeQuestionnaireAdapter.class.getSimpleName();
-    private NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire;
+    private NinchatQuestionnaire questionnaire;
     private Callback callback;
 
-    public NinchatComplexFormLikeQuestionnaireAdapter(final NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire,
+    public NinchatComplexFormLikeQuestionnaireAdapter(final com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire ninchatPreAudienceQuestionnaire,
                                                       final Callback callback) {
-        this.ninchatPreAudienceQuestionnaire = ninchatPreAudienceQuestionnaire;
+        this.questionnaire = ninchatPreAudienceQuestionnaire;
         this.callback = callback;
     }
 
@@ -37,11 +52,49 @@ public class NinchatComplexFormLikeQuestionnaireAdapter extends RecyclerView.Ada
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
-        final JSONObject currentItem = ninchatPreAudienceQuestionnaire.getItem(position);
-        final int viewType = NinchatQuestionnaire.getItemType(currentItem);
+        final JSONObject currentItem = questionnaire.getItem(position);
+        final int viewType = getItemType(currentItem);
         switch (viewType) {
-            case NinchatQuestionnaire.UNKNOWN:
+            case UNKNOWN:
                 return null;
+            case TEXT:
+                return new NinchatTextViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.text_view, parent, false),
+                        position, questionnaire);
+            case INPUT:
+                return new NinchatInputFieldViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.text_field_with_label, parent, false),
+                        position, questionnaire, false);
+            case TEXT_AREA:
+                return new NinchatInputFieldViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.text_area_with_label, parent, false),
+                        position, questionnaire, true);
+            case RADIO:
+                // a button like element with single choice
+                return new NinchatRadioBtnViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.multichoice_with_label, parent, false),
+                        position, questionnaire, new NinchatRadioBtnViewHolder.Callback() {
+                    @Override
+                    public void onSelected() {
+                        callback.onComplete();
+                    }
+                });
+            case SELECT:
+                return new NinchatDropDownSelectViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.dropdown_with_label, parent, false),
+                        position, questionnaire);
+            case CHECKBOX:
+                return new NinchatCheckboxViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.checkbox_simple, parent, false),
+                        position, questionnaire);
+            case LIKERT:
+                return new NinchatLikeRtViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.dropdown_with_label, parent, false),
+                        position, questionnaire);
+            case EOF:
+                return new NinchatControlFlowViewHolder(
+                        LayoutInflater.from(parent.getContext()).inflate(R.layout.control_buttons, parent, false),
+                        currentItem, controlFlowCallback);
 
         }
         return null;
@@ -54,13 +107,13 @@ public class NinchatComplexFormLikeQuestionnaireAdapter extends RecyclerView.Ada
 
     @Override
     public int getItemCount() {
-        return ninchatPreAudienceQuestionnaire.size();
+        return questionnaire.size();
     }
 
     private NinchatControlFlowViewHolder.Callback controlFlowCallback = new NinchatControlFlowViewHolder.Callback() {
         @Override
         public void onClickNext() {
-            final int errorIndex = ninchatPreAudienceQuestionnaire.updateRequiredFieldStats();
+            final int errorIndex = questionnaire.updateRequiredFieldStats();
             if (errorIndex != -1) {
                 notifyDataSetChanged();
                 callback.onError(errorIndex);
