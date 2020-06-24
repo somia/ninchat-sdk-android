@@ -6,15 +6,20 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatComplexFormLikeQuestionnaireAdapter;
 import com.ninchat.sdk.adapters.NinchatSimpleFormLikeQuestionnaireAdapter;
+import com.ninchat.sdk.events.RequireStateChange;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -38,6 +43,7 @@ public final class NinchatComplexQuestionnaireActivity extends NinchatBaseActivi
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBus.getDefault().register(this);
         final Intent intent = getIntent();
         final int previousPageIndex = intent.getIntExtra(PAGE_INDEX, -1);
         final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.questionnaire_form_rview);
@@ -46,6 +52,9 @@ public final class NinchatComplexQuestionnaireActivity extends NinchatBaseActivi
         final JSONArray questionnaire = NinchatSessionManager.getInstance().getNinchatQuestionnaires().getNinchatPreAudienceQuestionnaire().getQuestionnaireList();
         final JSONObject currentQuestionnaire = getNextElement(questionnaire, previousPageIndex);
         final JSONArray questionnaireList = getElements(currentQuestionnaire);
+        // heck if has button enabled. if enabled append the button as eof
+        // if does not have button , bind on click with all options
+        Log.e(TAG, questionnaireList.toString());
         final NinchatComplexFormLikeQuestionnaireAdapter mPreAudienceQuestionnaireAdapter = new NinchatComplexFormLikeQuestionnaireAdapter(
                 new NinchatQuestionnaire(questionnaireList),
                 new NinchatComplexFormLikeQuestionnaireAdapter.Callback() {
@@ -69,6 +78,7 @@ public final class NinchatComplexQuestionnaireActivity extends NinchatBaseActivi
 
     @Override
     protected void onDestroy() {
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
 
@@ -80,5 +90,10 @@ public final class NinchatComplexQuestionnaireActivity extends NinchatBaseActivi
     private void close() {
         setResult(RESULT_OK);
         finish();
+    }
+
+    @Subscribe(threadMode = ThreadMode.POSTING)
+    public void onEvent(RequireStateChange requireStateChange){
+
     }
 }

@@ -265,6 +265,16 @@ public class NinchatQuestionnaire {
         return hasResult(element);
     }
 
+    public static boolean hasButton(final JSONObject element) {
+        final JSONObject buttons = element.optJSONObject("buttons");
+        if (buttons == null) {
+            return false;
+        }
+        final boolean backDisabled = buttons.optBoolean("back", false);
+        final boolean nextDisabled = buttons.optBoolean("next", false);
+        return !(backDisabled && nextDisabled);
+    }
+
     public static void addEof(JSONArray itemList) {
         if (itemList == null) {
             return;
@@ -275,6 +285,60 @@ public class NinchatQuestionnaire {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isElement(final JSONObject element) {
+        return element.has("elements") || element.has("element");
+    }
+
+    public static JSONArray postProcess(JSONArray questionnaireList) {
+        if (questionnaireList == null) {
+            return null;
+        }
+        // if simple questionnaire then check if last element has a button. If it doesnot then add a button element with next enabled
+        if (isSimpleForm(questionnaireList)) {
+            // todo(pallab) do same think for simple form as well so that we can use same view and recycler for both simple and complex form
+            return questionnaireList;
+        }
+        try {
+            // at this point it is a complex questionnaire with either logic or redirect
+            for (int i = 0; i < questionnaireList.length(); i += 1) {
+                JSONObject currentElement = questionnaireList.optJSONObject(i);
+                if (!isElement(currentElement)) {
+                    continue;
+                }
+                JSONArray elements = getElements(currentElement);
+                final boolean hasButton = hasButton(currentElement);
+                if (hasButton) {
+                    final JSONObject tempElement = getButtonElement(currentElement);
+                    elements.put(tempElement);
+                }
+                for (int j = 0; j < elements.length(); j += 1) {
+                    // if there is no button for this element then mark fire event true for all conditions
+                    if (!hasButton) {
+                        elements.optJSONObject(j).putOpt("fireEvent", true);
+                    }
+                }
+                currentElement.putOpt("elements", elements);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return questionnaireList;
+    }
+
+    public static JSONObject getButtonElement(final JSONObject element) {
+        JSONObject retval = new JSONObject();
+        try {
+            final JSONObject buttons = element.optJSONObject("buttons");
+            retval.putOpt("element", "button");
+            retval.putOpt("fireEvent", true);
+            retval.putOpt("back", buttons.optJSONObject("back"));
+            retval.putOpt("next", buttons.optJSONObject("next"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return retval;
     }
 
     public static JSONArray getPreAudienceQuestionnaire(final JSONObject item) {
