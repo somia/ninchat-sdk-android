@@ -11,9 +11,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.events.RequireStateChange;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -32,15 +34,12 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
     private final int rootItemPosition;
 
     WeakReference<NinchatQuestionnaire> questionnaire;
-    WeakReference<Callback> callbackWeakReference;
 
     public NinchatRadioBtnViewHolder(@NonNull View itemView, final int position,
-                                     final NinchatQuestionnaire ninchatQuestionnaire,
-                                     final Callback callback) {
+                                     final NinchatQuestionnaire ninchatQuestionnaire) {
         super(itemView);
         rootItemPosition = position;
         questionnaire = new WeakReference(ninchatQuestionnaire);
-        callbackWeakReference = new WeakReference(callback);
         mLabel = (TextView) itemView.findViewById(R.id.radio_option_label);
         mRecycleView = (RecyclerView) itemView.findViewById(R.id.ninchat_chat_radio_options);
         update();
@@ -50,7 +49,7 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
         final JSONObject item = questionnaire.get().getItem(rootItemPosition);
         setLabel(item);
         mRecycleView.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
-        mRecycleView.setAdapter(new NinchatRadioBtnAdapter(getOptions(item), callbackWeakReference.get()));
+        mRecycleView.setAdapter(new NinchatRadioBtnAdapter(getOptions(item)));
     }
 
     private void setLabel(final JSONObject item) {
@@ -63,11 +62,9 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
 
     public class NinchatRadioBtnAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         private JSONArray options;
-        private Callback callback;
 
-        public NinchatRadioBtnAdapter(final JSONArray options, final Callback callback) {
+        public NinchatRadioBtnAdapter(final JSONArray options) {
             this.options = options;
-            this.callback = callback;
         }
 
         @Override
@@ -144,10 +141,17 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                             itemView.getContext(), R.color.ninchat_colorPrimary));
                 }
 
-                if (selected && callback != null) {
-                    callback.onSelected();
+                if (selected) {
+                    mayBeFireComplete();
                 }
 
+            }
+
+            private void mayBeFireComplete() {
+                final JSONObject rootItem = questionnaire.get().getItem(rootItemPosition);
+                if (rootItem.optBoolean("fireEvent", false)) {
+                    EventBus.getDefault().post(new RequireStateChange(false));
+                }
             }
 
             private void preFill(final JSONObject item, final int currentPosition) {
@@ -157,10 +161,6 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                 onSelectionChange(getResultInt(rootItem) == currentPosition);
             }
         }
-    }
-
-    public interface Callback {
-        void onSelected();
     }
 
 }

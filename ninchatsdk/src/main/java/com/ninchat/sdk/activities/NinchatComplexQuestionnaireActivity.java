@@ -12,7 +12,6 @@ import android.view.View;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatComplexFormLikeQuestionnaireAdapter;
-import com.ninchat.sdk.adapters.NinchatSimpleFormLikeQuestionnaireAdapter;
 import com.ninchat.sdk.events.RequireStateChange;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
@@ -44,32 +43,16 @@ public final class NinchatComplexQuestionnaireActivity extends NinchatBaseActivi
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
-        final Intent intent = getIntent();
-        final int previousPageIndex = intent.getIntExtra(PAGE_INDEX, -1);
+        final int previousPageIndex = getIntent().getIntExtra(PAGE_INDEX, -1);
         final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.questionnaire_form_rview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        final JSONArray questionnaire = NinchatSessionManager.getInstance().getNinchatQuestionnaires().getNinchatPreAudienceQuestionnaire().getQuestionnaireList();
-        final JSONObject currentQuestionnaire = getNextElement(questionnaire, previousPageIndex);
-        final JSONArray questionnaireList = getElements(currentQuestionnaire);
-        // heck if has button enabled. if enabled append the button as eof
-        // if does not have button , bind on click with all options
-        Log.e(TAG, questionnaireList.toString());
-        final NinchatComplexFormLikeQuestionnaireAdapter mPreAudienceQuestionnaireAdapter = new NinchatComplexFormLikeQuestionnaireAdapter(
-                new NinchatQuestionnaire(questionnaireList),
-                new NinchatComplexFormLikeQuestionnaireAdapter.Callback() {
-                    @Override
-                    public void onError(int position) {
-                        mRecyclerView.smoothScrollToPosition(position);
-                        close();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        setResult(RESULT_OK, new Intent().putExtra(PAGE_INDEX, previousPageIndex + 1));
-                        finish();
-                    }
-                });
+        final NinchatQuestionnaire questionnaire = NinchatSessionManager
+                .getInstance()
+                .getNinchatQuestionnaires()
+                .getNinchatPreAudienceQuestionnaire();
+        final JSONArray questionnaireList = getElements(getNextElement(questionnaire, previousPageIndex));
+        final NinchatComplexFormLikeQuestionnaireAdapter mPreAudienceQuestionnaireAdapter =
+                new NinchatComplexFormLikeQuestionnaireAdapter(new NinchatQuestionnaire(questionnaireList));
         final int spaceInPixel = getResources().getDimensionPixelSize(R.dimen.items_margin_top);
         mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(spaceInPixel));
         mRecyclerView.setAdapter(mPreAudienceQuestionnaireAdapter);
@@ -88,12 +71,12 @@ public final class NinchatComplexQuestionnaireActivity extends NinchatBaseActivi
     }
 
     private void close() {
-        setResult(RESULT_OK);
+        setResult(RESULT_OK, null);
         finish();
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)
-    public void onEvent(RequireStateChange requireStateChange){
-
+    public void onEvent(RequireStateChange requireStateChange) {
+        close();
     }
 }

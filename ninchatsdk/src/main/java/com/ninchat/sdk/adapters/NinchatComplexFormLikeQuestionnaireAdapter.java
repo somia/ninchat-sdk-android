@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.adapters.holders.formview.NinchatButtonViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatCheckboxViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatControlFlowViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatDropDownSelectViewHolder;
@@ -15,11 +16,9 @@ import com.ninchat.sdk.adapters.holders.formview.NinchatRadioBtnViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatTextViewHolder;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.BUTTON;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.CHECKBOX;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.EOF;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.INPUT;
@@ -29,19 +28,13 @@ import static com.ninchat.sdk.helper.NinchatQuestionnaire.SELECT;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.TEXT;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.TEXT_AREA;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.UNKNOWN;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getElements;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getItemType;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getNextElement;
 
 public class NinchatComplexFormLikeQuestionnaireAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final String TAG = NinchatComplexFormLikeQuestionnaireAdapter.class.getSimpleName();
     private NinchatQuestionnaire questionnaire;
-    private Callback callback;
-
-    public NinchatComplexFormLikeQuestionnaireAdapter(final com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire ninchatPreAudienceQuestionnaire,
-                                                      final Callback callback) {
+    public NinchatComplexFormLikeQuestionnaireAdapter(final com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire ninchatPreAudienceQuestionnaire) {
         this.questionnaire = ninchatPreAudienceQuestionnaire;
-        this.callback = callback;
     }
 
     @Override
@@ -73,7 +66,7 @@ public class NinchatComplexFormLikeQuestionnaireAdapter extends RecyclerView.Ada
                 // a button like element with single choice
                 return new NinchatRadioBtnViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.multichoice_with_label, parent, false),
-                        position, questionnaire, () -> callback.onComplete());
+                        position, questionnaire);
             case SELECT:
                 return new NinchatDropDownSelectViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.dropdown_with_label, parent, false),
@@ -86,10 +79,10 @@ public class NinchatComplexFormLikeQuestionnaireAdapter extends RecyclerView.Ada
                 return new NinchatLikeRtViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.dropdown_with_label, parent, false),
                         position, questionnaire);
-            case EOF:
-                return new NinchatControlFlowViewHolder(
+            case BUTTON:
+                return new NinchatButtonViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.control_buttons, parent, false),
-                        currentItem, controlFlowCallback);
+                        position, questionnaire);
 
         }
         return null;
@@ -103,29 +96,5 @@ public class NinchatComplexFormLikeQuestionnaireAdapter extends RecyclerView.Ada
     @Override
     public int getItemCount() {
         return questionnaire.size();
-    }
-
-    private NinchatControlFlowViewHolder.Callback controlFlowCallback = new NinchatControlFlowViewHolder.Callback() {
-        @Override
-        public void onClickNext() {
-            final int errorIndex = questionnaire.updateRequiredFieldStats();
-            if (errorIndex != -1) {
-                notifyDataSetChanged();
-                callback.onError(errorIndex);
-            } else {
-                callback.onComplete();
-            }
-        }
-
-        @Override
-        public void onClickPrevious() {
-            // todo implement
-        }
-    };
-
-    public interface Callback {
-        void onError(final int position);
-
-        void onComplete();
     }
 }

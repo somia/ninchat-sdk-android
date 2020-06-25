@@ -9,9 +9,11 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.events.RequireStateChange;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
@@ -44,6 +46,9 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
             questionnaire.get().setResult(item, isChecked);
             questionnaire.get().setError(item, false);
             updateUI(item);
+            if (isChecked) {
+                mayBeFireComplete();
+            }
         }
     };
 
@@ -76,6 +81,13 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
         // focus will get priority
         if (hasError) {
             mCheckbox.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.ninchat_color_error_background));
+        }
+    }
+
+    private void mayBeFireComplete() {
+        final JSONObject rootItem = questionnaire.get().getItem(itemPosition);
+        if (rootItem.optBoolean("fireEvent", false)) {
+            EventBus.getDefault().post(new RequireStateChange(false));
         }
     }
 

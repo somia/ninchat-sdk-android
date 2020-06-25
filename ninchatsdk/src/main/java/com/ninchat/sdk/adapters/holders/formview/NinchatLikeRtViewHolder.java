@@ -13,9 +13,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.events.RequireStateChange;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,6 +60,7 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
                 if (position != 0) {
                     questionnaire.get().setError(rootItem, false);
                     onSelected(true, mTextView);
+                    mayBeFireComplete();
                 } else {
                     onSelected(false, mTextView);
                 }
@@ -123,5 +126,12 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
             dataAdapter.add(label);
         }
         return dataAdapter;
+    }
+
+    private void mayBeFireComplete() {
+        final JSONObject rootItem = questionnaire.get().getItem(itemPosition);
+        if (rootItem.optBoolean("fireEvent", false)) {
+            EventBus.getDefault().post(new RequireStateChange(false));
+        }
     }
 }

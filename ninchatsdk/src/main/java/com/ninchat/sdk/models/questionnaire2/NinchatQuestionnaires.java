@@ -1,20 +1,21 @@
 package com.ninchat.sdk.models.questionnaire2;
-
-import com.ninchat.sdk.models.questionnaire.NinchatPostAudienceQuestionnaire;
-import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
-
 import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getPostAudienceQuestionnaire;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getPreAudienceQuestionnaire;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.postProcess;
 
 public class NinchatQuestionnaires {
     private NinchatQuestionnaire preAudienceQuestionnaire;
     private NinchatQuestionnaire postAudienceQuestionnaire;
 
     public NinchatQuestionnaires(final JSONObject configuration) {
-        preAudienceQuestionnaire = new NinchatQuestionnaire(getPreAudienceQuestionnaire(configuration));
-        postAudienceQuestionnaire = new NinchatQuestionnaire(getPostAudienceQuestionnaire(configuration));
+        preAudienceQuestionnaire = new NinchatQuestionnaire(
+                postProcess(getPreAudienceQuestionnaire(configuration))
+        );
+        postAudienceQuestionnaire = new NinchatQuestionnaire(
+                postProcess(getPostAudienceQuestionnaire(configuration))
+        );
     }
 
     public boolean hasPreAudienceQuestionnaire() {

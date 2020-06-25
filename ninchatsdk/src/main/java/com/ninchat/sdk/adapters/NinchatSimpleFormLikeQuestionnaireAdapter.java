@@ -69,7 +69,7 @@ public class NinchatSimpleFormLikeQuestionnaireAdapter extends RecyclerView.Adap
                 // a button like element with single choice
                 return new NinchatRadioBtnViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.multichoice_with_label, parent, false),
-                        position, questionnaire, null);
+                        position, questionnaire);
             case SELECT:
                 return new NinchatDropDownSelectViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.dropdown_with_label, parent, false),

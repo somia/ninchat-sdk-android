@@ -20,7 +20,8 @@ public class NinchatQuestionnaire {
     public static final int LIKERT = 6;
     public static final int CHECKBOX = 7;
     public static final int OPTIONS = 8;
-    public static final int EOF = 9;
+    public static final int BUTTON = 9;
+    public static final int EOF = 10;
 
     public static boolean isText(final JSONObject jsonObject) {
         return "text".equalsIgnoreCase(jsonObject.optString("element"));
@@ -50,6 +51,10 @@ public class NinchatQuestionnaire {
         return "checkbox".equalsIgnoreCase(jsonObject.optString("element"));
     }
 
+    public static boolean isButton(final JSONObject jsonObject) {
+        return "buttons".equalsIgnoreCase(jsonObject.optString("element"));
+    }
+
     public static boolean isEoF(final JSONObject jsonObject) {
         return "eof".equalsIgnoreCase(jsonObject.optString("element"));
     }
@@ -71,6 +76,8 @@ public class NinchatQuestionnaire {
             return NinchatQuestionnaire.LIKERT;
         } else if (NinchatQuestionnaire.isCheckBox(jsonObject)) {
             return NinchatQuestionnaire.CHECKBOX;
+        } else if (NinchatQuestionnaire.isButton(jsonObject)) {
+            return NinchatQuestionnaire.BUTTON;
         } else if (NinchatQuestionnaire.isEoF(jsonObject)) {
             return NinchatQuestionnaire.EOF;
         }
@@ -114,21 +121,29 @@ public class NinchatQuestionnaire {
         if (element == null) {
             return null;
         }
-        if (isGroupElement(element)) {
-            return element.optJSONArray("elements");
+        if (element.has("elements")) {
+            try {
+                return new JSONArray(element.optJSONArray("elements").toString());
+            } catch (JSONException e) {
+                return null;
+            }
         }
         JSONArray retval = new JSONArray();
-        retval.put(element);
+        try {
+            retval.put(new JSONObject(element.toString()));
+        } catch (JSONException e) {
+            return retval;
+        }
         return retval;
     }
 
-    public static JSONObject getNextElement(final JSONArray questionnaires, final int lastIndex) {
-        if (questionnaires == null) {
+    public static JSONObject getNextElement(final com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire questionnaire, final int lastIndex) {
+        if (questionnaire.getQuestionnaireList() == null) {
             return null;
         }
-        for (int i = lastIndex + 1; i < questionnaires.length(); i += 1) {
-            final JSONObject currentElement = questionnaires.optJSONObject(i);
-            if (currentElement.has("elements") || currentElement.has("element")) {
+        for (int i = lastIndex + 1; i < questionnaire.getQuestionnaireList().length(); i += 1) {
+            final JSONObject currentElement = questionnaire.getQuestionnaireList().optJSONObject(i);
+            if (isElement(currentElement)) {
                 return currentElement;
             }
         }
@@ -265,14 +280,21 @@ public class NinchatQuestionnaire {
         return hasResult(element);
     }
 
+    public static boolean hasButton(final JSONObject buttonElement, final boolean isBack) {
+        if (buttonElement == null) {
+            return false;
+        }
+        return "false".compareToIgnoreCase(buttonElement.optString(isBack ? "back" : "next")) != 0;
+    }
+
     public static boolean hasButton(final JSONObject element) {
         final JSONObject buttons = element.optJSONObject("buttons");
         if (buttons == null) {
             return false;
         }
-        final boolean backDisabled = buttons.optBoolean("back", false);
-        final boolean nextDisabled = buttons.optBoolean("next", false);
-        return !(backDisabled && nextDisabled);
+        final boolean hasBack = hasButton(buttons, true);
+        final boolean hasNext = hasButton(buttons, false);
+        return (hasBack || hasNext);
     }
 
     public static void addEof(JSONArray itemList) {
@@ -300,6 +322,7 @@ public class NinchatQuestionnaire {
             // todo(pallab) do same think for simple form as well so that we can use same view and recycler for both simple and complex form
             return questionnaireList;
         }
+
         try {
             // at this point it is a complex questionnaire with either logic or redirect
             for (int i = 0; i < questionnaireList.length(); i += 1) {
@@ -319,9 +342,9 @@ public class NinchatQuestionnaire {
                         elements.optJSONObject(j).putOpt("fireEvent", true);
                     }
                 }
-                currentElement.putOpt("elements", elements);
+                currentElement.put("elements", elements);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return questionnaireList;
@@ -331,10 +354,10 @@ public class NinchatQuestionnaire {
         JSONObject retval = new JSONObject();
         try {
             final JSONObject buttons = element.optJSONObject("buttons");
-            retval.putOpt("element", "button");
+            retval.putOpt("element", "buttons");
             retval.putOpt("fireEvent", true);
-            retval.putOpt("back", buttons.optJSONObject("back"));
-            retval.putOpt("next", buttons.optJSONObject("next"));
+            retval.putOpt("back", hasButton(buttons, true) ? buttons.optString("back") : false);
+            retval.putOpt("next", hasButton(buttons, false) ? buttons.optString("next") : false);
         } catch (Exception e) {
             e.printStackTrace();
         }
