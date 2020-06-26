@@ -405,6 +405,19 @@ public class NinchatQuestionnaire {
         return null;
     }
 
+    public static JSONArray convertSimpleFormToGroup(final JSONArray questionnaireList) throws JSONException {
+        final JSONArray retval = new JSONArray();
+        final JSONObject simpleForm = new JSONObject();
+        simpleForm.putOpt("name", "SimpleForm");
+        simpleForm.putOpt("type", "group");
+        simpleForm.putOpt("buttons", new JSONObject("{\"back\":false,\"next\": \"Continue\"}"));
+        simpleForm.putOpt("elements", questionnaireList);
+        final JSONObject logic = new JSONObject("{\"name\":\"SimpleForm-Logic1\",\"logic\":{\"target\":\"_register\"}}");
+        retval.put(simpleForm);
+        retval.put(logic);
+        return retval;
+    }
+
     public static JSONObject makeGroupElement(final JSONObject nonGroupElement) throws JSONException {
         JSONArray elements = new JSONArray();
         elements.put(new JSONObject(nonGroupElement.toString()));
