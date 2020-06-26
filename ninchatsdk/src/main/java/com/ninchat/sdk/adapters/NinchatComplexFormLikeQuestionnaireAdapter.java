@@ -20,7 +20,6 @@ import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.BUTTON;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.CHECKBOX;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.EOF;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.INPUT;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.LIKERT;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.RADIO;

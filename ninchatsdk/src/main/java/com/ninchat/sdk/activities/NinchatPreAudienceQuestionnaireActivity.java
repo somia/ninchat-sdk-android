@@ -10,6 +10,7 @@ import android.view.View;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.adapters.NinchatComplexFormLikeQuestionnaireAdapter;
 import com.ninchat.sdk.adapters.NinchatSimpleFormLikeQuestionnaireAdapter;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
 
@@ -23,7 +24,7 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
     public static final int REQUEST_CODE = NinchatPreAudienceQuestionnaireActivity.class.hashCode() & 0xffff;
     protected static final String QUEUE_ID = "queueId";
     private String queueId;
-    private int lastElement = -1;
+    private int lastElement = 0;
 
     @Override
     protected int getLayoutRes() {
@@ -86,9 +87,10 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NinchatComplexQuestionnaireActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                lastElement += 1;
+                final int nextIndex = data.getIntExtra(PAGE_INDEX, 0);
                 startActivityForResult(
-                        NinchatComplexQuestionnaireActivity.getLaunchIntent(getApplicationContext(), lastElement),
+                        NinchatComplexQuestionnaireActivity.getLaunchIntent(getApplicationContext(),
+                                nextIndex),
                         NinchatComplexQuestionnaireActivity.REQUEST_CODE);
             } else if (resultCode == RESULT_CANCELED) {
                 finish();

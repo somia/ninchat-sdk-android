@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
+import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatComplexFormLikeQuestionnaireAdapter;
@@ -22,13 +23,18 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.stream.IntStream;
+
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getElements;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getMatchingElement;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getNextElement;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getQuestionnaireElementByTarget;
 
 public final class NinchatComplexQuestionnaireActivity extends NinchatBaseActivity {
     private final String TAG = NinchatComplexQuestionnaireActivity.class.getSimpleName();
     public static final int REQUEST_CODE = NinchatComplexQuestionnaireActivity.class.hashCode() & 0xffff;
     public static final String PAGE_INDEX = "pageIndex";
+    private int lastIndex = 0;
 
     @Override
     protected int getLayoutRes() {
@@ -36,23 +42,26 @@ public final class NinchatComplexQuestionnaireActivity extends NinchatBaseActivi
     }
 
     public static Intent getLaunchIntent(final Context context, final int inputIndex) {
-        return new Intent(context, NinchatComplexQuestionnaireActivity.class).putExtra(PAGE_INDEX, inputIndex);
+        return new Intent(context, NinchatComplexQuestionnaireActivity.class)
+                .putExtra(PAGE_INDEX, inputIndex);
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
-        final int previousPageIndex = getIntent().getIntExtra(PAGE_INDEX, -1);
+        lastIndex = getIntent().getIntExtra(PAGE_INDEX, 0);
         final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.questionnaire_form_rview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         final NinchatQuestionnaire questionnaire = NinchatSessionManager
                 .getInstance()
                 .getNinchatQuestionnaires()
                 .getNinchatPreAudienceQuestionnaire();
-        final JSONArray questionnaireList = getElements(getNextElement(questionnaire, previousPageIndex));
+
+        final JSONObject groupQuestionnaire = getNextElement(questionnaire, lastIndex);
+        final JSONArray questionnaireElements = getElements(groupQuestionnaire);
         final NinchatComplexFormLikeQuestionnaireAdapter mPreAudienceQuestionnaireAdapter =
-                new NinchatComplexFormLikeQuestionnaireAdapter(new NinchatQuestionnaire(questionnaireList));
+                new NinchatComplexFormLikeQuestionnaireAdapter(new NinchatQuestionnaire(questionnaireElements));
         final int spaceInPixel = getResources().getDimensionPixelSize(R.dimen.items_margin_top);
         mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(spaceInPixel));
         mRecyclerView.setAdapter(mPreAudienceQuestionnaireAdapter);
@@ -70,13 +79,22 @@ public final class NinchatComplexQuestionnaireActivity extends NinchatBaseActivi
         finish();
     }
 
-    private void close() {
-        setResult(RESULT_OK, null);
+    private void close(final int elementIndex) {
+        setResult(RESULT_OK, new Intent().putExtra(NinchatComplexQuestionnaireActivity.PAGE_INDEX, elementIndex));
         finish();
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onEvent(RequireStateChange requireStateChange) {
-        close();
+        final NinchatQuestionnaire questionnaire = NinchatSessionManager
+                .getInstance()
+                .getNinchatQuestionnaires()
+                .getNinchatPreAudienceQuestionnaire();
+
+        final JSONObject groupQuestionnaire = getNextElement(questionnaire, lastIndex);
+        final String targetElement = getMatchingElement(questionnaire, groupQuestionnaire);
+        final int elementIndex = getQuestionnaireElementByTarget(questionnaire, targetElement);
+        Log.e(TAG, "" + targetElement + " " + elementIndex);
+        close(elementIndex);
     }
 }

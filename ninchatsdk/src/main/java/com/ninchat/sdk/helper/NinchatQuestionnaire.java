@@ -6,9 +6,12 @@ import android.text.Spanned;
 import android.text.TextUtils;
 
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Iterator;
 
 public class NinchatQuestionnaire {
     public static final int UNKNOWN = 0;
@@ -121,27 +124,14 @@ public class NinchatQuestionnaire {
         if (element == null) {
             return null;
         }
-        if (element.has("elements")) {
-            try {
-                return new JSONArray(element.optJSONArray("elements").toString());
-            } catch (JSONException e) {
-                return null;
-            }
-        }
-        JSONArray retval = new JSONArray();
-        try {
-            retval.put(new JSONObject(element.toString()));
-        } catch (JSONException e) {
-            return retval;
-        }
-        return retval;
+        return element.optJSONArray("elements");
     }
 
-    public static JSONObject getNextElement(final com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire questionnaire, final int lastIndex) {
+    public static JSONObject getNextElement(final com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire questionnaire, final int at) {
         if (questionnaire.getQuestionnaireList() == null) {
             return null;
         }
-        for (int i = lastIndex + 1; i < questionnaire.getQuestionnaireList().length(); i += 1) {
+        for (int i = at; i < questionnaire.getQuestionnaireList().length(); i += 1) {
             final JSONObject currentElement = questionnaire.getQuestionnaireList().optJSONObject(i);
             if (isElement(currentElement)) {
                 return currentElement;
@@ -166,6 +156,22 @@ public class NinchatQuestionnaire {
         return null;
     }
 
+    public static int getQuestionnaireElementByTarget(final com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire questionnaires, final String name) {
+        if (questionnaires == null) {
+            return -1;
+        }
+        if (name == null) {
+            return -1;
+        }
+        for (int i = 0; i < questionnaires.size(); i += 1) {
+            final JSONObject currentElement = questionnaires.getItem(i);
+            if (name.equals(getName(currentElement))) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
 
     public static String getPattern(final JSONObject element) {
         if (element == null) {
@@ -186,6 +192,20 @@ public class NinchatQuestionnaire {
             return "";
         }
         return element.optString("label", null);
+    }
+
+    public static String getName(final JSONObject element) {
+        if (element == null) {
+            return "";
+        }
+        return element.optString("name", null);
+    }
+
+    public static String getValue(final JSONObject element) {
+        if (element == null) {
+            return "";
+        }
+        return element.optString("value", null);
     }
 
 
@@ -313,6 +333,10 @@ public class NinchatQuestionnaire {
         return element.has("elements") || element.has("element");
     }
 
+    public static boolean isLogic(final JSONObject element) {
+        return element.has("logic");
+    }
+
     public static JSONArray postProcess(JSONArray questionnaireList) {
         if (questionnaireList == null) {
             return null;
@@ -362,6 +386,166 @@ public class NinchatQuestionnaire {
             e.printStackTrace();
         }
         return retval;
+    }
+
+    public static String getNextTargetByRedirects(final JSONObject currentElement, final JSONArray questionnaireList) {
+        final JSONArray redirects = currentElement.optJSONArray("redirects");
+        if (redirects == null) {
+            return null;
+        }
+        // only interested in first element
+        final JSONObject response = questionnaireList.optJSONObject(0);
+        final String value = getResultString(response);
+        for (int i = 0; i < redirects.length(); i += 1) {
+            final JSONObject currentRedirect = redirects.optJSONObject(i);
+            if (!currentRedirect.has("pattern") || matchPattern(value, currentRedirect.optString("pattern"))) {
+                return currentRedirect.optString("redirect");
+            }
+        }
+        return null;
+    }
+
+    public static JSONObject makeGroupElement(final JSONObject nonGroupElement) throws JSONException {
+        JSONArray elements = new JSONArray();
+        elements.put(new JSONObject(nonGroupElement.toString()));
+
+        JSONObject retval = new JSONObject(nonGroupElement.toString());
+        retval.putOpt("elements", elements);
+        retval.putOpt("type", "group");
+        return retval;
+    }
+
+    public static JSONObject makeLogicElement(final JSONObject redirectElement, final String elementName, final int logicIndex) throws JSONException {
+        JSONObject andLogic = new JSONObject();
+        andLogic.put(elementName, redirectElement.optString("pattern"));
+
+
+        JSONArray andLogicList = new JSONArray();
+        andLogicList.put(andLogic);
+
+        JSONObject logic = new JSONObject();
+        logic.putOpt("target", redirectElement.optString("target"));
+
+        // only add logic if it has pattern
+        if (redirectElement.has("pattern")) {
+            logic.putOpt("and", andLogicList);
+        }
+        JSONObject retval = new JSONObject();
+        retval.putOpt("name", elementName + "-Logic" + logicIndex);
+        retval.putOpt("logic", logic);
+        return retval;
+    }
+
+    // make no group element to group element
+    @NotNull
+    public static JSONArray unifyQuestionnaire(final JSONArray questionnaireList) throws JSONException {
+        if (questionnaireList == null) {
+            return null;
+        }
+        JSONArray retval = new JSONArray();
+        // convert all type of questionnaire to group questionnaire
+        for (int i = 0; i < questionnaireList.length(); i += 1) {
+            final JSONObject currentElement = questionnaireList.optJSONObject(i);
+            if (isGroupElement(currentElement)) {
+                retval.put(currentElement);
+            } else if (isLogic(currentElement)) {
+                retval.put(currentElement);
+            } else {
+                // a simple form. convert it to group element
+                final JSONObject groupElement = makeGroupElement(currentElement);
+                retval.put(groupElement);
+            }
+            final JSONArray redirectList = currentElement.optJSONArray("redirects");
+            for (int j = 0; redirectList != null && j < redirectList.length(); j += 1) {
+                retval.put(makeLogicElement(redirectList.optJSONObject(j), currentElement.optString("name"), j + 1));
+            }
+        }
+
+        // add actions for group elements
+        for (int i = 0; i < retval.length(); i += 1) {
+            final JSONObject currentElement = retval.optJSONObject(i);
+            if (isLogic(currentElement)) {
+                continue;
+            }
+            final boolean hasButton = hasButton(currentElement);
+            JSONArray elements = getElements(currentElement);
+            if (hasButton) {
+                final JSONObject tempElement = getButtonElement(currentElement);
+                elements.put(tempElement);
+            } else {
+                for (int j = 0; j < elements.length(); j += 1) {
+                    // if there is no button for this element then mark fire event true for all conditions
+                    elements.optJSONObject(j).putOpt("fireEvent", true);
+                }
+            }
+        }
+        return retval;
+    }
+
+    public static JSONArray getLogicByName(final com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire questionnaire, final String name) {
+        JSONArray retval = new JSONArray();
+        for (int i = 0; i < questionnaire.size(); i += 1) {
+            final JSONObject currentElement = questionnaire.getItem(i);
+            if (!isLogic(currentElement)) {
+                continue;
+            }
+            if (getName(currentElement).startsWith(name)) {
+                retval.put(currentElement);
+            }
+        }
+        return retval;
+    }
+
+    public static boolean isMatchedKey(final String key, final String value, final JSONArray elements) {
+        final JSONObject matchedElement = getQuestionnaireElementByName(elements, key);
+        if (matchedElement == null) {
+            return false;
+        }
+        final String result = getResultString(matchedElement);
+        if (result == null) {
+            return false;
+        }
+        return matchPattern(result, value);
+    }
+
+    public static boolean isMatchedLogic(final JSONArray logicList, final JSONArray elements, boolean matchAnd) {
+        if (logicList == null) {
+            return false;
+        }
+        boolean ok = matchAnd ? true : false;
+        for (int i = 0; i < logicList.length(); i += 1) {
+            final JSONObject currentLogic = logicList.optJSONObject(i);
+            Iterator<String> keys = currentLogic.keys();
+            while (keys.hasNext()) {
+                final String currentKey = keys.next();
+                final String currentValue = currentLogic.optString(currentKey);
+                final boolean matched = isMatchedKey(currentKey, currentValue, elements);
+                ok = matchAnd ? ok & matched : ok | matched;
+            }
+        }
+        return ok;
+    }
+
+    public static String getMatchingElement(final com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire questionnaire, final JSONObject groupQuestionnaire) {
+        final JSONArray elements = getElements(groupQuestionnaire);
+        final String elementName = getName(groupQuestionnaire);
+
+        // get list of all logic that match the name
+        final JSONArray logicList = getLogicByName(questionnaire, elementName);
+        // go through all logic and return the index of the match logic
+        for (int i = 0; i < logicList.length(); i += 1) {
+            final JSONObject currentLogic = logicList.optJSONObject(i).optJSONObject("logic");
+            final JSONArray andLogicList = currentLogic.optJSONArray("and");
+            final JSONArray orLogicList = currentLogic.optJSONArray("or");
+            if (andLogicList == null && orLogicList == null) {
+                return currentLogic.optString("target");
+            } else if (isMatchedLogic(andLogicList, elements, true)) {
+                return currentLogic.optString("target");
+            } else if (isMatchedLogic(orLogicList, elements, false)) {
+                return currentLogic.optString("target");
+            }
+        }
+        return null;
     }
 
     public static JSONArray getPreAudienceQuestionnaire(final JSONObject item) {
