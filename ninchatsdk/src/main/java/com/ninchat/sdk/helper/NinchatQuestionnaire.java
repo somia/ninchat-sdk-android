@@ -341,12 +341,6 @@ public class NinchatQuestionnaire {
         if (questionnaireList == null) {
             return null;
         }
-        // if simple questionnaire then check if last element has a button. If it doesnot then add a button element with next enabled
-        if (isSimpleForm(questionnaireList)) {
-            // todo(pallab) do same think for simple form as well so that we can use same view and recycler for both simple and complex form
-            return questionnaireList;
-        }
-
         try {
             // at this point it is a complex questionnaire with either logic or redirect
             for (int i = 0; i < questionnaireList.length(); i += 1) {
