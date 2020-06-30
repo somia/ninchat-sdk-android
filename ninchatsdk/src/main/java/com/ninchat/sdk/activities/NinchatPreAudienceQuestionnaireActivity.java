@@ -20,11 +20,13 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Stack;
 
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.clearElement;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getAllFilledElements;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getCurrentElement;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getElements;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getMatchingTargetElement;
@@ -38,6 +40,7 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
     private final String TAG = NinchatPreAudienceQuestionnaireActivity.class.getSimpleName();
     public static final int REQUEST_CODE = NinchatPreAudienceQuestionnaireActivity.class.hashCode() & 0xffff;
     protected static final String QUEUE_ID = "queueId";
+    protected static final String COMMAND_TYPE = "commandType";
     private String queueId;
     private Stack<Integer> historyList;
     private NinchatFormLikeQuestionnaireAdapter mPreAudienceQuestionnaireAdapter;
@@ -92,8 +95,12 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void close() {
-        setResult(RESULT_OK, new Intent().putExtra(NinchatPreAudienceQuestionnaireActivity.QUEUE_ID, queueId));
+    private void close(final boolean isComplete) {
+        Intent currentIntent = new Intent();
+        currentIntent.putExtra(NinchatPreAudienceQuestionnaireActivity.QUEUE_ID, queueId);
+        currentIntent.putExtra(NinchatPreAudienceQuestionnaireActivity.COMMAND_TYPE, isComplete ?
+                "_compete" : "_register");
+        setResult(RESULT_OK, currentIntent);
         finish();
     }
 
@@ -112,7 +119,8 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
         } else {
             // a next button or a logic
             final JSONObject currentElement = getCurrentElement(questionnaire.getQuestionnaireList(), historyList.peek());
-            final String targetElementName = getMatchingTargetElement(questionnaire.getQuestionnaireList(), currentElement);
+            final JSONArray filledElements = getAllFilledElements(questionnaire.getQuestionnaireList(), historyList);
+            final String targetElementName = getMatchingTargetElement(questionnaire.getQuestionnaireList(), filledElements, currentElement);
             final int targetElementIndex = getQuestionnaireElementIndexByName(questionnaire.getQuestionnaireList(), targetElementName);
             if (isComplete(targetElementName)) {
                 handleComplete();
@@ -159,10 +167,10 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
     }
 
     public void handleComplete() {
-        close();
+        close(true);
     }
 
     public void handleRegister() {
-        close();
+        close(false);
     }
 }

@@ -167,7 +167,7 @@ public class NinchatQuestionnaire {
         }
         for (int i = 0; i < questionnaireList.length(); i += 1) {
             final JSONObject currentElement = questionnaireList.optJSONObject(i);
-            if (name.equals(currentElement.optString("name"))) {
+            if (currentElement != null && name.equals(currentElement.optString("name"))) {
                 return currentElement;
             }
         }
@@ -573,9 +573,7 @@ public class NinchatQuestionnaire {
         return logicList;
     }
 
-    public static String getMatchingTargetElement(final JSONArray questionnaireList, final JSONObject currentQuestionItem) {
-        // get all group elements from current questionnaire item
-        final JSONArray elements = getElements(currentQuestionItem);
+    public static String getMatchingTargetElement(final JSONArray questionnaireList, JSONArray allFilledGroupElementList, final JSONObject currentQuestionItem) {
         // get list of all logic that match the name
         final JSONArray logicList = getMatchingLogic(questionnaireList, currentQuestionItem);
         // go through all logic and return the index of the match logic
@@ -587,15 +585,16 @@ public class NinchatQuestionnaire {
             if (!hasAndLogic && !hasOrLogic) {
                 return currentLogic.optString("target");
             }
-            if (matchedLogic(currentLogic.optJSONArray("and"), elements, true)) {
+            if (matchedLogic(currentLogic.optJSONArray("and"), allFilledGroupElementList, true)) {
                 return currentLogic.optString("target");
             }
-            if (matchedLogic(currentLogic.optJSONArray("or"), elements, false)) {
+            if (matchedLogic(currentLogic.optJSONArray("or"), allFilledGroupElementList, false)) {
                 return currentLogic.optString("target");
             }
         }
         return null;
     }
+
 
     public static <T> void setResult(final JSONObject element, final T result) {
         try {
@@ -611,6 +610,23 @@ public class NinchatQuestionnaire {
         } catch (Exception e) {
             // pass
         }
+    }
+
+    public static JSONArray getAllFilledElements(final JSONArray questionnaireList, final Stack<Integer> historyList) {
+        JSONArray retval = new JSONArray();
+        if (questionnaireList == null) {
+            return retval;
+        }
+        for (int currentIndex : historyList) {
+            final JSONObject currentElement = questionnaireList.optJSONObject(currentIndex);
+            final JSONArray elementList = getElements(currentElement);
+            for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
+                if (elementList.optJSONObject(i) != null) {
+                    retval.put(elementList.optJSONObject(i));
+                }
+            }
+        }
+        return retval;
     }
 
     public static void clearElement(final JSONArray questionnaireList, final Stack<Integer> historyList, final int index) {
