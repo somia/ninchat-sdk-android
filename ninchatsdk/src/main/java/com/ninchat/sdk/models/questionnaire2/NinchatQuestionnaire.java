@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.isRequiredOK;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.matchPattern;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.setError;
 
 public class NinchatQuestionnaire {
     private JSONArray questionnaireList;
@@ -13,20 +14,13 @@ public class NinchatQuestionnaire {
         this.questionnaireList = questionnaireList;
     }
 
-    public <T> void setResult(final JSONObject element, final T result) {
-        try {
-            element.put("result", result);
-        } catch (Exception e) {
-            // pass
-        }
+
+    public int size() {
+        return questionnaireList == null ? 0 : questionnaireList.length();
     }
 
-    public void setError(final JSONObject element, final boolean hasError) {
-        try {
-            element.put("hasError", hasError);
-        } catch (Exception e) {
-            // pass
-        }
+    public boolean isEmpty() {
+        return questionnaireList == null || size() == 0;
     }
 
     public JSONObject getItem(final int position) {
@@ -36,20 +30,17 @@ public class NinchatQuestionnaire {
         return questionnaireList.optJSONObject(position);
     }
 
-    public int size() {
-        return questionnaireList.length();
-    }
-
-    public boolean isEmpty() {
-        return questionnaireList == null || size() == 0;
-    }
-
     public void clear() {
         questionnaireList = null;
     }
 
     public JSONArray getQuestionnaireList() {
         return questionnaireList;
+    }
+
+    public void updateQuestionnaireList(final JSONArray questionnaireList) {
+        this.clear();
+        this.questionnaireList = questionnaireList;
     }
 
     public int updateRequiredFieldStats() {

@@ -13,7 +13,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.events.RequireStateChange;
+import com.ninchat.sdk.events.OnRequireStepChange;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
@@ -27,6 +27,8 @@ import java.lang.ref.WeakReference;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getError;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultInt;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.setError;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.setResult;
 
 public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatLikeRtViewHolder.class.getSimpleName();
@@ -55,10 +57,10 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 final JSONObject rootItem = questionnaire.get().getItem(itemPosition);
-                questionnaire.get().setResult(rootItem, position);
+                setResult(rootItem, position);
                 final TextView mTextView = (TextView) parent.getChildAt(0);
                 if (position != 0) {
-                    questionnaire.get().setError(rootItem, false);
+                    setError(rootItem, false);
                     onSelected(true, mTextView);
                     mayBeFireComplete();
                 } else {
@@ -131,7 +133,7 @@ public class NinchatLikeRtViewHolder extends RecyclerView.ViewHolder {
     private void mayBeFireComplete() {
         final JSONObject rootItem = questionnaire.get().getItem(itemPosition);
         if (rootItem.optBoolean("fireEvent", false)) {
-            EventBus.getDefault().post(new RequireStateChange(false));
+            EventBus.getDefault().post(new OnRequireStepChange(OnRequireStepChange.other));
         }
     }
 }

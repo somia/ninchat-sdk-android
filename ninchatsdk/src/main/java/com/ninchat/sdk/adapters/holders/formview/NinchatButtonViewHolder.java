@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.events.RequireStateChange;
+import com.ninchat.sdk.events.OnRequireStepChange;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
 import org.greenrobot.eventbus.EventBus;
@@ -41,21 +41,21 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
         } else {
             mPrevious.setText(currentItem.optString("back"));
             // todo want to check all required field
-            mPrevious.setOnClickListener(v -> mayBeFireComplete());
+            mPrevious.setOnClickListener(v -> mayBeFireComplete(OnRequireStepChange.back));
         }
         if (!hasButton(currentItem, false)) {
             mNext.setVisibility(View.INVISIBLE);
         } else {
             mNext.setText(currentItem.optString("next"));
             // todo want to check all required field
-            mNext.setOnClickListener(v -> mayBeFireComplete());
+            mNext.setOnClickListener(v -> mayBeFireComplete(OnRequireStepChange.forward));
         }
     }
 
-    private void mayBeFireComplete() {
+    private void mayBeFireComplete(final int moveType) {
         final JSONObject rootItem = questionnaire.get().getItem(itemPosition);
         if (rootItem.optBoolean("fireEvent", false)) {
-            EventBus.getDefault().post(new RequireStateChange(false));
+            EventBus.getDefault().post(new OnRequireStepChange(moveType));
         }
     }
 }

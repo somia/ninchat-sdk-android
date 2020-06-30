@@ -21,6 +21,8 @@ import static com.ninchat.sdk.helper.NinchatQuestionnaire.getError;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultString;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.matchPattern;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.setError;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.setResult;
 
 public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatInputFieldViewHolder.class.getSimpleName();
@@ -56,8 +58,8 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
         public void afterTextChanged(Editable s) {
             // try to validate the current input if there is a pattern
             final JSONObject item = questionnaire.get().getItem(itemPosition);
-            questionnaire.get().setResult(item, s.toString());
-            questionnaire.get().setError(item, !matchPattern(item));
+            setResult(item, s.toString());
+            setError(item, !matchPattern(item));
             updateUI(item, true);
         }
     };

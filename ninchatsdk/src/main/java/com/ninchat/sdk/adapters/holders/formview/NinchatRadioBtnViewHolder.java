@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.events.RequireStateChange;
+import com.ninchat.sdk.events.OnRequireStepChange;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
@@ -28,6 +28,8 @@ import static com.ninchat.sdk.helper.NinchatQuestionnaire.getOptions;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultInt;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultString;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getValue;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.setError;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.setResult;
 
 public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatRadioBtnViewHolder.class.getSimpleName();
@@ -114,8 +116,8 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                     final JSONObject rootItem = questionnaire.get().getItem(rootItemPosition);
                     final String value = getValue(item);
                     final String previouslySelected = getResultString(rootItem);
-                    questionnaire.get().setResult(rootItem, value.equalsIgnoreCase(previouslySelected) ? null : value);
-                    questionnaire.get().setError(rootItem, false);
+                    setResult(rootItem, value.equalsIgnoreCase(previouslySelected) ? null : value);
+                    setError(rootItem, false);
                     firstTime = false;
                     notifyDataSetChanged();
                 });
@@ -156,7 +158,7 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
             private void mayBeFireComplete() {
                 final JSONObject rootItem = questionnaire.get().getItem(rootItemPosition);
                 if (rootItem.optBoolean("fireEvent", false)) {
-                    EventBus.getDefault().post(new RequireStateChange(false));
+                    EventBus.getDefault().post(new OnRequireStepChange(OnRequireStepChange.other));
                 }
             }
 

@@ -16,6 +16,7 @@ import com.ninchat.sdk.adapters.holders.formview.NinchatRadioBtnViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatTextViewHolder;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.BUTTON;
@@ -26,7 +27,6 @@ import static com.ninchat.sdk.helper.NinchatQuestionnaire.RADIO;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.SELECT;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.TEXT;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.TEXT_AREA;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.UNKNOWN;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getItemType;
 
 public class NinchatFormLikeQuestionnaireAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -48,8 +48,6 @@ public class NinchatFormLikeQuestionnaireAdapter extends RecyclerView.Adapter<Re
         final JSONObject currentItem = questionnaire.getItem(position);
         final int viewType = getItemType(currentItem);
         switch (viewType) {
-            case UNKNOWN:
-                return null;
             case TEXT:
                 return new NinchatTextViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.text_view, parent, false),
@@ -93,8 +91,8 @@ public class NinchatFormLikeQuestionnaireAdapter extends RecyclerView.Adapter<Re
         Log.d(TAG, "on bind view holder " + position);
     }
 
-    public void updateContent(final NinchatQuestionnaire ninchatQuestionnaire) {
-        this.questionnaire = ninchatQuestionnaire;
+    public void updateContent(final JSONArray questionnaireList) {
+        this.questionnaire.updateQuestionnaireList(questionnaireList);
     }
 
     @Override

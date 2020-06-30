@@ -9,7 +9,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.events.RequireStateChange;
+import com.ninchat.sdk.events.OnRequireStepChange;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
@@ -21,6 +21,8 @@ import java.lang.ref.WeakReference;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getError;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultBoolean;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.setError;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.setResult;
 
 public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatCheckboxViewHolder.class.getSimpleName();
@@ -43,8 +45,8 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             final JSONObject item = questionnaire.get().getItem(itemPosition);
-            questionnaire.get().setResult(item, isChecked);
-            questionnaire.get().setError(item, false);
+            setResult(item, isChecked);
+            setError(item, false);
             updateUI(item);
             if (isChecked) {
                 mayBeFireComplete();
@@ -87,7 +89,7 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
     private void mayBeFireComplete() {
         final JSONObject rootItem = questionnaire.get().getItem(itemPosition);
         if (rootItem.optBoolean("fireEvent", false)) {
-            EventBus.getDefault().post(new RequireStateChange(false));
+            EventBus.getDefault().post(new OnRequireStepChange(OnRequireStepChange.other));
         }
     }
 
