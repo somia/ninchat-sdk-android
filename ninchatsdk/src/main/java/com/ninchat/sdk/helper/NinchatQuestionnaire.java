@@ -314,7 +314,7 @@ public class NinchatQuestionnaire {
         if (buttonElement == null) {
             return false;
         }
-        return "false".compareToIgnoreCase(buttonElement.optString(isBack ? "back" : "next")) != 0;
+        return !"false".equalsIgnoreCase(buttonElement.optString(isBack ? "back" : "next"));
     }
 
     public static boolean hasButton(final JSONObject element) {
@@ -325,18 +325,6 @@ public class NinchatQuestionnaire {
         final boolean hasBack = hasButton(buttons, true);
         final boolean hasNext = hasButton(buttons, false);
         return (hasBack || hasNext);
-    }
-
-    public static void addEof(JSONArray itemList) {
-        if (itemList == null) {
-            return;
-        }
-        final String jsonString = "{\"element\":\"eof\"}";
-        try {
-            itemList.put(new JSONObject(jsonString));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     public static boolean isElement(final JSONObject element) {
