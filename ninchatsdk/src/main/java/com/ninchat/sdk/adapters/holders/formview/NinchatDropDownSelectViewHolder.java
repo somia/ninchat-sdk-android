@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.events.OnRequireStepChange;
-import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
 import org.greenrobot.eventbus.EventBus;
@@ -25,8 +24,10 @@ import java.lang.ref.WeakReference;
 
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getError;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getOptionIndex;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getOptionValueByIndex;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getOptions;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultInt;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultString;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.setError;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.setResult;
 
@@ -59,7 +60,8 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 final JSONObject rootItem = questionnaire.get().getItem(itemPosition);
-                setResult(rootItem, position);
+                final String result = getOptionValueByIndex(rootItem, position - 1);
+                setResult(rootItem, result);
                 final TextView mTextView = (TextView) parent.getChildAt(0);
                 if (position != 0) {
                     setError(rootItem, false);
@@ -110,9 +112,9 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
     private int preFill() {
         final JSONObject item = questionnaire.get().getItem(itemPosition);
         final String label = getLabel(item);
-        final int result = getResultInt(item);
         mLabel.setText(label);
-        return Math.max(result, 0);
+        final int index = getOptionIndex(item, getResultString(item));
+        return Math.max(0, index + 1);
     }
 
     private ArrayAdapter<String> getRTDataAdapter() {

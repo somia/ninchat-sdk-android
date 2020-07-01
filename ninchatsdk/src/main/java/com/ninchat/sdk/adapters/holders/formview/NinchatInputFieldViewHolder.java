@@ -59,7 +59,7 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
             // try to validate the current input if there is a pattern
             final JSONObject item = questionnaire.get().getItem(itemPosition);
             setResult(item, s.toString());
-            setError(item, !matchPattern(item));
+            setError(item, matchPattern(item) == false);
             updateUI(item, true);
         }
     };

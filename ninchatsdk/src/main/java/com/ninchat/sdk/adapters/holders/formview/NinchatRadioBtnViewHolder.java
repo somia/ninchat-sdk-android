@@ -150,7 +150,7 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                 }
 
                 if (selected && !firstTime) {
-                   mayBeFireComplete();
+                    mayBeFireComplete();
                 }
 
             }
@@ -167,7 +167,7 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                 final String label = getLabel(item);
                 final String value = getValue(item);
                 mOptionLabel.setText(label);
-                onSelectionChange(value.equalsIgnoreCase(getResultString(rootItem)));
+                onSelectionChange((value == null ? "" : value).equalsIgnoreCase(getResultString(rootItem)));
             }
         }
     }

@@ -42,20 +42,4 @@ public class NinchatQuestionnaire {
         this.clear();
         this.questionnaireList = questionnaireList;
     }
-
-    public int updateRequiredFieldStats() {
-        int index = -1;
-        for (int i = 0; i < questionnaireList.length(); i += 1) {
-            final JSONObject item = getItem(i);
-            final boolean requiredOk = isRequiredOK(item);
-            final boolean patternOk = matchPattern(item);
-            setError(item, !(requiredOk && patternOk));
-            // take only the first item. for focusing purpose only
-            if ((!requiredOk || !patternOk) && index == -1) {
-                index = i;
-            }
-        }
-        return index;
-    }
-
 }

@@ -26,6 +26,7 @@ import org.json.JSONObject;
 import java.util.Stack;
 
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.clearElement;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.clearLastElement;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getAllFilledElements;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getCurrentElement;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getElements;
@@ -34,6 +35,7 @@ import static com.ninchat.sdk.helper.NinchatQuestionnaire.getNextElementIndex;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getQuestionnaireElementIndexByName;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.isComplete;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.isRegister;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.updateRequiredFieldStats;
 
 
 public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseActivity {
@@ -119,6 +121,13 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
         } else {
             // a next button or a logic
             final JSONObject currentElement = getCurrentElement(questionnaire.getQuestionnaireList(), historyList.peek());
+            final int errorIndex = updateRequiredFieldStats(currentElement);
+            if (errorIndex != -1) {
+                clearLastElement(currentElement);
+                mRecyclerView.setAdapter(mPreAudienceQuestionnaireAdapter);
+                return ;
+            }
+
             final JSONArray filledElements = getAllFilledElements(questionnaire.getQuestionnaireList(), historyList);
             final String targetElementName = getMatchingTargetElement(questionnaire.getQuestionnaireList(), filledElements, currentElement);
             final int targetElementIndex = getQuestionnaireElementIndexByName(questionnaire.getQuestionnaireList(), targetElementName);
@@ -148,7 +157,6 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
         clearElement(questionnaire.getQuestionnaireList(), historyList, historyList.peek());
         mPreAudienceQuestionnaireAdapter.updateContent(getElements(getQuestionnaire(historyList.peek())));
         mRecyclerView.setAdapter(mPreAudienceQuestionnaireAdapter);
-        mPreAudienceQuestionnaireAdapter.notifyDataSetChanged();
     }
 
 

@@ -194,6 +194,13 @@ public class NinchatQuestionnaire {
         return element.optString("pattern", null);
     }
 
+    public static boolean hasPattern(final JSONObject element) {
+        if (element == null) {
+            return false;
+        }
+        return element.has("pattern");
+    }
+
     public static boolean isRequired(final JSONObject element) {
         if (element == null) {
             return false;
@@ -269,30 +276,21 @@ public class NinchatQuestionnaire {
         if (element == null) {
             return false;
         }
-        final String pattern = getPattern(element);
-        if (TextUtils.isEmpty(pattern)) {
+        if (!hasPattern(element)) {
             return true;
         }
-        if (isInput(element) || isTextArea(element)) {
+        if (isInput(element) || isTextArea(element) || isSelect(element) || isLikeRT(element) || isRadio(element)) {
             final String value = getResultString(element);
-            return matchPattern(value, pattern);
+            return matchPattern(value, getPattern(element));
         }
         return true;
     }
 
 
     public static boolean hasResult(final JSONObject element) {
-        if ((isInput(element) || isTextArea(element))) {
+        if (isInput(element) || isTextArea(element) || isSelect(element) || isLikeRT(element) || isRadio(element)) {
             final String value = getResultString(element);
             return !TextUtils.isEmpty(value);
-        }
-        if ((isSelect(element) || isLikeRT(element))) {
-            final int value = getResultInt(element);
-            return value > 0;
-        }
-        if (isRadio(element)) {
-            final int value = getResultInt(element);
-            return value >= 0;
         }
         if (isCheckBox(element)) {
             return getResultBoolean(element);
@@ -448,6 +446,21 @@ public class NinchatQuestionnaire {
         return questionnaireList;
     }
 
+    public static JSONArray updateLikeRTElements(final JSONArray questionnaireList) throws JSONException {
+        for (int i = 0; questionnaireList != null && i < questionnaireList.length(); i += 1) {
+            final JSONObject currentElement = questionnaireList.optJSONObject(i);
+            if (currentElement == null) continue;
+            if (isLogic(currentElement)) continue;
+            JSONArray elementList = getElements(currentElement);
+            for (int j = 0; elementList != null && j < elementList.length(); j += 1) {
+                final JSONObject likeRTElement = elementList.optJSONObject(j);
+                if (!isLikeRT(likeRTElement)) continue;
+                likeRTElement.putOpt("options", getLikeRTOptions());
+            }
+        }
+        return questionnaireList;
+    }
+
     @NotNull
     public static JSONArray unifyQuestionnaire(final JSONArray questionnaireList) throws JSONException {
         JSONArray retval = new JSONArray();
@@ -470,7 +483,8 @@ public class NinchatQuestionnaire {
             }
         }
         // add actions for group elements
-        return updateActions(retval);
+        // make like rt elements with options
+        return updateLikeRTElements(updateActions(retval));
     }
 
     public static JSONArray getLogicByName(final JSONArray questionnaireList, final String name) {
@@ -638,6 +652,61 @@ public class NinchatQuestionnaire {
             }
         }
     }
+
+    public static int getOptionIndex(final JSONObject element, final String result) {
+        if (TextUtils.isEmpty(result)) return -1;
+
+        final JSONArray optionList = getOptions(element);
+        for (int i = 0; optionList != null && i < optionList.length(); i += 1) {
+            final JSONObject currentOption = optionList.optJSONObject(i);
+            final String value = getValue(currentOption);
+            if (result.equalsIgnoreCase(value)) return i;
+        }
+        return -1;
+    }
+
+    public static String getOptionValueByIndex(final JSONObject element, final int index) {
+        final JSONArray optionList = getOptions(element);
+        if (optionList == null || index < 0) {
+            return null;
+        }
+        final JSONObject currentItem = index >= optionList.length() ? null : optionList.optJSONObject(index);
+        return getValue(currentItem);
+    }
+
+    public static JSONArray getLikeRTOptions() throws JSONException {
+        JSONArray options = new JSONArray("[{\"label\":\"Strongly disagree\",\"value\":\"strongly_disagree\"},{\"label\":\"Disagree\",\"value\":\"disagree\"},{\"label\":\"Neither agree nor disagree\",\"value\":\"neither_agree_nor_disagree\"},{\"label\":\"Agree\",\"value\":\"agree\"},{\"label\":\"Strongly agree\",\"value\":\"strongly_agree\"}]");
+        return options;
+    }
+
+    public static int updateRequiredFieldStats(final JSONObject element) {
+        int index = -1;
+        final JSONArray elementList = getElements(element);
+        for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
+            final JSONObject currentElement = elementList.optJSONObject(i);
+            final boolean requiredOk = isRequiredOK(currentElement);
+            final boolean patternOk = matchPattern(currentElement);
+            setError(currentElement, !(requiredOk && patternOk));
+            // take only the first item. for focusing purpose only
+            if ((!requiredOk || !patternOk) && index == -1) {
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    public static void clearLastElement(final JSONObject element) {
+        final JSONArray elementList = getElements(element);
+        if (elementList == null || elementList.length() == 0) {
+            return;
+        }
+        JSONObject lastElement = elementList.optJSONObject(elementList.length() - 1);
+        if (lastElement != null) {
+            lastElement.remove("result");
+            lastElement.remove("hasError");
+        }
+    }
+
 
     public static JSONArray getPreAudienceQuestionnaire(final JSONObject item) {
         return item.optJSONArray("preAudienceQuestionnaire");

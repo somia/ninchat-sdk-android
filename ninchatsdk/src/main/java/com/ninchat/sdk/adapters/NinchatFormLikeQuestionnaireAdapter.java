@@ -11,7 +11,6 @@ import com.ninchat.sdk.adapters.holders.formview.NinchatButtonViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatCheckboxViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatDropDownSelectViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatInputFieldViewHolder;
-import com.ninchat.sdk.adapters.holders.formview.NinchatLikeRtViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatRadioBtnViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatTextViewHolder;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
@@ -66,16 +65,13 @@ public class NinchatFormLikeQuestionnaireAdapter extends RecyclerView.Adapter<Re
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.multichoice_with_label, parent, false),
                         position, questionnaire);
             case SELECT:
+            case LIKERT:
                 return new NinchatDropDownSelectViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.dropdown_with_label, parent, false),
                         position, questionnaire);
             case CHECKBOX:
                 return new NinchatCheckboxViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.checkbox_simple, parent, false),
-                        position, questionnaire);
-            case LIKERT:
-                return new NinchatLikeRtViewHolder(
-                        LayoutInflater.from(parent.getContext()).inflate(R.layout.dropdown_with_label, parent, false),
                         position, questionnaire);
             case BUTTON:
                 return new NinchatButtonViewHolder(
