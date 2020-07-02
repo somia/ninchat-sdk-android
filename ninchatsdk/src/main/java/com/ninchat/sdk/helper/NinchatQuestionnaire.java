@@ -11,7 +11,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Stack;
 
 public class NinchatQuestionnaire {
@@ -243,6 +245,13 @@ public class NinchatQuestionnaire {
             return null;
         }
         return element.optString("result", null);
+    }
+
+    public static JSONArray getTags(final JSONObject element) {
+        if (element == null) {
+            return null;
+        }
+        return element.optJSONArray("tags");
     }
 
     public static int getResultInt(final JSONObject element) {
@@ -575,7 +584,7 @@ public class NinchatQuestionnaire {
         return logicList;
     }
 
-    public static String getMatchingTargetElement(final JSONArray questionnaireList, JSONArray allFilledGroupElementList, final JSONObject currentQuestionItem) {
+    public static JSONObject getMatchingLogic(final JSONArray questionnaireList, JSONArray allFilledGroupElementList, final JSONObject currentQuestionItem) {
         // get list of all logic that match the name
         final JSONArray logicList = getMatchingLogic(questionnaireList, currentQuestionItem);
         // go through all logic and return the index of the match logic
@@ -585,16 +594,23 @@ public class NinchatQuestionnaire {
             final boolean hasAndLogic = hasLogic(currentLogic, true);
             final boolean hasOrLogic = hasLogic(currentLogic, false);
             if (!hasAndLogic && !hasOrLogic) {
-                return currentLogic.optString("target");
+                return currentLogic;
             }
             if (matchedLogic(currentLogic.optJSONArray("and"), allFilledGroupElementList, true)) {
-                return currentLogic.optString("target");
+                return currentLogic;
             }
             if (matchedLogic(currentLogic.optJSONArray("or"), allFilledGroupElementList, false)) {
-                return currentLogic.optString("target");
+                return currentLogic;
             }
         }
         return null;
+    }
+
+    public static String getMatchingLogicTarget(final JSONObject element) {
+        if (element == null) {
+            return null;
+        }
+        return element.optString("target");
     }
 
 
@@ -611,6 +627,29 @@ public class NinchatQuestionnaire {
             element.put("hasError", hasError);
         } catch (Exception e) {
             // pass
+        }
+    }
+
+    public static void setTags(final JSONObject element) {
+        if (element == null) return;
+        final JSONArray tags = element.optJSONArray("tags");
+        if (tags != null && tags.length() > 0) {
+            try {
+                element.putOpt("tags", tags);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public static void setQueue(final JSONObject element) {
+        if (element == null) return;
+        final String queue = element.optString("queue");
+        if (TextUtils.isEmpty(queue)) return;
+        try {
+            element.putOpt("queue", queue);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -647,6 +686,8 @@ public class NinchatQuestionnaire {
                     if (elementList.optJSONObject(i) != null) {
                         elementList.optJSONObject(i).remove("result");
                         elementList.optJSONObject(i).remove("hasError");
+                        elementList.optJSONObject(i).remove("tags");
+                        elementList.optJSONObject(i).remove("queue");
                     }
                 }
             }
@@ -704,7 +745,73 @@ public class NinchatQuestionnaire {
         if (lastElement != null) {
             lastElement.remove("result");
             lastElement.remove("hasError");
+            lastElement.remove("tags");
+            lastElement.remove("queue");
         }
+    }
+
+    public static JSONObject makeElement(final String name, final String result) {
+        JSONObject retval = new JSONObject();
+        try {
+            retval.putOpt(name, result);
+            return retval;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static JSONObject getQuestionnaireAnswers(final JSONArray questionnaireList, final Stack<Integer> historyList) {
+        JSONObject retval = new JSONObject();
+        List<Integer> seen = new ArrayList<>();
+        for (int currentIndex : historyList) {
+            if (currentIndex < 0) continue;
+            if(seen.contains(currentIndex))continue;
+            seen.add(currentIndex);
+            final JSONObject currentElement = questionnaireList.optJSONObject(currentIndex);
+            final JSONArray elementList = getElements(currentElement);
+            for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
+                if (elementList.optJSONObject(i) == null) continue;
+                if (isLogic(elementList.optJSONObject(i)) || isButton(elementList.optJSONObject(i)) || isText(elementList.optJSONObject(i)))
+                    continue;
+                final String elementName = getName(elementList.optJSONObject(i));
+                final String result = getResultString(elementList.optJSONObject(i));
+                if (TextUtils.isEmpty(result)) continue;
+                try {
+                    retval.putOpt(elementName, result);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return retval;
+    }
+
+    public static JSONArray getQuestionnaireAnswersTags(final JSONArray questionnaireList, final Stack<Integer> historyList) {
+        JSONArray retval = new JSONArray();
+        List<Integer> seen = new ArrayList<>();
+        for (int currentIndex : historyList) {
+            if (currentIndex < 0) continue;
+            if(seen.contains(currentIndex))continue;
+            seen.add(currentIndex);
+            final JSONObject currentElement = questionnaireList.optJSONObject(currentIndex);
+            final JSONArray tagList = currentElement == null ? null : currentElement.optJSONArray("tags");
+            for (int i = 0; tagList != null && i < tagList.length(); i += 1) {
+                if (tagList.optJSONObject(i) == null) continue;
+                retval.put(tagList.optJSONObject(i));
+            }
+        }
+        return retval;
+    }
+
+    public static String getQuestionnaireAnswersQueue(final JSONArray questionnaireList, final Stack<Integer> historyList) {
+        for (int currentIndex : historyList) {
+            if (currentIndex < 0) continue;
+            final JSONObject currentElement = questionnaireList.optJSONObject(currentIndex);
+            final String queue = currentElement == null ? null : currentElement.optString("queue");
+            return queue;
+        }
+        return null;
     }
 
 

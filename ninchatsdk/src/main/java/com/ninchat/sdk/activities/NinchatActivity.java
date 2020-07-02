@@ -9,14 +9,21 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.ninchat.client.JSON;
+import com.ninchat.client.Props;
 import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
+import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
+import com.ninchat.sdk.tasks.NinchatRegisterAudienceTask;
+
+import org.json.JSONArray;
 
 
 public final class NinchatActivity extends NinchatBaseActivity {
@@ -157,15 +164,24 @@ public final class NinchatActivity extends NinchatBaseActivity {
             }
         } else if (requestCode == NinchatPreAudienceQuestionnaireActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                if(data.getStringExtra(QUEUE_ID) != null ){
-                    queueId = data.getStringExtra(QUEUE_ID);
+                if (!TextUtils.isEmpty(data.getStringExtra(NinchatPreAudienceQuestionnaireActivity.QUEUE_ID))){
+                    queueId = data.getStringExtra(NinchatPreAudienceQuestionnaireActivity.QUEUE_ID);
                 }
-                setResult(resultCode, data);
-                openQueueActivity();
+                if ("_complete".equalsIgnoreCase(data.getStringExtra(NinchatPreAudienceQuestionnaireActivity.COMMAND_TYPE))) {
+                    // takes user to the queue. is queue is closed register the user and end chat
+                    setResult(resultCode, data);
+                    if(NinchatSessionManager.getInstance().getQueue(queueId) != null && !NinchatSessionManager.getInstance().getQueue(queueId).isClosed()){
+                        setResult(resultCode, data);
+                        openQueueActivity();
+                        return ;
+                    }
+                }
+                NinchatRegisterAudienceTask.start(queueId);
             } else if (resultCode == RESULT_CANCELED) {
                 finish();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
 }

@@ -9,6 +9,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 
+import com.ninchat.client.JSON;
+import com.ninchat.client.Props;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatFormLikeQuestionnaireAdapter;
@@ -21,6 +23,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Stack;
@@ -30,8 +33,12 @@ import static com.ninchat.sdk.helper.NinchatQuestionnaire.clearLastElement;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getAllFilledElements;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getCurrentElement;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getElements;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getMatchingTargetElement;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getMatchingLogic;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getMatchingLogicTarget;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getNextElementIndex;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getQuestionnaireAnswers;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getQuestionnaireAnswersQueue;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.getQuestionnaireAnswersTags;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getQuestionnaireElementIndexByName;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.isComplete;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.isRegister;
@@ -41,12 +48,14 @@ import static com.ninchat.sdk.helper.NinchatQuestionnaire.updateRequiredFieldSta
 public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseActivity {
     private final String TAG = NinchatPreAudienceQuestionnaireActivity.class.getSimpleName();
     public static final int REQUEST_CODE = NinchatPreAudienceQuestionnaireActivity.class.hashCode() & 0xffff;
-    protected static final String QUEUE_ID = "queueId";
     protected static final String COMMAND_TYPE = "commandType";
-    private String queueId;
+    protected static final String ANSWER_LIST = "answerList";
+    protected static final String TAG_LIST = "tagList";
+    protected static final String QUEUE_ID = "queueId";
     private Stack<Integer> historyList;
     private NinchatFormLikeQuestionnaireAdapter mPreAudienceQuestionnaireAdapter;
     private RecyclerView mRecyclerView;
+    private String queueId;
 
     @Override
     protected int getLayoutRes() {
@@ -65,7 +74,6 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
         EventBus.getDefault().register(this);
         final Intent intent = getIntent();
         queueId = intent.getStringExtra(QUEUE_ID);
-        // get a list of items
         mRecyclerView = (RecyclerView) findViewById(R.id.questionnaire_form_rview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -97,9 +105,12 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void close(final boolean isComplete) {
+    private void close(final boolean isComplete, final String queueId) {
         Intent currentIntent = new Intent();
-        currentIntent.putExtra(NinchatPreAudienceQuestionnaireActivity.QUEUE_ID, queueId);
+        if (!TextUtils.isEmpty(queueId)) {
+            this.queueId = queueId;
+        }
+        currentIntent.putExtra(NinchatPreAudienceQuestionnaireActivity.QUEUE_ID, this.queueId);
         currentIntent.putExtra(NinchatPreAudienceQuestionnaireActivity.COMMAND_TYPE, isComplete ?
                 "_compete" : "_register");
         setResult(RESULT_OK, currentIntent);
@@ -125,11 +136,11 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
             if (errorIndex != -1) {
                 clearLastElement(currentElement);
                 mRecyclerView.setAdapter(mPreAudienceQuestionnaireAdapter);
-                return ;
+                return;
             }
-
             final JSONArray filledElements = getAllFilledElements(questionnaire.getQuestionnaireList(), historyList);
-            final String targetElementName = getMatchingTargetElement(questionnaire.getQuestionnaireList(), filledElements, currentElement);
+            final JSONObject matchingLogic = getMatchingLogic(questionnaire.getQuestionnaireList(), filledElements, currentElement);
+            final String targetElementName = getMatchingLogicTarget(matchingLogic);
             final int targetElementIndex = getQuestionnaireElementIndexByName(questionnaire.getQuestionnaireList(), targetElementName);
             if (isComplete(targetElementName)) {
                 handleComplete();
@@ -175,10 +186,42 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
     }
 
     public void handleComplete() {
-        close(true);
+        final NinchatQuestionnaire questionnaire = NinchatSessionManager
+                .getInstance()
+                .getNinchatQuestionnaires()
+                .getNinchatPreAudienceQuestionnaire();
+        final String queueName = getQuestionnaireAnswersQueue(questionnaire.getQuestionnaireList(), historyList);
+        final JSONObject answerList = getQuestionnaireAnswers(questionnaire.getQuestionnaireList(), historyList);
+        final JSONArray tagList = getQuestionnaireAnswersTags(questionnaire.getQuestionnaireList(), historyList);
+        updateAudienceMetaData(answerList, tagList);
+        close(true, queueName);
     }
 
     public void handleRegister() {
-        close(false);
+        final NinchatQuestionnaire questionnaire = NinchatSessionManager
+                .getInstance()
+                .getNinchatQuestionnaires()
+                .getNinchatPreAudienceQuestionnaire();
+        final String queueName = getQuestionnaireAnswersQueue(questionnaire.getQuestionnaireList(), historyList);
+        final JSONObject answerList = getQuestionnaireAnswers(questionnaire.getQuestionnaireList(), historyList);
+        final JSONArray tagList = getQuestionnaireAnswersTags(questionnaire.getQuestionnaireList(), historyList);
+        updateAudienceMetaData(answerList, tagList);
+        close(false, queueName);
+    }
+
+    public void updateAudienceMetaData(final JSONObject answerList, final JSONArray tagList) {
+        if (answerList == null || answerList.length() == 0) {
+            return;
+        }
+        try {
+            answerList.putOpt("tags", tagList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(NinchatSessionManager.getInstance().getAudienceMetadata() == null) {
+            NinchatSessionManager.getInstance().setAudienceMetadata(new Props());
+        }
+        NinchatSessionManager.getInstance().getAudienceMetadata().setJSON("pre_answers", new JSON(answerList.toString()));
     }
 }

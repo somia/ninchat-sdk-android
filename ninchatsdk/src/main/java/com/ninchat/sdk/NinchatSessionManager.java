@@ -572,7 +572,7 @@ public final class NinchatSessionManager {
         }
     }
 
-    private NinchatQueue getQueue(final String queueId) {
+    public NinchatQueue getQueue(final String queueId) {
         for (NinchatQueue queue : queues) {
             if (queue.getId().equals(queueId)) {
                 return queue;
