@@ -112,7 +112,7 @@ public final class NinchatPreAudienceQuestionnaireActivity extends NinchatBaseAc
         }
         currentIntent.putExtra(NinchatPreAudienceQuestionnaireActivity.QUEUE_ID, this.queueId);
         currentIntent.putExtra(NinchatPreAudienceQuestionnaireActivity.COMMAND_TYPE, isComplete ?
-                "_compete" : "_register");
+                "_complete" : "_register");
         setResult(RESULT_OK, currentIntent);
         finish();
     }
