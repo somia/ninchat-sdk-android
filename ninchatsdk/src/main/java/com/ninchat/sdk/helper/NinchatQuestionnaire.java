@@ -29,6 +29,9 @@ public class NinchatQuestionnaire {
     public static final int BUTTON = 9;
     public static final int EOF = 10;
 
+    public static final int PRE_AUDIENCE_QUESTIONNAIRE = 1;
+    public static final int POST_AUDIENCE_QUESTIONNAIRE = 2;
+
     public static boolean isText(final JSONObject jsonObject) {
         return "text".equalsIgnoreCase(jsonObject.optString("element"));
     }
@@ -766,7 +769,7 @@ public class NinchatQuestionnaire {
         List<Integer> seen = new ArrayList<>();
         for (int currentIndex : historyList) {
             if (currentIndex < 0) continue;
-            if(seen.contains(currentIndex))continue;
+            if (seen.contains(currentIndex)) continue;
             seen.add(currentIndex);
             final JSONObject currentElement = questionnaireList.optJSONObject(currentIndex);
             final JSONArray elementList = getElements(currentElement);
@@ -792,7 +795,7 @@ public class NinchatQuestionnaire {
         List<Integer> seen = new ArrayList<>();
         for (int currentIndex : historyList) {
             if (currentIndex < 0) continue;
-            if(seen.contains(currentIndex))continue;
+            if (seen.contains(currentIndex)) continue;
             seen.add(currentIndex);
             final JSONObject currentElement = questionnaireList.optJSONObject(currentIndex);
             final JSONArray tagList = currentElement == null ? null : currentElement.optJSONArray("tags");

@@ -25,7 +25,6 @@ import com.ninchat.client.Session;
 import com.ninchat.client.SessionEventHandler;
 import com.ninchat.client.Strings;
 import com.ninchat.sdk.activities.NinchatActivity;
-import com.ninchat.sdk.activities.NinchatPreAudienceQuestionnaireActivity;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 import com.ninchat.sdk.models.NinchatFile;
@@ -35,7 +34,6 @@ import com.ninchat.sdk.models.NinchatQueue;
 import com.ninchat.sdk.models.NinchatSessionCredentials;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaires;
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
 import com.ninchat.sdk.tasks.NinchatDeleteUserTask;
@@ -97,7 +95,7 @@ public final class NinchatSessionManager {
         public static final String PICK_UP = WEBRTC_PREFIX + "pick-up";
         public static final String HANG_UP = WEBRTC_PREFIX + "hang-up";
         public static final String WEBRTC_SERVERS_PARSED = WEBRTC_PREFIX + "serversParsed";
-        public static final String RATING = "ninchat.com/metadata";
+        public static final String RATING_OR_POST_ANSWERS = "ninchat.com/metadata";
 
         static final List<String> WEBRTC_MESSAGE_TYPES = new ArrayList<>();
 
@@ -1101,7 +1099,19 @@ public final class NinchatSessionManager {
             value.put("rating", rating);
             final JSONObject data = new JSONObject();
             data.put("data", value);
-            NinchatSendMessageTask.start(MessageTypes.RATING, data.toString(), channelId);
+            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(), channelId);
+        } catch (final JSONException e) {
+            // Ignore
+        }
+    }
+
+    public void sendPostAnswers(final JSONObject postAnswers) {
+        try {
+            final JSONObject value = new JSONObject();
+            value.put("post_answers", postAnswers);
+            final JSONObject data = new JSONObject();
+            data.put("data", value);
+            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(), channelId);
         } catch (final JSONException e) {
             // Ignore
         }

@@ -10,15 +10,25 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.ninchat.client.JSON;
+import com.ninchat.client.Props;
 import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 import com.ninchat.sdk.tasks.NinchatRegisterAudienceTask;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import static com.ninchat.sdk.activities.NinchatQuestionnaireActivity.QUESTIONNAIRE_TYPE;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.POST_AUDIENCE_QUESTIONNAIRE;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.PRE_AUDIENCE_QUESTIONNAIRE;
 
 public final class NinchatActivity extends NinchatBaseActivity {
 
@@ -143,33 +153,65 @@ public final class NinchatActivity extends NinchatBaseActivity {
     }
 
     private void openPreAudienceQuestionnairesActivity() {
-        startActivityForResult(NinchatPreAudienceQuestionnaireActivity.getLaunchIntent(this, queueId), NinchatPreAudienceQuestionnaireActivity.REQUEST_CODE);
+        startActivityForResult(NinchatQuestionnaireActivity.getLaunchIntent(
+                this, queueId, PRE_AUDIENCE_QUESTIONNAIRE),
+                NinchatQuestionnaireActivity.REQUEST_CODE);
+    }
+
+    private void openPostAudienceQuestionnairesActivity() {
+        startActivityForResult(NinchatQuestionnaireActivity.getLaunchIntent(
+                this, queueId, POST_AUDIENCE_QUESTIONNAIRE),
+                NinchatQuestionnaireActivity.REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NinchatQueueActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK || queueId != null) {
-                sessionManager.close();
-                setResult(resultCode, data);
-                finish();
+                final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
+                if (ninchatSessionManager.getNinchatQuestionnaires().hasPostAudienceQuestionnaire()) {
+                    openPostAudienceQuestionnairesActivity();
+                } else {
+                    sessionManager.close();
+                    setResult(resultCode, data);
+                    finish();
+                }
+
             } else if (resultCode == RESULT_CANCELED) {
                 finish();
             }
-        } else if (requestCode == NinchatPreAudienceQuestionnaireActivity.REQUEST_CODE) {
+        } else if (requestCode == NinchatQuestionnaireActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                if (!TextUtils.isEmpty(data.getStringExtra(NinchatPreAudienceQuestionnaireActivity.QUEUE_ID))){
-                    queueId = data.getStringExtra(NinchatPreAudienceQuestionnaireActivity.QUEUE_ID);
-                }
-                setResult(resultCode, data);
-                if ("_complete".equalsIgnoreCase(data.getStringExtra(NinchatPreAudienceQuestionnaireActivity.COMMAND_TYPE))) {
-                    // takes user to the queue. is queue is closed register the user and end chat
-                    if(NinchatSessionManager.getInstance().getQueue(queueId) != null && !NinchatSessionManager.getInstance().getQueue(queueId).isClosed()){
-                        openQueueActivity();
-                        return ;
+                final int questionnaireType = data.getIntExtra(QUESTIONNAIRE_TYPE, -1);
+                final String answers = data.getStringExtra(NinchatQuestionnaireActivity.ANSWERS);
+                if (questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE) {
+                    if (!TextUtils.isEmpty(data.getStringExtra(NinchatQuestionnaireActivity.QUEUE_ID))) {
+                        queueId = data.getStringExtra(NinchatQuestionnaireActivity.QUEUE_ID);
+                    }
+                    setResult(resultCode, data);
+                    if ("_complete".equalsIgnoreCase(data.getStringExtra(NinchatQuestionnaireActivity.COMMAND_TYPE))) {
+                        // takes user to the queue. is queue is closed register the user and end chat
+                        if (NinchatSessionManager.getInstance().getQueue(queueId) != null && !NinchatSessionManager.getInstance().getQueue(queueId).isClosed()) {
+                            openQueueActivity();
+                            return;
+                        }
+                    }
+                    if (NinchatSessionManager.getInstance().getAudienceMetadata() == null) {
+                        NinchatSessionManager.getInstance().setAudienceMetadata(new Props());
+                    }
+                    if (!TextUtils.isEmpty(answers)) {
+                        NinchatSessionManager.getInstance().getAudienceMetadata().setJSON("pre_answers", new JSON(answers));
+                        NinchatRegisterAudienceTask.start(queueId);
+                    }
+                } else {
+                    if (!TextUtils.isEmpty(answers)) {
+                        try {
+                            NinchatSessionManager.getInstance().sendPostAnswers(new JSONObject(answers));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-                NinchatRegisterAudienceTask.start(queueId);
                 finish();
             } else if (resultCode == RESULT_CANCELED) {
                 finish();

@@ -35,7 +35,7 @@
             android:theme="@style/NinchatTheme" />
 
         <activity
-            android:name=".activities.NinchatPreAudienceQuestionnaireActivity"
+            android:name=".activities.NinchatQuestionnaireActivity"
             android:theme="@style/NinchatTheme.Questionnaire" />
 
     </application>
