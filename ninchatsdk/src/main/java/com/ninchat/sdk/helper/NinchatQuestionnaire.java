@@ -439,7 +439,11 @@ public class NinchatQuestionnaire {
             if (elementList == null || elementList.length() == 0) continue;
             final boolean hasButton = hasButton(currentElement);
             if (hasButton) {
-                final JSONObject tempElement = getButtonElement(currentElement, i == 0);
+                JSONObject tempElement = getButtonElement(currentElement, i == 0);
+                // hardcoded the last element of the next button needs to be always true
+                if(!hasButton(tempElement, false)){
+                    tempElement.putOpt("next", true);
+                }
                 elementList.put(tempElement);
             } else {
                 // add event fire capability to last element if it is not an text, input, or
