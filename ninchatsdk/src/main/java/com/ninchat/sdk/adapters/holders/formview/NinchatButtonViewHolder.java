@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.ninchat.sdk.NinchatSession;
+import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.events.OnRequireStepChange;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
@@ -55,7 +57,7 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
                 mPreviousImage.setOnClickListener(v -> mayBeFireComplete(OnRequireStepChange.back));
             } else {
                 mPrevious.setVisibility(View.VISIBLE);
-                mPrevious.setText(text);
+                mPrevious.setText(NinchatSessionManager.getInstance().getTranslation(text));
                 mPrevious.setOnClickListener(v -> mayBeFireComplete(OnRequireStepChange.back));
             }
         }
@@ -67,7 +69,7 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
                 mNextImage.setOnClickListener(v -> mayBeFireComplete(OnRequireStepChange.forward));
             } else {
                 mNext.setVisibility(View.VISIBLE);
-                mNext.setText(text);
+                mNext.setText(NinchatSessionManager.getInstance().getTranslation(text));
                 mNext.setOnClickListener(v -> mayBeFireComplete(OnRequireStepChange.forward));
             }
         }

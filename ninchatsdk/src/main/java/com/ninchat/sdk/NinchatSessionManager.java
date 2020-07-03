@@ -1248,7 +1248,7 @@ public final class NinchatSessionManager {
         }
     }
 
-    private String getTranslation(final String key) {
+    public String getTranslation(final String key) {
         if (configuration != null) {
             if (preferredEnvironments != null) {
                 for (final String configuration : preferredEnvironments) {

@@ -12,6 +12,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.events.OnRequireStepChange;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
@@ -121,11 +122,11 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(itemView.getContext(), R.layout.dropdown_item_text_view);
         final JSONObject item = questionnaire.get().getItem(itemPosition);
         final JSONArray options = getOptions(item);
-        dataAdapter.add("Select");
+        dataAdapter.add( NinchatSessionManager.getInstance().getTranslation("Select"));
         for (int i = 0; i < options.length(); i += 1) {
             final JSONObject curOption = options.optJSONObject(i);
             final String label = curOption.optString("label");
-            dataAdapter.add(label);
+            dataAdapter.add(NinchatSessionManager.getInstance().getTranslation(label));
         }
         return dataAdapter;
     }

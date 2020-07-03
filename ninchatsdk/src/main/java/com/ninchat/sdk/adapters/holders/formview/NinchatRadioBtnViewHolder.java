@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.events.OnRequireStepChange;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
@@ -166,7 +167,7 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                 final JSONObject rootItem = questionnaire.get().getItem(rootItemPosition);
                 final String label = getLabel(item);
                 final String value = getValue(item);
-                mOptionLabel.setText(label);
+                mOptionLabel.setText(NinchatSessionManager.getInstance().getTranslation(label));
                 onSelectionChange((value == null ? "" : value).equalsIgnoreCase(getResultString(rootItem)));
             }
         }

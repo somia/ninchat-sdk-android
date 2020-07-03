@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
+import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.events.OnRequireStepChange;
 import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
@@ -66,7 +67,7 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
         if (TextUtils.isEmpty(text)) {
             return;
         }
-        mCheckbox.setText(text);
+        mCheckbox.setText(NinchatSessionManager.getInstance().getTranslation(text));
     }
 
     private void setChecked(final JSONObject item) {
