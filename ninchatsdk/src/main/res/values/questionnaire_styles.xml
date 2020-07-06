@@ -12,7 +12,7 @@
         <item name="android:autoLink">all</item>
         <item name="android:textColorLink">@color/ninchat_color_link</item>
         <item name="android:buttonStyle">@style/NinchatTheme.Button</item>
-        <item name="android:background">@color/white</item>
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
 

@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.events.OnRequireStepChange;
-import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
 import org.greenrobot.eventbus.EventBus;
@@ -24,9 +23,7 @@ import java.lang.ref.WeakReference;
 
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getError;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getName;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getOptions;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultInt;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultString;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getValue;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.setError;

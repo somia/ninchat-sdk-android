@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.ninchat.client.JSON;
 import com.ninchat.client.Props;
+import com.ninchat.client.Strings;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatFormLikeQuestionnaireAdapter;
@@ -43,6 +44,8 @@ import static com.ninchat.sdk.helper.NinchatQuestionnaire.getQuestionnaireAnswer
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getQuestionnaireElementIndexByName;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.isComplete;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.isRegister;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.setQueue;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.setTags;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.updateRequiredFieldStats;
 
 
@@ -87,8 +90,14 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
                 new NinchatQuestionnaire(
                         getElements(
                                 getQuestionnaire(historyList.peek()))));
-        final int spaceInPixel = getResources().getDimensionPixelSize(R.dimen.items_margin_top);
-        mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(spaceInPixel));
+        final int spaceInPixelTop = getResources().getDimensionPixelSize(R.dimen.items_margin_top);
+        final int spaceLeft = getResources().getDimensionPixelSize(R.dimen.items_margin_left);
+        final int spaceRight = getResources().getDimensionPixelSize(R.dimen.items_margin_right);
+        mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(
+                spaceInPixelTop,
+                spaceLeft,
+                spaceRight
+        ));
         mRecyclerView.setAdapter(mPreAudienceQuestionnaireAdapter);
         mRecyclerView.setItemViewCacheSize(mPreAudienceQuestionnaireAdapter.getItemCount());
     }
@@ -139,7 +148,6 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
                 historyList.pop();
             }
         } else {
-            // a next button or a logic
             final JSONObject currentElement = getCurrentElement(questionnaire.getQuestionnaireList(), historyList.peek());
             final int errorIndex = updateRequiredFieldStats(currentElement);
             if (errorIndex != -1) {
@@ -149,6 +157,9 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
             }
             final JSONArray filledElements = getAllFilledElements(questionnaire.getQuestionnaireList(), historyList);
             final JSONObject matchingLogic = getMatchingLogic(questionnaire.getQuestionnaireList(), filledElements, currentElement);
+            // set tags and queue to the parent group element
+            setTags(matchingLogic, currentElement);
+            setQueue(matchingLogic, currentElement);
             final String targetElementName = getMatchingLogicTarget(matchingLogic);
             final int targetElementIndex = getQuestionnaireElementIndexByName(questionnaire.getQuestionnaireList(), targetElementName);
             if (isComplete(targetElementName)) {

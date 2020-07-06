@@ -39,11 +39,11 @@ public class NinchatQuestionnaires {
     }
 
     public boolean hasPreAudienceQuestionnaire() {
-        return preAudienceQuestionnaire.getQuestionnaireList() != null;
+        return preAudienceQuestionnaire.getQuestionnaireList() != null && preAudienceQuestionnaire.getQuestionnaireList().length() > 0 ;
     }
 
     public boolean hasPostAudienceQuestionnaire() {
-        return postAudienceQuestionnaire.getQuestionnaireList() != null;
+        return postAudienceQuestionnaire.getQuestionnaireList() != null && postAudienceQuestionnaire.getQuestionnaireList().length() > 0;
     }
 
     public NinchatQuestionnaire getNinchatPreAudienceQuestionnaire() {

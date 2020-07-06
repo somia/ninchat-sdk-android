@@ -6,6 +6,11 @@ import android.text.Spanned;
 import android.text.TextUtils;
 
 
+import com.ninchat.client.JSON;
+import com.ninchat.client.Props;
+import com.ninchat.client.Strings;
+import com.ninchat.sdk.NinchatSessionManager;
+
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -250,27 +255,12 @@ public class NinchatQuestionnaire {
         return element.optString("result", null);
     }
 
-    public static JSONArray getTags(final JSONObject element) {
-        if (element == null) {
-            return null;
-        }
-        return element.optJSONArray("tags");
-    }
-
-    public static int getResultInt(final JSONObject element) {
-        if (element == null) {
-            return -1;
-        }
-        return element.optInt("result", -1);
-    }
-
     public static boolean getResultBoolean(final JSONObject element) {
         if (element == null) {
             return false;
         }
         return element.optBoolean("result", false);
     }
-
 
     public static boolean getError(final JSONObject element) {
         if (element == null) {
@@ -441,7 +431,7 @@ public class NinchatQuestionnaire {
             if (hasButton) {
                 JSONObject tempElement = getButtonElement(currentElement, i == 0);
                 // hardcoded the last element of the next button needs to be always true
-                if(!hasButton(tempElement, false)){
+                if (!hasButton(tempElement, false)) {
                     tempElement.putOpt("next", true);
                 }
                 elementList.put(tempElement);
@@ -637,24 +627,24 @@ public class NinchatQuestionnaire {
         }
     }
 
-    public static void setTags(final JSONObject element) {
-        if (element == null) return;
-        final JSONArray tags = element.optJSONArray("tags");
+    public static void setTags(final JSONObject logic, final JSONObject currentElement) {
+        if (logic == null || currentElement == null) return;
+        final JSONArray tags = logic.optJSONArray("tags");
         if (tags != null && tags.length() > 0) {
             try {
-                element.putOpt("tags", tags);
+                currentElement.putOpt("tags", tags);
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public static void setQueue(final JSONObject element) {
-        if (element == null) return;
-        final String queue = element.optString("queue");
+    public static void setQueue(final JSONObject logic, JSONObject currentElement) {
+        if (logic == null || currentElement == null) return;
+        final String queue = logic.optString("queue");
         if (TextUtils.isEmpty(queue)) return;
         try {
-            element.putOpt("queue", queue);
+            currentElement.putOpt("queue", queue);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -757,17 +747,6 @@ public class NinchatQuestionnaire {
         }
     }
 
-    public static JSONObject makeElement(final String name, final String result) {
-        JSONObject retval = new JSONObject();
-        try {
-            retval.putOpt(name, result);
-            return retval;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public static JSONObject getQuestionnaireAnswers(final JSONArray questionnaireList, final Stack<Integer> historyList) {
         JSONObject retval = new JSONObject();
         List<Integer> seen = new ArrayList<>();
@@ -804,8 +783,8 @@ public class NinchatQuestionnaire {
             final JSONObject currentElement = questionnaireList.optJSONObject(currentIndex);
             final JSONArray tagList = currentElement == null ? null : currentElement.optJSONArray("tags");
             for (int i = 0; tagList != null && i < tagList.length(); i += 1) {
-                if (tagList.optJSONObject(i) == null) continue;
-                retval.put(tagList.optJSONObject(i));
+                if (tagList.optString(i) == null) continue;
+                retval.put(tagList.optString(i));
             }
         }
         return retval;
@@ -821,6 +800,36 @@ public class NinchatQuestionnaire {
         return null;
     }
 
+    public static Props getPreAnswers(final String resultString) {
+        Props preAnswers = new Props();
+        try {
+            final JSONObject result = new JSONObject(resultString);
+            Iterator<String> keys = result.keys();
+            while (keys.hasNext()) {
+                final String currentKey = keys.next();
+                // if current key is empty
+                if (TextUtils.isEmpty(currentKey)) continue;
+                if (currentKey.equalsIgnoreCase("tags")) {
+                    final Strings tags = getTags(result.optJSONArray("tags"));
+                    if (tags.length() > 0) preAnswers.setStringArray("tags", tags);
+                } else {
+                    preAnswers.setString(currentKey, result.optString(currentKey, ""));
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return preAnswers;
+    }
+
+    public static Strings getTags(final JSONArray tagList) {
+        Strings tags = new Strings();
+        for (int i = 0; tagList != null && i < tagList.length(); i += 1) {
+            if (tagList.optString(i) != null)
+                tags.append(tagList.optString(i));
+        }
+        return tags;
+    }
 
     public static JSONArray getPreAudienceQuestionnaire(final JSONObject item) {
         return item.optJSONArray("preAudienceQuestionnaire");

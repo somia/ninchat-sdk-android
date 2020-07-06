@@ -7,10 +7,12 @@
     android:fadeScrollbars="false"
     android:paddingTop="10dp"
     android:theme="@style/NinchatTheme.Questionnaire"
+    android:background="@drawable/ninchat_chat_background_tiled"
     tools:context=".activities.NinchatQuestionnaireActivity">
 
 
     <android.support.v7.widget.RecyclerView
+        android:background="@android:color/transparent"
         android:id="@+id/questionnaire_form_rview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
