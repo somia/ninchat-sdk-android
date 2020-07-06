@@ -36,7 +36,8 @@
 
         <activity
             android:name=".activities.NinchatQuestionnaireActivity"
-            android:theme="@style/NinchatTheme.Questionnaire" />
+            android:theme="@style/NinchatTheme.Questionnaire"
+            android:configChanges="orientation|screenSize"/>
 
     </application>
 
