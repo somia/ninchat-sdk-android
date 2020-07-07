@@ -33,8 +33,8 @@
     </style>
 
     <style name="NinchatTheme.Checkbox" parent="Theme.AppCompat.Light">
-        <item name="android:colorControlActivated">@color/checkbox_selected</item>
-        <item name="android:colorControlNormal">@color/checkbox_not_selected</item>
+        <item name="android:colorControlActivated">@color/ninchat_colorAccent</item>
+        <item name="android:colorControlNormal">@color/ninchat_color_hint</item>
     </style>
 
     <style name="NinchatTheme.Dropdown.Item" parent="Theme.AppCompat.Light">
