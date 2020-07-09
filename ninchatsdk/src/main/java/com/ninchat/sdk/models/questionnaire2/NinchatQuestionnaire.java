@@ -42,4 +42,8 @@ public class NinchatQuestionnaire {
         this.clear();
         this.questionnaireList = questionnaireList;
     }
+
+    public void addQuestionnaireList(final JSONObject currentQuestionnaire) {
+        this.questionnaireList.put(currentQuestionnaire);
+    }
 }

@@ -3,17 +3,20 @@ package com.ninchat.sdk.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
-import com.ninchat.client.JSON;
-import com.ninchat.client.Props;
-import com.ninchat.client.Strings;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.adapters.NinchatConversationLikeQuestionnaireAdapter;
 import com.ninchat.sdk.adapters.NinchatFormLikeQuestionnaireAdapter;
 import com.ninchat.sdk.events.OnRequireStepChange;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
@@ -31,7 +34,7 @@ import java.util.Stack;
 
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.PRE_AUDIENCE_QUESTIONNAIRE;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.clearElement;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.clearLastElement;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.clearElementResult;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getAllFilledElements;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getCurrentElement;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getElements;
@@ -57,14 +60,16 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
     protected static final String QUESTIONNAIRE_TYPE = "questionType";
     protected static final String ANSWERS = "answers";
     private Stack<Integer> historyList;
-    private NinchatFormLikeQuestionnaireAdapter mPreAudienceQuestionnaireAdapter;
+    private NinchatFormLikeQuestionnaireAdapter mFormLikeAudienceQuestionnaireAdapter;
+    private NinchatConversationLikeQuestionnaireAdapter mConversationLikeQuestionnaireAdapter;
     private RecyclerView mRecyclerView;
     private String queueId;
     private int questionnaireType;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.activity_ninchat_form_questionnaire;
+        return R.layout.activity_ninchat_questionnaire;
     }
 
     public static Intent getLaunchIntent(final Context context, final String queueId, final int questionnaireType) {
@@ -82,24 +87,12 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
         final Intent intent = getIntent();
         queueId = intent.getStringExtra(QUEUE_ID);
         questionnaireType = intent.getIntExtra(QUESTIONNAIRE_TYPE, -1);
-
         mRecyclerView = (RecyclerView) findViewById(R.id.questionnaire_form_rview);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
         historyList.push(0);
-        mPreAudienceQuestionnaireAdapter = new NinchatFormLikeQuestionnaireAdapter(
-                new NinchatQuestionnaire(
-                        getElements(
-                                getQuestionnaire(historyList.peek()))));
-        final int spaceInPixelTop = getResources().getDimensionPixelSize(R.dimen.items_margin_top);
-        final int spaceLeft = getResources().getDimensionPixelSize(R.dimen.items_margin_left);
-        final int spaceRight = getResources().getDimensionPixelSize(R.dimen.items_margin_right);
-        mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(
-                spaceInPixelTop,
-                spaceLeft,
-                spaceRight
-        ));
-        mRecyclerView.setAdapter(mPreAudienceQuestionnaireAdapter);
-        mRecyclerView.setItemViewCacheSize(mPreAudienceQuestionnaireAdapter.getItemCount());
+
+        createConversationLikeQuestionnaire();
     }
 
     @Override
@@ -151,8 +144,12 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
             final JSONObject currentElement = getCurrentElement(questionnaire.getQuestionnaireList(), historyList.peek());
             final int errorIndex = updateRequiredFieldStats(currentElement);
             if (errorIndex != -1) {
-                clearLastElement(currentElement);
-                mRecyclerView.setAdapter(mPreAudienceQuestionnaireAdapter);
+                clearElementResult(currentElement);
+                // todo for form like
+                // mRecyclerView.setAdapter(mConversationLikeQuestionnaireAdapter);
+                // todo for conversation like
+                mRecyclerView.clearFocus();
+                mConversationLikeQuestionnaireAdapter.notifyItemChanged(errorIndex);
                 return;
             }
             final JSONArray filledElements = getAllFilledElements(questionnaire.getQuestionnaireList(), historyList);
@@ -186,12 +183,24 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
             }
         }
         clearElement(questionnaire.getQuestionnaireList(), historyList, historyList.peek());
-        mPreAudienceQuestionnaireAdapter.updateContent(getElements(getQuestionnaire(historyList.peek())));
-        mRecyclerView.setAdapter(mPreAudienceQuestionnaireAdapter);
+        /*mFormLikeAudienceQuestionnaireAdapter.updateContent(getElements(getQuestionnaire(historyList.peek())));
+        mRecyclerView.setAdapter(mFormLikeAudienceQuestionnaireAdapter);*/
+
+        mConversationLikeQuestionnaireAdapter.addContent(getCurrentElement(questionnaire.getQuestionnaireList(), historyList.peek()));
+        mConversationLikeQuestionnaireAdapter.notifyDataSetChanged();
+        mRecyclerView.smoothScrollToPosition(mConversationLikeQuestionnaireAdapter.getItemCount() - 1);
+
+
+        Log.e(TAG, ">>" + mLayoutManager.getChildCount());
+        for (int i = 0; i < mLayoutManager.getChildCount(); i++) {
+            View child = mLayoutManager.getChildAt(i);
+            setViewAndChildrenEnabled(child, false);
+            child.setBackgroundColor(ContextCompat.getColor(child.getContext(), R.color.ninchat_activity_bottom_matter_background));
+        }
     }
 
 
-    private final JSONObject getQuestionnaire(final int index) {
+    private JSONObject getQuestionnaire(final int index) {
         final NinchatQuestionnaires questionnaires = NinchatSessionManager
                 .getInstance()
                 .getNinchatQuestionnaires();
@@ -205,6 +214,22 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
         return nextElementIndex == -1 ?
                 null : getCurrentElement(questionnaire.getQuestionnaireList(), nextElementIndex);
     }
+
+    private JSONArray getQuestionnaireList() {
+        final NinchatQuestionnaires questionnaires = NinchatSessionManager
+                .getInstance()
+                .getNinchatQuestionnaires();
+        final NinchatQuestionnaire questionnaire = questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
+                questionnaires.getNinchatPreAudienceQuestionnaire() : questionnaires.getNinchatPostAudienceQuestionnaire();
+
+        JSONArray elementList = new JSONArray();
+        for (int currentIndex : historyList) {
+            final JSONObject currentElement = getCurrentElement(questionnaire.getQuestionnaireList(), currentIndex);
+            elementList.put(currentElement);
+        }
+        return elementList;
+    }
+
 
     public void handleComplete() {
         final NinchatQuestionnaires questionnaires = NinchatSessionManager
@@ -242,5 +267,47 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
             e.printStackTrace();
         }
         return answerList;
+    }
+
+    private void createFormLikeQuestionnaire() {
+        mFormLikeAudienceQuestionnaireAdapter = new NinchatFormLikeQuestionnaireAdapter(
+                new NinchatQuestionnaire(
+                        getElements(
+                                getQuestionnaire(historyList.peek()))));
+        final int spaceInPixelTop = getResources().getDimensionPixelSize(R.dimen.items_margin_top);
+        final int spaceLeft = getResources().getDimensionPixelSize(R.dimen.items_margin_left);
+        final int spaceRight = getResources().getDimensionPixelSize(R.dimen.items_margin_right);
+        mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(
+                spaceInPixelTop,
+                spaceLeft,
+                spaceRight
+        ));
+        mRecyclerView.setAdapter(mFormLikeAudienceQuestionnaireAdapter);
+        mRecyclerView.setItemViewCacheSize(mFormLikeAudienceQuestionnaireAdapter.getItemCount());
+    }
+
+    private void createConversationLikeQuestionnaire() {
+        mConversationLikeQuestionnaireAdapter = new NinchatConversationLikeQuestionnaireAdapter(
+                new NinchatQuestionnaire(getQuestionnaireList()));
+        final int spaceInPixelTop = getResources().getDimensionPixelSize(R.dimen.items_margin_top);
+        final int spaceLeft = getResources().getDimensionPixelSize(R.dimen.items_margin_left);
+        final int spaceRight = getResources().getDimensionPixelSize(R.dimen.items_margin_right);
+        mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(
+                spaceInPixelTop,
+                spaceLeft,
+                spaceRight
+        ));
+        mRecyclerView.setAdapter(mConversationLikeQuestionnaireAdapter);
+    }
+
+    private void setViewAndChildrenEnabled(View view, boolean enabled) {
+        view.setEnabled(enabled);
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View child = viewGroup.getChildAt(i);
+                setViewAndChildrenEnabled(child, enabled);
+            }
+        }
     }
 }

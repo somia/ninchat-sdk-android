@@ -733,7 +733,7 @@ public class NinchatQuestionnaire {
         return index;
     }
 
-    public static void clearLastElement(final JSONObject element) {
+    public static void clearElementResult(final JSONObject element) {
         final JSONArray elementList = getElements(element);
         if (elementList == null || elementList.length() == 0) {
             return;
