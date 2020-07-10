@@ -1,9 +1,16 @@
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/text_view_content"
-    android:layout_height="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:clickable="true"
-    android:text="First, tell a bit about your situation so we can help you better."
-    android:textColor="@color/ninchat_color_text_normal"
-    android:focusable="true" />
+    android:layout_height="wrap_content"
+    android:background="@drawable/ninchat_chat_bubble_left_repeated"
+    android:orientation="vertical">
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/text_view_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="First, tell a bit about your situation so we can help you better."
+        android:textColor="@color/ninchat_color_text_normal" />
+
+</LinearLayout>

@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     android:fadeScrollbars="false"
     android:paddingTop="10dp"
+
+    android:background="@drawable/ninchat_chat_background_tiled"
     android:theme="@style/NinchatTheme.Questionnaire"
     tools:context=".activities.NinchatQuestionnaireActivity">
 
@@ -15,8 +17,6 @@
         android:id="@+id/questionnaire_form_rview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_start"
-        android:layout_marginEnd="@dimen/margin_end"
         android:overScrollMode="never"
         tools:itemCount="5"/>
 </RelativeLayout>

@@ -2,6 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/ninchat_chat_bubble_left_repeated"
     android:orientation="vertical">
 
     <TextView
