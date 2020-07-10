@@ -40,7 +40,7 @@ public class NinchaBotViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void update(View itemView) {
-        mTextView.setText("LightBotAgent");
+        mTextView.setText("LightbotAgent");
         mImageView.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator);
         final AnimationDrawable animationDrawable = (AnimationDrawable) mImageView.getBackground();
         animationDrawable.start();

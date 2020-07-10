@@ -7,7 +7,6 @@
     android:fadeScrollbars="false"
     android:paddingTop="10dp"
     android:theme="@style/NinchatTheme.Questionnaire"
-    android:background="@drawable/ninchat_chat_background_tiled"
     tools:context=".activities.NinchatQuestionnaireActivity">
 
 
