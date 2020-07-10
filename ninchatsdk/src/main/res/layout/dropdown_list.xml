@@ -27,6 +27,6 @@
         android:layout_gravity="center"
         android:contentDescription="arrow"
         android:src="@drawable/ninchat_dropdown_spinner_arrow"
-        android:tint="@color/checkbox_not_selected" />
+        android:tint="@color/ninchat_color_dropdown_unselected_text" />
 
 </RelativeLayout>

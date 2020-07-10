@@ -11,7 +11,6 @@ import android.widget.CompoundButton;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.events.OnRequireStepChange;
-import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
 import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
 
 import org.greenrobot.eventbus.EventBus;
@@ -79,7 +78,7 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
         final boolean hasError = getError(item);
         final boolean isChecked = getResultBoolean(item);
         mCheckbox.setTextColor(ContextCompat.getColor(itemView.getContext(),
-                isChecked ? R.color.checkbox_text_selected : R.color.checkbox_text_not_selected));
+                isChecked ? R.color.ninchat_color_checkbox_selected : R.color.ninchat_color_checkbox_unselected));
 
         // focus will get priority
         if (hasError) {

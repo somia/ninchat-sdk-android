@@ -90,14 +90,14 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
 
         ((ImageView) itemView.findViewById(R.id.ninchat_dropdown_list_icon)).setColorFilter(
                 ContextCompat.getColor(itemView.getContext(),
-                        selected ? R.color.checkbox_selected : R.color.checkbox_not_selected)
+                        selected ? R.color.ninchat_color_dropdown_selected_text : R.color.ninchat_color_dropdown_unselected_text)
         );
 
         mTextView.setTextColor(ContextCompat.getColor(
                 itemView.getContext(),
                 selected ?
-                        R.color.checkbox_selected :
-                        R.color.ninchat_color_ui_compose_select_unselected_text));
+                        R.color.ninchat_color_dropdown_selected_text :
+                        R.color.ninchat_color_dropdown_unselected_text));
 
         if (hasError) {
             ((RelativeLayout) itemView.findViewById(R.id.dropdown_select_layout)).setBackground(

@@ -15,10 +15,24 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="NinchatTheme.Button.Next" parent="NinchatTheme.Button">
+        <item name="android:background">@drawable/ninchat_chat_primary_button</item>
+        <item name="android:textColor">@color/ninchat_color_button_primary_text</item>
+    </style>
+
+    <style name="NinchatTheme.Button.Previous" parent="NinchatTheme.Button">
+        <item name="android:background">@drawable/ninchat_chat_secondary_button</item>
+        <item name="android:textColor">@color/ninchat_color_button_secondary_text</item>
+    </style>
+
+    <style name="NinchatTheme.Button.Disabled" parent="NinchatTheme.Button">
+        <item name="android:background">@drawable/ninchat_chat_disable_button</item>
+        <item name="android:textColor">@color/ninchat_color_button_disable_text</item>
+    </style>
 
     <style name="NinchatTheme.Questionnaire.Label" parent="Theme.AppCompat.Light">
         <item name="android:textColor">@color/ninchat_colorPrimary</item>
-        <item name="android:textSize">@dimen/label_text_size</item>
+        <item name="android:textSize">@dimen/ninchat_label_text_size</item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.InputText" parent="NinchatTheme.Questionnaire">
@@ -33,17 +47,21 @@
     </style>
 
     <style name="NinchatTheme.Checkbox" parent="Theme.AppCompat.Light">
-        <item name="android:colorControlActivated">@color/ninchat_colorAccent</item>
-        <item name="android:colorControlNormal">@color/ninchat_color_hint</item>
+        <item name="android:colorControlActivated">@color/ninchat_color_checkbox_selected</item>
+        <item name="android:colorControlNormal">@color/ninchat_color_checkbox_unselected</item>
     </style>
 
     <style name="NinchatTheme.Dropdown.Item" parent="Theme.AppCompat.Light">
-        <item name="android:divider">@color/checkbox_selected</item>
+        <item name="android:divider">@color/ninchat_color_dropdown_unselected_text</item>
         <item name="android:dividerHeight">0.5dp</item>
     </style>
 
     <style name="NinchatTheme.Dropdown.Spinner" parent="Theme.AppCompat.Light">
         <item name="android:dropDownListViewStyle">@style/NinchatTheme.Dropdown.Item</item>
+    </style>
+
+    <style name="NinchatTheme.Dropdown.Text" parent="Theme.AppCompat.Light">
+        <item name="android:textColor">@color/ninchat_color_dropdown_unselected_text</item>
     </style>
 
 </resources>

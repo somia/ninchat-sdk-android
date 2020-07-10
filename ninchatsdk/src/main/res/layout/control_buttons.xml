@@ -2,45 +2,51 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <ImageView
+        style="@style/NinchatTheme.Button.Previous"
+        android:tint="@color/ninchat_color_button_secondary_text"
+
         android:id="@+id/ninchat_image_button_previous"
-        style="@style/NinchatTheme.Button.Dialog.Close"
         android:layout_width="@dimen/ninchat_chat_control_follow_button_width"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="30dp"
         android:src="@drawable/ninchat_icon_back"
-        android:tint="@color/ninchat_colorAccent" />
+        />
 
     <ImageView
+        style="@style/NinchatTheme.Button.Next"
+        android:tint="@color/ninchat_color_button_primary_text"
+
         android:id="@+id/ninchat_image_button_next"
-        style="@style/NinchatTheme.Button.Dialog"
         android:layout_width="@dimen/ninchat_chat_control_follow_button_width"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="30dp"
         android:src="@drawable/ninchat_icon_next"
-        android:tint="@color/white" />
+        />
 
     <Button
+        style="@style/NinchatTheme.Button.Previous"
         android:id="@+id/ninchat_button_previous"
-        style="@style/NinchatTheme.Button.Dialog.Close"
         android:maxWidth="@dimen/ninchat_chat_control_follow_button_width"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="30dp"
         android:singleLine="true"
-        android:visibility="invisible"
-        android:text="Queue name that is far too long to fit in one line and extends to multiple lines" />
+        android:text="Queue name that is far too long to fit in one line and extends to multiple lines"
+        />
 
     <Button
+        style="@style/NinchatTheme.Button.Next"
         android:id="@+id/ninchat_button_next"
-        style="@style/NinchatTheme.Button.Dialog"
         android:maxWidth="@dimen/ninchat_chat_control_follow_button_width"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,7 +54,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="30dp"
         android:singleLine="true"
-        android:visibility="invisible"
-        android:text="Queue name that is far too long to fit in one line and extends to multiple lines" />
+        android:text="Queue name that is far too long to fit in one line and extends to multiple lines"
+        />
 
 </RelativeLayout>

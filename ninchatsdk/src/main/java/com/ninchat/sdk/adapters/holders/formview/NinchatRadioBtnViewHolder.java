@@ -127,8 +127,8 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                         ContextCompat.getColor(
                                 itemView.getContext(),
                                 selected ?
-                                        R.color.checkbox_selected :
-                                        R.color.ninchat_color_ui_compose_select_unselected_text)
+                                        R.color.ninchat_color_radio_item_selected_text :
+                                        R.color.ninchat_color_radio_item_unselected_text)
                 );
                 mOptionLabel.setBackground(
                         ContextCompat.getDrawable(
@@ -150,7 +150,6 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                 if (selected && !firstTime) {
                     mayBeFireComplete();
                 }
-
             }
 
             private void mayBeFireComplete() {
