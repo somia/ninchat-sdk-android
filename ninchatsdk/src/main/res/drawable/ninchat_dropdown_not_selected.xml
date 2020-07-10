@@ -4,7 +4,7 @@
     <corners android:radius="5dp" />
     <stroke
         android:width="2dp"
-        android:color="#A2A2A2" />
+        android:color="@color/ninchat_color_hint" />
     <padding
         android:bottom="3dp"
         android:left="4dp"
