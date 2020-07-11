@@ -11,6 +11,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
@@ -188,12 +190,9 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
         mConversationLikeQuestionnaireAdapter.notifyDataSetChanged();
         mRecyclerView.smoothScrollToPosition(mConversationLikeQuestionnaireAdapter.getItemCount() - 1);
 
-
-        Log.e(TAG, ">>" + mLayoutManager.getChildCount());
         for (int i = 0; i < mLayoutManager.getChildCount(); i++) {
             View child = mLayoutManager.getChildAt(i);
             setViewAndChildrenEnabled(child, false);
-            child.setBackgroundColor(ContextCompat.getColor(child.getContext(), R.color.ninchat_activity_bottom_matter_background));
         }
     }
 
@@ -300,10 +299,19 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
 
     private void setViewAndChildrenEnabled(View view, boolean enabled) {
         view.setEnabled(enabled);
+        if (view instanceof LinearLayout) {
+            if (view.getId() == -1) {
+                view.setBackground(ContextCompat.getDrawable(view.getContext(), R.drawable.ninchat_chat_bubble_left_repeated_disabled));
+            }
+        }
+        if (view instanceof Button) {
+            view.setBackground(ContextCompat.getDrawable(view.getContext(), R.drawable.ninchat_chat_disable_button));
+        }
         if (view instanceof ViewGroup) {
             ViewGroup viewGroup = (ViewGroup) view;
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 View child = viewGroup.getChildAt(i);
+                setViewAndChildrenEnabled(child, enabled);
                 setViewAndChildrenEnabled(child, enabled);
             }
         }

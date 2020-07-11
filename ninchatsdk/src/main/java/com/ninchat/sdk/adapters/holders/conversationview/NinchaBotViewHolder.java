@@ -1,13 +1,17 @@
 package com.ninchat.sdk.adapters.holders.conversationview;
 
 
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ninchat.sdk.R;
@@ -46,7 +50,8 @@ public class NinchaBotViewHolder extends RecyclerView.ViewHolder {
         animationDrawable.start();
         new Handler().postDelayed(() -> {
             animationDrawable.stop();
-            mImageView.setVisibility(View.INVISIBLE);
+            itemView.findViewById(R.id.ninchat_chat_message_bot_writing_root).setVisibility(View.GONE);
+
             mFormLikeAudienceQuestionnaireAdapter = new NinchatFormLikeQuestionnaireAdapter(
                     new NinchatQuestionnaire(getElements(currentElement)));
             final int spaceInPixelTop = itemView.getResources().getDimensionPixelSize(R.dimen.ninchat_items_margin_top_questionnaire);
@@ -59,7 +64,7 @@ public class NinchaBotViewHolder extends RecyclerView.ViewHolder {
             ));
             mRecyclerView.setAdapter(mFormLikeAudienceQuestionnaireAdapter);
             mRecyclerView.setItemViewCacheSize(mFormLikeAudienceQuestionnaireAdapter.getItemCount());
-        }, 1000);
+        }, 1500);
 
     }
 }

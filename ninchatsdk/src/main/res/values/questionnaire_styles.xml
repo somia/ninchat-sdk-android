@@ -20,8 +20,18 @@
         <item name="android:textColor">@color/ninchat_color_button_primary_text</item>
     </style>
 
+    <style name="NinchatTheme.Button.Next.Disabled" parent="NinchatTheme.Button.Next">
+        <item name="android:background">@drawable/ninchat_chat_disable_button</item>
+        <item name="android:textColor">@color/ninchat_color_button_primary_text</item>
+    </style>
+
     <style name="NinchatTheme.Button.Previous" parent="NinchatTheme.Button">
         <item name="android:background">@drawable/ninchat_chat_secondary_button</item>
+        <item name="android:textColor">@color/ninchat_color_button_secondary_text</item>
+    </style>
+
+    <style name="NinchatTheme.Button.Previous.Disabled" parent="NinchatTheme.Button.Previous">
+        <item name="android:background">@drawable/ninchat_chat_disable_button</item>
         <item name="android:textColor">@color/ninchat_color_button_secondary_text</item>
     </style>
 

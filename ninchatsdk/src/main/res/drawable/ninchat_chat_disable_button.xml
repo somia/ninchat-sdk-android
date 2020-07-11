@@ -6,6 +6,6 @@
     <solid android:color="@color/ninchat_colorDisabled" />
     <stroke
         android:width="2dp"
-        android:color="@color/ninchat_colorAccent"
+        android:color="@color/ninchat_colorDisabled"
         />
 </shape>
