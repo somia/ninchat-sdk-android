@@ -9,7 +9,7 @@
         android:id="@+id/dropdown_text_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/margin_bottom"
+        android:layout_marginBottom="@dimen/ninchat_item_margin_bottom"
         android:text="Label Name"
         android:theme="@style/NinchatTheme.Questionnaire.Label" />
 

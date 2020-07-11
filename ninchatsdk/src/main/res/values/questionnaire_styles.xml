@@ -32,7 +32,7 @@
 
     <style name="NinchatTheme.Questionnaire.Label" parent="Theme.AppCompat.Light">
         <item name="android:textColor">@color/ninchat_colorPrimary</item>
-        <item name="android:textSize">@dimen/ninchat_label_text_size</item>
+        <item name="android:textSize">@dimen/ninchat_item_label_text_size</item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.InputText" parent="NinchatTheme.Questionnaire">
