@@ -5,8 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fadeScrollbars="false"
-    android:paddingTop="10dp"
-
     android:background="@drawable/ninchat_chat_background_tiled"
     android:theme="@style/NinchatTheme.Questionnaire"
     tools:context=".activities.NinchatQuestionnaireActivity">

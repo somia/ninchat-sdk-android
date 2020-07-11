@@ -49,7 +49,7 @@ public class NinchaBotViewHolder extends RecyclerView.ViewHolder {
             mImageView.setVisibility(View.INVISIBLE);
             mFormLikeAudienceQuestionnaireAdapter = new NinchatFormLikeQuestionnaireAdapter(
                     new NinchatQuestionnaire(getElements(currentElement)));
-            final int spaceInPixelTop = itemView.getResources().getDimensionPixelSize(R.dimen.items_margin_top);
+            final int spaceInPixelTop = itemView.getResources().getDimensionPixelSize(R.dimen.items_margin_top_questionnaire_item);
             final int spaceLeft = 0;
             final int spaceRight = 0;
             mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(

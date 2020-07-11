@@ -97,6 +97,7 @@
     <dimen name="margin_end">15dp</dimen>
     <dimen name="margin_bottom">10dp</dimen>
     <dimen name="items_margin_top">25dp</dimen>
+    <dimen name="items_margin_top_questionnaire_item">15dp</dimen>
     <dimen name="items_margin_left">15dp</dimen>
     <dimen name="items_margin_right">15dp</dimen>
     <dimen name="ninchat_label_text_size">20sp</dimen>

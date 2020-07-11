@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/ninchat_chat_activity_message_title_top_margin"
     android:visibility="visible">
 
     <ImageView
