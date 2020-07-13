@@ -1,29 +1,45 @@
 package com.ninchat.sdk.models.questionnaire;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class NinchatQuestionnaire {
-    private NinchatPreAudienceQuestionnaire ninchatPreAudienceQuestionnaire;
-    private NinchatPostAudienceQuestionnaire ninchatPostAudienceQuestionnaire;
+    private JSONArray questionnaireList;
 
-    public NinchatQuestionnaire(final JSONObject configuration) {
-        this.ninchatPreAudienceQuestionnaire = new NinchatPreAudienceQuestionnaire(configuration);
-        this.ninchatPostAudienceQuestionnaire = new NinchatPostAudienceQuestionnaire(configuration);
+    public NinchatQuestionnaire(JSONArray questionnaireList) {
+        this.questionnaireList = questionnaireList;
     }
 
-    public boolean hasPreAudienceQuestionnaire() {
-        return this.ninchatPreAudienceQuestionnaire.getQuestionnaireList() != null;
+
+    public int size() {
+        return questionnaireList == null ? 0 : questionnaireList.length();
     }
 
-    public boolean hasPostAudienceQuestionnaire() {
-        return this.ninchatPostAudienceQuestionnaire.getQuestionnaireList() != null;
+    public boolean isEmpty() {
+        return questionnaireList == null || size() == 0;
     }
 
-    public NinchatPreAudienceQuestionnaire getNinchatPreAudienceQuestionnaire() {
-        return ninchatPreAudienceQuestionnaire;
+    public JSONObject getItem(final int position) {
+        if (isEmpty() || position >= size()) {
+            return null;
+        }
+        return questionnaireList.optJSONObject(position);
     }
 
-    public NinchatPostAudienceQuestionnaire getNinchatPostAudienceQuestionnaire() {
-        return ninchatPostAudienceQuestionnaire;
+    public void clear() {
+        questionnaireList = null;
+    }
+
+    public JSONArray getQuestionnaireList() {
+        return questionnaireList;
+    }
+
+    public void updateQuestionnaireList(final JSONArray questionnaireList) {
+        this.clear();
+        this.questionnaireList = questionnaireList;
+    }
+
+    public void addQuestionnaireList(final JSONObject currentQuestionnaire) {
+        this.questionnaireList.put(currentQuestionnaire);
     }
 }

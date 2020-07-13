@@ -7,15 +7,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.events.OnRequireStepChange;
-import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
+import com.ninchat.sdk.events.OnNextQuestionnaire;
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.lang.ref.WeakReference;
 
@@ -54,11 +52,11 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
             final String text = currentItem.optString("back");
             if ("true".equalsIgnoreCase(text) || TextUtils.isEmpty(text)) {
                 mPreviousImage.setVisibility(View.VISIBLE);
-                mPreviousImage.setOnClickListener(v -> mayBeFireComplete(OnRequireStepChange.back));
+                mPreviousImage.setOnClickListener(v -> mayBeFireComplete(OnNextQuestionnaire.back));
             } else {
                 mPrevious.setVisibility(View.VISIBLE);
                 mPrevious.setText(NinchatSessionManager.getInstance().getTranslation(text));
-                mPrevious.setOnClickListener(v -> mayBeFireComplete(OnRequireStepChange.back));
+                mPrevious.setOnClickListener(v -> mayBeFireComplete(OnNextQuestionnaire.back));
             }
         }
 
@@ -66,11 +64,11 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
             final String text = currentItem.optString("next");
             if ("true".equalsIgnoreCase(text) || TextUtils.isEmpty(text)) {
                 mNextImage.setVisibility(View.VISIBLE);
-                mNextImage.setOnClickListener(v -> mayBeFireComplete(OnRequireStepChange.forward));
+                mNextImage.setOnClickListener(v -> mayBeFireComplete(OnNextQuestionnaire.forward));
             } else {
                 mNext.setVisibility(View.VISIBLE);
                 mNext.setText(NinchatSessionManager.getInstance().getTranslation(text));
-                mNext.setOnClickListener(v -> mayBeFireComplete(OnRequireStepChange.forward));
+                mNext.setOnClickListener(v -> mayBeFireComplete(OnNextQuestionnaire.forward));
             }
         }
     }
@@ -78,7 +76,7 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
     private void mayBeFireComplete(final int moveType) {
         final JSONObject rootItem = questionnaire.get().getItem(itemPosition);
         if (rootItem.optBoolean("fireEvent", false)) {
-            EventBus.getDefault().post(new OnRequireStepChange(moveType));
+            EventBus.getDefault().post(new OnNextQuestionnaire(moveType));
         }
     }
 }

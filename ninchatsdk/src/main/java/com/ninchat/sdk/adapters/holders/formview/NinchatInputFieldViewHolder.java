@@ -10,8 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
-import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
 import org.json.JSONObject;
 

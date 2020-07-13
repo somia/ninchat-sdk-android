@@ -1,9 +1,9 @@
 package com.ninchat.sdk.events;
 
-public class OnRequireStepChange {
+public class OnNextQuestionnaire {
     public int moveType;
 
-    public OnRequireStepChange(final int moveType) {
+    public OnNextQuestionnaire(final int moveType) {
         this.moveType = moveType;
     }
 

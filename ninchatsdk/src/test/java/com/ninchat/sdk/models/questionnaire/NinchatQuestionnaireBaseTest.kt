@@ -11,6 +11,7 @@ import org.mockito.Mockito.doReturn
 import org.mockito.Mockito.mock
 
 class NinchatQuestionnaireBaseTest {
+    /*
     lateinit var configuration: JSONObject
     lateinit var preAudienceQuestionnaireJson: JSONArray
     lateinit var postAudienceQuestionnaireJson: JSONArray
@@ -156,4 +157,5 @@ class NinchatQuestionnaireBaseTest {
         val element1 = getQuestionnaireElementByName(null, "SomethingElse")
         Assert.assertNull(element1)
     }
+    */
 }

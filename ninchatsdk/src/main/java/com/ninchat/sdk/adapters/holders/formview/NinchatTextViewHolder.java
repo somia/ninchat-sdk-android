@@ -8,8 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.helper.NinchatImageGetter;
-import com.ninchat.sdk.models.questionnaire.NinchatPreAudienceQuestionnaire;
-import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
 import org.json.JSONObject;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;

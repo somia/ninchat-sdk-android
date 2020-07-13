@@ -1,15 +1,22 @@
 package com.ninchat.sdk.helper;
 
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 
 import com.ninchat.client.JSON;
 import com.ninchat.client.Props;
 import com.ninchat.client.Strings;
 import com.ninchat.sdk.NinchatSessionManager;
+import com.ninchat.sdk.R;
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaires;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -36,6 +43,7 @@ public class NinchatQuestionnaire {
 
     public static final int PRE_AUDIENCE_QUESTIONNAIRE = 1;
     public static final int POST_AUDIENCE_QUESTIONNAIRE = 2;
+    public static final int DEFAULT_INT_VALUE = -1;
 
     public static boolean isText(final JSONObject jsonObject) {
         return "text".equalsIgnoreCase(jsonObject.optString("element"));
@@ -733,6 +741,21 @@ public class NinchatQuestionnaire {
         return index;
     }
 
+    public static boolean formHasError(final JSONObject element) {
+        int index = -1;
+        final JSONArray elementList = getElements(element);
+        for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
+            final JSONObject currentElement = elementList.optJSONObject(i);
+            final boolean requiredOk = isRequiredOK(currentElement);
+            final boolean patternOk = matchPattern(currentElement);
+            // take only the first item. for focusing purpose only
+            if ((!requiredOk || !patternOk) && index == -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static void clearElementResult(final JSONObject element) {
         final JSONArray elementList = getElements(element);
         if (elementList == null || elementList.length() == 0) {
@@ -822,6 +845,23 @@ public class NinchatQuestionnaire {
         return preAnswers;
     }
 
+    public static Props getPreAnswers(final JSONObject result) {
+        Props preAnswers = new Props();
+        Iterator<String> keys = result.keys();
+        while (keys.hasNext()) {
+            final String currentKey = keys.next();
+            // if current key is empty
+            if (TextUtils.isEmpty(currentKey)) continue;
+            if (currentKey.equalsIgnoreCase("tags")) {
+                final Strings tags = getTags(result.optJSONArray("tags"));
+                if (tags.length() > 0) preAnswers.setStringArray("tags", tags);
+            } else {
+                preAnswers.setString(currentKey, result.optString(currentKey, ""));
+            }
+        }
+        return preAnswers;
+    }
+
     public static Strings getTags(final JSONArray tagList) {
         Strings tags = new Strings();
         for (int i = 0; tagList != null && i < tagList.length(); i += 1) {
@@ -829,6 +869,45 @@ public class NinchatQuestionnaire {
                 tags.append(tagList.optString(i));
         }
         return tags;
+    }
+
+    public static void setViewAndChildrenEnabled(View view, boolean enabled) {
+        view.setEnabled(enabled);
+        if (view instanceof LinearLayout) {
+            if (view.getId() == -1) {
+                view.setBackground(ContextCompat.getDrawable(view.getContext(), R.drawable.ninchat_chat_bubble_left_repeated_disabled));
+            }
+        }
+        if (view instanceof Button) {
+            view.setBackground(ContextCompat.getDrawable(view.getContext(), R.drawable.ninchat_chat_disable_button));
+        }
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View child = viewGroup.getChildAt(i);
+                setViewAndChildrenEnabled(child, enabled);
+            }
+        }
+    }
+
+    public static JSONObject getFinalAnswers(final JSONObject answerList, final JSONArray tagList) {
+        if (answerList == null || answerList.length() == 0) {
+            return null;
+        }
+        try {
+            answerList.putOpt("tags", tagList);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return answerList;
+    }
+
+    public static com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire getQuestionnaire(final int questionnaireType) {
+        final NinchatQuestionnaires questionnaires = NinchatSessionManager
+                .getInstance()
+                .getNinchatQuestionnaires();
+        return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
+                questionnaires.getNinchatPreAudienceQuestionnaire() : questionnaires.getNinchatPostAudienceQuestionnaire();
     }
 
     public static JSONArray getPreAudienceQuestionnaire(final JSONObject item) {

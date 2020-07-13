@@ -8,6 +8,7 @@ import org.junit.Test
 import org.mockito.Mockito
 
 class NinchatPreAudienceQuestionnaireTest {
+    /*
     lateinit var configuration: JSONObject
     lateinit var preAudienceQuestionnaireJson: JSONArray
     @Before
@@ -24,4 +25,5 @@ class NinchatPreAudienceQuestionnaireTest {
         val ninchatPreAudienceQuestionnaires = NinchatPreAudienceQuestionnaire(configuration)
         Assert.assertEquals(preAudienceQuestionnaireJson, ninchatPreAudienceQuestionnaires.questionnaireList)
     }
+   */
 }

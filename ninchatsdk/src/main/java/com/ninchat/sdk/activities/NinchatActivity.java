@@ -26,6 +26,7 @@ import com.ninchat.sdk.tasks.NinchatRegisterAudienceTask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.ninchat.sdk.activities.NinchatQuestionnaireActivity.OPEN_QUEUE;
 import static com.ninchat.sdk.activities.NinchatQuestionnaireActivity.QUESTIONNAIRE_TYPE;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.POST_AUDIENCE_QUESTIONNAIRE;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.PRE_AUDIENCE_QUESTIONNAIRE;
@@ -182,38 +183,16 @@ public final class NinchatActivity extends NinchatBaseActivity {
             }
         } else if (requestCode == NinchatQuestionnaireActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                final int questionnaireType = data.getIntExtra(QUESTIONNAIRE_TYPE, -1);
-                final String answers = data.getStringExtra(NinchatQuestionnaireActivity.ANSWERS);
                 setResult(resultCode, data);
-                if (questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE) {
-                    if (!TextUtils.isEmpty(data.getStringExtra(NinchatQuestionnaireActivity.QUEUE_ID))) {
-                        queueId = data.getStringExtra(NinchatQuestionnaireActivity.QUEUE_ID);
-                    }
-                    if (NinchatSessionManager.getInstance().getAudienceMetadata() == null) {
-                        NinchatSessionManager.getInstance().setAudienceMetadata(new Props());
-                    }
-                    if (!TextUtils.isEmpty(answers)) {
-                        NinchatSessionManager.getInstance().getAudienceMetadata().setObject("pre_answers",
-                                getPreAnswers(answers));
-                    }
-                    if ("_complete".equalsIgnoreCase(data.getStringExtra(NinchatQuestionnaireActivity.COMMAND_TYPE))) {
-                        // takes user to the queue. is queue is closed register the user and end chat
-                        if (NinchatSessionManager.getInstance().getQueue(queueId) != null && !NinchatSessionManager.getInstance().getQueue(queueId).isClosed()) {
-                            openQueueActivity();
-                            return;
-                        }
-                    }
-                    NinchatRegisterAudienceTask.start(queueId);
+                final boolean openQueue = data.getBooleanExtra(OPEN_QUEUE, false);
+                final String newQueueId = data.getStringExtra(QUEUE_ID);
+                if(openQueue && !TextUtils.isEmpty(newQueueId)){
+                    this.queueId = newQueueId;
+                    openQueueActivity();
                 } else {
-                    if (!TextUtils.isEmpty(answers)) {
-                        try {
-                            NinchatSessionManager.getInstance().sendPostAnswers(new JSONObject(answers));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    // else finish
+                    finish();
                 }
-                finish();
             } else if (resultCode == RESULT_CANCELED) {
                 finish();
             }

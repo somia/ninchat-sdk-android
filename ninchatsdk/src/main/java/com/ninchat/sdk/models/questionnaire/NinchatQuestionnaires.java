@@ -1,7 +1,6 @@
-package com.ninchat.sdk.models.questionnaire2;
+package com.ninchat.sdk.models.questionnaire;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.convertSimpleFormToGroup;

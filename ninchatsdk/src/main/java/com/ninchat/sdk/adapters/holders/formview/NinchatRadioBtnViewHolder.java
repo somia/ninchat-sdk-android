@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.events.OnRequireStepChange;
-import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
+import com.ninchat.sdk.events.OnNextQuestionnaire;
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
@@ -155,7 +155,7 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
             private void mayBeFireComplete() {
                 final JSONObject rootItem = questionnaire.get().getItem(rootItemPosition);
                 if (rootItem.optBoolean("fireEvent", false)) {
-                    EventBus.getDefault().post(new OnRequireStepChange(OnRequireStepChange.other));
+                    EventBus.getDefault().post(new OnNextQuestionnaire(OnNextQuestionnaire.other));
                 }
             }
 

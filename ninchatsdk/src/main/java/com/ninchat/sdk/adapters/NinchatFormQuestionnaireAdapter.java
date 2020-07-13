@@ -13,7 +13,7 @@ import com.ninchat.sdk.adapters.holders.formview.NinchatDropDownSelectViewHolder
 import com.ninchat.sdk.adapters.holders.formview.NinchatInputFieldViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatRadioBtnViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatTextViewHolder;
-import com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire;
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,11 +28,11 @@ import static com.ninchat.sdk.helper.NinchatQuestionnaire.TEXT;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.TEXT_AREA;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getItemType;
 
-public class NinchatFormLikeQuestionnaireAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private final String TAG = NinchatFormLikeQuestionnaireAdapter.class.getSimpleName();
+public class NinchatFormQuestionnaireAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private final String TAG = NinchatFormQuestionnaireAdapter.class.getSimpleName();
     private NinchatQuestionnaire questionnaire;
 
-    public NinchatFormLikeQuestionnaireAdapter(final com.ninchat.sdk.models.questionnaire2.NinchatQuestionnaire ninchatPreAudienceQuestionnaire) {
+    public NinchatFormQuestionnaireAdapter(final com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire ninchatPreAudienceQuestionnaire) {
         this.questionnaire = ninchatPreAudienceQuestionnaire;
     }
 
@@ -60,7 +60,6 @@ public class NinchatFormLikeQuestionnaireAdapter extends RecyclerView.Adapter<Re
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.text_area_with_label, parent, false),
                         position, questionnaire, true);
             case RADIO:
-                // a button like element with single choice
                 return new NinchatRadioBtnViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.multichoice_with_label, parent, false),
                         position, questionnaire);
@@ -84,7 +83,6 @@ public class NinchatFormLikeQuestionnaireAdapter extends RecyclerView.Adapter<Re
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        Log.d(TAG, "on bind view holder " + position);
     }
 
     public void updateContent(final JSONArray questionnaireList) {
