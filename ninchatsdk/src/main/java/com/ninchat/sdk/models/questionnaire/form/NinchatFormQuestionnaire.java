@@ -2,6 +2,7 @@ package com.ninchat.sdk.models.questionnaire.form;
 
 import android.content.Context;
 import android.support.v4.util.Pair;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -36,13 +37,16 @@ public class NinchatFormQuestionnaire {
 
     private NinchatFormQuestionnaireAdapter mNinchatFormQuestionnaireAdapter;
     private WeakReference<RecyclerView> mRecyclerViewWeakReference;
-    private WeakReference<RecyclerView.LayoutManager> mLinearLayoutWeakReference;
+    private WeakReference<LinearLayoutManager> mLinearLayoutWeakReference;
     private String queueId;
     private final int questionnaireType;
     private final NinchatQuestionnaire mQuestionnaire;
     private Stack<Integer> historyList;
 
-    public NinchatFormQuestionnaire(final String queueId, final int questionnaireType, final RecyclerView recyclerView, final RecyclerView.LayoutManager linearLayout) {
+    public NinchatFormQuestionnaire(final String queueId,
+                                    final int questionnaireType,
+                                    final RecyclerView recyclerView,
+                                    final LinearLayoutManager linearLayout) {
         mRecyclerViewWeakReference = new WeakReference<>(recyclerView);
         mLinearLayoutWeakReference = new WeakReference<>(linearLayout);
         this.queueId = queueId;
@@ -198,11 +202,5 @@ public class NinchatFormQuestionnaire {
             historyList.push(target.second != -1 ? target.second : getNextElementIndex(mQuestionnaire.getQuestionnaireList(), historyList.peek()));
         }
         handleNext();
-    }
-
-    @Subscribe(threadMode = ThreadMode.POSTING)
-    public void onItemLoaded(OnItemLoaded onItemLoaded) {
-        mRecyclerViewWeakReference.get().post(() -> mRecyclerViewWeakReference.get().smoothScrollToPosition(mNinchatFormQuestionnaireAdapter.getItemCount() - 1));
-
     }
 }

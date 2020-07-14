@@ -9,13 +9,8 @@ import android.view.ViewGroup;
 
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.holders.conversationview.NinchatConversationViewHolder;
-import com.ninchat.sdk.events.OnComponentError;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
-import com.ninchat.sdk.models.questionnaire.conversation.NinchatConversationQuestionnaire;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class NinchatConversationQuestionnaireAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -58,4 +53,5 @@ public class NinchatConversationQuestionnaireAdapter extends RecyclerView.Adapte
     public int getItemCount() {
         return questionnaire.size();
     }
+
 }

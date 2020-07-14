@@ -2,8 +2,10 @@ package com.ninchat.sdk.models.questionnaire.conversation;
 
 import android.content.Context;
 import android.support.v4.util.Pair;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.ninchat.client.Props;
@@ -37,7 +39,7 @@ public class NinchatConversationQuestionnaire {
 
     private NinchatConversationQuestionnaireAdapter mNinchatConversationQuestionnaireAdapter;
     private WeakReference<RecyclerView> mRecyclerViewWeakReference;
-    private WeakReference<RecyclerView.LayoutManager> mLinearLayoutWeakReference;
+    private WeakReference<LinearLayoutManager> mLinearLayoutWeakReference;
     private String queueId;
     private final int questionnaireType;
     private final NinchatQuestionnaire mQuestionnaire;
@@ -46,7 +48,7 @@ public class NinchatConversationQuestionnaire {
     public NinchatConversationQuestionnaire(final String queueId,
                                             final int questionnaireType,
                                             final RecyclerView recyclerView,
-                                            final RecyclerView.LayoutManager linearLayout) {
+                                            final LinearLayoutManager linearLayout) {
         mRecyclerViewWeakReference = new WeakReference<>(recyclerView);
         mLinearLayoutWeakReference = new WeakReference<>(linearLayout);
         this.queueId = queueId;
@@ -207,7 +209,9 @@ public class NinchatConversationQuestionnaire {
 
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onItemLoaded(OnItemLoaded onItemLoaded) {
-        mRecyclerViewWeakReference.get().post(() -> mRecyclerViewWeakReference.get().smoothScrollToPosition(mNinchatConversationQuestionnaireAdapter.getItemCount() - 1));
-
+        mRecyclerViewWeakReference.get().post(() -> {
+            //mRecyclerViewWeakReference.get().smoothScrollToPosition(mNinchatConversationQuestionnaireAdapter.getItemCount() - 1);
+            mLinearLayoutWeakReference.get().scrollToPositionWithOffset(mNinchatConversationQuestionnaireAdapter.getItemCount() - 1, 0);
+        });
     }
 }

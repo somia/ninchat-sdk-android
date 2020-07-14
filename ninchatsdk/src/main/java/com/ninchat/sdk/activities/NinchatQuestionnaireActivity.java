@@ -33,7 +33,7 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
     private RecyclerView mRecyclerView;
     private String queueId;
     private int questionnaireType;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private LinearLayoutManager mLayoutManager;
     private boolean isConversationLike;
 
     @Override
