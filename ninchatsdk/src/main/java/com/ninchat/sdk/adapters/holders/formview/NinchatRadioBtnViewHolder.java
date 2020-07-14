@@ -37,19 +37,26 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
     private final int rootItemPosition;
     private boolean firstTime = true;
     WeakReference<NinchatQuestionnaire> questionnaire;
+    private final boolean isFormLikeQuestionnaire;
 
     public NinchatRadioBtnViewHolder(@NonNull View itemView, final int position,
-                                     final NinchatQuestionnaire ninchatQuestionnaire) {
+                                     final NinchatQuestionnaire ninchatQuestionnaire,
+                                     final boolean isFormLikeQuestionnaire) {
         super(itemView);
         firstTime = true;
         rootItemPosition = position;
         questionnaire = new WeakReference(ninchatQuestionnaire);
-        mLabel = (TextView) itemView.findViewById(R.id.radio_option_label);
-        mRecycleView = (RecyclerView) itemView.findViewById(R.id.ninchat_chat_radio_options);
+        this.isFormLikeQuestionnaire = isFormLikeQuestionnaire;
+        mLabel = itemView.findViewById(R.id.radio_option_label);
+        mRecycleView = itemView.findViewById(R.id.ninchat_chat_radio_options);
         update();
     }
 
     public void update() {
+        if (isFormLikeQuestionnaire) {
+            itemView.setBackground(
+                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
+        }
         final JSONObject item = questionnaire.get().getItem(rootItemPosition);
         setLabel(item);
         mRecycleView.setLayoutManager(new LinearLayoutManager(itemView.getContext()));

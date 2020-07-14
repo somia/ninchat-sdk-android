@@ -30,13 +30,16 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
     private final CheckBox mCheckbox;
     private final int itemPosition;
     WeakReference<NinchatQuestionnaire> questionnaire;
+    private final boolean isFormLikeQuestionnaire;
 
     public NinchatCheckboxViewHolder(@NonNull View itemView, final int position,
-                                     final NinchatQuestionnaire ninchatQuestionnaire) {
+                                     final NinchatQuestionnaire ninchatQuestionnaire,
+                                     final boolean isFormLikeQuestionnaire) {
         super(itemView);
         itemPosition = position;
         questionnaire = new WeakReference(ninchatQuestionnaire);
-        mCheckbox = (CheckBox) itemView.findViewById(R.id.ninchat_checkbox);
+        this.isFormLikeQuestionnaire = isFormLikeQuestionnaire;
+        mCheckbox = itemView.findViewById(R.id.ninchat_checkbox);
         mCheckbox.setOnCheckedChangeListener(onCheckedChangeListener);
         update();
     }
@@ -58,6 +61,10 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
         final JSONObject item = questionnaire.get().getItem(itemPosition);
         setLabel(item);
         setChecked(item);
+        if (isFormLikeQuestionnaire) {
+            itemView.setBackground(
+                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
+        }
         updateUI(item);
     }
 

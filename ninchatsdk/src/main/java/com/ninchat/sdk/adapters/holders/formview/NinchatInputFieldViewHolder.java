@@ -1,6 +1,7 @@
 package com.ninchat.sdk.adapters.holders.formview;
 
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -29,16 +30,19 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
     private final TextView mLabel;
     private final EditText mEditText;
     private final int itemPosition;
+    private final boolean isFormLikeQuestionnaire;
     WeakReference<NinchatQuestionnaire> questionnaire;
 
     public NinchatInputFieldViewHolder(@NonNull View itemView, final int position,
                                        final NinchatQuestionnaire ninchatQuestionnaire,
-                                       final boolean multilineText) {
+                                       final boolean multilineText,
+                                       final boolean isFormLikeQuestionnaire) {
         super(itemView);
         itemPosition = position;
         questionnaire = new WeakReference(ninchatQuestionnaire);
-        mLabel = (TextView) itemView.findViewById(multilineText ? R.id.multiline_text_label : R.id.simple_text_label);
-        mEditText = (EditText) itemView.findViewById(multilineText ? R.id.multiline_text_area : R.id.simple_text_field);
+        this.isFormLikeQuestionnaire = isFormLikeQuestionnaire;
+        mLabel = itemView.findViewById(multilineText ? R.id.multiline_text_label : R.id.simple_text_label);
+        mEditText = itemView.findViewById(multilineText ? R.id.multiline_text_area : R.id.simple_text_field);
         mEditText.addTextChangedListener(onTextChange);
         mEditText.setOnFocusChangeListener(onFocusChangeListener);
         bind();
@@ -76,6 +80,10 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
         final JSONObject item = questionnaire.get().getItem(itemPosition);
         setLabel(item);
         setText(item);
+        if (isFormLikeQuestionnaire) {
+            itemView.setBackground(
+                            ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
+        }
         updateUI(item, false);
     }
 

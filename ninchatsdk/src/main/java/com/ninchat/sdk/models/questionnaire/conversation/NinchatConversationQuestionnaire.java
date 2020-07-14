@@ -61,7 +61,10 @@ public class NinchatConversationQuestionnaire {
     private final NinchatQuestionnaire mQuestionnaire;
     private Stack<Integer> historyList;
 
-    public NinchatConversationQuestionnaire(final String queueId, final int questionnaireType, final RecyclerView recyclerView, final RecyclerView.LayoutManager linearLayout) {
+    public NinchatConversationQuestionnaire(final String queueId,
+                                            final int questionnaireType,
+                                            final RecyclerView recyclerView,
+                                            final RecyclerView.LayoutManager linearLayout) {
         mRecyclerViewWeakReference = new WeakReference<>(recyclerView);
         mLinearLayoutWeakReference = new WeakReference<>(linearLayout);
         this.queueId = queueId;
@@ -71,18 +74,18 @@ public class NinchatConversationQuestionnaire {
         this.createAdapter();
     }
 
+    private void initialize() {
+        this.dispose();
+        historyList = new Stack<>();
+        EventBus.getDefault().register(this);
+    }
+
     private void createAdapter() {
         historyList.push(0);
         mNinchatConversationQuestionnaireAdapter = new
                 NinchatConversationQuestionnaireAdapter(
                 new NinchatQuestionnaire(
                         getQuestionnaireAsList()));
-    }
-
-    private void initialize() {
-        this.dispose();
-        historyList = new Stack<>();
-        EventBus.getDefault().register(this);
     }
 
     private void handleNext() {

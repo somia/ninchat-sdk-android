@@ -6,12 +6,17 @@ import org.json.JSONObject;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.convertSimpleFormToGroup;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getPostAudienceQuestionnaire;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getPreAudienceQuestionnaire;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.isConversationLikePostAudienceQuestionnaire;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.isConversationLikePreAudienceQuestionnaire;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.isConversationLikePostAudienceQuestionnaire;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.isSimpleForm;
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.unifyQuestionnaire;
 
 public class NinchatQuestionnaires {
     private NinchatQuestionnaire preAudienceQuestionnaire;
     private NinchatQuestionnaire postAudienceQuestionnaire;
+    private boolean conversationLikePreAudienceQuestionnaire;
+    private boolean formLikePreAudienceQuestionnaire;
 
     public NinchatQuestionnaires(final JSONObject configuration) {
         preAudienceQuestionnaire = new NinchatQuestionnaire(
@@ -20,6 +25,8 @@ public class NinchatQuestionnaires {
         postAudienceQuestionnaire = new NinchatQuestionnaire(
                 parse(configuration, false)
         );
+        conversationLikePreAudienceQuestionnaire = isConversationLikePreAudienceQuestionnaire(configuration);
+        formLikePreAudienceQuestionnaire = isConversationLikePostAudienceQuestionnaire(configuration);
     }
 
     public JSONArray parse(final JSONObject configuration, final boolean isPreAudienceQuestionnaire) {
@@ -38,7 +45,7 @@ public class NinchatQuestionnaires {
     }
 
     public boolean hasPreAudienceQuestionnaire() {
-        return preAudienceQuestionnaire.getQuestionnaireList() != null && preAudienceQuestionnaire.getQuestionnaireList().length() > 0 ;
+        return preAudienceQuestionnaire.getQuestionnaireList() != null && preAudienceQuestionnaire.getQuestionnaireList().length() > 0;
     }
 
     public boolean hasPostAudienceQuestionnaire() {
@@ -51,5 +58,13 @@ public class NinchatQuestionnaires {
 
     public NinchatQuestionnaire getNinchatPostAudienceQuestionnaire() {
         return postAudienceQuestionnaire;
+    }
+
+    public boolean conversationLikePreAudienceQuestionnaire() {
+        return this.conversationLikePreAudienceQuestionnaire;
+    }
+
+    public boolean formLikePreAudienceQuestionnaire() {
+        return this.formLikePreAudienceQuestionnaire;
     }
 }

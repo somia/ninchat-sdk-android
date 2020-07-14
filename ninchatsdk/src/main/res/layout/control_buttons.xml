@@ -9,7 +9,9 @@
         android:tint="@color/ninchat_color_button_secondary_text"
 
         android:id="@+id/ninchat_image_button_previous"
-        android:layout_width="@dimen/ninchat_chat_control_follow_button_width"
+        android:maxWidth="@dimen/ninchat_chat_control_follow_button_width"
+
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_gravity="center_horizontal"
@@ -22,7 +24,8 @@
         android:tint="@color/ninchat_color_button_primary_text"
 
         android:id="@+id/ninchat_image_button_next"
-        android:layout_width="@dimen/ninchat_chat_control_follow_button_width"
+        android:maxWidth="@dimen/ninchat_chat_control_follow_button_width"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_gravity="center_horizontal"

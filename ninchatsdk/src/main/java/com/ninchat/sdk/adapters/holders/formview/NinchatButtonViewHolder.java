@@ -32,10 +32,10 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
     public NinchatButtonViewHolder(@NonNull View itemView, final int position,
                                    final NinchatQuestionnaire ninchatQuestionnaire) {
         super(itemView);
-        mPrevious = (Button) itemView.findViewById(R.id.ninchat_button_previous);
-        mNext = (Button) itemView.findViewById(R.id.ninchat_button_next);
-        mPreviousImage = (ImageView) itemView.findViewById(R.id.ninchat_image_button_previous);
-        mNextImage = (ImageView) itemView.findViewById(R.id.ninchat_image_button_next);
+        mPrevious = itemView.findViewById(R.id.ninchat_button_previous);
+        mNext = itemView.findViewById(R.id.ninchat_button_next);
+        mPreviousImage =  itemView.findViewById(R.id.ninchat_image_button_previous);
+        mNextImage =  itemView.findViewById(R.id.ninchat_image_button_next);
         itemPosition = position;
         questionnaire = new WeakReference(ninchatQuestionnaire);
         this.bind();

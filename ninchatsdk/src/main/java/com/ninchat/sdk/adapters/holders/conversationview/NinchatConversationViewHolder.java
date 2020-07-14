@@ -55,7 +55,7 @@ public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
             itemView.findViewById(R.id.ninchat_chat_message_bot_writing_root).setVisibility(View.GONE);
 
             mFormLikeAudienceQuestionnaireAdapter = new NinchatFormQuestionnaireAdapter(
-                    new NinchatQuestionnaire(getElements(currentElement)));
+                    new NinchatQuestionnaire(getElements(currentElement)), false);
             final int spaceInPixelTop = itemView.getResources().getDimensionPixelSize(R.dimen.ninchat_items_margin_top_questionnaire);
             final int spaceLeft = 0;
             final int spaceRight = 0;

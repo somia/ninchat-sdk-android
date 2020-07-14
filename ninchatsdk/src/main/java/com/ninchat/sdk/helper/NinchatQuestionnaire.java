@@ -906,16 +906,25 @@ public class NinchatQuestionnaire {
         final NinchatQuestionnaires questionnaires = NinchatSessionManager
                 .getInstance()
                 .getNinchatQuestionnaires();
+
         return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
                 questionnaires.getNinchatPreAudienceQuestionnaire() : questionnaires.getNinchatPostAudienceQuestionnaire();
     }
 
-    public static JSONArray getPreAudienceQuestionnaire(final JSONObject item) {
+    public static JSONArray getPreAudienceQuestionnaire(@NotNull final JSONObject item) {
         return item.optJSONArray("preAudienceQuestionnaire");
     }
 
-    public static JSONArray getPostAudienceQuestionnaire(final JSONObject item) {
+    public static JSONArray getPostAudienceQuestionnaire(@NotNull final JSONObject item) {
         return item.optJSONArray("postAudienceQuestionnaire");
+    }
+
+    public static boolean isConversationLikePreAudienceQuestionnaire(final JSONObject item) {
+        return item.optString("preAudienceQuestionnaireStyle", "").equalsIgnoreCase("conversation");
+    }
+
+    public static boolean isConversationLikePostAudienceQuestionnaire(final JSONObject item) {
+        return item.optString("postAudienceQuestionnaireStyle", "").equalsIgnoreCase("conversation");
     }
 
 }

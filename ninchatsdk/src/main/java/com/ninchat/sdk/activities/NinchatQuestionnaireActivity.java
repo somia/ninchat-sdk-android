@@ -8,16 +8,19 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.events.OnCompleteQuestionnaire;
-import com.ninchat.sdk.events.OnItemLoaded;
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaires;
 import com.ninchat.sdk.models.questionnaire.conversation.NinchatConversationQuestionnaire;
+import com.ninchat.sdk.models.questionnaire.form.NinchatFormQuestionnaire;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.DEFAULT_INT_VALUE;
+import static com.ninchat.sdk.helper.NinchatQuestionnaire.PRE_AUDIENCE_QUESTIONNAIRE;
 
 
 public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
@@ -28,10 +31,12 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
     protected static final String OPEN_QUEUE = "openQueue";
 
     private NinchatConversationQuestionnaire ninchatConversationQuestionnaire;
+    private NinchatFormQuestionnaire ninchatFormQuestionnaire;
     private RecyclerView mRecyclerView;
     private String queueId;
     private int questionnaireType;
     private RecyclerView.LayoutManager mLayoutManager;
+    private boolean isConversationLike;
 
     @Override
     protected int getLayoutRes() {
@@ -54,20 +59,36 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
         mRecyclerView = findViewById(R.id.questionnaire_form_rview);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        isConversationLike = getFormOrConvLikeQuestionnaireType();
+        if (isConversationLike) {
+            ninchatConversationQuestionnaire = new NinchatConversationQuestionnaire(
+                    queueId,
+                    questionnaireType,
+                    mRecyclerView,
+                    mLayoutManager
+            );
+            ninchatConversationQuestionnaire.setAdapter(getApplicationContext());
+        } else {
+            ninchatFormQuestionnaire = new NinchatFormQuestionnaire(queueId,
+                    questionnaireType,
+                    mRecyclerView,
+                    mLayoutManager);
+            ninchatFormQuestionnaire.setAdapter(getApplicationContext());
+        }
 
-        ninchatConversationQuestionnaire = new NinchatConversationQuestionnaire(
-                queueId,
-                questionnaireType,
-                mRecyclerView,
-                mLayoutManager
-        );
-        ninchatConversationQuestionnaire.setAdapter(getApplicationContext());
     }
 
     @Override
     protected void onDestroy() {
         // dispose
-        ninchatConversationQuestionnaire.dispose();
+        if(ninchatConversationQuestionnaire != null){
+            ninchatConversationQuestionnaire.dispose();
+        }
+        if(ninchatFormQuestionnaire != null){
+            ninchatFormQuestionnaire.dispose();
+        }
+
+
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
@@ -80,6 +101,14 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private boolean getFormOrConvLikeQuestionnaireType() {
+        final NinchatQuestionnaires questionnaires = NinchatSessionManager
+                .getInstance()
+                .getNinchatQuestionnaires();
+        return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
+                questionnaires.conversationLikePreAudienceQuestionnaire() : questionnaires.formLikePreAudienceQuestionnaire();
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)
