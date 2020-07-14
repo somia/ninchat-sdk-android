@@ -24,6 +24,37 @@ public class NinchatQuestionnaireSantizer {
         return retval;
     }
 
+    public static JSONArray getThankYouElement(final String thankYouString, final boolean isRegister) throws JSONException {
+        JSONObject thankYouElement = new JSONObject();
+        thankYouElement.putOpt("element", "text");
+        thankYouElement.putOpt("name", "ThankYouText");
+        thankYouElement.putOpt("label", thankYouString);
+
+        JSONObject buttonElement = new JSONObject("{\"element\":\"buttons\",\"fireEvent\":true,\"back\":false,\"next\":\"true\"}");
+        buttonElement.putOpt("type", isRegister ? "_register" : "_complete");
+
+        thankYouElement.putOpt("element", "text");
+        thankYouElement.putOpt("name", "ThankYouText");
+        thankYouElement.putOpt("label", thankYouString);
+
+
+        JSONArray questionnaireList = new JSONArray();
+        questionnaireList.put(thankYouElement);
+        questionnaireList.put(buttonElement);
+
+
+        final JSONArray retval = new JSONArray();
+        final JSONObject simpleForm = new JSONObject();
+        simpleForm.putOpt("name", "ThankYouForm");
+        simpleForm.putOpt("type", "group");
+        simpleForm.putOpt("buttons", buttonElement);
+        simpleForm.putOpt("elements", questionnaireList);
+        final JSONObject logic = new JSONObject("{\"name\":\"ThankYouForm-Logic1\",\"logic\":{\"target\":\"_register\"}}");
+        retval.put(simpleForm);
+        retval.put(logic);
+        return retval;
+    }
+
     public static JSONObject makeGroupElement(final JSONObject nonGroupElement) throws JSONException {
         JSONArray elements = new JSONArray();
         elements.put(new JSONObject(nonGroupElement.toString()));

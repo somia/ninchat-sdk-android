@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.ninchat.sdk.models.questionnaire.form.NinchatFormQuestionnaire;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 
@@ -58,6 +60,7 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         isConversationLike = getFormOrConvLikeQuestionnaireType();
+
         if (isConversationLike) {
             ninchatConversationQuestionnaire = new NinchatConversationQuestionnaire(
                     queueId,
@@ -79,10 +82,10 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
     @Override
     protected void onDestroy() {
         // dispose
-        if(ninchatConversationQuestionnaire != null){
+        if (ninchatConversationQuestionnaire != null) {
             ninchatConversationQuestionnaire.dispose();
         }
-        if(ninchatFormQuestionnaire != null){
+        if (ninchatFormQuestionnaire != null) {
             ninchatFormQuestionnaire.dispose();
         }
 

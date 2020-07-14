@@ -5,6 +5,8 @@ import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
 
+import com.ninchat.sdk.NinchatSessionManager;
+
 import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
@@ -78,5 +80,9 @@ public class NinchatQuestionnaireMiscUtil {
         final boolean hasBack = hasButton(buttons, true);
         final boolean hasNext = hasButton(buttons, false);
         return (hasBack || hasNext);
+    }
+
+    public static boolean isClosedQueue(final String queueId) {
+        return (NinchatSessionManager.getInstance().getQueue(queueId) == null || NinchatSessionManager.getInstance().getQueue(queueId).isClosed());
     }
 }

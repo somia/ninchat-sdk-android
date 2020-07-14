@@ -35,8 +35,8 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mPrevious = itemView.findViewById(R.id.ninchat_button_previous);
         mNext = itemView.findViewById(R.id.ninchat_button_next);
-        mPreviousImage =  itemView.findViewById(R.id.ninchat_image_button_previous);
-        mNextImage =  itemView.findViewById(R.id.ninchat_image_button_next);
+        mPreviousImage = itemView.findViewById(R.id.ninchat_image_button_previous);
+        mNextImage = itemView.findViewById(R.id.ninchat_image_button_next);
         itemPosition = position;
         questionnaire = new WeakReference(ninchatQuestionnaire);
         this.bind();
@@ -77,7 +77,14 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
     private void mayBeFireComplete(final int moveType) {
         final JSONObject rootItem = questionnaire.get().getItem(itemPosition);
         if (rootItem.optBoolean("fireEvent", false)) {
-            EventBus.getDefault().post(new OnNextQuestionnaire(moveType));
+            if ("_register".equalsIgnoreCase(rootItem.optString("type", ""))) {
+                EventBus.getDefault().post(new OnNextQuestionnaire(OnNextQuestionnaire.register));
+            } else if ("_complete".equalsIgnoreCase(rootItem.optString("type", ""))) {
+                EventBus.getDefault().post(new OnNextQuestionnaire(OnNextQuestionnaire.complete));
+            } else {
+                EventBus.getDefault().post(new OnNextQuestionnaire(moveType));
+            }
+
         }
     }
 }

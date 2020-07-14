@@ -247,6 +247,24 @@ public class NinchatQuestionnaireItemGetter {
                 questionnaires.getNinchatPreAudienceQuestionnaire() : questionnaires.getNinchatPostAudienceQuestionnaire();
     }
 
+    public static String getAudienceRegisteredText(final int questionnaireType) {
+        final NinchatQuestionnaires questionnaires = NinchatSessionManager
+                .getInstance()
+                .getNinchatQuestionnaires();
+
+        return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
+                questionnaires.getAudienceRegisteredText() : "";
+    }
+
+    public static String getAudienceRegisteredClosedText(final int questionnaireType) {
+        final NinchatQuestionnaires questionnaires = NinchatSessionManager
+                .getInstance()
+                .getNinchatQuestionnaires();
+
+        return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
+                questionnaires.getAudienceRegisteredClosedText() : "";
+    }
+
     public static Props getPreAnswers(final String resultString) {
         Props preAnswers = new Props();
         try {
@@ -340,6 +358,13 @@ public class NinchatQuestionnaireItemGetter {
         return null;
     }
 
+    public static String getAudienceRegisteredTextFromConfig(final JSONObject item) {
+        return item.optString("audienceRegisteredText", "");
+    }
+
+    public static String getAudienceRegisteredClosedTextFromConfig(final JSONObject item) {
+        return item.optString("audienceRegisteredClosedText", "");
+    }
 
     public static JSONArray getPreAudienceQuestionnaire(@NotNull final JSONObject item) {
         return item.optJSONArray("preAudienceQuestionnaire");

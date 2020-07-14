@@ -1,7 +1,10 @@
 package com.ninchat.sdk.models.questionnaire;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireSantizer.getThankYouElement;
 
 public class NinchatQuestionnaire {
     private JSONArray questionnaireList;
@@ -41,5 +44,18 @@ public class NinchatQuestionnaire {
 
     public void addQuestionnaireList(final JSONObject currentQuestionnaire) {
         this.questionnaireList.put(currentQuestionnaire);
+    }
+
+    public int updateQuestionWithThankYouElement(final String thankYouText, final boolean isRegister) {
+        final int elementIndex = this.questionnaireList.length();
+        try {
+            final JSONArray thankYouItems = getThankYouElement(thankYouText, isRegister);
+            for (int i = 0; i < thankYouItems.length(); i += 1) {
+                this.questionnaireList.put(thankYouItems.optJSONObject(i));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return elementIndex;
     }
 }

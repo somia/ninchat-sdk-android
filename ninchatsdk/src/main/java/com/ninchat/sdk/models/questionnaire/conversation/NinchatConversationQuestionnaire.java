@@ -5,7 +5,6 @@ import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 
 import com.ninchat.client.Props;
@@ -32,6 +31,7 @@ import java.util.Stack;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireNavigationUtil.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
@@ -43,6 +43,8 @@ public class NinchatConversationQuestionnaire {
     private String queueId;
     private final int questionnaireType;
     private final NinchatQuestionnaire mQuestionnaire;
+    private final String mAudienceRegisterText;
+    private final String mAudienceRegisterClosedText;
     private Stack<Integer> historyList;
 
     public NinchatConversationQuestionnaire(final String queueId,
@@ -54,6 +56,8 @@ public class NinchatConversationQuestionnaire {
         this.queueId = queueId;
         this.questionnaireType = questionnaireType;
         this.mQuestionnaire = getQuestionnaire(questionnaireType);
+        this.mAudienceRegisterText = getAudienceRegisteredText(questionnaireType);
+        this.mAudienceRegisterClosedText = getAudienceRegisteredClosedText(questionnaireType);
         this.initialize();
         this.createAdapter();
     }
@@ -121,11 +125,7 @@ public class NinchatConversationQuestionnaire {
     }
 
     private void handleComplete() {
-        final String currentQueueId = getQuestionnaireAnswersQueue(mQuestionnaire.getQuestionnaireList(), historyList);
-        if (!TextUtils.isEmpty(currentQueueId)) {
-            this.queueId = currentQueueId;
-        }
-        if (NinchatSessionManager.getInstance().getQueue(queueId) == null || NinchatSessionManager.getInstance().getQueue(queueId).isClosed()) {
+        if (isClosedQueue(queueId)) {
             handleRegister();
             return;
         }
@@ -186,6 +186,10 @@ public class NinchatConversationQuestionnaire {
             if (!historyList.empty()) {
                 historyList.pop();
             }
+        } else if (onNextQuestionnaire.moveType == OnNextQuestionnaire.register) {
+            handleRegister();
+        } else if (onNextQuestionnaire.moveType == OnNextQuestionnaire.complete) {
+            handleComplete();
         } else {
             if (formHasError(getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek()))) {
                 handleError();
@@ -194,17 +198,39 @@ public class NinchatConversationQuestionnaire {
             final JSONObject matchingLogic = getCurrentlyMatchedLogicElement();
             setTagsAndQueue(matchingLogic);
             final Pair<String, Integer> target = getTargetElementAndIndex(matchingLogic);
-            if (isComplete(target.first) || (target.second == -1 && getNextElementIndex(mQuestionnaire.getQuestionnaireList(), historyList.peek()) == -1)) {
-                handleComplete();
-                return;
-            }
+            int thankYouElementIndex = -1;
             if (isRegister(target.first)) {
-                handleRegister();
-                return;
+                // if has audience register text
+                if (TextUtils.isEmpty(mAudienceRegisterText)) {
+                    handleRegister();
+                    return;
+                }
+                thankYouElementIndex = mQuestionnaire.updateQuestionWithThankYouElement(mAudienceRegisterText, true);
+            } else if (isComplete(target.first) || (target.second == -1 && getNextElementIndex(mQuestionnaire.getQuestionnaireList(), historyList.peek()) == -1)) {
+                // if completed or it is a last element or there is no other matching element then it can be a complete
+                final String currentQueueId = getQuestionnaireAnswersQueue(mQuestionnaire.getQuestionnaireList(), historyList);
+                if (!TextUtils.isEmpty(currentQueueId)) {
+                    this.queueId = currentQueueId;
+                }
+                if (!isClosedQueue(this.queueId) || TextUtils.isEmpty(mAudienceRegisterClosedText)) {
+                    handleComplete();
+                    return;
+                }
+                thankYouElementIndex = mQuestionnaire.updateQuestionWithThankYouElement(mAudienceRegisterClosedText, false);
             }
-            historyList.push(target.second != -1 ? target.second : getNextElementIndex(mQuestionnaire.getQuestionnaireList(), historyList.peek()));
+            historyList.push(
+                    thankYouElementIndex != -1 ?
+                            thankYouElementIndex :
+                            target.second != -1 ?
+                                    target.second : getNextElementIndex(mQuestionnaire.getQuestionnaireList(), historyList.peek()));
         }
         handleNext();
+    }
+
+    private void updateQueue() {
+        final String currentQueueId = getQuestionnaireAnswersQueue(mQuestionnaire.getQuestionnaireList(), historyList);
+        if (TextUtils.isEmpty(currentQueueId)) return;
+        this.queueId = currentQueueId;
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)
