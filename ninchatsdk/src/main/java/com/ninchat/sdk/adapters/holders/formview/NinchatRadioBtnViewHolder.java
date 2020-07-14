@@ -21,13 +21,8 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getError;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getOptions;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultString;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getValue;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.setError;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.setResult;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
 
 public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatRadioBtnViewHolder.class.getSimpleName();

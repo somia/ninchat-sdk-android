@@ -18,15 +18,7 @@ import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.BUTTON;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.CHECKBOX;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.INPUT;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.LIKERT;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.RADIO;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.SELECT;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.TEXT;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.TEXT_AREA;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getItemType;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 public class NinchatFormQuestionnaireAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private final String TAG = NinchatFormQuestionnaireAdapter.class.getSimpleName();

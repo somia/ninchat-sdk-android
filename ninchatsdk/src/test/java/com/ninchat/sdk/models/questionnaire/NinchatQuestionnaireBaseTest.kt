@@ -1,15 +1,5 @@
 package com.ninchat.sdk.models.questionnaire
 
-import com.ninchat.sdk.helper.NinchatQuestionnaire.*
-import com.ninchat.sdk.models.questionnaire.data.*
-import org.json.JSONArray
-import org.json.JSONObject
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mockito.doReturn
-import org.mockito.Mockito.mock
-
 class NinchatQuestionnaireBaseTest {
     /*
     lateinit var configuration: JSONObject

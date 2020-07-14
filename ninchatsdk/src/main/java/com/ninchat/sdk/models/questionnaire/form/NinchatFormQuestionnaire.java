@@ -11,7 +11,6 @@ import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatFormQuestionnaireAdapter;
 import com.ninchat.sdk.events.OnCompleteQuestionnaire;
-import com.ninchat.sdk.events.OnComponentError;
 import com.ninchat.sdk.events.OnItemLoaded;
 import com.ninchat.sdk.events.OnNextQuestionnaire;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
@@ -28,29 +27,10 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.Stack;
 
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.POST_AUDIENCE_QUESTIONNAIRE;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.clearElement;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.clearElementResult;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.formHasError;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getAllFilledElements;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getCurrentElement;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getElements;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getFinalAnswers;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getMatchingLogic;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getMatchingLogicTarget;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getNextElementIndex;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getPreAnswers;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getQuestionnaire;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getQuestionnaireAnswers;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getQuestionnaireAnswersQueue;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getQuestionnaireAnswersTags;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getQuestionnaireElementIndexByName;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.isComplete;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.isRegister;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.setQueue;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.setTags;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.setViewAndChildrenEnabled;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.updateRequiredFieldStats;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireNavigationUtil.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 public class NinchatFormQuestionnaire {
 
@@ -107,7 +87,7 @@ public class NinchatFormQuestionnaire {
     private void close(final boolean isRegister) {
         final JSONObject answerList = getQuestionnaireAnswers(mQuestionnaire.getQuestionnaireList(), historyList);
         final JSONArray tagList = getQuestionnaireAnswersTags(mQuestionnaire.getQuestionnaireList(), historyList);
-        final JSONObject answers = getFinalAnswers(answerList, tagList);
+        final JSONObject answers = mergeAnswersAndTags(answerList, tagList);
         boolean openQueueView = true;
         if (questionnaireType == POST_AUDIENCE_QUESTIONNAIRE) {
             // a post audience questionnaire
@@ -171,7 +151,6 @@ public class NinchatFormQuestionnaire {
         mRecyclerViewWeakReference.get().clearFocus();
         mRecyclerViewWeakReference.get().setAdapter(mNinchatFormQuestionnaireAdapter);
         mNinchatFormQuestionnaireAdapter.notifyDataSetChanged();
-        // mNinchatConversationQuestionnaireAdapter.notifyItemChanged(errorIndex);
     }
 
     public void setAdapter(final Context mContext) {

@@ -18,9 +18,7 @@ import com.ninchat.sdk.models.questionnaire.form.NinchatFormQuestionnaire;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.DEFAULT_INT_VALUE;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.PRE_AUDIENCE_QUESTIONNAIRE;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 
 public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {

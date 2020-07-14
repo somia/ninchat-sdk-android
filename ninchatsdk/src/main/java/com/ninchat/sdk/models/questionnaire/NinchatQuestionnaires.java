@@ -3,14 +3,9 @@ package com.ninchat.sdk.models.questionnaire;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.convertSimpleFormToGroup;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getPostAudienceQuestionnaire;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getPreAudienceQuestionnaire;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.isConversationLikePostAudienceQuestionnaire;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.isConversationLikePreAudienceQuestionnaire;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.isConversationLikePostAudienceQuestionnaire;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.isSimpleForm;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.unifyQuestionnaire;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireSantizer.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 public class NinchatQuestionnaires {
     private NinchatQuestionnaire preAudienceQuestionnaire;

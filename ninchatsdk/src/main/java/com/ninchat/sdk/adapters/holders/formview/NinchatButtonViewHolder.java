@@ -17,7 +17,8 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.hasButton;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.hasButton;
+
 
 public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatButtonViewHolder.class.getSimpleName();

@@ -18,11 +18,8 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getError;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getResultBoolean;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.setError;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.setResult;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
 
 public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatCheckboxViewHolder.class.getSimpleName();

@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.EventLog;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,7 +21,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONObject;
 
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getElements;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 
 public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatConversationViewHolder.class.getSimpleName();

@@ -14,7 +14,7 @@ import com.ninchat.sdk.helper.NinchatImageGetter;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
 import org.json.JSONObject;
-import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 
 public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatTextViewHolder.class.getSimpleName();
