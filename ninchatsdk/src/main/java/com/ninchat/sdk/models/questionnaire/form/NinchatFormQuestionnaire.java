@@ -169,8 +169,9 @@ public class NinchatFormQuestionnaire {
 
         clearElementResult(currentElement);
         mRecyclerViewWeakReference.get().clearFocus();
+        mRecyclerViewWeakReference.get().setAdapter(mNinchatFormQuestionnaireAdapter);
+        mNinchatFormQuestionnaireAdapter.notifyDataSetChanged();
         // mNinchatConversationQuestionnaireAdapter.notifyItemChanged(errorIndex);
-        EventBus.getDefault().post(new OnComponentError(errorIndex));
     }
 
     public void setAdapter(final Context mContext) {

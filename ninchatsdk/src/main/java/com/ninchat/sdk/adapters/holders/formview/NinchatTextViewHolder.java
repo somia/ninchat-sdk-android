@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
@@ -13,7 +14,6 @@ import com.ninchat.sdk.helper.NinchatImageGetter;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
 import org.json.JSONObject;
-
 import static com.ninchat.sdk.helper.NinchatQuestionnaire.getLabel;
 
 public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
@@ -32,12 +32,13 @@ public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(final int position, final NinchatQuestionnaire ninchatQuestionnaire) {
         final JSONObject item = ninchatQuestionnaire.getItem(position);
-        final String text = getLabel(item);
+        String text = getLabel(item);
         if (isFormLikeQuestionnaire) {
             itemView.setBackground(
                     ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background)
             );
         }
+
         mContent.setAutoLinkMask(0);
         mContent.setMovementMethod(LinkMovementMethod.getInstance());
         // there might be some images images
