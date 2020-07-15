@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/ninchat_chat_bubble_left_repeated"
     android:layout_marginTop="@dimen/ninchat_items_margin_top_questionnaire"
+    android:layout_marginBottom="@dimen/ninchat_item_margin_bottom"
     android:orientation="vertical">
 
     <ImageView

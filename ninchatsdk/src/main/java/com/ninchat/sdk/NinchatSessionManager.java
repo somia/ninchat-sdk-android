@@ -27,6 +27,7 @@ import com.ninchat.client.Strings;
 import com.ninchat.sdk.activities.NinchatActivity;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
+import com.ninchat.sdk.events.OnAudienceRegistered;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatOption;
@@ -47,6 +48,7 @@ import com.ninchat.sdk.tasks.NinchatSendFileTask;
 import com.ninchat.sdk.tasks.NinchatSendIsWritingTask;
 import com.ninchat.sdk.tasks.NinchatSendMessageTask;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -363,6 +365,9 @@ public final class NinchatSessionManager {
                         NinchatSessionManager.getInstance().fileFound(params);
                     } else if (event.equals("channel_member_updated") || event.equals("user_updated")) {
                         NinchatSessionManager.getInstance().memberUpdated(params);
+                    } else if ( event.equals("audience_registered")) {
+                        // send event that audience is register, and we can not close the session
+                        EventBus.getDefault().post(new OnAudienceRegistered());
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);

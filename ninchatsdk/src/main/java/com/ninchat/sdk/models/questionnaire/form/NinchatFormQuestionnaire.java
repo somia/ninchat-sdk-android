@@ -11,6 +11,7 @@ import com.ninchat.client.Props;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatFormQuestionnaireAdapter;
+import com.ninchat.sdk.events.OnAudienceRegistered;
 import com.ninchat.sdk.events.OnCompleteQuestionnaire;
 import com.ninchat.sdk.events.OnItemLoaded;
 import com.ninchat.sdk.events.OnNextQuestionnaire;
@@ -97,11 +98,11 @@ public class NinchatFormQuestionnaire {
         final JSONObject answerList = getQuestionnaireAnswers(mQuestionnaire.getQuestionnaireList(), historyList);
         final JSONArray tagList = getQuestionnaireAnswersTags(mQuestionnaire.getQuestionnaireList(), historyList);
         final JSONObject answers = mergeAnswersAndTags(answerList, tagList);
-        boolean openQueueView = true;
         if (questionnaireType == POST_AUDIENCE_QUESTIONNAIRE) {
             // a post audience questionnaire
             NinchatSessionManager.getInstance().sendPostAnswers(answers);
-            openQueueView = false;
+            // send an event via event bus now that the questionnaire list are completed and filled
+            EventBus.getDefault().post(new OnCompleteQuestionnaire(false, queueId));
         } else {
             // a complete
             if (NinchatSessionManager.getInstance().getAudienceMetadata() == null) {
@@ -111,11 +112,13 @@ public class NinchatFormQuestionnaire {
             // a register
             if (isRegister) {
                 NinchatRegisterAudienceTask.start(queueId);
-                openQueueView = false;
+                // send an event via event bus now that the questionnaire list are completed and filled
+                // wait for audience register event and do everything else from there "onAudienceRegistered"
+                return ;
             }
+            // send an event via event bus now that the questionnaire list are completed and filled
+            EventBus.getDefault().post(new OnCompleteQuestionnaire(true, queueId));
         }
-        // send an event via event bus now that the questionnaire list are completed and filled
-        EventBus.getDefault().post(new OnCompleteQuestionnaire(openQueueView, queueId));
     }
 
     private void handleRegister() {
@@ -223,5 +226,12 @@ public class NinchatFormQuestionnaire {
                                     target.second : getNextElementIndex(mQuestionnaire.getQuestionnaireList(), historyList.peek()));
         }
         handleNext();
+    }
+
+    @Subscribe(threadMode = ThreadMode.POSTING)
+    public void onAudienceRegistered(OnAudienceRegistered onAudienceRegistered) {
+        // call finish after session close
+        NinchatSessionManager.getInstance().close();
+        EventBus.getDefault().post(new OnCompleteQuestionnaire(false, queueId));
     }
 }
