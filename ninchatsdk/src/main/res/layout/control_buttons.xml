@@ -22,7 +22,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.4"
         android:minWidth="@dimen/ninchat_chat_control_follow_button_width"
-        android:maxWidth="@dimen/ninchat_chat_control_follow_button_width"
         android:singleLine="true"
         android:text="Queue name that is far too long to fit in one line and extends to multiple lines" />
 
@@ -30,7 +29,7 @@
         android:id="@+id/view_padding"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="0.4"
+        android:layout_weight="0.2"
         android:visibility="invisible" />
 
     <ImageView

@@ -57,7 +57,7 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
             } else {
                 mPrevious.setVisibility(View.VISIBLE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    mNext.setTooltipText(NinchatSessionManager.getInstance().getTranslation(text));
+                    mPrevious.setTooltipText(NinchatSessionManager.getInstance().getTranslation(text));
                 }
                 mPrevious.setText(NinchatSessionManager.getInstance().getTranslation(text));
                 mPrevious.setOnClickListener(v -> mayBeFireComplete(OnNextQuestionnaire.back));
