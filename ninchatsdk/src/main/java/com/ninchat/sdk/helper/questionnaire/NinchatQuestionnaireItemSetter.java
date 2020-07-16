@@ -81,31 +81,24 @@ public class NinchatQuestionnaireItemSetter {
     }
 
 
-    public static int updateRequiredFieldStats(final JSONObject element) {
-        int index = -1;
+    public static void updateRequiredFieldStats(final JSONObject element) {
         final JSONArray elementList = getElements(element);
         for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
             final JSONObject currentElement = elementList.optJSONObject(i);
             final boolean requiredOk = isRequiredOK(currentElement);
             final boolean patternOk = matchPattern(currentElement);
             setError(currentElement, !(requiredOk && patternOk));
-            // take only the first item. for focusing purpose only
-            if ((!requiredOk || !patternOk) && index == -1) {
-                index = i;
-            }
         }
-        return index;
     }
 
     public static boolean formHasError(final JSONObject element) {
-        int index = -1;
         final JSONArray elementList = getElements(element);
         for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
             final JSONObject currentElement = elementList.optJSONObject(i);
             final boolean requiredOk = isRequiredOK(currentElement);
             final boolean patternOk = matchPattern(currentElement);
             // take only the first item. for focusing purpose only
-            if ((!requiredOk || !patternOk) && index == -1) {
+            if ((!requiredOk || !patternOk)) {
                 return true;
             }
         }

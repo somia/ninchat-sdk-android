@@ -5,6 +5,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.isRequiredOK;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.matchPattern;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 public class NinchatQuestionnaireNavigationUtil {
@@ -60,4 +62,16 @@ public class NinchatQuestionnaireNavigationUtil {
         return -1;
     }
 
+    public static String getErrorItemName(final JSONArray questionnaireList, final JSONObject element) {
+        final JSONArray elementList = getElements(element);
+        for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
+            final JSONObject currentElement = elementList.optJSONObject(i);
+            final boolean requiredOk = isRequiredOK(currentElement);
+            final boolean patternOk = matchPattern(currentElement);
+            if ((!requiredOk || !patternOk)) {
+                return getName(element);
+            }
+        }
+        return null;
+    }
 }

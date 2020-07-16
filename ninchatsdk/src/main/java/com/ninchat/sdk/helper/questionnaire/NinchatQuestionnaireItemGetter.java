@@ -43,7 +43,8 @@ public class NinchatQuestionnaireItemGetter {
         if (element == null) {
             return "";
         }
-        return element.optString("label", null);
+        final boolean isRequired = isRequired(element);
+        return element.optString("label", null) + (isRequired ? " *" : "");
     }
 
     public static String getName(final JSONObject element) {

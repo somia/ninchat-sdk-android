@@ -158,12 +158,12 @@ public class NinchatConversationQuestionnaire {
 
     private void handleError() {
         final JSONObject currentElement = getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek());
-        final int errorIndex = updateRequiredFieldStats(currentElement);
-
+        updateRequiredFieldStats(currentElement);
+        final String itemName = getErrorItemName(mQuestionnaire.getQuestionnaireList(), currentElement);
         clearElementResult(currentElement);
         mRecyclerViewWeakReference.get().clearFocus();
         // mNinchatConversationQuestionnaireAdapter.notifyItemChanged(errorIndex);
-        EventBus.getDefault().post(new OnComponentError(errorIndex));
+        EventBus.getDefault().post(new OnComponentError(itemName));
     }
 
     public void setAdapter(final Context mContext) {

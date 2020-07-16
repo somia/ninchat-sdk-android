@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,7 +40,7 @@ public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
         this.currentElement = currentElement;
         mTextView = itemView.findViewById(R.id.ninchat_chat_message_bot_text);
         mImageView = itemView.findViewById(R.id.ninchat_chat_message_bot_writing);
-        mRecyclerView = (RecyclerView) itemView.findViewById(R.id.questionnaire_conversation_rview);
+        mRecyclerView = itemView.findViewById(R.id.questionnaire_conversation_rview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
         update(itemView);
     }
@@ -72,10 +73,10 @@ public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
 
     @Subscribe
     public void onEvent(final OnComponentError onComponentError) {
-        if (currentPosition != onComponentError.index) {
+        final String name = getName(currentElement);
+        if (TextUtils.isEmpty(name) || !name.equalsIgnoreCase(onComponentError.itemName)) {
             return;
         }
         mRecyclerView.setAdapter(mFormLikeAudienceQuestionnaireAdapter);
-        mFormLikeAudienceQuestionnaireAdapter.notifyDataSetChanged();
     }
 }

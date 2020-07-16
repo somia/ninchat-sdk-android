@@ -148,8 +148,7 @@ public class NinchatFormQuestionnaire {
 
     private void handleError() {
         final JSONObject currentElement = getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek());
-        final int errorIndex = updateRequiredFieldStats(currentElement);
-
+        updateRequiredFieldStats(currentElement);
         clearElementResult(currentElement);
         mRecyclerViewWeakReference.get().clearFocus();
         mRecyclerViewWeakReference.get().setAdapter(mNinchatFormQuestionnaireAdapter);
