@@ -78,11 +78,6 @@ public class NinchatFormQuestionnaire {
 
     private void handleNext() {
         clearElement(mQuestionnaire.getQuestionnaireList(), historyList, historyList.peek());
-        for (int i = 0; i < mLinearLayoutWeakReference.get().getChildCount(); i++) {
-            View child = mLinearLayoutWeakReference.get().getChildAt(i);
-            setViewAndChildrenEnabled(child, false);
-        }
-
         mNinchatFormQuestionnaireAdapter.updateContent(getQuestionnaireAsList());
         mRecyclerViewWeakReference.get().setAdapter(mNinchatFormQuestionnaireAdapter);
         // mRecyclerViewWeakReference.get().scrollToPosition(mNinchatFormQuestionnaireAdapter.getItemCount() - 1);

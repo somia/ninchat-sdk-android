@@ -30,7 +30,7 @@ public class NinchatQuestionnaireSantizer {
         thankYouElement.putOpt("name", "ThankYouText");
         thankYouElement.putOpt("label", thankYouString);
 
-        JSONObject buttonElement = new JSONObject("{\"element\":\"buttons\",\"fireEvent\":true,\"back\":false,\"next\":\"true\"}");
+        JSONObject buttonElement = new JSONObject("{\"element\":\"buttons\",\"fireEvent\":true,\"back\":false,\"next\":\"Close Conversation\"}");
         buttonElement.putOpt("type", isRegister ? "_register" : "_complete");
 
         thankYouElement.putOpt("element", "text");

@@ -89,7 +89,7 @@
     <dimen name="ninchat_review_activity_skip_bottom_margin">60dp</dimen>
 
 
-    <dimen name="ninchat_chat_control_follow_button_width">200dp</dimen>
+    <dimen name="ninchat_chat_control_follow_button_width">150dp</dimen>
 
 
     <!-- Questionnaire-->

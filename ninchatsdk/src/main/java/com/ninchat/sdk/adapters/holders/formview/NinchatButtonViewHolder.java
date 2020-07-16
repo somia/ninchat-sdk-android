@@ -1,5 +1,6 @@
 package com.ninchat.sdk.adapters.holders.formview;
 
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -44,11 +45,10 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
 
     public void bind() {
         final JSONObject currentItem = questionnaire.get().getItem(itemPosition);
-        mPrevious.setVisibility(View.INVISIBLE);
-        mPreviousImage.setVisibility(View.INVISIBLE);
-        mNext.setVisibility(View.INVISIBLE);
-        mNextImage.setVisibility(View.INVISIBLE);
-
+        mPrevious.setVisibility(View.GONE);
+        mNext.setVisibility(View.GONE);
+        mPreviousImage.setVisibility(View.GONE);
+        mNextImage.setVisibility(View.GONE);
         if (hasButton(currentItem, true)) {
             final String text = currentItem.optString("back");
             if ("true".equalsIgnoreCase(text) || TextUtils.isEmpty(text)) {
@@ -56,6 +56,9 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
                 mPreviousImage.setOnClickListener(v -> mayBeFireComplete(OnNextQuestionnaire.back));
             } else {
                 mPrevious.setVisibility(View.VISIBLE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    mNext.setTooltipText(NinchatSessionManager.getInstance().getTranslation(text));
+                }
                 mPrevious.setText(NinchatSessionManager.getInstance().getTranslation(text));
                 mPrevious.setOnClickListener(v -> mayBeFireComplete(OnNextQuestionnaire.back));
             }
@@ -68,6 +71,9 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
                 mNextImage.setOnClickListener(v -> mayBeFireComplete(OnNextQuestionnaire.forward));
             } else {
                 mNext.setVisibility(View.VISIBLE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    mNext.setTooltipText(NinchatSessionManager.getInstance().getTranslation(text));
+                }
                 mNext.setText(NinchatSessionManager.getInstance().getTranslation(text));
                 mNext.setOnClickListener(v -> mayBeFireComplete(OnNextQuestionnaire.forward));
             }

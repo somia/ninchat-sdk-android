@@ -129,8 +129,6 @@ public class NinchatQuestionnaireTypeUtil {
             return CHECKBOX;
         } else if (isButton(jsonObject)) {
             return BUTTON;
-        } else if (isEoF(jsonObject)) {
-            return EOF;
         }
         return UNKNOWN;
     }

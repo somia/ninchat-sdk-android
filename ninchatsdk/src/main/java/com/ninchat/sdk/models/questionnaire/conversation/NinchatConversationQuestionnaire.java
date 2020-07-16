@@ -1,6 +1,7 @@
 package com.ninchat.sdk.models.questionnaire.conversation;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -79,12 +80,14 @@ public class NinchatConversationQuestionnaire {
 
     private void handleNext() {
         clearElement(mQuestionnaire.getQuestionnaireList(), historyList, historyList.peek());
-        for (int i = 0; i < mLinearLayoutWeakReference.get().getChildCount(); i++) {
-            View child = mLinearLayoutWeakReference.get().getChildAt(i);
-            setViewAndChildrenEnabled(child, false);
-        }
         mNinchatConversationQuestionnaireAdapter.addContent(getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek()));
         mRecyclerViewWeakReference.get().scrollToPosition(mNinchatConversationQuestionnaireAdapter.getItemCount() - 1);
+        new Handler().post(() -> {
+            for (int i = 0; i < mLinearLayoutWeakReference.get().getChildCount(); i++) {
+                View child = mLinearLayoutWeakReference.get().getChildAt(i);
+                setViewAndChildrenEnabled(child, false);
+            }
+        });
     }
 
     private JSONArray getQuestionnaireAsList() {
@@ -228,12 +231,6 @@ public class NinchatConversationQuestionnaire {
                                     target.second : getNextElementIndex(mQuestionnaire.getQuestionnaireList(), historyList.peek()));
         }
         handleNext();
-    }
-
-    private void updateQueue() {
-        final String currentQueueId = getQuestionnaireAnswersQueue(mQuestionnaire.getQuestionnaireList(), historyList);
-        if (TextUtils.isEmpty(currentQueueId)) return;
-        this.queueId = currentQueueId;
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)
