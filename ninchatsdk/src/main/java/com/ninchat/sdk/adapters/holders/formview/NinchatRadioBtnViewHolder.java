@@ -5,6 +5,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,6 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
     private final TextView mLabel;
     private final RecyclerView mRecycleView;
     private final int rootItemPosition;
-    private boolean firstTime = true;
     WeakReference<NinchatQuestionnaire> questionnaire;
     private final boolean isFormLikeQuestionnaire;
 
@@ -38,7 +38,6 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                                      final NinchatQuestionnaire ninchatQuestionnaire,
                                      final boolean isFormLikeQuestionnaire) {
         super(itemView);
-        firstTime = true;
         rootItemPosition = position;
         questionnaire = new WeakReference(ninchatQuestionnaire);
         this.isFormLikeQuestionnaire = isFormLikeQuestionnaire;
@@ -101,6 +100,43 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
             return options.length();
         }
 
+        private void onOptionClicked(final int currentPosition) {
+            JSONObject rootItem = questionnaire.get().getItem(rootItemPosition);
+            final String currentSelectedValue = getValue(options.optJSONObject(currentPosition));
+
+            final String previouslySelectedValue = getResultString(rootItem);
+            final int previouslySelectedValueIndex = getPreviouslySelectedByValue(previouslySelectedValue);
+            final boolean isSelected = previouslySelectedValueIndex != currentPosition;
+            setResult(rootItem, isSelected ? currentSelectedValue : null);
+            setError(rootItem, false);
+            if (previouslySelectedValueIndex != -1)
+                notifyItemChanged(previouslySelectedValueIndex);
+            notifyItemChanged(currentPosition);
+            if (isSelected) {
+                mayBeFireComplete();
+            }
+        }
+
+        private void mayBeFireComplete() {
+            final JSONObject rootItem = questionnaire.get().getItem(rootItemPosition);
+            if (rootItem.optBoolean("fireEvent", false)) {
+                EventBus.getDefault().post(new OnNextQuestionnaire(OnNextQuestionnaire.other));
+            }
+        }
+
+        private int getPreviouslySelectedByValue(final String value) {
+            if (TextUtils.isEmpty(value)) {
+                return -1;
+            }
+            for (int i = 0; i < options.length(); i += 1) {
+                final JSONObject currentItem = options.optJSONObject(i);
+                if (value.equalsIgnoreCase(currentItem.optString("value", ""))) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
         public class NinchatRadioBtnTextViewHolder extends RecyclerView.ViewHolder {
             private final TextView mOptionLabel;
 
@@ -112,16 +148,8 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
             }
 
             public void bind(final JSONObject item, final int currentPosition) {
-                mOptionLabel.setOnClickListener(v -> {
-                    final JSONObject rootItem = questionnaire.get().getItem(rootItemPosition);
-                    final String value = getValue(item);
-                    final String previouslySelected = getResultString(rootItem);
-                    setResult(rootItem, value.equalsIgnoreCase(previouslySelected) ? null : value);
-                    setError(rootItem, false);
-                    firstTime = false;
-                    notifyDataSetChanged();
-                });
                 preFill(item);
+                mOptionLabel.setOnClickListener(v -> onOptionClicked(currentPosition));
             }
 
             public void onSelectionChange(boolean selected) {
@@ -147,17 +175,6 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                 } else {
                     mLabel.setTextColor(ContextCompat.getColor(
                             itemView.getContext(), R.color.ninchat_colorPrimary));
-                }
-
-                if (selected && !firstTime) {
-                    mayBeFireComplete();
-                }
-            }
-
-            private void mayBeFireComplete() {
-                final JSONObject rootItem = questionnaire.get().getItem(rootItemPosition);
-                if (rootItem.optBoolean("fireEvent", false)) {
-                    EventBus.getDefault().post(new OnNextQuestionnaire(OnNextQuestionnaire.other));
                 }
             }
 
