@@ -86,7 +86,7 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
 
         ((RelativeLayout) itemView.findViewById(R.id.dropdown_select_layout)).setBackground(
                 ContextCompat.getDrawable(itemView.getContext(),
-                        selected ? R.drawable.ninchat_dropdown_select : R.drawable.ninchat_dropdown_not_selected));
+                        selected ? R.drawable.ninchat_dropdown_border_select : R.drawable.ninchat_dropdown_border_not_selected));
 
         ((ImageView) itemView.findViewById(R.id.ninchat_dropdown_list_icon)).setColorFilter(
                 ContextCompat.getColor(itemView.getContext(),
@@ -101,7 +101,7 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
 
         if (hasError) {
             ((RelativeLayout) itemView.findViewById(R.id.dropdown_select_layout)).setBackground(
-                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_dropdown_with_error));
+                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_dropdown_border_with_error));
             ((ImageView) itemView.findViewById(R.id.ninchat_dropdown_list_icon)).setColorFilter(
                     ContextCompat.getColor(itemView.getContext(), R.color.ninchat_color_error_background)
             );
