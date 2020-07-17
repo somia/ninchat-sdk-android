@@ -5,6 +5,7 @@
     <color name="ninchat_colorPrimaryDark">#0D2230</color>
     <color name="ninchat_colorAccent">#008aff</color>
     <color name="ninchat_colorDisabled">#abd8ff</color>
+    <color name="ninchat_colorOnClicked">#0270ce</color>
     <color name="ninchat_background_colorDisabled">#F4F6F7</color>
     <color name="ninchat_colorTimestamp">#7492AA</color>
     <color name="ninchat_activity_top_matter_background">@android:color/white</color>

@@ -2,6 +2,7 @@ package com.ninchat.sdk.adapters.holders.formview;
 
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -53,14 +54,21 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
             final String text = currentItem.optString("back");
             if ("true".equalsIgnoreCase(text) || TextUtils.isEmpty(text)) {
                 mPreviousImage.setVisibility(View.VISIBLE);
-                mPreviousImage.setOnClickListener(v -> mayBeFireComplete(OnNextQuestionnaire.back));
+                mPreviousImage.setOnClickListener(v -> {
+                    mPreviousImage.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_secondary_onclicked_button));
+                    mayBeFireComplete(OnNextQuestionnaire.back);
+                });
             } else {
                 mPrevious.setVisibility(View.VISIBLE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     mPrevious.setTooltipText(NinchatSessionManager.getInstance().getTranslation(text));
                 }
+
                 mPrevious.setText(NinchatSessionManager.getInstance().getTranslation(text));
-                mPrevious.setOnClickListener(v -> mayBeFireComplete(OnNextQuestionnaire.back));
+                mPrevious.setOnClickListener(v -> {
+                    mPrevious.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_secondary_onclicked_button));
+                    mayBeFireComplete(OnNextQuestionnaire.back);
+                });
             }
         }
 
@@ -68,14 +76,20 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
             final String text = currentItem.optString("next");
             if ("true".equalsIgnoreCase(text) || TextUtils.isEmpty(text)) {
                 mNextImage.setVisibility(View.VISIBLE);
-                mNextImage.setOnClickListener(v -> mayBeFireComplete(OnNextQuestionnaire.forward));
+                mNextImage.setOnClickListener(v -> {
+                    mNextImage.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_primary_oncliked_button));
+                    mayBeFireComplete(OnNextQuestionnaire.forward);
+                });
             } else {
                 mNext.setVisibility(View.VISIBLE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     mNext.setTooltipText(NinchatSessionManager.getInstance().getTranslation(text));
                 }
                 mNext.setText(NinchatSessionManager.getInstance().getTranslation(text));
-                mNext.setOnClickListener(v -> mayBeFireComplete(OnNextQuestionnaire.forward));
+                mNext.setOnClickListener(v -> {
+                    mNext.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_primary_oncliked_button));
+                    mayBeFireComplete(OnNextQuestionnaire.forward);
+                });
             }
         }
     }

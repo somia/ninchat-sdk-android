@@ -1229,8 +1229,8 @@ public final class NinchatSessionManager {
     }
 
     private Spanned toSpanned(final String text) {
-        final String centeredText = center(text);
-        return centeredText == null ? null :
+        final String centeredText = center(text) == null ? "" : center(text);
+        return centeredText == null ? null  :
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(centeredText, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(centeredText);
     }
 
