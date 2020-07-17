@@ -21,7 +21,8 @@
         android:layout_toEndOf="@id/ninchat_chat_message_bot_avatar"
         android:layout_marginEnd="20dp"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/ninchat_chat_activity_message_title_height"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/ninchat_chat_activity_message_title_height"
         tools:text="LightbotAgent"
         android:gravity="center"
         android:textColor="@color/ninchat_colorPrimary" />
