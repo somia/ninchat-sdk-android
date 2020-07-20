@@ -113,7 +113,7 @@ public class NinchatQuestionnaireItemGetter {
             retval.putOpt("element", "buttons");
             retval.putOpt("fireEvent", true);
             retval.putOpt("back", hideBack ? false : true);
-            retval.putOpt("next", "Continue");
+            retval.putOpt("next", true);
         } catch (Exception e) {
             e.printStackTrace();
         }

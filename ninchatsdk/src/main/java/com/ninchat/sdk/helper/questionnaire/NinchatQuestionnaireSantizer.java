@@ -16,7 +16,7 @@ public class NinchatQuestionnaireSantizer {
         final JSONObject simpleForm = new JSONObject();
         simpleForm.putOpt("name", "SimpleForm");
         simpleForm.putOpt("type", "group");
-        simpleForm.putOpt("buttons", new JSONObject("{\"back\":false,\"next\": \"Continue\"}"));
+        simpleForm.putOpt("buttons", new JSONObject("{\"back\":false,\"next\": true}"));
         simpleForm.putOpt("elements", questionnaireList);
         final JSONObject logic = new JSONObject("{\"name\":\"SimpleForm-Logic1\",\"logic\":{\"target\":\"_register\"}}");
         retval.put(simpleForm);
