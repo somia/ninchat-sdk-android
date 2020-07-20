@@ -15,13 +15,10 @@ import android.widget.TextView;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.events.OnNextQuestionnaire;
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.lang.ref.WeakReference;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
@@ -31,26 +28,20 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
 
     private final TextView mLabel;
     private final Spinner mSpinner;
-    private int itemPosition;
-    WeakReference<NinchatQuestionnaire> questionnaire;
-    private final boolean isFormLikeQuestionnaire;
 
-    public NinchatDropDownSelectViewHolder(@NonNull View itemView, final int position,
-                                           final NinchatQuestionnaire ninchatQuestionnaire,
+    public NinchatDropDownSelectViewHolder(@NonNull View itemView,
+                                           final JSONObject questionnaireElement,
                                            final boolean isFormLikeQuestionnaire) {
         super(itemView);
         mLabel = itemView.findViewById(R.id.dropdown_text_label);
         mSpinner = itemView.findViewById(R.id.ninchat_dropdown_list);
-        itemPosition = position;
-        questionnaire = new WeakReference(ninchatQuestionnaire);
-        this.isFormLikeQuestionnaire = isFormLikeQuestionnaire;
-        bind();
+        bind(questionnaireElement, isFormLikeQuestionnaire);
     }
 
 
-    public void bind() {
-        final int previouslySelected = preFill();
-        final ArrayAdapter<String> dataAdapter = getRTDataAdapter();
+    public void bind(final JSONObject questionnaireElement, final boolean isFormLikeQuestionnaire) {
+        final int previouslySelected = preFill(questionnaireElement);
+        final ArrayAdapter<String> dataAdapter = getRTDataAdapter(questionnaireElement);
         if (isFormLikeQuestionnaire) {
             itemView.setBackground(
                     ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
@@ -60,16 +51,15 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                final JSONObject rootItem = questionnaire.get().getItem(itemPosition);
-                final String result = getOptionValueByIndex(rootItem, position - 1);
-                setResult(rootItem, result);
+                final String result = getOptionValueByIndex(questionnaireElement, position - 1);
+                setResult(questionnaireElement, result);
                 final TextView mTextView = (TextView) parent.getChildAt(0);
                 if (position != 0) {
-                    setError(rootItem, false);
-                    onSelected(true, mTextView);
-                    mayBeFireComplete();
+                    setError(questionnaireElement, false);
+                    onSelected(questionnaireElement, true, mTextView);
+                    mayBeFireComplete(questionnaireElement);
                 } else {
-                    onSelected(false, mTextView);
+                    onSelected(questionnaireElement, false, mTextView);
                 }
             }
 
@@ -80,10 +70,8 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void onSelected(boolean selected, final TextView mTextView) {
-        final JSONObject item = questionnaire.get().getItem(itemPosition);
-        final boolean hasError = getError(item);
-
+    public void onSelected(final JSONObject questionnaireElement, boolean selected, final TextView mTextView) {
+        final boolean hasError = getError(questionnaireElement);
         ((RelativeLayout) itemView.findViewById(R.id.dropdown_select_layout)).setBackground(
                 ContextCompat.getDrawable(itemView.getContext(),
                         selected ? R.drawable.ninchat_dropdown_border_select : R.drawable.ninchat_dropdown_border_not_selected));
@@ -110,18 +98,16 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    private int preFill() {
-        final JSONObject item = questionnaire.get().getItem(itemPosition);
-        final String label = getLabel(item);
+    private int preFill(final JSONObject questionnaireElement) {
+        final String label = getLabel(questionnaireElement);
         mLabel.setText(label);
-        final int index = getOptionIndex(item, getResultString(item));
+        final int index = getOptionIndex(questionnaireElement, getResultString(questionnaireElement));
         return Math.max(0, index + 1);
     }
 
-    private ArrayAdapter<String> getRTDataAdapter() {
+    private ArrayAdapter<String> getRTDataAdapter(final JSONObject questionnaireElement) {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(itemView.getContext(), R.layout.dropdown_item_text_view);
-        final JSONObject item = questionnaire.get().getItem(itemPosition);
-        final JSONArray options = getOptions(item);
+        final JSONArray options = getOptions(questionnaireElement);
         dataAdapter.add(NinchatSessionManager.getInstance().getTranslation("Select"));
         for (int i = 0; i < options.length(); i += 1) {
             final JSONObject curOption = options.optJSONObject(i);
@@ -131,9 +117,8 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
         return dataAdapter;
     }
 
-    private void mayBeFireComplete() {
-        final JSONObject rootItem = questionnaire.get().getItem(itemPosition);
-        if (rootItem.optBoolean("fireEvent", false)) {
+    private void mayBeFireComplete(final JSONObject questionnaireElement) {
+        if (questionnaireElement != null && questionnaireElement.optBoolean("fireEvent", false)) {
             EventBus.getDefault().post(new OnNextQuestionnaire(OnNextQuestionnaire.other));
         }
     }

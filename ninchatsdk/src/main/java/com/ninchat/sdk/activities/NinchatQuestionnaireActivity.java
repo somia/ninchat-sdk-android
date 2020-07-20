@@ -72,8 +72,7 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
         } else {
             ninchatFormQuestionnaire = new NinchatFormQuestionnaire(queueId,
                     questionnaireType,
-                    mRecyclerView,
-                    mLayoutManager);
+                    mRecyclerView);
             ninchatFormQuestionnaire.setAdapter(getApplicationContext());
         }
 

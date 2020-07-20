@@ -1,11 +1,16 @@
 package com.ninchat.sdk.helper.questionnaire;
 
 import android.os.Build;
+import android.support.annotation.IdRes;
+import android.support.annotation.StringRes;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
+import com.ninchat.sdk.R;
 
 import org.json.JSONObject;
 

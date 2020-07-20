@@ -22,30 +22,32 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
+
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 
 public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
     private final String TAG = NinchatConversationViewHolder.class.getSimpleName();
-    final JSONObject currentElement;
-    final int currentPosition;
     final TextView mTextView;
     final ImageView mImageView;
     private RecyclerView mRecyclerView;
     private NinchatFormQuestionnaireAdapter mFormLikeAudienceQuestionnaireAdapter;
+    private WeakReference<JSONObject> mQuestionnaireElementWeakReference;
 
-    public NinchatConversationViewHolder(@NonNull View itemView, final int position, final JSONObject currentElement) {
+    public NinchatConversationViewHolder(@NonNull View itemView,
+                                         final JSONObject questionnaireElement,
+                                         final int position) {
         super(itemView);
         EventBus.getDefault().register(this);
-        this.currentPosition = position;
-        this.currentElement = currentElement;
         mTextView = itemView.findViewById(R.id.ninchat_chat_message_bot_text);
         mImageView = itemView.findViewById(R.id.ninchat_chat_message_bot_writing);
         mRecyclerView = itemView.findViewById(R.id.questionnaire_conversation_rview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
-        update(itemView);
+        mQuestionnaireElementWeakReference = new WeakReference(questionnaireElement);
+        bind(questionnaireElement, position);
     }
 
-    public void update(View itemView) {
+    public void bind(final JSONObject questionnaireElement, final int position) {
         mTextView.setText("LightbotAgent");
         mImageView.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator);
         final AnimationDrawable animationDrawable = (AnimationDrawable) mImageView.getBackground();
@@ -55,7 +57,7 @@ public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
             itemView.findViewById(R.id.ninchat_chat_message_bot_writing_root).setVisibility(View.GONE);
 
             mFormLikeAudienceQuestionnaireAdapter = new NinchatFormQuestionnaireAdapter(
-                    new NinchatQuestionnaire(getElements(currentElement)), false);
+                    new NinchatQuestionnaire(getElements(questionnaireElement)), false);
             final int spaceInPixelTop = itemView.getResources().getDimensionPixelSize(R.dimen.ninchat_items_margin_top_questionnaire);
             final int spaceLeft = 0;
             final int spaceRight = 0;
@@ -65,18 +67,16 @@ public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
                     spaceRight
             ));
             mRecyclerView.setAdapter(mFormLikeAudienceQuestionnaireAdapter);
-            mRecyclerView.setItemViewCacheSize(mFormLikeAudienceQuestionnaireAdapter.getItemCount());
-            EventBus.getDefault().post(new OnItemLoaded(this.currentPosition));
+            EventBus.getDefault().post(new OnItemLoaded(position));
         }, 1500);
-
     }
 
     @Subscribe
     public void onEvent(final OnComponentError onComponentError) {
-        final String name = getName(currentElement);
+        final String name = getName(mQuestionnaireElementWeakReference.get());
         if (TextUtils.isEmpty(name) || !name.equalsIgnoreCase(onComponentError.itemName)) {
             return;
         }
-        mRecyclerView.setAdapter(mFormLikeAudienceQuestionnaireAdapter);
+        mFormLikeAudienceQuestionnaireAdapter.notifyDataSetChanged();
     }
 }

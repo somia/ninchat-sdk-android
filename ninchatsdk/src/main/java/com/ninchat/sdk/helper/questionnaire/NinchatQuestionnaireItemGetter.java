@@ -290,6 +290,9 @@ public class NinchatQuestionnaireItemGetter {
 
     public static Props getPreAnswers(final JSONObject result) {
         Props preAnswers = new Props();
+        if (result == null)
+            return preAnswers;
+
         Iterator<String> keys = result.keys();
         while (keys.hasNext()) {
             final String currentKey = keys.next();

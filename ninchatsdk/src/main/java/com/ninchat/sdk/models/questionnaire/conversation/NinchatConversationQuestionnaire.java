@@ -80,14 +80,10 @@ public class NinchatConversationQuestionnaire {
 
     private void handleNext() {
         clearElement(mQuestionnaire.getQuestionnaireList(), historyList, historyList.peek());
-        mNinchatConversationQuestionnaireAdapter.addContent(getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek()));
+        final JSONObject currentElement = getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek());
+        mNinchatConversationQuestionnaireAdapter.addContent(currentElement);
+        mNinchatConversationQuestionnaireAdapter.notifyDataSetChanged();
         mRecyclerViewWeakReference.get().scrollToPosition(mNinchatConversationQuestionnaireAdapter.getItemCount() - 1);
-        new Handler().post(() -> {
-            for (int i = 0; i < mLinearLayoutWeakReference.get().getChildCount(); i++) {
-                View child = mLinearLayoutWeakReference.get().getChildAt(i);
-                setViewAndChildrenEnabled(child, false);
-            }
-        });
     }
 
     private JSONArray getQuestionnaireAsList() {
@@ -119,7 +115,7 @@ public class NinchatConversationQuestionnaire {
                 NinchatRegisterAudienceTask.start(queueId);
                 // send an event via event bus now that the questionnaire list are completed and filled
                 // wait for audience register event and do everything else from there "onAudienceRegistered"
-                return ;
+                return;
             }
             // send an event via event bus now that the questionnaire list are completed and filled
             EventBus.getDefault().post(new OnCompleteQuestionnaire(true, queueId));
@@ -162,7 +158,6 @@ public class NinchatConversationQuestionnaire {
         final String itemName = getErrorItemName(mQuestionnaire.getQuestionnaireList(), currentElement);
         clearElementResult(currentElement);
         mRecyclerViewWeakReference.get().clearFocus();
-        // mNinchatConversationQuestionnaireAdapter.notifyItemChanged(errorIndex);
         EventBus.getDefault().post(new OnComponentError(itemName));
     }
 
@@ -194,8 +189,10 @@ public class NinchatConversationQuestionnaire {
             }
         } else if (onNextQuestionnaire.moveType == OnNextQuestionnaire.register) {
             handleRegister();
+            return ;
         } else if (onNextQuestionnaire.moveType == OnNextQuestionnaire.complete) {
             handleComplete();
+            return ;
         } else {
             if (formHasError(getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek()))) {
                 handleError();
@@ -235,10 +232,7 @@ public class NinchatConversationQuestionnaire {
 
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onItemLoaded(OnItemLoaded onItemLoaded) {
-        mRecyclerViewWeakReference.get().post(() -> {
-            //mRecyclerViewWeakReference.get().smoothScrollToPosition(mNinchatConversationQuestionnaireAdapter.getItemCount() - 1);
-            mLinearLayoutWeakReference.get().scrollToPositionWithOffset(mNinchatConversationQuestionnaireAdapter.getItemCount() - 1, 0);
-        });
+        mLinearLayoutWeakReference.get().scrollToPositionWithOffset(mNinchatConversationQuestionnaireAdapter.getItemCount() - 1, 0);
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)

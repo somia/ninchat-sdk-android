@@ -1,6 +1,7 @@
 package com.ninchat.sdk.models.questionnaire.form;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -39,7 +40,6 @@ public class NinchatFormQuestionnaire {
 
     private NinchatFormQuestionnaireAdapter mNinchatFormQuestionnaireAdapter;
     private WeakReference<RecyclerView> mRecyclerViewWeakReference;
-    private WeakReference<LinearLayoutManager> mLinearLayoutWeakReference;
     private String queueId;
     private final int questionnaireType;
     private final NinchatQuestionnaire mQuestionnaire;
@@ -49,10 +49,8 @@ public class NinchatFormQuestionnaire {
 
     public NinchatFormQuestionnaire(final String queueId,
                                     final int questionnaireType,
-                                    final RecyclerView recyclerView,
-                                    final LinearLayoutManager linearLayout) {
+                                    final RecyclerView recyclerView) {
         mRecyclerViewWeakReference = new WeakReference<>(recyclerView);
-        mLinearLayoutWeakReference = new WeakReference<>(linearLayout);
         this.queueId = queueId;
         this.questionnaireType = questionnaireType;
         this.mQuestionnaire = getQuestionnaire(questionnaireType);
@@ -80,7 +78,8 @@ public class NinchatFormQuestionnaire {
         clearElement(mQuestionnaire.getQuestionnaireList(), historyList, historyList.peek());
         mNinchatFormQuestionnaireAdapter.updateContent(getQuestionnaireAsList());
         mRecyclerViewWeakReference.get().setAdapter(mNinchatFormQuestionnaireAdapter);
-        // mRecyclerViewWeakReference.get().scrollToPosition(mNinchatFormQuestionnaireAdapter.getItemCount() - 1);
+        // scroll to top
+        new Handler().post(() -> mRecyclerViewWeakReference.get().scrollToPosition(0));
     }
 
     private JSONArray getQuestionnaireAsList() {
@@ -109,7 +108,7 @@ public class NinchatFormQuestionnaire {
                 NinchatRegisterAudienceTask.start(queueId);
                 // send an event via event bus now that the questionnaire list are completed and filled
                 // wait for audience register event and do everything else from there "onAudienceRegistered"
-                return ;
+                return;
             }
             // send an event via event bus now that the questionnaire list are completed and filled
             EventBus.getDefault().post(new OnCompleteQuestionnaire(true, queueId));
@@ -151,7 +150,6 @@ public class NinchatFormQuestionnaire {
         updateRequiredFieldStats(currentElement);
         clearElementResult(currentElement);
         mRecyclerViewWeakReference.get().clearFocus();
-        mRecyclerViewWeakReference.get().setAdapter(mNinchatFormQuestionnaireAdapter);
         mNinchatFormQuestionnaireAdapter.notifyDataSetChanged();
     }
 
@@ -183,8 +181,10 @@ public class NinchatFormQuestionnaire {
             }
         } else if (onNextQuestionnaire.moveType == OnNextQuestionnaire.register) {
             handleRegister();
+            return ;
         } else if (onNextQuestionnaire.moveType == OnNextQuestionnaire.complete) {
             handleComplete();
+            return ;
         } else {
             if (formHasError(getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek()))) {
                 handleError();

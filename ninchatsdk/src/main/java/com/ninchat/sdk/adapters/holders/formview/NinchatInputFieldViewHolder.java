@@ -11,11 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
-
 import org.json.JSONObject;
-
-import java.lang.ref.WeakReference;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
@@ -26,62 +22,47 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
 
     private final TextView mLabel;
     private final EditText mEditText;
-    private final int itemPosition;
-    private final boolean isFormLikeQuestionnaire;
-    WeakReference<NinchatQuestionnaire> questionnaire;
 
-    public NinchatInputFieldViewHolder(@NonNull View itemView, final int position,
-                                       final NinchatQuestionnaire ninchatQuestionnaire,
+    public NinchatInputFieldViewHolder(@NonNull View itemView,
+                                       final JSONObject questionnaireElement,
                                        final boolean multilineText,
                                        final boolean isFormLikeQuestionnaire) {
         super(itemView);
-        itemPosition = position;
-        questionnaire = new WeakReference(ninchatQuestionnaire);
-        this.isFormLikeQuestionnaire = isFormLikeQuestionnaire;
         mLabel = itemView.findViewById(multilineText ? R.id.multiline_text_label : R.id.simple_text_label);
         mEditText = itemView.findViewById(multilineText ? R.id.multiline_text_area : R.id.simple_text_field);
-        mEditText.addTextChangedListener(onTextChange);
-        mEditText.setOnFocusChangeListener(onFocusChangeListener);
-        bind();
+        bind(questionnaireElement, isFormLikeQuestionnaire);
     }
 
-    public final TextWatcher onTextChange = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
+    public void bind(final JSONObject questionnaireElement, final boolean isFormLikeQuestionnaire) {
+        mEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // pass
+            }
 
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // pass
+            }
 
-        @Override
-        public void afterTextChanged(Editable s) {
-            // try to validate the current input if there is a pattern
-            final JSONObject item = questionnaire.get().getItem(itemPosition);
-            setResult(item, s.toString());
-            setError(item, matchPattern(item) == false);
-            updateUI(item, true);
-        }
-    };
-
-    private final View.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
-        @Override
-        public void onFocusChange(View v, boolean hasFocus) {
+            @Override
+            public void afterTextChanged(Editable s) {
+                setResult(questionnaireElement, s.toString());
+                setError(questionnaireElement, matchPattern(questionnaireElement) == false);
+                updateUI(questionnaireElement, true);
+            }
+        });
+        mEditText.setOnFocusChangeListener((v, hasFocus) -> {
             // update to error if input is not valid
-            final JSONObject item = questionnaire.get().getItem(itemPosition);
-            updateUI(item, hasFocus);
-        }
-    };
-
-    public void bind() {
-        final JSONObject item = questionnaire.get().getItem(itemPosition);
-        setLabel(item);
-        setText(item);
+            updateUI(questionnaireElement, hasFocus);
+        });
+        setLabel(questionnaireElement);
+        setText(questionnaireElement);
         if (isFormLikeQuestionnaire) {
             itemView.setBackground(
-                            ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
+                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
         }
-        updateUI(item, false);
+        updateUI(questionnaireElement, false);
     }
 
     private void setLabel(final JSONObject item) {
