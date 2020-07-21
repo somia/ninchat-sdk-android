@@ -46,6 +46,11 @@ public class NinchatQuestionnaire {
         this.questionnaireList.put(currentQuestionnaire);
     }
 
+    public void removeQuestionnaireList(final int at) {
+        if (at >= this.size()) return;
+        this.questionnaireList.remove(at);
+    }
+
     public int updateQuestionWithThankYouElement(final String thankYouText, final boolean isRegister) {
         final int elementIndex = this.questionnaireList.length();
         try {

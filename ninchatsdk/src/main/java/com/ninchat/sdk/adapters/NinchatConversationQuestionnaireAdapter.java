@@ -42,13 +42,21 @@ public class NinchatConversationQuestionnaireAdapter extends RecyclerView.Adapte
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         if (position + 1 == getItemCount()) {
-            return;
+            setViewAndChildrenEnabled(viewHolder.itemView, true);
+        } else {
+            setViewAndChildrenEnabled(viewHolder.itemView, false);
         }
-        setViewAndChildrenEnabled(viewHolder.itemView, false);
+
     }
 
     public void addContent(final JSONObject questionnaireList) {
         this.questionnaire.addQuestionnaireList(questionnaireList);
+    }
+
+    public void removeLast() {
+        final int position = getItemCount() - 1;
+        this.questionnaire.removeQuestionnaireList(position);
+        notifyItemRemoved(position);
     }
 
     @Override

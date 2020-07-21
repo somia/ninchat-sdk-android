@@ -86,6 +86,16 @@ public class NinchatConversationQuestionnaire {
         mRecyclerViewWeakReference.get().scrollToPosition(mNinchatConversationQuestionnaireAdapter.getItemCount() - 1);
     }
 
+    private void handlePrevious() {
+        clearElement(mQuestionnaire.getQuestionnaireList(), historyList, historyList.peek());
+        if (!historyList.empty()) {
+            historyList.pop();
+        }
+        mNinchatConversationQuestionnaireAdapter.removeLast();
+        mNinchatConversationQuestionnaireAdapter.notifyDataSetChanged();
+        mRecyclerViewWeakReference.get().scrollToPosition(mNinchatConversationQuestionnaireAdapter.getItemCount() - 1);
+    }
+
     private JSONArray getQuestionnaireAsList() {
         JSONArray elementList = new JSONArray();
         for (int currentIndex : historyList) {
@@ -183,16 +193,15 @@ public class NinchatConversationQuestionnaire {
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onNextQuestionnaire(@NotNull OnNextQuestionnaire onNextQuestionnaire) {
         if (onNextQuestionnaire.moveType == OnNextQuestionnaire.back) {
-            // remove last element
             if (!historyList.empty()) {
                 historyList.pop();
             }
         } else if (onNextQuestionnaire.moveType == OnNextQuestionnaire.register) {
             handleRegister();
-            return ;
+            return;
         } else if (onNextQuestionnaire.moveType == OnNextQuestionnaire.complete) {
             handleComplete();
-            return ;
+            return;
         } else {
             if (formHasError(getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek()))) {
                 handleError();

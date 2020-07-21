@@ -124,7 +124,8 @@ public class NinchatQuestionnaireItemSetter {
         view.setEnabled(enabled);
         if (view instanceof LinearLayout) {
             if (view.getId() == -1) {
-                view.setBackground(ContextCompat.getDrawable(view.getContext(), R.drawable.ninchat_chat_bubble_left_repeated_disabled));
+                view.setBackground(ContextCompat.getDrawable(view.getContext(),
+                        enabled ? R.drawable.ninchat_chat_bubble_left_repeated : R.drawable.ninchat_chat_bubble_left_repeated_disabled));
             }
         }
         /*if (view instanceof Button) {
