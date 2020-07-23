@@ -119,6 +119,7 @@ public class NinchatQuestionnaireItemSetter {
     public static void clearElementResult(JSONObject element) {
         if (element == null) return;
         element.remove("result");
+        element.remove("position");
         element.remove("hasError");
         element.remove("tags");
         element.remove("queue");
@@ -129,6 +130,7 @@ public class NinchatQuestionnaireItemSetter {
         JSONObject lastElement = elementList.optJSONObject(elementList.length() - 1);
         if (lastElement != null) {
             lastElement.remove("result");
+            lastElement.remove("position");
             lastElement.remove("hasError");
             lastElement.remove("tags");
             lastElement.remove("queue");
