@@ -5,12 +5,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.isRequiredOK;
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.matchPattern;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 public class NinchatQuestionnaireNavigationUtil {
-    public static JSONObject getCurrentElement(final JSONArray questionnaire, final int at) {
+    public static JSONObject getElementByIndex(JSONArray questionnaire, int at) {
         if (questionnaire == null || at < 0 || at >= questionnaire.length()) {
             return null;
         }
@@ -20,7 +19,7 @@ public class NinchatQuestionnaireNavigationUtil {
         return questionnaire.optJSONObject(at);
     }
 
-    public static int getNextElementIndex(final JSONArray questionnaire, final int at) {
+    public static int getNextElementIndex(JSONArray questionnaire, int at) {
         if (questionnaire == null || at < 0 || at >= questionnaire.length()) {
             return -1;
         }
@@ -32,7 +31,7 @@ public class NinchatQuestionnaireNavigationUtil {
         return -1;
     }
 
-    public static JSONObject getQuestionnaireElementByName(final JSONArray questionnaireList, final String name) {
+    public static JSONObject getQuestionnaireElementByName(JSONArray questionnaireList, String name) {
         if (questionnaireList == null) {
             return null;
         }
@@ -40,7 +39,7 @@ public class NinchatQuestionnaireNavigationUtil {
             return null;
         }
         for (int i = 0; i < questionnaireList.length(); i += 1) {
-            final JSONObject currentElement = questionnaireList.optJSONObject(i);
+            JSONObject currentElement = questionnaireList.optJSONObject(i);
             if (currentElement != null && name.equals(currentElement.optString("name"))) {
                 return currentElement;
             }
@@ -49,12 +48,12 @@ public class NinchatQuestionnaireNavigationUtil {
     }
 
 
-    public static int getQuestionnaireElementIndexByName(final JSONArray questionnaireList, final String name) {
+    public static int getQuestionnaireElementIndexByName(JSONArray questionnaireList, String name) {
         if (name == null) {
             return -1;
         }
         for (int i = 0; questionnaireList != null && i < questionnaireList.length(); i += 1) {
-            final JSONObject currentElement = questionnaireList.optJSONObject(i);
+            JSONObject currentElement = questionnaireList.optJSONObject(i);
             if (currentElement != null && name.equals(getName(currentElement))) {
                 return i;
             }
@@ -62,12 +61,12 @@ public class NinchatQuestionnaireNavigationUtil {
         return -1;
     }
 
-    public static String getErrorItemName(final JSONArray questionnaireList, final JSONObject element) {
-        final JSONArray elementList = getElements(element);
+    public static String getErrorItemName(JSONObject element) {
+        JSONArray elementList = getElements(element);
         for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
-            final JSONObject currentElement = elementList.optJSONObject(i);
-            final boolean requiredOk = isRequiredOK(currentElement);
-            final boolean patternOk = matchPattern(currentElement);
+            JSONObject currentElement = elementList.optJSONObject(i);
+            boolean requiredOk = isRequiredOK(currentElement);
+            boolean patternOk = matchPattern(currentElement);
             if ((!requiredOk || !patternOk)) {
                 return getName(element);
             }

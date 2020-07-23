@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.CheckBox;
+
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.events.OnNextQuestionnaire;
@@ -17,18 +18,19 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGette
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
 
 public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
-    private final String TAG = NinchatCheckboxViewHolder.class.getSimpleName();
+    private String TAG = NinchatCheckboxViewHolder.class.getSimpleName();
 
-    private final CheckBox mCheckbox;
+    private CheckBox mCheckbox;
+
     public NinchatCheckboxViewHolder(@NonNull View itemView,
-                                     final JSONObject questionnaireElement,
-                                     final boolean isFormLikeQuestionnaire) {
+                                     JSONObject questionnaireElement,
+                                     boolean isFormLikeQuestionnaire) {
         super(itemView);
         mCheckbox = itemView.findViewById(R.id.ninchat_checkbox);
         bind(questionnaireElement, isFormLikeQuestionnaire);
     }
 
-    public void bind(final JSONObject questionnaireElement, final boolean isFormLikeQuestionnaire) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire) {
         mCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             setResult(questionnaireElement, isChecked);
             setError(questionnaireElement, false);
@@ -46,22 +48,22 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
         updateUI(questionnaireElement);
     }
 
-    private void setLabel(final JSONObject item) {
-        final String text = getLabel(item);
+    private void setLabel(JSONObject item) {
+        String text = getLabel(item);
         if (TextUtils.isEmpty(text)) {
             return;
         }
         mCheckbox.setText(NinchatSessionManager.getInstance().getTranslation(text));
     }
 
-    private void setChecked(final JSONObject item) {
-        final boolean result = getResultBoolean(item);
+    private void setChecked(JSONObject item) {
+        boolean result = getResultBoolean(item);
         mCheckbox.setChecked(result);
     }
 
-    private void updateUI(final JSONObject item) {
-        final boolean hasError = getError(item);
-        final boolean isChecked = getResultBoolean(item);
+    private void updateUI(JSONObject item) {
+        boolean hasError = getError(item);
+        boolean isChecked = getResultBoolean(item);
         mCheckbox.setTextColor(ContextCompat.getColor(itemView.getContext(),
                 isChecked ? R.color.ninchat_color_checkbox_selected : R.color.ninchat_color_checkbox_unselected));
 
@@ -71,7 +73,7 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    private void mayBeFireComplete(final JSONObject item) {
+    private void mayBeFireComplete(JSONObject item) {
         if (item != null && item.optBoolean("fireEvent", false)) {
             EventBus.getDefault().post(new OnNextQuestionnaire(OnNextQuestionnaire.other));
         }

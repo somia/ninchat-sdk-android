@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -23,12 +22,12 @@ import org.greenrobot.eventbus.ThreadMode;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 
-public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
-    private final String TAG = NinchatQuestionnaireActivity.class.getSimpleName();
-    public static final int REQUEST_CODE = NinchatQuestionnaireActivity.class.hashCode() & 0xffff;
-    protected static final String QUEUE_ID = "queueId";
-    protected static final String QUESTIONNAIRE_TYPE = "questionType";
-    protected static final String OPEN_QUEUE = "openQueue";
+public class NinchatQuestionnaireActivity extends NinchatBaseActivity {
+    private String TAG = NinchatQuestionnaireActivity.class.getSimpleName();
+    public static int REQUEST_CODE = NinchatQuestionnaireActivity.class.hashCode() & 0xffff;
+    protected static String QUEUE_ID = "queueId";
+    protected static String QUESTIONNAIRE_TYPE = "questionType";
+    protected static String OPEN_QUEUE = "openQueue";
 
     private NinchatConversationQuestionnaire ninchatConversationQuestionnaire;
     private NinchatFormQuestionnaire ninchatFormQuestionnaire;
@@ -43,7 +42,7 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
         return R.layout.activity_ninchat_questionnaire;
     }
 
-    public static Intent getLaunchIntent(final Context context, final String queueId, final int questionnaireType) {
+    public static Intent getLaunchIntent(Context context, String queueId, int questionnaireType) {
         return new Intent(context, NinchatQuestionnaireActivity.class)
                 .putExtra(QUEUE_ID, queueId)
                 .putExtra(QUESTIONNAIRE_TYPE, questionnaireType);
@@ -53,7 +52,7 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EventBus.getDefault().register(this);
-        final Intent intent = getIntent();
+        Intent intent = getIntent();
         questionnaireType = intent.getIntExtra(QUESTIONNAIRE_TYPE, DEFAULT_INT_VALUE);
         queueId = intent.getStringExtra(QUEUE_ID);
         mRecyclerView = findViewById(R.id.questionnaire_form_rview);
@@ -93,7 +92,7 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
         super.onDestroy();
     }
 
-    public void onClose(final View view) {
+    public void onClose(View view) {
         setResult(RESULT_CANCELED, null);
         finish();
     }
@@ -104,7 +103,7 @@ public final class NinchatQuestionnaireActivity extends NinchatBaseActivity {
     }
 
     private boolean getFormOrConvLikeQuestionnaireType() {
-        final NinchatQuestionnaires questionnaires = NinchatSessionManager
+        NinchatQuestionnaires questionnaires = NinchatSessionManager
                 .getInstance()
                 .getNinchatQuestionnaires();
         return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?

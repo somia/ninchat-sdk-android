@@ -19,7 +19,7 @@ public class NinchatQuestionnaires {
     private boolean conversationLikePreAudienceQuestionnaire;
     private boolean formLikePreAudienceQuestionnaire;
 
-    public NinchatQuestionnaires(final JSONObject configuration) {
+    public NinchatQuestionnaires( JSONObject configuration) {
         preAudienceQuestionnaire = new NinchatQuestionnaire(
                 parse(configuration, true)
         );
@@ -32,7 +32,7 @@ public class NinchatQuestionnaires {
         audienceRegisteredClosedText = getAudienceRegisteredClosedTextFromConfig(configuration);
     }
 
-    public JSONArray parse(final JSONObject configuration, final boolean isPreAudienceQuestionnaire) {
+    public JSONArray parse( JSONObject configuration,  boolean isPreAudienceQuestionnaire) {
         JSONArray questionnaireList = isPreAudienceQuestionnaire ?
                 getPreAudienceQuestionnaire(configuration) : getPostAudienceQuestionnaire(configuration);
 

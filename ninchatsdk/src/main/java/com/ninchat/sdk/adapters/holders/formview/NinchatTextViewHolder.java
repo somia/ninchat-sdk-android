@@ -16,11 +16,11 @@ import org.json.JSONObject;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 
 public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
-    private final TextView mTextView;
+    private TextView mTextView;
 
     public NinchatTextViewHolder(@NonNull View itemView,
-                                 final JSONObject questionnaireElement,
-                                 final boolean isFormLikeQuestionnaire) {
+                                 JSONObject questionnaireElement,
+                                 boolean isFormLikeQuestionnaire) {
         super(itemView);
         mTextView = itemView.findViewById(R.id.text_view_content);
         bind(questionnaireElement, isFormLikeQuestionnaire);
@@ -30,11 +30,11 @@ public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
         return mTextView;
     }
 
-    public void bind(final JSONObject questionnaireElement, final boolean isFormLikeQuestionnaire) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire) {
         if (questionnaireElement == null) {
             return;
         }
-        final String labelText = getLabel(questionnaireElement);
+        String labelText = getLabel(questionnaireElement);
         if (isFormLikeQuestionnaire) {
             itemView.setBackground(
                     ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background)

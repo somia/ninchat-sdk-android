@@ -13,17 +13,17 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireNavigatio
 
 public class NinchatQuestionnaireLogicUtil {
 
-    public static boolean hasLogic(final JSONObject logicElement, final boolean isAnd) {
+    public static boolean hasLogic(JSONObject logicElement, boolean isAnd) {
         if (logicElement == null) {
             return false;
         }
-        final JSONArray logicList = logicElement.optJSONArray(isAnd ? "and" : "or");
+        JSONArray logicList = logicElement.optJSONArray(isAnd ? "and" : "or");
         for (int i = 0; logicList != null && i < logicList.length(); i += 1) {
-            final JSONObject currentLogic = logicList.optJSONObject(i);
+            JSONObject currentLogic = logicList.optJSONObject(i);
             if (currentLogic == null) continue;
             Iterator<String> keys = currentLogic.keys();
             while (keys.hasNext()) {
-                final String currentKey = keys.next();
+                String currentKey = keys.next();
                 // if current key is not empty
                 if (!TextUtils.isEmpty(currentKey)) {
                     return true;
@@ -34,31 +34,31 @@ public class NinchatQuestionnaireLogicUtil {
     }
 
 
-    public static boolean matchedLogicCore(final String key, final String value, final JSONArray elements) {
-        final JSONObject matchedElement = getQuestionnaireElementByName(elements, key);
+    public static boolean matchedLogicCore(String key, String value, JSONArray elementList) {
+        JSONObject matchedElement = getQuestionnaireElementByName(elementList, key);
         if (matchedElement == null) {
             return false;
         }
-        final String result = getResultString(matchedElement);
+        String result = getResultString(matchedElement);
         return matchPattern(result, value);
     }
 
-    public static boolean matchedLogic(final JSONArray logicList, final JSONArray elements, boolean matchAnd) {
+    public static boolean matchedLogic(JSONArray logicList, JSONArray elementList, boolean matchAnd) {
         if (logicList == null) {
             return false;
         }
         boolean ok = matchAnd ? true : false;
         for (int i = 0; i < logicList.length(); i += 1) {
-            final JSONObject currentLogic = logicList.optJSONObject(i);
+            JSONObject currentLogic = logicList.optJSONObject(i);
             Iterator<String> keys = currentLogic.keys();
             while (keys.hasNext()) {
-                final String currentKey = keys.next();
+                String currentKey = keys.next();
                 // if current key is empty, then just ignore and continue
                 if (TextUtils.isEmpty(currentKey)) {
                     continue;
                 }
-                final String currentValue = currentLogic.optString(currentKey);
-                final boolean matched = matchedLogicCore(currentKey, currentValue, elements);
+                String currentValue = currentLogic.optString(currentKey);
+                boolean matched = matchedLogicCore(currentKey, currentValue, elementList);
                 ok = matchAnd ? ok & matched : ok | matched;
             }
         }

@@ -1,28 +1,26 @@
 package com.ninchat.sdk.adapters;
 
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.holders.conversationview.NinchatConversationViewHolder;
-import com.ninchat.sdk.adapters.holders.formview.NinchatTextViewHolder;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.setViewAndChildrenEnabled;
 
 public class NinchatConversationQuestionnaireAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private final String TAG = NinchatConversationQuestionnaireAdapter.class.getSimpleName();
+    private String TAG = NinchatConversationQuestionnaireAdapter.class.getSimpleName();
     private NinchatQuestionnaire questionnaire;
 
-    public NinchatConversationQuestionnaireAdapter(final NinchatQuestionnaire ninchatPreAudienceQuestionnaire) {
+    public NinchatConversationQuestionnaireAdapter(NinchatQuestionnaire questionnaire) {
         // expect list of questionnaire with object. later from the bot view holder we will expand to elements
-        this.questionnaire = ninchatPreAudienceQuestionnaire;
+        this.questionnaire = questionnaire;
     }
 
     @Override
@@ -33,7 +31,7 @@ public class NinchatConversationQuestionnaireAdapter extends RecyclerView.Adapte
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
-        final JSONObject currentItem = questionnaire.getItem(position);
+        JSONObject currentItem = questionnaire.getItem(position);
         return new NinchatConversationViewHolder(
                 LayoutInflater.from(parent.getContext()).inflate(R.layout.bot_conversation_item, parent, false),
                 currentItem, position);
@@ -49,12 +47,20 @@ public class NinchatConversationQuestionnaireAdapter extends RecyclerView.Adapte
 
     }
 
-    public void addContent(final JSONObject questionnaireList) {
-        this.questionnaire.addQuestionnaireList(questionnaireList);
+    public void addContent(JSONObject questionnaireList) {
+        this.questionnaire.addQuestionnaire(questionnaireList);
+    }
+
+    public JSONObject getLastElement() {
+        return this.questionnaire.getLastElement();
+    }
+
+    public JSONObject getSecondLastElement() {
+        return this.questionnaire.getSecondLastElement();
     }
 
     public void removeLast() {
-        final int position = getItemCount() - 1;
+        int position = getItemCount() - 1;
         this.questionnaire.removeQuestionnaireList(position);
         notifyItemRemoved(position);
     }
@@ -64,4 +70,11 @@ public class NinchatConversationQuestionnaireAdapter extends RecyclerView.Adapte
         return questionnaire == null ? 0 : questionnaire.size();
     }
 
+    public NinchatQuestionnaire getQuestionnaire() {
+        return this.questionnaire;
+    }
+
+    public JSONArray getQuestionnaireList() {
+        return this.questionnaire.getQuestionnaireList();
+    }
 }

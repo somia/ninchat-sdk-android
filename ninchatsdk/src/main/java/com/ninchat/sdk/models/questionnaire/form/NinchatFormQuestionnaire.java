@@ -3,10 +3,8 @@ package com.ninchat.sdk.models.questionnaire.form;
 import android.content.Context;
 import android.os.Handler;
 import android.support.v4.util.Pair;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.View;
 
 import com.ninchat.client.Props;
 import com.ninchat.sdk.NinchatSessionManager;
@@ -14,10 +12,10 @@ import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatFormQuestionnaireAdapter;
 import com.ninchat.sdk.events.OnAudienceRegistered;
 import com.ninchat.sdk.events.OnCompleteQuestionnaire;
-import com.ninchat.sdk.events.OnItemLoaded;
 import com.ninchat.sdk.events.OnNextQuestionnaire;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaires;
 import com.ninchat.sdk.tasks.NinchatRegisterAudienceTask;
 
 import org.greenrobot.eventbus.EventBus;
@@ -28,70 +26,85 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.util.Stack;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.isClosedQueue;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireNavigationUtil.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 public class NinchatFormQuestionnaire {
-
     private NinchatFormQuestionnaireAdapter mNinchatFormQuestionnaireAdapter;
     private WeakReference<RecyclerView> mRecyclerViewWeakReference;
+    private NinchatQuestionnaire mQuestionnaireAnswerList;
     private String queueId;
-    private final int questionnaireType;
-    private final NinchatQuestionnaire mQuestionnaire;
-    private Stack<Integer> historyList;
-    private final String mAudienceRegisterText;
-    private final String mAudienceRegisterClosedText;
+    private int questionnaireType;
+    private NinchatQuestionnaire mQuestionnaireList;
+    private String mAudienceRegisterText;
+    private String mAudienceRegisterClosedText;
 
-    public NinchatFormQuestionnaire(final String queueId,
-                                    final int questionnaireType,
-                                    final RecyclerView recyclerView) {
+    public NinchatFormQuestionnaire(String queueId,
+                                    int questionnaireType,
+                                    RecyclerView recyclerView) {
+        // register event bus
+        EventBus.getDefault().register(this);
         mRecyclerViewWeakReference = new WeakReference<>(recyclerView);
+        mQuestionnaireAnswerList = new NinchatQuestionnaire(new JSONArray());
         this.queueId = queueId;
         this.questionnaireType = questionnaireType;
-        this.mQuestionnaire = getQuestionnaire(questionnaireType);
         this.mAudienceRegisterText = getAudienceRegisteredText(questionnaireType);
         this.mAudienceRegisterClosedText = getAudienceRegisteredClosedText(questionnaireType);
-        this.initialize();
-        this.createAdapter();
+        NinchatQuestionnaires questionnaires = NinchatSessionManager
+                .getInstance()
+                .getNinchatQuestionnaires();
+        mQuestionnaireList = questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
+                questionnaires.getNinchatPreAudienceQuestionnaire() : questionnaires.getNinchatPostAudienceQuestionnaire();
+        mNinchatFormQuestionnaireAdapter = new NinchatFormQuestionnaireAdapter(getQuestionnaire(), true);
     }
 
-    private void initialize() {
-        this.dispose();
-        historyList = new Stack<>();
-        EventBus.getDefault().register(this);
+    private NinchatQuestionnaire getQuestionnaire() {
+        JSONObject currentElement = getSlowCopy(mQuestionnaireList.getElement(0));
+        mQuestionnaireAnswerList.addQuestionnaire(currentElement);
+        return new NinchatQuestionnaire(getElements(currentElement));
     }
 
-    private void createAdapter() {
-        historyList.push(0);
-        mNinchatFormQuestionnaireAdapter = new
-                NinchatFormQuestionnaireAdapter(
-                new NinchatQuestionnaire(
-                        getQuestionnaireAsList()), true);
-    }
-
-    private void handleNext() {
-        clearElement(mQuestionnaire.getQuestionnaireList(), historyList, historyList.peek());
-        mNinchatFormQuestionnaireAdapter.updateContent(getQuestionnaireAsList());
+    private void handleNext(int index) {
+        if (index == -1) {
+            return;
+        }
+        JSONObject currentElement = getSlowCopy(getElementByIndex(mQuestionnaireList.getQuestionnaireList(), index));
+        mQuestionnaireAnswerList.addQuestionnaire(currentElement);
+        mNinchatFormQuestionnaireAdapter.updateContent(getElements(currentElement));
+        mNinchatFormQuestionnaireAdapter.notifyDataSetChanged();
         mRecyclerViewWeakReference.get().setAdapter(mNinchatFormQuestionnaireAdapter);
         // scroll to top
         new Handler().post(() -> mRecyclerViewWeakReference.get().scrollToPosition(0));
     }
 
-    private JSONArray getQuestionnaireAsList() {
-        final JSONObject currentElement = getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek());
-        // get the first element and return
-        return getElements(currentElement);
+    private void handlePrevious() {
+        JSONObject previousElement = mQuestionnaireAnswerList.getSecondLastElement();
+        int currentElementIndex = getQuestionnaireElementIndexByName(mQuestionnaireList.getQuestionnaireList(), getName(previousElement));
+        JSONObject currentElement = getSlowCopy(getElementByIndex(mQuestionnaireList.getQuestionnaireList(), currentElementIndex));
+        mQuestionnaireAnswerList.addQuestionnaire(currentElement);
+        mNinchatFormQuestionnaireAdapter.updateContent(getElements(currentElement));
+        mNinchatFormQuestionnaireAdapter.notifyDataSetChanged();
+        mRecyclerViewWeakReference.get().setAdapter(mNinchatFormQuestionnaireAdapter);
+        // scroll to top
+        new Handler().post(() -> mRecyclerViewWeakReference.get().scrollToPosition(0));
     }
 
-    private void close(final boolean isRegister) {
-        final JSONObject answerList = getQuestionnaireAnswers(mQuestionnaire.getQuestionnaireList(), historyList);
-        final JSONArray tagList = getQuestionnaireAnswersTags(mQuestionnaire.getQuestionnaireList(), historyList);
-        final JSONObject answers = mergeAnswersAndTags(answerList, tagList);
+    private void handleError() {
+        JSONObject lastElement = mQuestionnaireAnswerList.getLastElement();
+        updateRequiredFieldStats(lastElement);
+        clearElementResult(lastElement);
+        mRecyclerViewWeakReference.get().clearFocus();
+        mNinchatFormQuestionnaireAdapter.notifyDataSetChanged();
+    }
+
+    private void close(boolean isRegister) {
+        JSONObject answerList = getQuestionnaireAnswers(mQuestionnaireAnswerList.getQuestionnaireList());
+        JSONArray tagList = getQuestionnaireAnswersTags(mQuestionnaireAnswerList.getQuestionnaireList());
+        JSONObject answers = mergeAnswersAndTags(answerList, tagList);
         if (questionnaireType == POST_AUDIENCE_QUESTIONNAIRE) {
             // a post audience questionnaire
             NinchatSessionManager.getInstance().sendPostAnswers(answers);
@@ -127,36 +140,10 @@ public class NinchatFormQuestionnaire {
         close(false);
     }
 
-    private JSONObject getCurrentlyMatchedLogicElement() {
-        final JSONObject currentElement = getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek());
-        final JSONArray filledElements = getAllFilledElements(mQuestionnaire.getQuestionnaireList(), historyList);
-        return getMatchingLogic(mQuestionnaire.getQuestionnaireList(), filledElements, currentElement);
-    }
-
-    private void setTagsAndQueue(final JSONObject matchingLogic) {
-        final JSONObject currentElement = getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek());
-        setTags(matchingLogic, currentElement);
-        setQueue(matchingLogic, currentElement);
-    }
-
-    private Pair<String, Integer> getTargetElementAndIndex(final JSONObject matchingLogic) {
-        final String elementName = getMatchingLogicTarget(matchingLogic);
-        final int elementIndex = getQuestionnaireElementIndexByName(mQuestionnaire.getQuestionnaireList(), elementName);
-        return Pair.create(elementName, elementIndex);
-    }
-
-    private void handleError() {
-        final JSONObject currentElement = getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek());
-        updateRequiredFieldStats(currentElement);
-        clearElementResult(currentElement);
-        mRecyclerViewWeakReference.get().clearFocus();
-        mNinchatFormQuestionnaireAdapter.notifyDataSetChanged();
-    }
-
-    public void setAdapter(final Context mContext) {
-        final int spaceInPixelTop = mContext.getResources().getDimensionPixelSize(R.dimen.ninchat_items_margin_top);
-        final int spaceLeft = mContext.getResources().getDimensionPixelSize(R.dimen.ninchat_items_margin_left);
-        final int spaceRight = mContext.getResources().getDimensionPixelSize(R.dimen.ninchat_items_margin_right);
+    public void setAdapter(Context mContext) {
+        int spaceInPixelTop = mContext.getResources().getDimensionPixelSize(R.dimen.ninchat_items_margin_top);
+        int spaceLeft = mContext.getResources().getDimensionPixelSize(R.dimen.ninchat_items_margin_left);
+        int spaceRight = mContext.getResources().getDimensionPixelSize(R.dimen.ninchat_items_margin_right);
         mRecyclerViewWeakReference.get().addItemDecoration(new NinchatQuestionnaireItemDecoration(
                 spaceInPixelTop,
                 spaceLeft,
@@ -166,60 +153,70 @@ public class NinchatFormQuestionnaire {
     }
 
     public void dispose() {
-        if (this.historyList != null) {
-            this.historyList.clear();
-        }
         EventBus.getDefault().unregister(this);
+    }
+
+    private void setTagsAndQueue(JSONObject matchingLogic) {
+        JSONObject currentElement = mQuestionnaireAnswerList.getLastElement();
+        setTags(matchingLogic, currentElement);
+        setQueue(matchingLogic, currentElement);
+    }
+
+    @NotNull
+    private Pair<String, Integer> getTargetElementAndIndex(JSONObject matchingLogic) {
+        String elementName = getMatchingLogicTarget(matchingLogic);
+        int elementIndex = getQuestionnaireElementIndexByName(mQuestionnaireList.getQuestionnaireList(), elementName);
+        return Pair.create(elementName, elementIndex);
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void onNextQuestionnaire(@NotNull OnNextQuestionnaire onNextQuestionnaire) {
+        JSONObject previousElement = mQuestionnaireAnswerList.getLastElement();
+        int currentElementIndex = getQuestionnaireElementIndexByName(mQuestionnaireList.getQuestionnaireList(), getName(previousElement));
         if (onNextQuestionnaire.moveType == OnNextQuestionnaire.back) {
-            // remove last element
-            if (!historyList.empty()) {
-                historyList.pop();
-            }
-        } else if (onNextQuestionnaire.moveType == OnNextQuestionnaire.register) {
+            handlePrevious();
+            return;
+        }
+        if (onNextQuestionnaire.moveType == OnNextQuestionnaire.register) {
             handleRegister();
-            return ;
-        } else if (onNextQuestionnaire.moveType == OnNextQuestionnaire.complete) {
+            return;
+        }
+        if (onNextQuestionnaire.moveType == OnNextQuestionnaire.complete) {
             handleComplete();
-            return ;
-        } else {
-            if (formHasError(getCurrentElement(mQuestionnaire.getQuestionnaireList(), historyList.peek()))) {
-                handleError();
+            return;
+        }
+        if (formHasError(mQuestionnaireAnswerList.getLastElement())) {
+            handleError();
+            return;
+        }
+        JSONObject matchingLogic = getMatchingLogic(mQuestionnaireList.getQuestionnaireList(),
+                mQuestionnaireAnswerList.getQuestionnaireList(), previousElement);
+        setTagsAndQueue(matchingLogic);
+        Pair<String, Integer> target = getTargetElementAndIndex(matchingLogic);
+        int thankYouElementIndex = -1;
+        if (isRegister(target.first)) {
+            // if has audience register text
+            if (TextUtils.isEmpty(mAudienceRegisterText)) {
+                handleRegister();
                 return;
             }
-            final JSONObject matchingLogic = getCurrentlyMatchedLogicElement();
-            setTagsAndQueue(matchingLogic);
-            final Pair<String, Integer> target = getTargetElementAndIndex(matchingLogic);
-            int thankYouElementIndex = -1;
-            if (isRegister(target.first)) {
-                // if has audience register text
-                if (TextUtils.isEmpty(mAudienceRegisterText)) {
-                    handleRegister();
-                    return;
-                }
-                thankYouElementIndex = mQuestionnaire.updateQuestionWithThankYouElement(mAudienceRegisterText, true);
-            } else if (isComplete(target.first) || (target.second == -1 && getNextElementIndex(mQuestionnaire.getQuestionnaireList(), historyList.peek()) == -1)) {
-                // if completed or it is a last element or there is no other matching element then it can be a complete
-                final String currentQueueId = getQuestionnaireAnswersQueue(mQuestionnaire.getQuestionnaireList(), historyList);
-                if (!TextUtils.isEmpty(currentQueueId)) {
-                    this.queueId = currentQueueId;
-                }
-                if (!isClosedQueue(this.queueId) || TextUtils.isEmpty(mAudienceRegisterClosedText)) {
-                    handleComplete();
-                    return;
-                }
-                thankYouElementIndex = mQuestionnaire.updateQuestionWithThankYouElement(mAudienceRegisterClosedText, false);
+            thankYouElementIndex = mQuestionnaireList.updateQuestionWithThankYouElement(mAudienceRegisterText, true);
+        } else if (isComplete(target.first) ||
+                (target.second == -1 && getNextElementIndex(mQuestionnaireList.getQuestionnaireList(), currentElementIndex) == -1)) {
+            // if completed or it is a last element or there is no other matching element then it can be a complete
+            String currentQueueId = getQuestionnaireAnswersQueue(mQuestionnaireAnswerList.getQuestionnaireList());
+            if (!TextUtils.isEmpty(currentQueueId)) {
+                this.queueId = currentQueueId;
             }
-            historyList.push(
-                    thankYouElementIndex != -1 ?
-                            thankYouElementIndex :
-                            target.second != -1 ?
-                                    target.second : getNextElementIndex(mQuestionnaire.getQuestionnaireList(), historyList.peek()));
+            if (!isClosedQueue(this.queueId) || TextUtils.isEmpty(mAudienceRegisterClosedText)) {
+                handleComplete();
+                return;
+            }
+            thankYouElementIndex = mQuestionnaireList.updateQuestionWithThankYouElement(mAudienceRegisterText, true);
         }
-        handleNext();
+        int currentIndex = thankYouElementIndex != -1 ? thankYouElementIndex :
+                target.second != -1 ? target.second : getNextElementIndex(mQuestionnaireList.getQuestionnaireList(), currentElementIndex);
+        handleNext(currentIndex);
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)

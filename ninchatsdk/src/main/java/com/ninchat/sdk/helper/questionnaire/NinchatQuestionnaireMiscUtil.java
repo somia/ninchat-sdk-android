@@ -12,6 +12,8 @@ import android.widget.TextView;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
@@ -22,19 +24,22 @@ public class NinchatQuestionnaireMiscUtil {
         return source == null ? null : Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(source, Html.FROM_HTML_MODE_COMPACT) : Html.fromHtml(source);
     }
 
-    public static boolean hasPattern(final JSONObject element) {
+    public static boolean hasPattern(JSONObject element) {
         if (element == null) {
             return false;
         }
-        return element.has("pattern");
+        return element.has("pattern") && !TextUtils.isEmpty(element.optString("pattern", null));
     }
 
 
-    public static boolean matchPattern(final String currentInput, final String pattern) {
+    public static boolean matchPattern(String currentInput, String pattern) {
+        if (TextUtils.isEmpty(pattern)) {
+            return true;
+        }
         return (currentInput == null ? "" : currentInput).matches(pattern == null ? "" : pattern);
     }
 
-    public static boolean matchPattern(final JSONObject element) {
+    public static boolean matchPattern(JSONObject element) {
         if (element == null) {
             return false;
         }
@@ -42,16 +47,16 @@ public class NinchatQuestionnaireMiscUtil {
             return true;
         }
         if (isInput(element) || isTextArea(element) || isSelect(element) || isLikeRT(element) || isRadio(element)) {
-            final String value = getResultString(element);
+            String value = getResultString(element);
             return matchPattern(value, getPattern(element));
         }
         return true;
     }
 
 
-    public static boolean hasResult(final JSONObject element) {
+    public static boolean hasResult(JSONObject element) {
         if (isInput(element) || isTextArea(element) || isSelect(element) || isLikeRT(element) || isRadio(element)) {
-            final String value = getResultString(element);
+            String value = getResultString(element);
             return !TextUtils.isEmpty(value);
         }
         if (isCheckBox(element)) {
@@ -61,8 +66,8 @@ public class NinchatQuestionnaireMiscUtil {
     }
 
 
-    public static boolean isRequiredOK(final JSONObject element) {
-        final boolean isRequired = isRequired(element);
+    public static boolean isRequiredOK(JSONObject element) {
+        boolean isRequired = isRequired(element);
         // if not an required field. then good
         if (!isRequired) {
             return true;
@@ -70,24 +75,44 @@ public class NinchatQuestionnaireMiscUtil {
         return hasResult(element);
     }
 
-    public static boolean hasButton(final JSONObject buttonElement, final boolean isBack) {
+    public static boolean hasButton(JSONObject buttonElement, boolean isBack) {
         if (buttonElement == null) {
             return false;
         }
         return !"false".equalsIgnoreCase(buttonElement.optString(isBack ? "back" : "next"));
     }
 
-    public static boolean hasButton(final JSONObject element) {
-        final JSONObject buttons = element.optJSONObject("buttons");
+    public static boolean hasButton(JSONObject element) {
+        JSONObject buttons = element.optJSONObject("buttons");
         if (buttons == null) {
             return false;
         }
-        final boolean hasBack = hasButton(buttons, true);
-        final boolean hasNext = hasButton(buttons, false);
+        boolean hasBack = hasButton(buttons, true);
+        boolean hasNext = hasButton(buttons, false);
         return (hasBack || hasNext);
     }
 
-    public static boolean isClosedQueue(final String queueId) {
+    public static boolean isClosedQueue(String queueId) {
         return (NinchatSessionManager.getInstance().getQueue(queueId) == null || NinchatSessionManager.getInstance().getQueue(queueId).isClosed());
+    }
+
+    public static boolean isEqual(String a, String b) {
+        return (a == null ? "" : a).equalsIgnoreCase(b == null ? "" : b);
+    }
+
+    public static JSONObject getSlowCopy(JSONObject element) {
+        try {
+            return new JSONObject(element.toString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static JSONArray getSlowCopy(JSONArray elementList) {
+        JSONArray retval = new JSONArray();
+        for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
+            retval.put(getSlowCopy(elementList.optJSONObject(i)));
+        }
+        return retval;
     }
 }

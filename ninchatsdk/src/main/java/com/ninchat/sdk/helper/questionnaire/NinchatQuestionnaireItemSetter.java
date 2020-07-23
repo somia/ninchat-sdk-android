@@ -7,16 +7,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
 import com.ninchat.sdk.R;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import java.util.Stack;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.getElements;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.*;
 
 public class NinchatQuestionnaireItemSetter {
-    public static <T> void setResult(final JSONObject element, final T result) {
+    public static <T> void setResult(JSONObject element, T result) {
         try {
             element.put("result", result);
         } catch (Exception e) {
@@ -24,7 +27,7 @@ public class NinchatQuestionnaireItemSetter {
         }
     }
 
-    public static void setError(final JSONObject element, final boolean hasError) {
+    public static void setError(JSONObject element, boolean hasError) {
         try {
             element.put("hasError", hasError);
         } catch (Exception e) {
@@ -32,9 +35,17 @@ public class NinchatQuestionnaireItemSetter {
         }
     }
 
-    public static void setTags(final JSONObject logic, final JSONObject currentElement) {
+    public static void setPosition(JSONObject element, int position) {
+        try {
+            element.put("position", position);
+        } catch (Exception e) {
+            // pass
+        }
+    }
+
+    public static void setTags(JSONObject logic, JSONObject currentElement) {
         if (logic == null || currentElement == null) return;
-        final JSONArray tags = logic.optJSONArray("tags");
+        JSONArray tags = logic.optJSONArray("tags");
         if (tags != null && tags.length() > 0) {
             try {
                 currentElement.putOpt("tags", tags);
@@ -44,9 +55,9 @@ public class NinchatQuestionnaireItemSetter {
         }
     }
 
-    public static void setQueue(final JSONObject logic, JSONObject currentElement) {
+    public static void setQueue(JSONObject logic, JSONObject currentElement) {
         if (logic == null || currentElement == null) return;
-        final String queue = logic.optString("queue");
+        String queue = logic.optString("queue");
         if (TextUtils.isEmpty(queue)) return;
         try {
             currentElement.putOpt("queue", queue);
@@ -56,7 +67,7 @@ public class NinchatQuestionnaireItemSetter {
     }
 
 
-    public static void clearElement(final JSONArray questionnaireList, final Stack<Integer> historyList, final int index) {
+    public static void clearElement(JSONArray questionnaireList, Stack<Integer> historyList, int index) {
         if (questionnaireList == null) {
             return;
         }
@@ -66,8 +77,8 @@ public class NinchatQuestionnaireItemSetter {
                 shouldClear = true;
             }
             if (shouldClear && currentIndex >= 0) {
-                final JSONObject currentElement = questionnaireList.optJSONObject(currentIndex);
-                final JSONArray elementList = getElements(currentElement);
+                JSONObject currentElement = questionnaireList.optJSONObject(currentIndex);
+                JSONArray elementList = getElements(currentElement);
                 for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
                     if (elementList.optJSONObject(i) != null) {
                         elementList.optJSONObject(i).remove("result");
@@ -81,22 +92,22 @@ public class NinchatQuestionnaireItemSetter {
     }
 
 
-    public static void updateRequiredFieldStats(final JSONObject element) {
-        final JSONArray elementList = getElements(element);
+    public static void updateRequiredFieldStats(JSONObject element) {
+        JSONArray elementList = getElements(element);
         for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
-            final JSONObject currentElement = elementList.optJSONObject(i);
-            final boolean requiredOk = isRequiredOK(currentElement);
-            final boolean patternOk = matchPattern(currentElement);
+            JSONObject currentElement = elementList.optJSONObject(i);
+            boolean requiredOk = isRequiredOK(currentElement);
+            boolean patternOk = matchPattern(currentElement);
             setError(currentElement, !(requiredOk && patternOk));
         }
     }
 
-    public static boolean formHasError(final JSONObject element) {
-        final JSONArray elementList = getElements(element);
+    public static boolean formHasError(JSONObject element) {
+        JSONArray elementList = getElements(element);
         for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
-            final JSONObject currentElement = elementList.optJSONObject(i);
-            final boolean requiredOk = isRequiredOK(currentElement);
-            final boolean patternOk = matchPattern(currentElement);
+            JSONObject currentElement = elementList.optJSONObject(i);
+            boolean requiredOk = isRequiredOK(currentElement);
+            boolean patternOk = matchPattern(currentElement);
             // take only the first item. for focusing purpose only
             if ((!requiredOk || !patternOk)) {
                 return true;
@@ -105,8 +116,13 @@ public class NinchatQuestionnaireItemSetter {
         return false;
     }
 
-    public static void clearElementResult(final JSONObject element) {
-        final JSONArray elementList = getElements(element);
+    public static void clearElementResult(JSONObject element) {
+        if (element == null) return;
+        element.remove("result");
+        element.remove("hasError");
+        element.remove("tags");
+        element.remove("queue");
+        JSONArray elementList = getElements(element);
         if (elementList == null || elementList.length() == 0) {
             return;
         }
@@ -120,7 +136,7 @@ public class NinchatQuestionnaireItemSetter {
     }
 
 
-    public static void setViewAndChildrenEnabled(final View view, boolean enabled) {
+    public static void setViewAndChildrenEnabled(View view, boolean enabled) {
         view.setEnabled(enabled);
         if (view instanceof LinearLayout) {
             if (view.getId() == -1) {
@@ -140,7 +156,7 @@ public class NinchatQuestionnaireItemSetter {
         }
     }
 
-    public static JSONObject mergeAnswersAndTags(final JSONObject answerList, final JSONArray tagList) {
+    public static JSONObject mergeAnswersAndTags(JSONObject answerList, JSONArray tagList) {
         if (answerList == null || answerList.length() == 0) {
             return null;
         }

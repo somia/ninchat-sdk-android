@@ -20,16 +20,16 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.
 
 
 public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
-    private final String TAG = NinchatButtonViewHolder.class.getSimpleName();
+    private String TAG = NinchatButtonViewHolder.class.getSimpleName();
 
-    private final Button mPrevious;
-    private final Button mNext;
-    private final ImageView mPreviousImage;
-    private final ImageView mNextImage;
+    private Button mPrevious;
+    private Button mNext;
+    private ImageView mPreviousImage;
+    private ImageView mNextImage;
 
     public NinchatButtonViewHolder(@NonNull View itemView,
-                                   final JSONObject questionnaireElement,
-                                   final boolean isFormLikeQuestionnaire) {
+                                   JSONObject questionnaireElement,
+                                   boolean isFormLikeQuestionnaire) {
         super(itemView);
         mPrevious = itemView.findViewById(R.id.ninchat_button_previous);
         mNext = itemView.findViewById(R.id.ninchat_button_next);
@@ -38,13 +38,13 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
         this.bind(questionnaireElement, isFormLikeQuestionnaire);
     }
 
-    public void bind(final JSONObject questionnaireElement, final boolean isFormLikeQuestionnaire) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire) {
         mPrevious.setVisibility(View.GONE);
         mNext.setVisibility(View.GONE);
         mPreviousImage.setVisibility(View.GONE);
         mNextImage.setVisibility(View.GONE);
         if (hasButton(questionnaireElement, true)) {
-            final String text = questionnaireElement.optString("back");
+            String text = questionnaireElement.optString("back");
             if ("true".equalsIgnoreCase(text) || TextUtils.isEmpty(text)) {
                 mPreviousImage.setVisibility(View.VISIBLE);
                 mPreviousImage.setOnClickListener(v -> {
@@ -66,7 +66,7 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
         }
 
         if (hasButton(questionnaireElement, false)) {
-            final String text = questionnaireElement.optString("next");
+            String text = questionnaireElement.optString("next");
             if ("true".equalsIgnoreCase(text) || TextUtils.isEmpty(text)) {
                 mNextImage.setVisibility(View.VISIBLE);
                 mNextImage.setOnClickListener(v -> {
@@ -87,7 +87,7 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    private void mayBeFireComplete(final JSONObject questionnaireElement, final int moveType) {
+    private void mayBeFireComplete(JSONObject questionnaireElement, int moveType) {
         if (questionnaireElement != null && questionnaireElement.optBoolean("fireEvent", false)) {
             if ("_register".equalsIgnoreCase(questionnaireElement.optString("type", ""))) {
                 EventBus.getDefault().post(new OnNextQuestionnaire(OnNextQuestionnaire.register));

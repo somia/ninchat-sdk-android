@@ -2,7 +2,6 @@ package com.ninchat.sdk.adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -21,11 +20,11 @@ import org.json.JSONObject;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 public class NinchatFormQuestionnaireAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private final String TAG = NinchatFormQuestionnaireAdapter.class.getSimpleName();
+    private String TAG = NinchatFormQuestionnaireAdapter.class.getSimpleName();
     private NinchatQuestionnaire questionnaire;
     private boolean isFormLikeQuestionnaire;
 
-    public NinchatFormQuestionnaireAdapter(final NinchatQuestionnaire ninchatPreAudienceQuestionnaire, final boolean isFormLikeQuestionnaire) {
+    public NinchatFormQuestionnaireAdapter(NinchatQuestionnaire ninchatPreAudienceQuestionnaire, boolean isFormLikeQuestionnaire) {
         this.questionnaire = ninchatPreAudienceQuestionnaire;
         this.isFormLikeQuestionnaire = isFormLikeQuestionnaire;
     }
@@ -38,8 +37,8 @@ public class NinchatFormQuestionnaireAdapter extends RecyclerView.Adapter<Recycl
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
-        final JSONObject currentItem = questionnaire.getItem(position);
-        final int viewType = getItemType(currentItem);
+        JSONObject currentItem = questionnaire.getItem(position);
+        int viewType = getItemType(currentItem);
         switch (viewType) {
             case TEXT:
                 return new NinchatTextViewHolder(
@@ -77,7 +76,7 @@ public class NinchatFormQuestionnaireAdapter extends RecyclerView.Adapter<Recycl
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        final JSONObject currentItem = questionnaire.getItem(position);
+        JSONObject currentItem = questionnaire.getItem(position);
         if (viewHolder instanceof NinchatTextViewHolder) {
             ((NinchatTextViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire);
         } else if (viewHolder instanceof NinchatInputFieldViewHolder) {
@@ -93,7 +92,7 @@ public class NinchatFormQuestionnaireAdapter extends RecyclerView.Adapter<Recycl
         }
     }
 
-    public void updateContent(final JSONArray questionnaireList) {
+    public void updateContent(JSONArray questionnaireList) {
         this.questionnaire.updateQuestionnaireList(questionnaireList);
     }
 

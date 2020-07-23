@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.ninchat.sdk.R;
+
 import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
@@ -18,22 +19,22 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSette
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.matchPattern;
 
 public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
-    private final String TAG = NinchatInputFieldViewHolder.class.getSimpleName();
+    private String TAG = NinchatInputFieldViewHolder.class.getSimpleName();
 
-    private final TextView mLabel;
-    private final EditText mEditText;
+    private TextView mLabel;
+    private EditText mEditText;
 
     public NinchatInputFieldViewHolder(@NonNull View itemView,
-                                       final JSONObject questionnaireElement,
-                                       final boolean multilineText,
-                                       final boolean isFormLikeQuestionnaire) {
+                                       JSONObject questionnaireElement,
+                                       boolean multilineText,
+                                       boolean isFormLikeQuestionnaire) {
         super(itemView);
         mLabel = itemView.findViewById(multilineText ? R.id.multiline_text_label : R.id.simple_text_label);
         mEditText = itemView.findViewById(multilineText ? R.id.multiline_text_area : R.id.simple_text_field);
         bind(questionnaireElement, isFormLikeQuestionnaire);
     }
 
-    public void bind(final JSONObject questionnaireElement, final boolean isFormLikeQuestionnaire) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire) {
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -65,24 +66,24 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
         updateUI(questionnaireElement, false);
     }
 
-    private void setLabel(final JSONObject item) {
-        final String text = getLabel(item);
+    private void setLabel(JSONObject item) {
+        String text = getLabel(item);
         if (TextUtils.isEmpty(text)) {
             return;
         }
         mLabel.setText(text);
     }
 
-    private void setText(final JSONObject item) {
-        final String text = getResultString(item);
+    private void setText(JSONObject item) {
+        String text = getResultString(item);
         if (TextUtils.isEmpty(text)) {
             return;
         }
         mEditText.setText(text);
     }
 
-    private void updateUI(final JSONObject item, final boolean hasFocus) {
-        final boolean hasError = getError(item);
+    private void updateUI(JSONObject item, boolean hasFocus) {
+        boolean hasError = getError(item);
         mEditText.setBackgroundResource(hasFocus ?
                 R.drawable.ninchat_border_with_focus : R.drawable.ninchat_border_with_unfocus);
         if (hasError) {
