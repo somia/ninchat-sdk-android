@@ -200,8 +200,11 @@ public class NinchatQuestionnaireItemGetter {
         if (questionnaireList == null) {
             return retval;
         }
+        List<String> seen = new ArrayList<>();
         for (int at = questionnaireList.length() - 1; at >= 0; at -= 1) {
             JSONObject currentElement = questionnaireList.optJSONObject(at);
+            if (seen.contains(getName(currentElement))) continue;
+            seen.add(getName(currentElement));
             JSONArray elementList = getElements(currentElement);
             for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
                 if (elementList.optJSONObject(i) != null) {
