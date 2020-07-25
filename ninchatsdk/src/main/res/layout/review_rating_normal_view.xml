@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentTop="true"
+    android:background="@color/ninchat_color_background_top"
+    android:orientation="vertical"
+    android:padding="@dimen/ninchat_review_activity_top_padding">
+
+    <include layout="@layout/review_rating_text_view" />
+
+    <include layout="@layout/review_rating_icon_items" />
+
+</LinearLayout>

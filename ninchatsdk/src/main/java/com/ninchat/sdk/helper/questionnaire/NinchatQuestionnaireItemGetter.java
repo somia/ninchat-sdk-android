@@ -269,28 +269,6 @@ public class NinchatQuestionnaireItemGetter {
                 questionnaires.getAudienceRegisteredClosedText() : "";
     }
 
-    public static Props getPreAnswers(String resultString) {
-        Props preAnswers = new Props();
-        try {
-            JSONObject result = new JSONObject(resultString);
-            Iterator<String> keys = result.keys();
-            while (keys.hasNext()) {
-                String currentKey = keys.next();
-                // if current key is empty
-                if (TextUtils.isEmpty(currentKey)) continue;
-                if (currentKey.equalsIgnoreCase("tags")) {
-                    Strings tags = getTags(result.optJSONArray("tags"));
-                    if (tags.length() > 0) preAnswers.setStringArray("tags", tags);
-                } else {
-                    preAnswers.setString(currentKey, result.optString(currentKey, ""));
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return preAnswers;
-    }
-
     public static Props getPreAnswers(JSONObject result) {
         Props preAnswers = new Props();
         if (result == null)

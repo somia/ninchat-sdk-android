@@ -1490,6 +1490,10 @@ public final class NinchatSessionManager {
         return toSpanned(getTranslation("How was our customer service?"));
     }
 
+    public Spanned getThankYouText() {
+        return toSpanned(getTranslation("Thank you for the conversation!"));
+    }
+
     public String getFeedbackPositive() {
         return getTranslation("Good");
     }

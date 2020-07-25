@@ -107,7 +107,7 @@ public class NinchatQuestionnaireActivity extends NinchatBaseActivity {
                 .getInstance()
                 .getNinchatQuestionnaires();
         return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
-                questionnaires.conversationLikePreAudienceQuestionnaire() : questionnaires.formLikePreAudienceQuestionnaire();
+                questionnaires.conversationLikePreAudienceQuestionnaire() : questionnaires.conversationLikePostAudienceQuestionnaire();
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)

@@ -1,7 +1,5 @@
 package com.ninchat.sdk.models.questionnaire;
 
-import android.text.TextUtils;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,7 +15,7 @@ public class NinchatQuestionnaires {
 
 
     private boolean conversationLikePreAudienceQuestionnaire;
-    private boolean formLikePreAudienceQuestionnaire;
+    private boolean conversationLikePostAudienceQuestionnaire;
 
     public NinchatQuestionnaires( JSONObject configuration) {
         preAudienceQuestionnaire = new NinchatQuestionnaire(
@@ -27,7 +25,7 @@ public class NinchatQuestionnaires {
                 parse(configuration, false)
         );
         conversationLikePreAudienceQuestionnaire = isConversationLikePreAudienceQuestionnaire(configuration);
-        formLikePreAudienceQuestionnaire = isConversationLikePostAudienceQuestionnaire(configuration);
+        conversationLikePostAudienceQuestionnaire = isConversationLikePostAudienceQuestionnaire(configuration);
         audienceRegisteredText = getAudienceRegisteredTextFromConfig(configuration);
         audienceRegisteredClosedText = getAudienceRegisteredClosedTextFromConfig(configuration);
     }
@@ -75,7 +73,7 @@ public class NinchatQuestionnaires {
         return this.conversationLikePreAudienceQuestionnaire;
     }
 
-    public boolean formLikePreAudienceQuestionnaire() {
-        return this.formLikePreAudienceQuestionnaire;
+    public boolean conversationLikePostAudienceQuestionnaire() {
+        return this.conversationLikePostAudienceQuestionnaire;
     }
 }
