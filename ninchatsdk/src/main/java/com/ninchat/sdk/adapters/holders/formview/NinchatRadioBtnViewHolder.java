@@ -21,6 +21,7 @@ import java.lang.ref.WeakReference;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.setAnimation;
 
 public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
     private String TAG = NinchatRadioBtnViewHolder.class.getSimpleName();
@@ -30,15 +31,16 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
 
     public NinchatRadioBtnViewHolder(@NonNull View itemView,
                                      JSONObject questionnaireElement,
-                                     boolean isFormLikeQuestionnaire) {
+                                     boolean isFormLikeQuestionnaire,
+                                     int position) {
         super(itemView);
         mLabel = itemView.findViewById(R.id.radio_option_label);
         mRecyclerViewWeakReference = new WeakReference<>(itemView.findViewById(R.id.ninchat_chat_radio_options));
-        this.bind(questionnaireElement, isFormLikeQuestionnaire);
+        this.bind(questionnaireElement, isFormLikeQuestionnaire, position);
     }
 
 
-    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position) {
         this.rootElement = questionnaireElement;
         if (isFormLikeQuestionnaire) {
             itemView.setBackground(
@@ -50,6 +52,7 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
 
         mRecyclerViewWeakReference.get().setLayoutManager(new LinearLayoutManager(itemView.getContext()));
         mRecyclerViewWeakReference.get().setAdapter(new NinchatRadioBtnAdapter(optionList));
+        setAnimation(itemView, position, position != 0);
     }
 
     public class NinchatRadioBtnAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

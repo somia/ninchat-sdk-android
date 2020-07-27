@@ -16,6 +16,7 @@ import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.setAnimation;
 
 public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
     private String TAG = NinchatCheckboxViewHolder.class.getSimpleName();
@@ -24,13 +25,14 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
 
     public NinchatCheckboxViewHolder(@NonNull View itemView,
                                      JSONObject questionnaireElement,
-                                     boolean isFormLikeQuestionnaire) {
+                                     boolean isFormLikeQuestionnaire,
+                                     int position) {
         super(itemView);
         mCheckbox = itemView.findViewById(R.id.ninchat_checkbox);
-        bind(questionnaireElement, isFormLikeQuestionnaire);
+        bind(questionnaireElement, isFormLikeQuestionnaire, position);
     }
 
-    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire,int position) {
         mCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             setResult(questionnaireElement, isChecked);
             setError(questionnaireElement, false);
@@ -46,6 +48,7 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
                     ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
         }
         updateUI(questionnaireElement);
+        setAnimation(itemView, position, position != 0);
     }
 
     private void setLabel(JSONObject item) {

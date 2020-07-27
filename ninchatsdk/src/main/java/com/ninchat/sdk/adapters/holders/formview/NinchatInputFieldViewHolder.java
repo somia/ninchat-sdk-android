@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.matchPattern;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.setAnimation;
 
 public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
     private String TAG = NinchatInputFieldViewHolder.class.getSimpleName();
@@ -27,14 +28,15 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
     public NinchatInputFieldViewHolder(@NonNull View itemView,
                                        JSONObject questionnaireElement,
                                        boolean multilineText,
-                                       boolean isFormLikeQuestionnaire) {
+                                       boolean isFormLikeQuestionnaire,
+                                       int position) {
         super(itemView);
         mLabel = itemView.findViewById(multilineText ? R.id.multiline_text_label : R.id.simple_text_label);
         mEditText = itemView.findViewById(multilineText ? R.id.multiline_text_area : R.id.simple_text_field);
-        bind(questionnaireElement, isFormLikeQuestionnaire);
+        bind(questionnaireElement, isFormLikeQuestionnaire, position);
     }
 
-    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position) {
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -64,6 +66,7 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
                     ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
         }
         updateUI(questionnaireElement, false);
+        setAnimation(itemView, position, position != 0);
     }
 
     private void setLabel(JSONObject item) {

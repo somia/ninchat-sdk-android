@@ -17,6 +17,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.hasButton;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.setAnimation;
 
 
 public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
@@ -29,16 +30,17 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
 
     public NinchatButtonViewHolder(@NonNull View itemView,
                                    JSONObject questionnaireElement,
-                                   boolean isFormLikeQuestionnaire) {
+                                   boolean isFormLikeQuestionnaire,
+                                   int position) {
         super(itemView);
         mPrevious = itemView.findViewById(R.id.ninchat_button_previous);
         mNext = itemView.findViewById(R.id.ninchat_button_next);
         mPreviousImage = itemView.findViewById(R.id.ninchat_image_button_previous);
         mNextImage = itemView.findViewById(R.id.ninchat_image_button_next);
-        this.bind(questionnaireElement, isFormLikeQuestionnaire);
+        this.bind(questionnaireElement, isFormLikeQuestionnaire, position);
     }
 
-    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position) {
         mPrevious.setVisibility(View.GONE);
         mNext.setVisibility(View.GONE);
         mPreviousImage.setVisibility(View.GONE);
@@ -85,6 +87,8 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
                 });
             }
         }
+
+        setAnimation(itemView, position, position != 0);
     }
 
     private void mayBeFireComplete(JSONObject questionnaireElement, int moveType) {

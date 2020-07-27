@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.setAnimation;
 
 public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
     private String TAG = NinchatDropDownSelectViewHolder.class.getSimpleName();
@@ -32,15 +33,16 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
 
     public NinchatDropDownSelectViewHolder(@NonNull View itemView,
                                            JSONObject questionnaireElement,
-                                           boolean isFormLikeQuestionnaire) {
+                                           boolean isFormLikeQuestionnaire,
+                                           int position) {
         super(itemView);
         mLabel = itemView.findViewById(R.id.dropdown_text_label);
         mSpinner = itemView.findViewById(R.id.ninchat_dropdown_list);
-        bind(questionnaireElement, isFormLikeQuestionnaire);
+        bind(questionnaireElement, isFormLikeQuestionnaire, position);
     }
 
 
-    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position) {
         int previouslySelected = preFill(questionnaireElement);
         ArrayAdapter<String> dataAdapter = getRTDataAdapter(questionnaireElement);
         if (isFormLikeQuestionnaire) {
@@ -69,6 +71,7 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
                 Log.d(TAG, "nothing is selected");
             }
         });
+        setAnimation(itemView, position, position != 0);
     }
 
     public void onSelected(JSONObject questionnaireElement, boolean selected, TextView mTextView) {

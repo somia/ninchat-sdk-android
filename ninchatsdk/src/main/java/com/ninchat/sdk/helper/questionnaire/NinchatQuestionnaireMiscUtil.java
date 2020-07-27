@@ -1,5 +1,7 @@
 package com.ninchat.sdk.helper.questionnaire;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.os.Build;
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
@@ -20,6 +22,8 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGette
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 public class NinchatQuestionnaireMiscUtil {
+    public static final int DURATION = 500;
+
     public static Spanned fromHTML(String source) {
         return source == null ? null : Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(source, Html.FROM_HTML_MODE_COMPACT) : Html.fromHtml(source);
     }
@@ -114,5 +118,16 @@ public class NinchatQuestionnaireMiscUtil {
             retval.put(getSlowCopy(elementList.optJSONObject(i)));
         }
         return retval;
+    }
+
+    public static void setAnimation(final View itemView, final int position, final boolean notFirstItem) {
+        itemView.setAlpha(0.0f);
+        AnimatorSet animatorSet = new AnimatorSet();
+        ObjectAnimator animator = ObjectAnimator.ofFloat(itemView, "alpha", 0.f, 0.5f, 1.0f);
+        ObjectAnimator.ofFloat(itemView, "alpha", 0.f).start();
+        animator.setStartDelay(notFirstItem ? DURATION / 2 : (position * DURATION / 3));
+        animator.setDuration(DURATION);
+        animatorSet.play(animator);
+        animator.start();
     }
 }

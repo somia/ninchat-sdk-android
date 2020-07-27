@@ -14,23 +14,20 @@ import com.ninchat.sdk.helper.NinchatImageGetter;
 import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.setAnimation;
 
 public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
     private TextView mTextView;
 
     public NinchatTextViewHolder(@NonNull View itemView,
                                  JSONObject questionnaireElement,
-                                 boolean isFormLikeQuestionnaire) {
+                                 boolean isFormLikeQuestionnaire, int position) {
         super(itemView);
         mTextView = itemView.findViewById(R.id.text_view_content);
-        bind(questionnaireElement, isFormLikeQuestionnaire);
+        bind(questionnaireElement, isFormLikeQuestionnaire, position);
     }
 
-    public TextView getTextView() {
-        return mTextView;
-    }
-
-    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position) {
         if (questionnaireElement == null) {
             return;
         }
@@ -44,5 +41,7 @@ public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
         mTextView.setMovementMethod(LinkMovementMethod.getInstance());
         // there might be some images images
         mTextView.setText(Html.fromHtml(labelText, new NinchatImageGetter(mTextView, true, null), null));
+
+        setAnimation(itemView, position, position != 0);
     }
 }
