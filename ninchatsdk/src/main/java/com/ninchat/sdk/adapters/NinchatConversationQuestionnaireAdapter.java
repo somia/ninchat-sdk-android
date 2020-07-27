@@ -9,23 +9,16 @@ import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.holders.conversationview.NinchatConversationViewHolder;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.setViewAndChildrenEnabled;
 
-public class NinchatConversationQuestionnaireAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class NinchatConversationQuestionnaireAdapter extends NinchatQuestionnaireBaseAdapter {
     private String TAG = NinchatConversationQuestionnaireAdapter.class.getSimpleName();
-    private NinchatQuestionnaire questionnaire;
 
-    public NinchatConversationQuestionnaireAdapter(NinchatQuestionnaire questionnaire) {
+    public NinchatConversationQuestionnaireAdapter(NinchatQuestionnaire ninchatQuestionnaire) {
         // expect list of questionnaire with object. later from the bot view holder we will expand to elements
-        this.questionnaire = questionnaire;
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return position;
+        super(ninchatQuestionnaire, false);
     }
 
     @NonNull
@@ -45,36 +38,5 @@ public class NinchatConversationQuestionnaireAdapter extends RecyclerView.Adapte
             setViewAndChildrenEnabled(viewHolder.itemView, false);
         }
 
-    }
-
-    public void addContent(JSONObject questionnaireList) {
-        this.questionnaire.addQuestionnaire(questionnaireList);
-    }
-
-    public JSONObject getLastElement() {
-        return this.questionnaire.getLastElement();
-    }
-
-    public JSONObject getSecondLastElement() {
-        return this.questionnaire.getSecondLastElement();
-    }
-
-    public void removeLast() {
-        int position = getItemCount() - 1;
-        this.questionnaire.removeQuestionnaireList(position);
-        notifyItemRemoved(position);
-    }
-
-    @Override
-    public int getItemCount() {
-        return questionnaire == null ? 0 : questionnaire.size();
-    }
-
-    public NinchatQuestionnaire getQuestionnaire() {
-        return this.questionnaire;
-    }
-
-    public JSONArray getQuestionnaireList() {
-        return this.questionnaire.getQuestionnaireList();
     }
 }

@@ -11,7 +11,7 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 public class NinchatQuestionnaireSantizer {
-    public static JSONArray convertSimpleFormToGroup(JSONArray questionnaireList) throws JSONException {
+    public static JSONArray convertSimpleFormToGroupQuestionnaire(JSONArray questionnaireList) throws JSONException {
         JSONArray retval = new JSONArray();
         JSONObject simpleForm = new JSONObject();
         simpleForm.putOpt("name", "SimpleForm");
@@ -148,7 +148,7 @@ public class NinchatQuestionnaireSantizer {
     }
 
     @NotNull
-    public static JSONArray unifyQuestionnaire(JSONArray questionnaireList) throws JSONException {
+    public static JSONArray unifyQuestionnaireList(JSONArray questionnaireList) throws JSONException {
         JSONArray retval = new JSONArray();
         // convert all type of questionnaire to group questionnaire
         for (int i = 0; questionnaireList != null && i < questionnaireList.length(); i += 1) {

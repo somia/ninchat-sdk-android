@@ -106,7 +106,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
         }
         if (queueId != null) {
             final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
-            if (ninchatSessionManager.getNinchatQuestionnaires().hasPreAudienceQuestionnaire()) {
+            if (ninchatSessionManager.getNinchatQuestionnaireHolder().hasPreAudienceQuestionnaire()) {
                 openPreAudienceQuestionnairesActivity();
             } else {
                 openQueueActivity();
@@ -159,7 +159,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
         if (requestCode == NinchatQueueActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK || queueId != null) {
                 final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
-                if (ninchatSessionManager.getNinchatQuestionnaires().hasPostAudienceQuestionnaire()) {
+                if (ninchatSessionManager.getNinchatQuestionnaireHolder().hasPostAudienceQuestionnaire()) {
                     openPostAudienceQuestionnairesActivity();
                 } else {
                     sessionManager.close();

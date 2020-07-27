@@ -10,13 +10,12 @@ import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaires;
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
 
 public final class NinchatReviewActivity extends NinchatBaseActivity {
 
@@ -134,9 +133,9 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
 
     // check if post audience questionnaire is conversation like questionnaire
     private boolean isConversationLikeQuestionnaire() {
-        NinchatQuestionnaires questionnaires = NinchatSessionManager
+        NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaires();
+                .getNinchatQuestionnaireHolder();
         return questionnaires.conversationLikePostAudienceQuestionnaire();
     }
 

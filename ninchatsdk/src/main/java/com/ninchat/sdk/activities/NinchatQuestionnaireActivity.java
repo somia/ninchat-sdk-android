@@ -11,7 +11,7 @@ import android.view.View;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.events.OnCompleteQuestionnaire;
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaires;
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
 import com.ninchat.sdk.models.questionnaire.conversation.NinchatConversationQuestionnaire;
 import com.ninchat.sdk.models.questionnaire.form.NinchatFormQuestionnaire;
 
@@ -103,9 +103,9 @@ public class NinchatQuestionnaireActivity extends NinchatBaseActivity {
     }
 
     private boolean getFormOrConvLikeQuestionnaireType() {
-        NinchatQuestionnaires questionnaires = NinchatSessionManager
+        NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaires();
+                .getNinchatQuestionnaireHolder();
         return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
                 questionnaires.conversationLikePreAudienceQuestionnaire() : questionnaires.conversationLikePostAudienceQuestionnaire();
     }

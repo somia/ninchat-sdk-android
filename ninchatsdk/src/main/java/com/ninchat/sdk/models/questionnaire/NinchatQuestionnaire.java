@@ -4,14 +4,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireNavigationUtil.getElementByIndex;
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireNavigationUtil.getNextElementIndex;
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireSantizer.getThankYouElement;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireNavigationUtil.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireSantizer.*;
 
 public class NinchatQuestionnaire {
     private JSONArray questionnaireList;
 
-    public NinchatQuestionnaire( JSONArray questionnaireList) {
+    public NinchatQuestionnaire(JSONArray questionnaireList) {
         this.questionnaireList = questionnaireList;
     }
 
@@ -24,23 +23,23 @@ public class NinchatQuestionnaire {
         return questionnaireList == null || size() == 0;
     }
 
-    public JSONObject getItem( int position) {
+    public JSONObject getItem(int position) {
         if (isEmpty() || position >= size() || position < 0) {
             return null;
         }
         return getElementByIndex(questionnaireList, position);
     }
 
-    public JSONObject getElement( int position) {
+    public JSONObject getElement(int position) {
         if (isEmpty() || position >= size() || position < 0) {
             return null;
         }
-         JSONObject element = getElementByIndex(questionnaireList, position);
+        JSONObject element = getElementByIndex(questionnaireList, position);
         if (element != null) {
             return element;
         }
         // if this element if null then search for next not null element
-         int nextItemIndex = getNextElementIndex(questionnaireList, position);
+        int nextItemIndex = getNextElementIndex(questionnaireList, position);
         return getElementByIndex(questionnaireList, nextItemIndex);
     }
 
@@ -52,17 +51,17 @@ public class NinchatQuestionnaire {
         return questionnaireList;
     }
 
-    public void updateQuestionnaireList( JSONArray questionnaireList) {
+    public void updateQuestionnaireList(JSONArray questionnaireList) {
         this.clear();
         this.questionnaireList = questionnaireList;
     }
 
-    public void addQuestionnaire( JSONObject currentQuestionnaire) {
+    public void addQuestionnaire(JSONObject currentQuestionnaire) {
         this.questionnaireList.put(currentQuestionnaire);
     }
 
-    public void removeQuestionnaireList( int at) {
-        if (at >= this.size()) return;
+    public void removeQuestionnaireList(int at) {
+        if (at >= this.size() || at < 0) return;
         this.questionnaireList.remove(at);
     }
 
@@ -78,10 +77,10 @@ public class NinchatQuestionnaire {
         return getItem(size() - 2);
     }
 
-    public int updateQuestionWithThankYouElement( String thankYouText,  boolean isRegister) {
-         int elementIndex = this.questionnaireList.length();
+    public int updateQuestionWithThankYouElement(String thankYouText, boolean isRegister) {
+        int elementIndex = this.questionnaireList.length();
         try {
-             JSONArray thankYouItems = getThankYouElement(thankYouText, isRegister);
+            JSONArray thankYouItems = getThankYouElement(thankYouText, isRegister);
             for (int i = 0; i < thankYouItems.length(); i += 1) {
                 this.questionnaireList.put(thankYouItems.optJSONObject(i));
             }

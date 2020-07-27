@@ -6,8 +6,7 @@ import android.text.TextUtils;
 import com.ninchat.client.Props;
 import com.ninchat.client.Strings;
 import com.ninchat.sdk.NinchatSessionManager;
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaires;
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -17,7 +16,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireLogicUtil.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.*;
@@ -252,18 +250,18 @@ public class NinchatQuestionnaireItemGetter {
     }
 
     public static String getAudienceRegisteredText(int questionnaireType) {
-        NinchatQuestionnaires questionnaires = NinchatSessionManager
+        NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaires();
+                .getNinchatQuestionnaireHolder();
 
         return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
                 questionnaires.getAudienceRegisteredText() : "";
     }
 
     public static String getAudienceRegisteredClosedText(int questionnaireType) {
-        NinchatQuestionnaires questionnaires = NinchatSessionManager
+        NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaires();
+                .getNinchatQuestionnaireHolder();
 
         return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
                 questionnaires.getAudienceRegisteredClosedText() : "";
@@ -369,6 +367,4 @@ public class NinchatQuestionnaireItemGetter {
     public static boolean isConversationLikePostAudienceQuestionnaire(JSONObject item) {
         return item.optString("postAudienceQuestionnaireStyle", "").equalsIgnoreCase("conversation");
     }
-
-
 }

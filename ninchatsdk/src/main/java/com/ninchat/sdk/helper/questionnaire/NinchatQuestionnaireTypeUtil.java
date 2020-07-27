@@ -57,7 +57,7 @@ public class NinchatQuestionnaireTypeUtil {
         return "eof".equalsIgnoreCase(jsonObject.optString("element"));
     }
 
-    public static boolean isSimpleForm(final JSONArray questionnaires) {
+    public static boolean isSimpleFormLikeQuestionnaire(final JSONArray questionnaires) {
         if (questionnaires == null) {
             return false;
         }

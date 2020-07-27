@@ -7,7 +7,7 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGette
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireSantizer.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
-public class NinchatQuestionnaires {
+public class NinchatQuestionnaireHolder {
     private NinchatQuestionnaire preAudienceQuestionnaire;
     private NinchatQuestionnaire postAudienceQuestionnaire;
     private String audienceRegisteredText;
@@ -17,12 +17,12 @@ public class NinchatQuestionnaires {
     private boolean conversationLikePreAudienceQuestionnaire;
     private boolean conversationLikePostAudienceQuestionnaire;
 
-    public NinchatQuestionnaires( JSONObject configuration) {
+    public NinchatQuestionnaireHolder(JSONObject configuration) {
         preAudienceQuestionnaire = new NinchatQuestionnaire(
-                parse(configuration, true)
+                parseQuestionnaire(configuration, true)
         );
         postAudienceQuestionnaire = new NinchatQuestionnaire(
-                parse(configuration, false)
+                parseQuestionnaire(configuration, false)
         );
         conversationLikePreAudienceQuestionnaire = isConversationLikePreAudienceQuestionnaire(configuration);
         conversationLikePostAudienceQuestionnaire = isConversationLikePostAudienceQuestionnaire(configuration);
@@ -30,15 +30,15 @@ public class NinchatQuestionnaires {
         audienceRegisteredClosedText = getAudienceRegisteredClosedTextFromConfig(configuration);
     }
 
-    public JSONArray parse( JSONObject configuration,  boolean isPreAudienceQuestionnaire) {
+    public JSONArray parseQuestionnaire(JSONObject configuration, boolean isPreAudienceQuestionnaire) {
         JSONArray questionnaireList = isPreAudienceQuestionnaire ?
                 getPreAudienceQuestionnaire(configuration) : getPostAudienceQuestionnaire(configuration);
 
         try {
-            if (isSimpleForm(questionnaireList)) {
-                questionnaireList = convertSimpleFormToGroup(questionnaireList);
+            if (isSimpleFormLikeQuestionnaire(questionnaireList)) {
+                questionnaireList = convertSimpleFormToGroupQuestionnaire(questionnaireList);
             }
-            questionnaireList = unifyQuestionnaire(questionnaireList);
+            questionnaireList = unifyQuestionnaireList(questionnaireList);
         } catch (Exception err) {
             err.printStackTrace();
         }

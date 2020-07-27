@@ -63,7 +63,7 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
             return ;
         }
         final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
-        if (ninchatSessionManager.getNinchatQuestionnaires().hasPreAudienceQuestionnaire()) {
+        if (ninchatSessionManager.getNinchatQuestionnaireHolder().hasPreAudienceQuestionnaire()) {
             activity.startActivityForResult(
                     NinchatQuestionnaireActivity.getLaunchIntent(activity, queueId, PRE_AUDIENCE_QUESTIONNAIRE),
                     NinchatQuestionnaireActivity.REQUEST_CODE);
