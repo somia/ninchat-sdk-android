@@ -4,12 +4,12 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/ninchat_chat_bubble_left_repeated"
-    android:layout_marginBottom="@dimen/ninchat_item_margin_bottom"
+    android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
     android:orientation="vertical">
 
     <TextView
         android:theme="@style/NinchatTheme.Questionnaire.Label"
-        android:layout_marginBottom="@dimen/ninchat_item_margin_bottom"
+        android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
         android:id="@+id/multiline_text_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -10,16 +10,15 @@
         android:id="@+id/ninchat_image_button_previous"
         style="@style/NinchatTheme.Button.Previous"
         android:layout_width="@dimen/ninchat_chat_control_follow_button_width"
-        android:layout_height="wrap_content"
+        android:height="@dimen/ninchat_button_height"
         android:src="@drawable/ninchat_icon_back"
         android:tint="@color/ninchat_color_button_secondary_text" />
 
     <Button
-        android:visibility="gone"
         android:id="@+id/ninchat_button_previous"
         style="@style/NinchatTheme.Button.Previous"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:height="@dimen/ninchat_button_height"
         android:layout_weight="0.4"
         android:minWidth="@dimen/ninchat_chat_control_follow_button_width"
         android:singleLine="true"
@@ -33,19 +32,19 @@
         android:visibility="invisible" />
 
     <ImageView
-        android:visibility="gone"
         android:id="@+id/ninchat_image_button_next"
         style="@style/NinchatTheme.Button.Next"
         android:layout_width="@dimen/ninchat_chat_control_follow_button_width"
-        android:layout_height="wrap_content"
+        android:height="@dimen/ninchat_button_height"
         android:src="@drawable/ninchat_icon_next"
         android:tint="@color/ninchat_color_button_primary_text" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/ninchat_button_next"
         style="@style/NinchatTheme.Button.Next"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:height="@dimen/ninchat_button_height"
         android:layout_weight="0.4"
         android:minWidth="@dimen/ninchat_chat_control_follow_button_width"
         android:singleLine="true"

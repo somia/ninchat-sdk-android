@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dropdown_select_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -8,9 +8,9 @@
 
     <Spinner
         android:id="@+id/ninchat_dropdown_list"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="0.85"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_gravity="center"
         android:background="@android:color/transparent"
         android:gravity="center"
@@ -20,13 +20,11 @@
 
     <ImageView
         android:id="@+id/ninchat_dropdown_list_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
+        android:layout_width="0dp"
+        android:layout_weight="0.15"
+        android:layout_height="@dimen/ninchat_questionnaire_item_dropdown_height"
         android:layout_gravity="center"
-        android:contentDescription="arrow"
         android:src="@drawable/ninchat_dropdown_spinner_arrow"
         android:tint="@color/ninchat_color_dropdown_unselected_text" />
 
-</RelativeLayout>
+</LinearLayout>

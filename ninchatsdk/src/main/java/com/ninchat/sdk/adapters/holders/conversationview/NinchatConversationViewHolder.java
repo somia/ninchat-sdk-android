@@ -58,7 +58,7 @@ public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
 
             mFormLikeAudienceQuestionnaireAdapter = new NinchatFormQuestionnaireAdapter(
                     new NinchatQuestionnaire(getElements(questionnaireElement)), false);
-            int spaceInPixelTop = itemView.getResources().getDimensionPixelSize(R.dimen.ninchat_items_margin_top_questionnaire);
+            int spaceInPixelTop = itemView.getResources().getDimensionPixelSize(R.dimen.ninchat_questionnaire_item_margin_start);
             int spaceLeft = 0;
             int spaceRight = 0;
             mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(

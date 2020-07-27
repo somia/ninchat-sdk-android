@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_alignParentStart="true"
     android:layout_alignParentTop="true"
-    android:layout_marginTop="@dimen/ninchat_items_margin_top_questionnaire"
+    android:layout_marginTop="@dimen/ninchat_questionnaire_item_margin_start"
     android:orientation="vertical">
 
     <LinearLayout
@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="visible"
-        android:layout_marginStart="@dimen/ninchat_items_margin_left"
-        android:layout_marginEnd="@dimen/ninchat_items_margin_right">
+        android:layout_marginStart="@dimen/ninchat_questionnaire_items_margin_left"
+        android:layout_marginEnd="@dimen/ninchat_questionnaire_items_margin_right">
 
         <LinearLayout
             android:layout_width="match_parent"

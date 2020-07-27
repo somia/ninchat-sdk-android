@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -72,7 +73,7 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
 
     public void onSelected(JSONObject questionnaireElement, boolean selected, TextView mTextView) {
         boolean hasError = getError(questionnaireElement);
-        ((RelativeLayout) itemView.findViewById(R.id.dropdown_select_layout)).setBackground(
+        ((LinearLayout) itemView.findViewById(R.id.dropdown_select_layout)).setBackground(
                 ContextCompat.getDrawable(itemView.getContext(),
                         selected ? R.drawable.ninchat_dropdown_border_select : R.drawable.ninchat_dropdown_border_not_selected));
 
@@ -88,7 +89,7 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
                         R.color.ninchat_color_dropdown_unselected_text));
 
         if (hasError) {
-            ((RelativeLayout) itemView.findViewById(R.id.dropdown_select_layout)).setBackground(
+            ((LinearLayout) itemView.findViewById(R.id.dropdown_select_layout)).setBackground(
                     ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_dropdown_border_with_error));
             ((ImageView) itemView.findViewById(R.id.ninchat_dropdown_list_icon)).setColorFilter(
                     ContextCompat.getColor(itemView.getContext(), R.color.ninchat_color_error_background)
