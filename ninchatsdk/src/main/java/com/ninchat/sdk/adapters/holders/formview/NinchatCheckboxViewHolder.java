@@ -29,10 +29,10 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
                                      int position) {
         super(itemView);
         mCheckbox = itemView.findViewById(R.id.ninchat_checkbox);
-        bind(questionnaireElement, isFormLikeQuestionnaire, position);
+        bind(questionnaireElement, isFormLikeQuestionnaire, position, false);
     }
 
-    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire,int position) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position, boolean isUpdate) {
         mCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             setResult(questionnaireElement, isChecked);
             setError(questionnaireElement, false);
@@ -48,7 +48,8 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
                     ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
         }
         updateUI(questionnaireElement);
-        setAnimation(itemView, position, position != 0);
+        if (!isUpdate)
+            setAnimation(itemView, position, position != 0);
     }
 
     private void setLabel(JSONObject item) {

@@ -20,6 +20,7 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.
 
 public class NinchatFormQuestionnaireAdapter extends NinchatQuestionnaireBaseAdapter {
     private String TAG = NinchatFormQuestionnaireAdapter.class.getSimpleName();
+
     public NinchatFormQuestionnaireAdapter(NinchatQuestionnaire ninchatQuestionnaire, boolean isFormLikeQuestionnaire) {
         super(ninchatQuestionnaire, isFormLikeQuestionnaire);
     }
@@ -68,17 +69,17 @@ public class NinchatFormQuestionnaireAdapter extends NinchatQuestionnaireBaseAda
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         JSONObject currentItem = questionnaire.getItem(position);
         if (viewHolder instanceof NinchatTextViewHolder) {
-            ((NinchatTextViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position);
+            ((NinchatTextViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position, true);
         } else if (viewHolder instanceof NinchatInputFieldViewHolder) {
-            ((NinchatInputFieldViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position);
+            ((NinchatInputFieldViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position, true);
         } else if (viewHolder instanceof NinchatDropDownSelectViewHolder) {
-            ((NinchatDropDownSelectViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position);
+            ((NinchatDropDownSelectViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position, true);
         } else if (viewHolder instanceof NinchatRadioBtnViewHolder) {
-            ((NinchatRadioBtnViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position);
+            ((NinchatRadioBtnViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position, true);
         } else if (viewHolder instanceof NinchatCheckboxViewHolder) {
-            ((NinchatCheckboxViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position);
+            ((NinchatCheckboxViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position, true);
         } else if (viewHolder instanceof NinchatButtonViewHolder) {
-            ((NinchatButtonViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position);
+            ((NinchatButtonViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position, true);
         }
     }
 }

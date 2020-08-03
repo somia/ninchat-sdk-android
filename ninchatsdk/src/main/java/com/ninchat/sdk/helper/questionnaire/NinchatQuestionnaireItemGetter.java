@@ -22,27 +22,17 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 public class NinchatQuestionnaireItemGetter {
-    public static JSONArray getElements(JSONObject element) {
-        if (element == null) {
-            return null;
-        }
-        return element.optJSONArray("elements");
+    public static JSONArray getElements(JSONObject jsonObject) {
+        return jsonObject == null ? null : jsonObject.optJSONArray("elements");
     }
 
-
-    public static String getPattern(JSONObject element) {
-        if (element == null) {
-            return null;
-        }
-        return element.optString("pattern", null);
+    public static String getPattern(JSONObject jsonObject) {
+        return jsonObject == null ? null : jsonObject.optString("pattern", null);
     }
 
-    public static String getLabel(JSONObject element) {
-        if (element == null) {
-            return "";
-        }
-        boolean isRequired = isRequired(element);
-        return element.optString("label", null) + (isRequired ? " *" : "");
+    public static String getLabel(JSONObject jsonObject) {
+        boolean isRequired = isRequired(jsonObject);
+        return jsonObject == null ? null : jsonObject.optString("label", null) + (isRequired ? " *" : "");
     }
 
     public static String getName(JSONObject element) {

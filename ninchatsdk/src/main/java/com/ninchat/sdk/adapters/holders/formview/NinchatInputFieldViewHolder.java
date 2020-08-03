@@ -33,10 +33,10 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mLabel = itemView.findViewById(multilineText ? R.id.multiline_text_label : R.id.simple_text_label);
         mEditText = itemView.findViewById(multilineText ? R.id.multiline_text_area : R.id.simple_text_field);
-        bind(questionnaireElement, isFormLikeQuestionnaire, position);
+        bind(questionnaireElement, isFormLikeQuestionnaire, position, false);
     }
 
-    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position, boolean isUpdate) {
         mEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -66,7 +66,8 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
                     ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
         }
         updateUI(questionnaireElement, false);
-        setAnimation(itemView, position, position != 0);
+        if (!isUpdate)
+            setAnimation(itemView, position, position != 0);
     }
 
     private void setLabel(JSONObject item) {

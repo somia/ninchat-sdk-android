@@ -37,10 +37,10 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
         mNext = itemView.findViewById(R.id.ninchat_button_next);
         mPreviousImage = itemView.findViewById(R.id.ninchat_image_button_previous);
         mNextImage = itemView.findViewById(R.id.ninchat_image_button_next);
-        this.bind(questionnaireElement, isFormLikeQuestionnaire, position);
+        this.bind(questionnaireElement, isFormLikeQuestionnaire, position, false);
     }
 
-    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position, boolean isUpdate) {
         mPrevious.setVisibility(View.GONE);
         mNext.setVisibility(View.GONE);
         mPreviousImage.setVisibility(View.GONE);
@@ -88,7 +88,8 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
             }
         }
 
-        setAnimation(itemView, position, position != 0);
+        if (!isUpdate)
+            setAnimation(itemView, position, position != 0);
     }
 
     private void mayBeFireComplete(JSONObject questionnaireElement, int moveType) {

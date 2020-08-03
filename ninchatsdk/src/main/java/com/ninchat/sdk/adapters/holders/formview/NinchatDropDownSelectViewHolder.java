@@ -38,11 +38,11 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mLabel = itemView.findViewById(R.id.dropdown_text_label);
         mSpinner = itemView.findViewById(R.id.ninchat_dropdown_list);
-        bind(questionnaireElement, isFormLikeQuestionnaire, position);
+        bind(questionnaireElement, isFormLikeQuestionnaire, position, false);
     }
 
 
-    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position, boolean isUpdate) {
         int previouslySelected = preFill(questionnaireElement);
         ArrayAdapter<String> dataAdapter = getRTDataAdapter(questionnaireElement);
         if (isFormLikeQuestionnaire) {
@@ -71,7 +71,8 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
                 Log.d(TAG, "nothing is selected");
             }
         });
-        setAnimation(itemView, position, position != 0);
+        if (!isUpdate)
+            setAnimation(itemView, position, position != 0);
     }
 
     public void onSelected(JSONObject questionnaireElement, boolean selected, TextView mTextView) {

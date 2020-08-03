@@ -24,10 +24,10 @@ public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
                                  boolean isFormLikeQuestionnaire, int position) {
         super(itemView);
         mTextView = itemView.findViewById(R.id.text_view_content);
-        bind(questionnaireElement, isFormLikeQuestionnaire, position);
+        bind(questionnaireElement, isFormLikeQuestionnaire, position, false);
     }
 
-    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position) {
+    public void bind(JSONObject questionnaireElement, boolean isFormLikeQuestionnaire, int position, boolean isUpdate) {
         if (questionnaireElement == null) {
             return;
         }
@@ -41,7 +41,7 @@ public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
         mTextView.setMovementMethod(LinkMovementMethod.getInstance());
         // there might be some images images
         mTextView.setText(Html.fromHtml(labelText, new NinchatImageGetter(mTextView, true, null), null));
-
-        setAnimation(itemView, position, position != 0);
+        if (!isUpdate)
+            setAnimation(itemView, position, position != 0);
     }
 }
