@@ -67,7 +67,7 @@ public class NinchatConversationQuestionnaire extends NinchatQuestionnaireBase<N
         updateRequiredFieldStats(lastElement);
         String itemName = getErrorItemName(lastElement);
         clearElementResult(lastElement);
-        mRecyclerViewWeakReference.get().clearFocus();
+        // mRecyclerViewWeakReference.get().clearFocus();
         EventBus.getDefault().post(new OnComponentError(itemName));
     }
 }

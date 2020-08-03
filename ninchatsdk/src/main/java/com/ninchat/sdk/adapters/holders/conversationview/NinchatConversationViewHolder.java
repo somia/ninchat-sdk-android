@@ -67,6 +67,7 @@ public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
                     spaceRight
             ));
             mRecyclerView.setAdapter(mFormLikeAudienceQuestionnaireAdapter);
+            mRecyclerView.setHasFixedSize(true);
             EventBus.getDefault().post(new OnItemLoaded(position));
         }, 1500);
     }
@@ -78,5 +79,6 @@ public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
             return;
         }
         mFormLikeAudienceQuestionnaireAdapter.notifyDataSetChanged();
+        new Handler().post(() -> mRecyclerView.clearFocus());
     }
 }
