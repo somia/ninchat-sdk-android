@@ -83,6 +83,9 @@ public class NinchatQuestionnaireMiscUtil {
         if (buttonElement == null) {
             return false;
         }
+        if(TextUtils.isEmpty(buttonElement.optString(isBack ? "back" : "next"))){
+            return false;
+        }
         return !"false".equalsIgnoreCase(buttonElement.optString(isBack ? "back" : "next"));
     }
 
