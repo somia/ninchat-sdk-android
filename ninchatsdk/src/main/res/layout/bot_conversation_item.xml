@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="visible">
+
+    <ImageView
+        android:id="@+id/ninchat_chat_message_bot_avatar"
+        android:layout_width="@dimen/ninchat_chat_activity_avatar_size"
+        android:layout_height="@dimen/ninchat_chat_activity_avatar_size"
+        android:layout_marginEnd="@dimen/ninchat_chat_activity_avatar_margin"
+        android:src="@drawable/ninchat_chat_avatar_left"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"/>
+
+    <TextView
+        android:id="@+id/ninchat_chat_message_bot_text"
+        android:layout_toEndOf="@id/ninchat_chat_message_bot_avatar"
+        android:layout_marginEnd="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/ninchat_chat_activity_message_title_height"
+        tools:text="LightbotAgent"
+        android:gravity="center"
+        android:textColor="@color/ninchat_colorPrimary" />
+
+
+    <LinearLayout
+        android:id="@+id/ninchat_chat_message_bot_wrapper"
+        android:layout_below="@id/ninchat_chat_message_bot_text"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/ninchat_chat_message_bot_writing_root"
+            layout="@layout/bot_writing_indicator" />
+
+        <android.support.v7.widget.RecyclerView
+            android:background="@android:color/transparent"
+            android:id="@+id/questionnaire_conversation_rview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never"
+            tools:itemCount="5"/>
+    </LinearLayout>
+
+</RelativeLayout>

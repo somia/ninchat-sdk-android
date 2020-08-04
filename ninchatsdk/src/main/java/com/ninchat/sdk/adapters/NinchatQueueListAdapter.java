@@ -3,12 +3,12 @@ package com.ninchat.sdk.adapters;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.activities.NinchatQuestionnaireActivity;
 import com.ninchat.sdk.activities.NinchatQueueActivity;
 import com.ninchat.sdk.adapters.holders.NinchatQueueViewHolder;
 import com.ninchat.sdk.models.NinchatQueue;
@@ -16,6 +16,8 @@ import com.ninchat.sdk.models.NinchatQueue;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQueueViewHolder> {
 
@@ -57,16 +59,19 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
 
     private final NinchatQueueViewHolder.Callback callback = queueId -> {
         final Activity activity = activityWeakReference.get();
+        if(activity == null) {
+            return ;
+        }
         final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
-        if (ninchatSessionManager.getNinchatQuestionnaire().hasPreAudienceQuestionnaire()) {
-            Log.e("NinchatQueueListAdapter", "open pre audience questionnaires");
+        if (ninchatSessionManager.getNinchatQuestionnaireHolder().hasPreAudienceQuestionnaire()) {
+            activity.startActivityForResult(
+                    NinchatQuestionnaireActivity.getLaunchIntent(activity, queueId, PRE_AUDIENCE_QUESTIONNAIRE),
+                    NinchatQuestionnaireActivity.REQUEST_CODE);
             return;
         }
         // after click a particular queue we should check if there are pre-audience questionnaires
-        if (activity != null) {
-            activity.startActivityForResult(
-                    NinchatQueueActivity.getLaunchIntent(activity, queueId),
-                    NinchatQueueActivity.REQUEST_CODE);
-        }
+        activity.startActivityForResult(
+                NinchatQueueActivity.getLaunchIntent(activity, queueId),
+                NinchatQueueActivity.REQUEST_CODE);
     };
 }

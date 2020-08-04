@@ -102,9 +102,11 @@
         <!--<item name="android:windowNoTitle">true</item>-->
     </style>
 
-    <style name="NinchatTheme.RadioButton" parent="Theme.AppCompat.Light">
-        <item name="android:colorControlActivated">@color/ninchat_colorAccent</item>
-        <item name="android:colorControlNormal">@android:color/white</item>
+    <style name="NinchatTheme.Radio.Selected" parent="NinchatTheme.MultiChoice" >
+        <item name="android:textColor">@color/ninchat_color_radio_item_selected_text</item>
+    </style>
+    <style name="NinchatTheme.Radio.UnSelected" parent="NinchatTheme.MultiChoice" >
+        <item name="android:textColor">@color/ninchat_color_radio_item_unselected_text</item>
     </style>
 
 </resources>

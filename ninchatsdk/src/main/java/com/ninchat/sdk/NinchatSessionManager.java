@@ -27,6 +27,7 @@ import com.ninchat.client.Strings;
 import com.ninchat.sdk.activities.NinchatActivity;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
+import com.ninchat.sdk.events.OnAudienceRegistered;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatOption;
@@ -34,7 +35,7 @@ import com.ninchat.sdk.models.NinchatQueue;
 import com.ninchat.sdk.models.NinchatSessionCredentials;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
 import com.ninchat.sdk.tasks.NinchatDeleteUserTask;
 import com.ninchat.sdk.tasks.NinchatDescribeFileTask;
@@ -47,6 +48,7 @@ import com.ninchat.sdk.tasks.NinchatSendFileTask;
 import com.ninchat.sdk.tasks.NinchatSendIsWritingTask;
 import com.ninchat.sdk.tasks.NinchatSendMessageTask;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -95,7 +97,7 @@ public final class NinchatSessionManager {
         public static final String PICK_UP = WEBRTC_PREFIX + "pick-up";
         public static final String HANG_UP = WEBRTC_PREFIX + "hang-up";
         public static final String WEBRTC_SERVERS_PARSED = WEBRTC_PREFIX + "serversParsed";
-        public static final String RATING = "ninchat.com/metadata";
+        public static final String RATING_OR_POST_ANSWERS = "ninchat.com/metadata";
 
         static final List<String> WEBRTC_MESSAGE_TYPES = new ArrayList<>();
 
@@ -219,7 +221,7 @@ public final class NinchatSessionManager {
     protected WeakReference<NinchatSDKLogListener> logListenerWeakReference;
 
     protected JSONObject configuration;
-    protected NinchatQuestionnaire ninchatQuestionnaire;
+    protected NinchatQuestionnaireHolder ninchatQuestionnaireHolder;
     protected Session session;
     protected WeakReference<Activity> activityWeakReference;
     protected int requestCode;
@@ -255,7 +257,7 @@ public final class NinchatSessionManager {
         try {
             Log.v(TAG, "Got configuration: " + config);
             this.configuration = new JSONObject(config);
-            this.ninchatQuestionnaire = new NinchatQuestionnaire(this.getDefault());
+            this.ninchatQuestionnaireHolder = new NinchatQuestionnaireHolder(this.getDefault());
             Log.i(TAG, "Configuration fetched successfully!");
         } catch (final JSONException e) {
             this.configuration = null;
@@ -302,9 +304,9 @@ public final class NinchatSessionManager {
                         String oldSessionId = sessionCredentials != null ? sessionCredentials.getSessionId() : null;
 
                         sessionCredentials = new NinchatSessionCredentials(
-                            params.getString("user_id"),
-                            userAuth,
-                            params.getString("session_id")
+                                params.getString("user_id"),
+                                userAuth,
+                                params.getString("session_id")
                         );
 
                         NinchatListQueuesTask.start();
@@ -363,6 +365,9 @@ public final class NinchatSessionManager {
                         NinchatSessionManager.getInstance().fileFound(params);
                     } else if (event.equals("channel_member_updated") || event.equals("user_updated")) {
                         NinchatSessionManager.getInstance().memberUpdated(params);
+                    } else if ( event.equals("audience_registered")) {
+                        // send event that audience is register, and we can not close the session
+                        EventBus.getDefault().post(new OnAudienceRegistered());
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);
@@ -570,7 +575,7 @@ public final class NinchatSessionManager {
         }
     }
 
-    private NinchatQueue getQueue(final String queueId) {
+    public NinchatQueue getQueue(final String queueId) {
         for (NinchatQueue queue : queues) {
             if (queue.getId().equals(queueId)) {
                 return queue;
@@ -1099,7 +1104,19 @@ public final class NinchatSessionManager {
             value.put("rating", rating);
             final JSONObject data = new JSONObject();
             data.put("data", value);
-            NinchatSendMessageTask.start(MessageTypes.RATING, data.toString(), channelId);
+            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(), channelId);
+        } catch (final JSONException e) {
+            // Ignore
+        }
+    }
+
+    public void sendPostAnswers(final JSONObject postAnswers) {
+        try {
+            final JSONObject value = new JSONObject();
+            value.put("post_answers", postAnswers);
+            final JSONObject data = new JSONObject();
+            data.put("data", value);
+            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(), channelId);
         } catch (final JSONException e) {
             // Ignore
         }
@@ -1212,8 +1229,8 @@ public final class NinchatSessionManager {
     }
 
     private Spanned toSpanned(final String text) {
-        final String centeredText = center(text);
-        return centeredText == null ? null :
+        final String centeredText = center(text) == null ? "" : center(text);
+        return centeredText == null ? null  :
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(centeredText, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(centeredText);
     }
 
@@ -1236,7 +1253,7 @@ public final class NinchatSessionManager {
         }
     }
 
-    private String getTranslation(final String key) {
+    public String getTranslation(final String key) {
         if (configuration != null) {
             if (preferredEnvironments != null) {
                 for (final String configuration : preferredEnvironments) {
@@ -1473,6 +1490,10 @@ public final class NinchatSessionManager {
         return toSpanned(getTranslation("How was our customer service?"));
     }
 
+    public Spanned getThankYouText() {
+        return toSpanned(getTranslation("Thank you for the conversation!"));
+    }
+
     public String getFeedbackPositive() {
         return getTranslation("Good");
     }
@@ -1489,8 +1510,8 @@ public final class NinchatSessionManager {
         return getTranslation("Skip");
     }
 
-    public NinchatQuestionnaire getNinchatQuestionnaire() {
-        return ninchatQuestionnaire;
+    public NinchatQuestionnaireHolder getNinchatQuestionnaireHolder() {
+        return ninchatQuestionnaireHolder;
     }
 
     public void close() {

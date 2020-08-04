@@ -5,6 +5,9 @@
     <solid android:color="@android:color/white" />
     <stroke
         android:width="2dp"
-        android:color="#983637" />
-    <corners android:radius="8dp" />
+        android:color="@color/ninchat_color_error_background" />
+    <corners android:bottomLeftRadius="10dp"
+        android:bottomRightRadius="10dp"
+        android:topLeftRadius="10dp"
+        android:topRightRadius="0dp" />
 </shape>

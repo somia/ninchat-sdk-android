@@ -39,7 +39,8 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NinchatChatActivity.REQUEST_CODE) {
-            final String queueId = data.getStringExtra(NinchatSessionManager.Parameter.QUEUE_ID);
+            // check data is null or not. Can through exception
+            final String queueId = data == null ? null : data.getStringExtra(NinchatSessionManager.Parameter.QUEUE_ID);
             if (queueId == null) {
                 setResult(RESULT_OK, data);
                 finish();

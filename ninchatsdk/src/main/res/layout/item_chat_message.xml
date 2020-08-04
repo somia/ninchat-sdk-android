@@ -58,21 +58,23 @@
                 android:id="@+id/ninchat_chat_message_agent_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:minHeight="@dimen/ninchat_chat_activity_message_title_height"
+                android:orientation="horizontal"
+                android:layout_gravity="start">
 
                 <TextView
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
                     android:id="@+id/ninchat_chat_message_agent_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/ninchat_chat_activity_message_title_height"
+                    android:layout_height="wrap_content"
                     tools:text="Agent"
                     android:textColor="@color/ninchat_color_chat_name" />
-
                 <TextView
                     android:id="@+id/ninchat_chat_message_agent_timestamp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal"
-                    tools:text="Timestamp"
+                    tools:text="00:00"
                     android:textColor="@color/ninchat_color_chat_timestamp"/>
 
             </LinearLayout>
@@ -203,13 +205,14 @@
                 android:id="@+id/ninchat_chat_message_user_title"
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/ninchat_chat_activity_message_title_height"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/ninchat_chat_activity_message_title_top_margin"
                 android:layout_gravity="end">
 
                 <TextView
                     android:id="@+id/ninchat_chat_message_user_name"
-                    android:layout_width="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     tools:text="User"
                     android:textColorLink="@color/ninchat_color_chat_bubble_right_link"
@@ -220,7 +223,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal"
-                    tools:text="Timestamp"
+                    tools:text="00:00"
                     android:textColor="@color/ninchat_color_chat_timestamp"/>
 
             </LinearLayout>
@@ -252,7 +255,7 @@
                         tools:layout_height="150dp"
                         tools:src="@drawable/ninchat_logo"
                         android:adjustViewBounds="true" />
-                    
+
                     <RelativeLayout
                         android:id="@+id/ninchat_chat_message_user_video_play_image"
                         android:layout_width="@dimen/ninchat_chat_activity_message_video_play_icon_background_size"

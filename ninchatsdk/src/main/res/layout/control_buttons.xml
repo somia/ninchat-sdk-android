@@ -1,28 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content"
+    android:id="@+id/ninchat_control_button_root"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/ninchat_image_button_previous"
+        style="@style/NinchatTheme.Button.Previous"
+        android:layout_width="@dimen/ninchat_chat_control_follow_button_width"
+        android:height="@dimen/ninchat_button_height"
+        android:src="@drawable/ninchat_icon_back"
+        android:tint="@color/ninchat_color_button_secondary_text" />
 
     <Button
         android:id="@+id/ninchat_button_previous"
-        style="@style/NinchatTheme.Button.Dialog"
+        style="@style/NinchatTheme.Button.Previous"
+        android:layout_width="0dp"
+        android:height="@dimen/ninchat_button_height"
+        android:layout_weight="0.4"
+        android:minWidth="@dimen/ninchat_chat_control_follow_button_width"
+        android:singleLine="true"
+        android:text="Queue name that is far too long to fit in one line and extends to multiple lines" />
+
+    <View
+        android:id="@+id/view_padding"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.2"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/ninchat_image_button_next"
+        style="@style/NinchatTheme.Button.Next"
         android:layout_width="@dimen/ninchat_chat_control_follow_button_width"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        tools:text="Back"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/ninchat_chat_control_follow_button_outer_margin" />
+        android:height="@dimen/ninchat_button_height"
+        android:src="@drawable/ninchat_icon_next"
+        android:tint="@color/ninchat_color_button_primary_text" />
 
     <Button
+        android:visibility="gone"
         android:id="@+id/ninchat_button_next"
-        style="@style/NinchatTheme.Button.Dialog"
-        android:layout_width="@dimen/ninchat_chat_control_follow_button_width"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        tools:text="Continue"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/ninchat_chat_control_follow_button_outer_margin" />
-
-</RelativeLayout>
+        style="@style/NinchatTheme.Button.Next"
+        android:layout_width="0dp"
+        android:height="@dimen/ninchat_button_height"
+        android:layout_weight="0.4"
+        android:minWidth="@dimen/ninchat_chat_control_follow_button_width"
+        android:singleLine="true"
+        android:text="Queue name that is far too long to fit in one line and extends to multiple lines" />
+</LinearLayout>

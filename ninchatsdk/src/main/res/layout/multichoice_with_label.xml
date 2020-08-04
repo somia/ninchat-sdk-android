@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
+    android:background="@drawable/ninchat_chat_bubble_left_repeated">
+
+    <TextView
+        android:theme="@style/NinchatTheme.Questionnaire.Label"
+        android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
+        android:id="@+id/radio_option_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Element label"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:background="@color/ninchat_color_transparent"
+        android:id="@+id/ninchat_chat_radio_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:orientation="vertical"
+        tools:listitem="@layout/radio_item"
+        tools:itemCount="3"/>
+</LinearLayout>
+
