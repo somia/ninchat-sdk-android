@@ -22,7 +22,7 @@ public class NinchatFormQuestionnaireAdapter extends NinchatQuestionnaireBaseAda
     private String TAG = NinchatFormQuestionnaireAdapter.class.getSimpleName();
 
     public NinchatFormQuestionnaireAdapter(NinchatQuestionnaire ninchatQuestionnaire, boolean isFormLikeQuestionnaire) {
-        super(ninchatQuestionnaire, isFormLikeQuestionnaire);
+        super(ninchatQuestionnaire, null, isFormLikeQuestionnaire);
     }
 
     @NonNull

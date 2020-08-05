@@ -1,5 +1,6 @@
 package com.ninchat.sdk.models.questionnaire.conversation;
 
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
@@ -21,10 +22,11 @@ public class NinchatConversationQuestionnaire extends NinchatQuestionnaireBase<N
 
     public NinchatConversationQuestionnaire(String queueId,
                                             int questionnaireType,
+                                            Pair<String,String> botDetails,
                                             RecyclerView recyclerView,
                                             LinearLayoutManager linearLayout) {
         super(queueId, questionnaireType, recyclerView, linearLayout);
-        ninchatQuestionnaireAdapter = new NinchatConversationQuestionnaireAdapter(getInitialQuestionnaire());
+        ninchatQuestionnaireAdapter = new NinchatConversationQuestionnaireAdapter(getInitialQuestionnaire(), botDetails);
     }
 
     @Override

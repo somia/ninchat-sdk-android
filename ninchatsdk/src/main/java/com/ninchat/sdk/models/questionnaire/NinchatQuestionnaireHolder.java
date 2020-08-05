@@ -12,6 +12,8 @@ public class NinchatQuestionnaireHolder {
     private NinchatQuestionnaire postAudienceQuestionnaire;
     private String audienceRegisteredText;
     private String audienceRegisteredClosedText;
+    private String botQuestionnaireName;
+    private String botQuestionnaireAvatar;
 
 
     private boolean conversationLikePreAudienceQuestionnaire;
@@ -28,6 +30,8 @@ public class NinchatQuestionnaireHolder {
         conversationLikePostAudienceQuestionnaire = isConversationLikePostAudienceQuestionnaire(configuration);
         audienceRegisteredText = getAudienceRegisteredTextFromConfig(configuration);
         audienceRegisteredClosedText = getAudienceRegisteredClosedTextFromConfig(configuration);
+        botQuestionnaireName = getBotQuestionnaireNameFromConfig(configuration);
+        botQuestionnaireAvatar = getBotQuestionnaireAvatarFromConfig(configuration);
     }
 
     public JSONArray parseQuestionnaire(JSONObject configuration, boolean isPreAudienceQuestionnaire) {
@@ -75,5 +79,13 @@ public class NinchatQuestionnaireHolder {
 
     public boolean conversationLikePostAudienceQuestionnaire() {
         return this.conversationLikePostAudienceQuestionnaire;
+    }
+
+    public String getBotQuestionnaireName(){
+        return botQuestionnaireName;
+    }
+
+    public String getBotQuestionnaireAvatar(){
+        return botQuestionnaireAvatar;
     }
 }

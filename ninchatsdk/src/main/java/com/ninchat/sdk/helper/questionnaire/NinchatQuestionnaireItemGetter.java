@@ -1,6 +1,7 @@
 package com.ninchat.sdk.helper.questionnaire;
 
 
+import android.support.v4.util.Pair;
 import android.text.TextUtils;
 
 import com.ninchat.client.Props;
@@ -332,6 +333,24 @@ public class NinchatQuestionnaireItemGetter {
             }
         }
         return null;
+    }
+
+    public static String getBotName(Pair<String, String> botDetails) {
+        if (botDetails == null) return "";
+        return TextUtils.isEmpty(botDetails.first) ? "" : botDetails.first;
+    }
+
+    public static String getBotAvatar(Pair<String, String> botDetails) {
+        if (botDetails == null) return "";
+        return TextUtils.isEmpty(botDetails.second) ? "" : botDetails.second;
+    }
+
+    public static String getBotQuestionnaireNameFromConfig(JSONObject item) {
+        return item.optString("questionnaireName", "");
+    }
+
+    public static String getBotQuestionnaireAvatarFromConfig(JSONObject item) {
+        return item.optString("questionnaireAvatar", "");
     }
 
     public static String getAudienceRegisteredTextFromConfig(JSONObject item) {
