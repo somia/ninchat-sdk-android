@@ -1,5 +1,8 @@
 package com.ninchat.sdk.events;
 
 public class OnAudienceRegistered {
-    public OnAudienceRegistered(){ }
+    public boolean withError;
+    public OnAudienceRegistered(boolean withError){
+        this.withError = withError;
+    }
 }

@@ -9,7 +9,6 @@ public class OnNextQuestionnaire {
 
     public static final int back = 0;
     public static final int forward = 1;
-    public static final int register = 2;
-    public static final int complete = 3;
-    public static final int other = 4;
+    public static final int thankYou = 2;
+    public static final int other = 3;
 }

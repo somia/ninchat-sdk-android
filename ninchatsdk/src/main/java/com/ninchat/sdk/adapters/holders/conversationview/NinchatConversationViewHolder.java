@@ -22,6 +22,7 @@ import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
@@ -89,7 +90,7 @@ public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
         }, 1500);
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(OnComponentError onComponentError) {
         String name = getName(mQuestionnaireElementWeakReference.get());
         if (TextUtils.isEmpty(name) || !name.equalsIgnoreCase(onComponentError.itemName)) {

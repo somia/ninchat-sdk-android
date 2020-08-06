@@ -18,20 +18,20 @@ public class NinchatQuestionnaireSantizer {
         simpleForm.putOpt("type", "group");
         simpleForm.putOpt("buttons", new JSONObject("{\"back\":false,\"next\": true}"));
         simpleForm.putOpt("elements", questionnaireList);
-        JSONObject logic = new JSONObject("{\"name\":\"SimpleForm-Logic1\",\"logic\":{\"target\":\"_register\"}}");
+        JSONObject logic = new JSONObject("{\"name\":\"SimpleForm-Logic1\",\"logic\":{\"target\":\"_complete\"}}");
         retval.put(simpleForm);
         retval.put(logic);
         return retval;
     }
 
-    public static JSONArray getThankYouElement(String thankYouString, boolean isRegister) throws JSONException {
+    public static JSONArray getThankYouElement(String thankYouString) throws JSONException {
         JSONObject thankYouElement = new JSONObject();
         thankYouElement.putOpt("element", "text");
         thankYouElement.putOpt("name", "ThankYouText");
         thankYouElement.putOpt("label", thankYouString);
 
         JSONObject buttonElement = new JSONObject("{\"element\":\"buttons\",\"fireEvent\":true,\"back\":false,\"next\":\"Close chat\"}");
-        buttonElement.putOpt("type", isRegister ? "_register" : "_complete");
+        buttonElement.putOpt("type", "thankYouText");
 
         thankYouElement.putOpt("element", "text");
         thankYouElement.putOpt("name", "ThankYouText");
