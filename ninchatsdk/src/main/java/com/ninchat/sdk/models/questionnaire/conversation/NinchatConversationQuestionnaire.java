@@ -55,10 +55,17 @@ public class NinchatConversationQuestionnaire extends NinchatQuestionnaireBase<N
 
     @Override
     protected void handlePrevious() {
+
+        /*
         JSONObject previousElement = ninchatQuestionnaireAdapter.getSecondLastElement();
         int currentElementIndex = getQuestionnaireElementIndexByName(mQuestionnaireList.getQuestionnaireList(), getName(previousElement));
         JSONObject currentElement = getSlowCopy(getElementByIndex(mQuestionnaireList.getQuestionnaireList(), currentElementIndex));
         ninchatQuestionnaireAdapter.addContent(currentElement);
+        ninchatQuestionnaireAdapter.notifyDataSetChanged();
+        mRecyclerViewWeakReference.get().scrollToPosition(ninchatQuestionnaireAdapter.getItemCount() - 1);*/
+        // remove last element
+        ninchatQuestionnaireAdapter.removeLast();
+        JSONObject currentElement = ninchatQuestionnaireAdapter.getLastElement();
         ninchatQuestionnaireAdapter.notifyDataSetChanged();
         mRecyclerViewWeakReference.get().scrollToPosition(ninchatQuestionnaireAdapter.getItemCount() - 1);
     }
