@@ -365,9 +365,11 @@ public final class NinchatSessionManager {
                         NinchatSessionManager.getInstance().fileFound(params);
                     } else if (event.equals("channel_member_updated") || event.equals("user_updated")) {
                         NinchatSessionManager.getInstance().memberUpdated(params);
-                    } else if ( event.equals("audience_registered")) {
+                    } else if (event.equals("audience_registered")) {
                         // send event that audience is register, and we can not close the session
-                        EventBus.getDefault().post(new OnAudienceRegistered());
+                        EventBus.getDefault().post(new OnAudienceRegistered(false));
+                    } else if (event.equals("error")) {
+                        EventBus.getDefault().post(new OnAudienceRegistered(true));
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);
@@ -1230,7 +1232,7 @@ public final class NinchatSessionManager {
 
     private Spanned toSpanned(final String text) {
         final String centeredText = center(text) == null ? "" : center(text);
-        return centeredText == null ? null  :
+        return centeredText == null ? null :
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(centeredText, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(centeredText);
     }
 

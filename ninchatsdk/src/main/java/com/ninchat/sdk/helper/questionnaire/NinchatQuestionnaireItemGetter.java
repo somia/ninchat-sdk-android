@@ -1,6 +1,8 @@
 package com.ninchat.sdk.helper.questionnaire;
 
 
+import android.support.v4.util.Pair;
+import android.text.InputType;
 import android.text.TextUtils;
 
 import com.ninchat.client.Props;
@@ -332,6 +334,53 @@ public class NinchatQuestionnaireItemGetter {
             }
         }
         return null;
+    }
+
+    public static String getBotName(Pair<String, String> botDetails) {
+        if (botDetails == null) return "";
+        return TextUtils.isEmpty(botDetails.first) ? "" : botDetails.first;
+    }
+
+    public static String getBotAvatar(Pair<String, String> botDetails) {
+        if (botDetails == null) return "";
+        return TextUtils.isEmpty(botDetails.second) ? "" : botDetails.second;
+    }
+
+    public static int getInputType(JSONObject item) {
+        final String inputType = item == null ? null : item.optString("type");
+        if (TextUtils.isEmpty(inputType)) {
+            return InputType.TYPE_CLASS_TEXT;
+        }
+        if (inputType.contains("text")) {
+            return InputType.TYPE_CLASS_TEXT;
+        }
+        if (inputType.contains("date")) {
+            return InputType.TYPE_CLASS_DATETIME;
+        }
+        if (inputType.contains("tel") || inputType.contains("phone")) {
+            return InputType.TYPE_CLASS_PHONE;
+        }
+        if (inputType.contains("email")) {
+            return InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS;
+        }
+        if (inputType.contains("number")) {
+            return InputType.TYPE_CLASS_NUMBER;
+        }
+        if (inputType.contains("password")) {
+            return InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD;
+        }
+        if (inputType.contains("url") || inputType.contains("web") || inputType.contains("link")) {
+            return InputType.TYPE_TEXT_VARIATION_URI;
+        }
+        return InputType.TYPE_CLASS_TEXT;
+    }
+
+    public static String getBotQuestionnaireNameFromConfig(JSONObject item) {
+        return item.optString("questionnaireName", "");
+    }
+
+    public static String getBotQuestionnaireAvatarFromConfig(JSONObject item) {
+        return item.optString("questionnaireAvatar", "");
     }
 
     public static String getAudienceRegisteredTextFromConfig(JSONObject item) {

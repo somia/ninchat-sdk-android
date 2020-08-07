@@ -3,19 +3,14 @@ package com.ninchat.sdk.helper.questionnaire;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.os.Build;
-import android.support.annotation.IdRes;
-import android.support.annotation.StringRes;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
-import com.ninchat.sdk.R;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
@@ -32,12 +27,16 @@ public class NinchatQuestionnaireMiscUtil {
         if (element == null) {
             return false;
         }
-        return element.has("pattern") && !TextUtils.isEmpty(element.optString("pattern", null));
+        // return element.has("pattern") && !TextUtils.isEmpty(element.optString("pattern", null));
+        return element.has("pattern");
     }
 
 
     public static boolean matchPattern(String currentInput, String pattern) {
         if (TextUtils.isEmpty(pattern)) {
+            return true;
+        }
+        if((currentInput == null ? "" : currentInput).equals(pattern == null ? "" : pattern)) {
             return true;
         }
         return (currentInput == null ? "" : currentInput).matches(pattern == null ? "" : pattern);
@@ -81,6 +80,9 @@ public class NinchatQuestionnaireMiscUtil {
 
     public static boolean hasButton(JSONObject buttonElement, boolean isBack) {
         if (buttonElement == null) {
+            return false;
+        }
+        if(TextUtils.isEmpty(buttonElement.optString(isBack ? "back" : "next"))){
             return false;
         }
         return !"false".equalsIgnoreCase(buttonElement.optString(isBack ? "back" : "next"));

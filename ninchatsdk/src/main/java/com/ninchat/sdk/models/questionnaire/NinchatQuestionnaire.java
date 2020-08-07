@@ -77,10 +77,10 @@ public class NinchatQuestionnaire {
         return getItem(size() - 2);
     }
 
-    public int updateQuestionWithThankYouElement(String thankYouText, boolean isRegister) {
+    public int updateQuestionWithThankYouElement(String thankYouText) {
         int elementIndex = this.questionnaireList.length();
         try {
-            JSONArray thankYouItems = getThankYouElement(thankYouText, isRegister);
+            JSONArray thankYouItems = getThankYouElement(thankYouText);
             for (int i = 0; i < thankYouItems.length(); i += 1) {
                 this.questionnaireList.put(thankYouItems.optJSONObject(i));
             }

@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
@@ -33,6 +34,9 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
         super(itemView);
         mLabel = itemView.findViewById(multilineText ? R.id.multiline_text_label : R.id.simple_text_label);
         mEditText = itemView.findViewById(multilineText ? R.id.multiline_text_area : R.id.simple_text_field);
+        if (!multilineText) {
+            mEditText.setInputType(getInputType(questionnaireElement));
+        }
         bind(questionnaireElement, isFormLikeQuestionnaire, position, false);
     }
 

@@ -4,6 +4,7 @@ package com.ninchat.sdk.adapters.holders.conversationview;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatFormQuestionnaireAdapter;
 import com.ninchat.sdk.events.OnComponentError;
@@ -20,6 +22,7 @@ import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
@@ -30,25 +33,40 @@ public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
     private String TAG = NinchatConversationViewHolder.class.getSimpleName();
     TextView mTextView;
     ImageView mImageView;
+    ImageView mBotImageView;
     private RecyclerView mRecyclerView;
     private NinchatFormQuestionnaireAdapter mFormLikeAudienceQuestionnaireAdapter;
     private WeakReference<JSONObject> mQuestionnaireElementWeakReference;
 
     public NinchatConversationViewHolder(@NonNull View itemView,
                                          JSONObject questionnaireElement,
+                                         Pair<String, String> botDetails,
                                          int position) {
         super(itemView);
         EventBus.getDefault().register(this);
         mTextView = itemView.findViewById(R.id.ninchat_chat_message_bot_text);
         mImageView = itemView.findViewById(R.id.ninchat_chat_message_bot_writing);
+        mBotImageView = itemView.findViewById(R.id.ninchat_chat_message_bot_avatar);
         mRecyclerView = itemView.findViewById(R.id.questionnaire_conversation_rview);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
         mQuestionnaireElementWeakReference = new WeakReference(questionnaireElement);
-        bind(questionnaireElement, position);
+        bind(questionnaireElement, botDetails, position);
     }
 
-    public void bind(JSONObject questionnaireElement, int position) {
-        mTextView.setText("LightbotAgent");
+    public void bind(JSONObject questionnaireElement, Pair<String, String> botDetails, int position) {
+        mTextView.setText(getBotName(botDetails));
+        if (!TextUtils.isEmpty(getBotAvatar(botDetails))) {
+            // has bot image utl
+            try {
+                GlideApp.with(itemView.getContext())
+                        .load(getBotAvatar(botDetails))
+                        .circleCrop()
+                        .into(mBotImageView);
+            } catch (Exception e) {
+                mImageView.setImageResource(R.drawable.ninchat_chat_avatar_left);
+            }
+
+        }
         mImageView.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator);
         AnimationDrawable animationDrawable = (AnimationDrawable) mImageView.getBackground();
         animationDrawable.start();
@@ -72,7 +90,7 @@ public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
         }, 1500);
     }
 
-    @Subscribe
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(OnComponentError onComponentError) {
         String name = getName(mQuestionnaireElementWeakReference.get());
         if (TextUtils.isEmpty(name) || !name.equalsIgnoreCase(onComponentError.itemName)) {

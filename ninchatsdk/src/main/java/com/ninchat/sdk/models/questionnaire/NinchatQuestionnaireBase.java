@@ -37,9 +37,9 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
     protected WeakReference<LinearLayoutManager> mLinearLayoutWeakReference;
     protected String queueId;
     protected int questionnaireType;
-    protected String mAudienceRegisterText;
-    protected String mAudienceRegisterClosedText;
+    protected String thankYouText;
     protected NinchatQuestionnaire mQuestionnaireList;
+    protected boolean pendingAudienceRegisterRequest;
     protected T ninchatQuestionnaireAdapter;
 
     public NinchatQuestionnaireBase(String queueId,
@@ -52,8 +52,6 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
         mLinearLayoutWeakReference = new WeakReference<>(linearLayout);
         this.queueId = queueId;
         this.questionnaireType = questionnaireType;
-        this.mAudienceRegisterText = getAudienceRegisteredText(questionnaireType);
-        this.mAudienceRegisterClosedText = getAudienceRegisteredClosedText(questionnaireType);
         NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
                 .getNinchatQuestionnaireHolder();
@@ -94,44 +92,31 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
     }
 
     private void handleComplete() {
+        JSONObject answers = updateQueueAndGetAnswers();
         if (isClosedQueue(queueId)) {
             handleRegister();
             return;
         }
-        close(false);
+        setAudienceMetadata(answers);
+        EventBus.getDefault().post(new OnCompleteQuestionnaire(true, queueId));
     }
 
     private void handleRegister() {
-        close(true);
+        JSONObject answers = updateQueueAndGetAnswers();
+        setAudienceMetadata(answers);
+        pendingAudienceRegisterRequest = true;
+        // a register
+        NinchatRegisterAudienceTask.start(queueId);
+        // wait for register to complete. Should get event from session manager
+        // that register is complete with or without error onAudienceRegistered
     }
 
-
-    private void close(boolean isRegister) {
-        NinchatQuestionnaire answersList = getQuestionnaireAnswerList();
-        JSONObject answerList = getQuestionnaireAnswers(answersList.getQuestionnaireList());
-        JSONArray tagList = getQuestionnaireAnswersTags(answersList.getQuestionnaireList());
-        JSONObject answers = mergeAnswersAndTags(answerList, tagList);
-        if (questionnaireType == POST_AUDIENCE_QUESTIONNAIRE) {
-            // a post audience questionnaire
-            NinchatSessionManager.getInstance().sendPostAnswers(answers);
-            // send an event via event bus now that the questionnaire list are completed and filled
-            EventBus.getDefault().post(new OnCompleteQuestionnaire(false, queueId));
-        } else {
-            // a complete
-            if (NinchatSessionManager.getInstance().getAudienceMetadata() == null) {
-                NinchatSessionManager.getInstance().setAudienceMetadata(new Props());
-            }
-            NinchatSessionManager.getInstance().getAudienceMetadata().setObject("pre_answers", getPreAnswers(answers));
-            // a register
-            if (isRegister) {
-                NinchatRegisterAudienceTask.start(queueId);
-                // send an event via event bus now that the questionnaire list are completed and filled
-                // wait for audience register event and do everything else from there "onAudienceRegistered"
-                return;
-            }
-            // send an event via event bus now that the questionnaire list are completed and filled
-            EventBus.getDefault().post(new OnCompleteQuestionnaire(true, queueId));
-        }
+    private void handlePostAudienceQuestionnaire() {
+        JSONObject answers = updateQueueAndGetAnswers();
+        // a post audience questionnaire
+        NinchatSessionManager.getInstance().sendPostAnswers(answers);
+        NinchatSessionManager.getInstance().close();
+        EventBus.getDefault().post(new OnCompleteQuestionnaire(false, queueId));
     }
 
     public void dispose() {
@@ -159,12 +144,9 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
             handlePrevious();
             return;
         }
-        if (onNextQuestionnaire.moveType == OnNextQuestionnaire.register) {
-            handleRegister();
-            return;
-        }
-        if (onNextQuestionnaire.moveType == OnNextQuestionnaire.complete) {
-            handleComplete();
+        if (onNextQuestionnaire.moveType == OnNextQuestionnaire.thankYou) {
+            NinchatSessionManager.getInstance().close();
+            EventBus.getDefault().post(new OnCompleteQuestionnaire(false, queueId));
             return;
         }
         if (formHasError(answersList.getLastElement())) {
@@ -175,42 +157,70 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
                 answersList.getQuestionnaireList(), previousElement);
         setTagsAndQueue(matchingLogic);
         Pair<String, Integer> target = getTargetElementAndIndex(matchingLogic);
-        int thankYouElementIndex = -1;
         if (isRegister(target.first)) {
-            // if has audience register text
-            if (TextUtils.isEmpty(mAudienceRegisterText)) {
-                handleRegister();
+            if (questionnaireType == POST_AUDIENCE_QUESTIONNAIRE) {
+                handlePostAudienceQuestionnaire();
                 return;
             }
-            thankYouElementIndex = mQuestionnaireList.updateQuestionWithThankYouElement(mAudienceRegisterText, true);
-        } else if (isComplete(target.first) ||
-                (target.second == -1 && getNextElementIndex(mQuestionnaireList.getQuestionnaireList(), currentElementIndex) == -1)) {
-            // if completed or it is a last element or there is no other matching element then it can be a complete
-            String currentQueueId = getQuestionnaireAnswersQueue(answersList.getQuestionnaireList());
-            if (!TextUtils.isEmpty(currentQueueId)) {
-                this.queueId = currentQueueId;
-            }
-            if (!isClosedQueue(this.queueId) || TextUtils.isEmpty(mAudienceRegisterClosedText)) {
-                handleComplete();
-                return;
-            }
-            thankYouElementIndex = mQuestionnaireList.updateQuestionWithThankYouElement(mAudienceRegisterText, true);
+            thankYouText = getAudienceRegisteredText(questionnaireType);
+            handleRegister();
+            return;
         }
-        int currentIndex = thankYouElementIndex != -1 ? thankYouElementIndex :
-                target.second != -1 ? target.second : getNextElementIndex(mQuestionnaireList.getQuestionnaireList(), currentElementIndex);
+        if (isComplete(target.first) ||
+                (target.second == -1 && getNextElementIndex(mQuestionnaireList.getQuestionnaireList(), currentElementIndex) == -1)) {
+            if (questionnaireType == POST_AUDIENCE_QUESTIONNAIRE) {
+                handlePostAudienceQuestionnaire();
+                return;
+            }
+            thankYouText = getAudienceRegisteredClosedText(questionnaireType);
+            handleComplete();
+            return;
+        }
+        int currentIndex = target.second != -1 ? target.second : getNextElementIndex(mQuestionnaireList.getQuestionnaireList(), currentElementIndex);
         handleNext(currentIndex);
     }
 
-    @Subscribe(threadMode = ThreadMode.POSTING)
+    private JSONObject updateQueueAndGetAnswers() {
+        NinchatQuestionnaire answersList = getQuestionnaireAnswerList();
+        JSONObject answerList = getQuestionnaireAnswers(answersList.getQuestionnaireList());
+        JSONArray tagList = getQuestionnaireAnswersTags(answersList.getQuestionnaireList());
+        JSONObject answers = mergeAnswersAndTags(answerList, tagList);
+        String currentQueueId = getQuestionnaireAnswersQueue(answersList.getQuestionnaireList());
+        if (!TextUtils.isEmpty(currentQueueId)) {
+            this.queueId = currentQueueId;
+        }
+        return answers;
+    }
+
+    private void setAudienceMetadata(JSONObject answers) {
+        // no audience meta data is set
+        if (NinchatSessionManager.getInstance().getAudienceMetadata() == null) {
+            NinchatSessionManager.getInstance().setAudienceMetadata(new Props());
+        }
+        NinchatSessionManager.getInstance().getAudienceMetadata().setObject("pre_answers", getPreAnswers(answers));
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onItemLoaded(OnItemLoaded onItemLoaded) {
         mLinearLayoutWeakReference.get().scrollToPositionWithOffset(ninchatQuestionnaireAdapter.getItemCount() - 1, 0);
     }
 
-    @Subscribe(threadMode = ThreadMode.POSTING)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAudienceRegistered(OnAudienceRegistered onAudienceRegistered) {
-        // call finish after session close
-        NinchatSessionManager.getInstance().close();
-        EventBus.getDefault().post(new OnCompleteQuestionnaire(false, queueId));
+        if (!pendingAudienceRegisterRequest) {
+            return;
+        }
+        pendingAudienceRegisterRequest = false;
+        // if no audience register test is set or there is an error to register the audience
+        // then skip audience text ( thank you text )
+        if (TextUtils.isEmpty(thankYouText) || onAudienceRegistered.withError) {
+            // close the session and exit
+            NinchatSessionManager.getInstance().close();
+            EventBus.getDefault().post(new OnCompleteQuestionnaire(false, queueId));
+            return;
+        }
+        int thankYouElementIndex = mQuestionnaireList.updateQuestionWithThankYouElement(thankYouText);
+        handleNext(thankYouElementIndex);
     }
 
 }

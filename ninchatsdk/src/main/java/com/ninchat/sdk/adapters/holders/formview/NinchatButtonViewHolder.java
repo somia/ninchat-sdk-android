@@ -94,10 +94,8 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
 
     private void mayBeFireComplete(JSONObject questionnaireElement, int moveType) {
         if (questionnaireElement != null && questionnaireElement.optBoolean("fireEvent", false)) {
-            if ("_register".equalsIgnoreCase(questionnaireElement.optString("type", ""))) {
-                EventBus.getDefault().post(new OnNextQuestionnaire(OnNextQuestionnaire.register));
-            } else if ("_complete".equalsIgnoreCase(questionnaireElement.optString("type", ""))) {
-                EventBus.getDefault().post(new OnNextQuestionnaire(OnNextQuestionnaire.complete));
+            if ("thankYouText".equalsIgnoreCase(questionnaireElement.optString("type", ""))) {
+                EventBus.getDefault().post(new OnNextQuestionnaire(OnNextQuestionnaire.thankYou));
             } else {
                 EventBus.getDefault().post(new OnNextQuestionnaire(moveType));
             }

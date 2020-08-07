@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -36,6 +37,7 @@ public class NinchatQuestionnaireActivity extends NinchatBaseActivity {
     private int questionnaireType;
     private LinearLayoutManager mLayoutManager;
     private boolean isConversationLike;
+    private Pair<String, String> botDetails;
 
     @Override
     protected int getLayoutRes() {
@@ -59,11 +61,12 @@ public class NinchatQuestionnaireActivity extends NinchatBaseActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         isConversationLike = getFormOrConvLikeQuestionnaireType();
-
+        botDetails = getBotDetails();
         if (isConversationLike) {
             ninchatConversationQuestionnaire = new NinchatConversationQuestionnaire(
                     queueId,
                     questionnaireType,
+                    botDetails,
                     mRecyclerView,
                     mLayoutManager
             );
@@ -108,6 +111,13 @@ public class NinchatQuestionnaireActivity extends NinchatBaseActivity {
                 .getNinchatQuestionnaireHolder();
         return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
                 questionnaires.conversationLikePreAudienceQuestionnaire() : questionnaires.conversationLikePostAudienceQuestionnaire();
+    }
+
+    private Pair<String, String> getBotDetails() {
+        NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
+                .getInstance()
+                .getNinchatQuestionnaireHolder();
+        return Pair.create(questionnaires.getBotQuestionnaireName(), questionnaires.getBotQuestionnaireAvatar());
     }
 
     @Subscribe(threadMode = ThreadMode.POSTING)

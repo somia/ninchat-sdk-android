@@ -7,15 +7,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
+
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.getBotAvatar;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.getBotName;
 
 public final class NinchatReviewActivity extends NinchatBaseActivity {
 
@@ -54,7 +60,20 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
                 ContextCompat.getDrawable(getApplicationContext(),
                         R.drawable.ninchat_chat_background_tiled));
 
-        ((TextView) botViewItem.findViewById(R.id.ninchat_chat_message_bot_text)).setText("LightbotAgent");
+        Pair<String, String> botDetails = getBotDetails();
+        ((TextView) botViewItem.findViewById(R.id.ninchat_chat_message_bot_text)).setText(getBotName(botDetails));
+        if (!TextUtils.isEmpty(getBotAvatar(botDetails))) {
+            try {
+                // has bot image utl
+                GlideApp.with(getApplicationContext())
+                        .load(getBotAvatar(botDetails))
+                        .circleCrop()
+                        .into((ImageView) botViewItem.findViewById(R.id.ninchat_chat_message_bot_avatar));
+            } catch (Exception e) {
+                ((ImageView) botViewItem.findViewById(R.id.ninchat_chat_message_bot_avatar)).setImageResource(R.drawable.ninchat_chat_avatar_left);
+            }
+
+        }
         ImageView mImageView = botViewItem.findViewById(R.id.ninchat_chat_message_bot_writing);
         mImageView.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator);
         AnimationDrawable animationDrawable = (AnimationDrawable) mImageView.getBackground();
@@ -137,6 +156,13 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
                 .getInstance()
                 .getNinchatQuestionnaireHolder();
         return questionnaires.conversationLikePostAudienceQuestionnaire();
+    }
+
+    private Pair<String, String> getBotDetails() {
+        NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
+                .getInstance()
+                .getNinchatQuestionnaireHolder();
+        return Pair.create(questionnaires.getBotQuestionnaireName(), questionnaires.getBotQuestionnaireAvatar());
     }
 
 

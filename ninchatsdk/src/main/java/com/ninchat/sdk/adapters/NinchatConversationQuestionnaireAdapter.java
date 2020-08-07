@@ -1,6 +1,7 @@
 package com.ninchat.sdk.adapters;
 
 import android.support.annotation.NonNull;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -16,9 +17,9 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSette
 public class NinchatConversationQuestionnaireAdapter extends NinchatQuestionnaireBaseAdapter {
     private String TAG = NinchatConversationQuestionnaireAdapter.class.getSimpleName();
 
-    public NinchatConversationQuestionnaireAdapter(NinchatQuestionnaire ninchatQuestionnaire) {
+    public NinchatConversationQuestionnaireAdapter(NinchatQuestionnaire ninchatQuestionnaire, Pair<String,String> botDetails) {
         // expect list of questionnaire with object. later from the bot view holder we will expand to elements
-        super(ninchatQuestionnaire, false);
+        super(ninchatQuestionnaire, botDetails, false);
     }
 
     @NonNull
@@ -27,7 +28,7 @@ public class NinchatConversationQuestionnaireAdapter extends NinchatQuestionnair
         JSONObject currentItem = questionnaire.getItem(position);
         return new NinchatConversationViewHolder(
                 LayoutInflater.from(parent.getContext()).inflate(R.layout.bot_conversation_item, parent, false),
-                currentItem, position);
+                currentItem, botDetails, position);
     }
 
     @Override

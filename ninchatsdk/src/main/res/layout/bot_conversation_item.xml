@@ -24,8 +24,8 @@
         android:layout_height="wrap_content"
         android:minHeight="@dimen/ninchat_chat_activity_message_title_height"
         tools:text="LightbotAgent"
-        android:gravity="center"
-        android:textColor="@color/ninchat_colorPrimary" />
+        android:gravity="center|left"
+        android:textColor="@color/ninchat_color_chat_name" />
 
 
     <LinearLayout
