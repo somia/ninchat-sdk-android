@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
@@ -23,8 +24,8 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.
 public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
     private String TAG = NinchatButtonViewHolder.class.getSimpleName();
 
-    private Button mPrevious;
-    private Button mNext;
+    private TextView mPrevious;
+    private TextView mNext;
     private ImageView mPreviousImage;
     private ImageView mNextImage;
 

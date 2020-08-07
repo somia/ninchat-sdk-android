@@ -15,7 +15,7 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style name="NinchatTheme.Button.Next" parent="NinchatTheme.Button">
+    <style name="NinchatTheme.Button.Next" parent="NinchatTheme.MultiChoice">
         <item name="android:background">@drawable/ninchat_chat_primary_button</item>
         <item name="android:textColor">@color/ninchat_color_button_primary_text</item>
     </style>
@@ -25,7 +25,7 @@
         <item name="android:textColor">@color/ninchat_color_button_primary_text</item>
     </style>
 
-    <style name="NinchatTheme.Button.Previous" parent="NinchatTheme.Button">
+    <style name="NinchatTheme.Button.Previous" parent="NinchatTheme.MultiChoice">
         <item name="android:background">@drawable/ninchat_chat_secondary_button</item>
         <item name="android:textColor">@color/ninchat_color_button_secondary_text</item>
     </style>
@@ -35,7 +35,7 @@
         <item name="android:textColor">@color/ninchat_color_button_secondary_text</item>
     </style>
 
-    <style name="NinchatTheme.Button.Disabled" parent="NinchatTheme.Button">
+    <style name="NinchatTheme.Button.Disabled" parent="NinchatTheme.MultiChoice">
         <item name="android:background">@drawable/ninchat_chat_disable_button</item>
         <item name="android:textColor">@color/ninchat_color_button_disable_text</item>
     </style>
