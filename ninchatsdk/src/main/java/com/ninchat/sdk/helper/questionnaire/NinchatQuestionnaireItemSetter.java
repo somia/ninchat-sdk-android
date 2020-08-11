@@ -116,6 +116,20 @@ public class NinchatQuestionnaireItemSetter {
         return false;
     }
 
+    public static int getFirstErrorIndex(JSONObject element) {
+        JSONArray elementList = getElements(element);
+        for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
+            JSONObject currentElement = elementList.optJSONObject(i);
+            boolean requiredOk = isRequiredOK(currentElement);
+            boolean patternOk = matchPattern(currentElement);
+            // take only the first item. for focusing purpose only
+            if ((!requiredOk || !patternOk)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     public static void clearElementResult(JSONObject element) {
         if (element == null) return;
         element.remove("result");
@@ -124,16 +138,14 @@ public class NinchatQuestionnaireItemSetter {
         element.remove("tags");
         element.remove("queue");
         JSONArray elementList = getElements(element);
-        if (elementList == null || elementList.length() == 0) {
-            return;
-        }
-        JSONObject lastElement = elementList.optJSONObject(elementList.length() - 1);
-        if (lastElement != null) {
-            lastElement.remove("result");
-            lastElement.remove("position");
-            lastElement.remove("hasError");
-            lastElement.remove("tags");
-            lastElement.remove("queue");
+        for (int i = 0; elementList != null && i < elementList.length(); i += 1) {
+            JSONObject currentElement = elementList.optJSONObject(i);
+            if (currentElement == null) continue;
+            if (currentElement.optBoolean("hasError", false)) {
+                currentElement.remove("position");
+                currentElement.remove("tags");
+                currentElement.remove("queue");
+            }
         }
     }
 

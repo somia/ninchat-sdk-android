@@ -72,7 +72,9 @@ public class NinchatFormQuestionnaire extends NinchatQuestionnaireBase<NinchatFo
         JSONObject lastElement = mQuestionnaireAnswerList.getLastElement();
         updateRequiredFieldStats(lastElement);
         clearElementResult(lastElement);
-        mRecyclerViewWeakReference.get().clearFocus();
         ninchatQuestionnaireAdapter.notifyDataSetChanged();
+        int errorIndex = getFirstErrorIndex(lastElement);
+        mRecyclerViewWeakReference.get().clearFocus();
+        mRecyclerViewWeakReference.get().scrollToPosition(errorIndex);
     }
 }
