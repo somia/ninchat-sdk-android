@@ -13,16 +13,15 @@ import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireNavigationUtil.*;
 
 public class NinchatConversationQuestionnaire extends NinchatQuestionnaireBase<NinchatConversationQuestionnaireAdapter> {
-
+    private boolean markDirty = false;
     public NinchatConversationQuestionnaire(String queueId,
                                             int questionnaireType,
-                                            Pair<String,String> botDetails,
+                                            Pair<String, String> botDetails,
                                             RecyclerView recyclerView,
                                             LinearLayoutManager linearLayout) {
         super(queueId, questionnaireType, recyclerView, linearLayout);
@@ -47,6 +46,10 @@ public class NinchatConversationQuestionnaire extends NinchatQuestionnaireBase<N
             // if it is still a no match then do nothing
             return;
         }
+        if (markDirty) {
+            mRecyclerViewWeakReference.get().getRecycledViewPool().clear();
+        }
+        markDirty = false;
         JSONObject currentElement = getSlowCopy(getElementByIndex(mQuestionnaireList.getQuestionnaireList(), index));
         ninchatQuestionnaireAdapter.addContent(currentElement);
         ninchatQuestionnaireAdapter.notifyDataSetChanged();
@@ -55,10 +58,9 @@ public class NinchatConversationQuestionnaire extends NinchatQuestionnaireBase<N
 
     @Override
     protected void handlePrevious() {
-        JSONObject previousElement = ninchatQuestionnaireAdapter.getSecondLastElement();
-        int currentElementIndex = getQuestionnaireElementIndexByName(mQuestionnaireList.getQuestionnaireList(), getName(previousElement));
-        JSONObject currentElement = getSlowCopy(getElementByIndex(mQuestionnaireList.getQuestionnaireList(), currentElementIndex));
-        ninchatQuestionnaireAdapter.addContent(currentElement);
+        // remove last element
+        markDirty = true;
+        ninchatQuestionnaireAdapter.removeLast();
         ninchatQuestionnaireAdapter.notifyDataSetChanged();
         mRecyclerViewWeakReference.get().scrollToPosition(ninchatQuestionnaireAdapter.getItemCount() - 1);
     }

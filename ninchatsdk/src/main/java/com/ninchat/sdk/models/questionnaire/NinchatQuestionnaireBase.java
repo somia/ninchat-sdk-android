@@ -135,7 +135,7 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
         setQueue(matchingLogic, currentElement);
     }
 
-    @Subscribe(threadMode = ThreadMode.POSTING)
+    @Subscribe(threadMode = ThreadMode.MAIN)
     public void onNextQuestionnaire(@NotNull OnNextQuestionnaire onNextQuestionnaire) {
         NinchatQuestionnaire answersList = getQuestionnaireAnswerList();
         JSONObject previousElement = answersList.getLastElement();

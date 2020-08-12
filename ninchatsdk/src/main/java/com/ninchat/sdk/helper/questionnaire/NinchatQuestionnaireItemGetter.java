@@ -347,29 +347,27 @@ public class NinchatQuestionnaireItemGetter {
     }
 
     public static int getInputType(JSONObject item) {
-        final String inputType = item == null ? null : item.optString("type");
-        if (TextUtils.isEmpty(inputType)) {
+        final String inputMode = item == null ? null : item.optString("inputMode");
+        if (TextUtils.isEmpty(inputMode)) {
             return InputType.TYPE_CLASS_TEXT;
         }
-        if (inputType.contains("text")) {
+
+        if (inputMode.contains("text")) {
             return InputType.TYPE_CLASS_TEXT;
         }
-        if (inputType.contains("date")) {
-            return InputType.TYPE_CLASS_DATETIME;
-        }
-        if (inputType.contains("tel") || inputType.contains("phone")) {
+        if (inputMode.contains("tel")) {
             return InputType.TYPE_CLASS_PHONE;
         }
-        if (inputType.contains("email")) {
+        if (inputMode.contains("email")) {
             return InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS;
         }
-        if (inputType.contains("number")) {
+        if (inputMode.contains("numeric")) {
             return InputType.TYPE_CLASS_NUMBER;
         }
-        if (inputType.contains("password")) {
-            return InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD;
+        if (inputMode.contains("decimal")) {
+            return InputType.TYPE_NUMBER_FLAG_DECIMAL;
         }
-        if (inputType.contains("url") || inputType.contains("web") || inputType.contains("link")) {
+        if (inputMode.contains("url")) {
             return InputType.TYPE_TEXT_VARIATION_URI;
         }
         return InputType.TYPE_CLASS_TEXT;

@@ -9,5 +9,5 @@
     <corners android:bottomLeftRadius="10dp"
         android:bottomRightRadius="10dp"
         android:topLeftRadius="10dp"
-        android:topRightRadius="0dp" />
+        android:topRightRadius="10dp" />
 </shape>

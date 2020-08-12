@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.getFirstErrorIndex;
 
 public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
     private String TAG = NinchatConversationViewHolder.class.getSimpleName();
@@ -97,6 +98,8 @@ public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
             return;
         }
         mFormLikeAudienceQuestionnaireAdapter.notifyDataSetChanged();
-        new Handler().post(() -> mRecyclerView.clearFocus());
+        int errorIndex = getFirstErrorIndex(mQuestionnaireElementWeakReference.get());
+        mRecyclerView.clearFocus();
+        mRecyclerView.scrollToPosition(errorIndex);
     }
 }
