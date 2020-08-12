@@ -215,4 +215,4 @@ The test application can be found from the ninchat-sdk-android-testclient projec
 
 If you have any questions, contact:
 
-Jussi Pekonen / Qvik jussi.pekonen@qvik.fi
+Pallab Gain - pallab.gain@somia.fi
