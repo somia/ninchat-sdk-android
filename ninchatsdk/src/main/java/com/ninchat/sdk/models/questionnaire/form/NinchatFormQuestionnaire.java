@@ -56,18 +56,6 @@ public class NinchatFormQuestionnaire extends NinchatQuestionnaireBase<NinchatFo
 
     @Override
     protected void handlePrevious() {
-        /*
-        JSONObject previousElement = mQuestionnaireAnswerList.getSecondLastElement();
-        int currentElementIndex = getQuestionnaireElementIndexByName(mQuestionnaireList.getQuestionnaireList(), getName(previousElement));
-        JSONObject currentElement = getSlowCopy(getElementByIndex(mQuestionnaireList.getQuestionnaireList(), currentElementIndex));
-        mQuestionnaireAnswerList.addQuestionnaire(currentElement);
-        ninchatQuestionnaireAdapter.updateContent(getElements(currentElement));
-        ninchatQuestionnaireAdapter.notifyDataSetChanged();
-        mRecyclerViewWeakReference.get().setAdapter(ninchatQuestionnaireAdapter);
-        // scroll to top
-        new Handler().post(() -> mRecyclerViewWeakReference.get().scrollToPosition(0));
-        */
-
         mQuestionnaireAnswerList.removeLastElement();
         JSONObject currentElement = mQuestionnaireAnswerList.getLastElement();
         ninchatQuestionnaireAdapter.updateContent(getElements(currentElement));
