@@ -59,6 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minHeight="@dimen/ninchat_chat_activity_message_title_height"
+                android:layout_marginBottom="5dp"
                 android:orientation="horizontal"
                 android:layout_gravity="start">
 
@@ -207,6 +208,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/ninchat_chat_activity_message_title_top_margin"
+                android:layout_marginBottom="5dp"
                 android:layout_gravity="end">
 
                 <TextView
