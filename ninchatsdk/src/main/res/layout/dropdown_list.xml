@@ -9,7 +9,7 @@
     <Spinner
         android:id="@+id/ninchat_dropdown_list"
         android:layout_width="0dp"
-        android:layout_weight="0.85"
+        android:layout_weight="0.90"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@android:color/transparent"
@@ -21,7 +21,7 @@
     <ImageView
         android:id="@+id/ninchat_dropdown_list_icon"
         android:layout_width="0dp"
-        android:layout_weight="0.15"
+        android:layout_weight="0.10"
         android:layout_height="@dimen/ninchat_questionnaire_item_dropdown_height"
         android:layout_gravity="center"
         android:src="@drawable/ninchat_dropdown_spinner_arrow"

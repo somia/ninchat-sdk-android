@@ -69,7 +69,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     }
 
     private void messagesUpdated(final int index, final MessageType messageType) {
-        new Handler(Looper.getMainLooper()).post(() -> {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             if (index < 0) {
                 notifyDataSetChanged();
             } else if (messageType == MessageType.UPDATE) {
@@ -81,11 +81,12 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 } else {
                     notifyItemInserted(index);
                 }
+                notifyItemInserted(index);
             } else if (messageType == MessageType.DELETE) {
                 notifyItemRemoved(index);
             }
             scrollToBottom(true);
-        });
+        }, 300);
     }
 
     public void scrollToBottom(boolean requireSmooth) {
