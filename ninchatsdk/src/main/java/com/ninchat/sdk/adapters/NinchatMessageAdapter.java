@@ -86,7 +86,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 notifyItemRemoved(index);
             }
             scrollToBottom(true);
-        }, 300);
+        }, 200);
     }
 
     public void scrollToBottom(boolean requireSmooth) {
