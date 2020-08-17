@@ -28,6 +28,7 @@ import com.ninchat.sdk.activities.NinchatActivity;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 import com.ninchat.sdk.events.OnAudienceRegistered;
+import com.ninchat.sdk.events.OnPostAudienceQuestionnaire;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatOption;
@@ -126,6 +127,7 @@ public final class NinchatSessionManager {
 
     private String appDetails = null;
     private String serverAddress = null;
+    private long actionId = -1;
 
     public void setAppDetails(final String appDetails) {
         this.appDetails = appDetails;
@@ -776,18 +778,19 @@ public final class NinchatSessionManager {
             return;
         }
 
-        long actionId = 0;
+        long currentActionId = 0;
         String messageType;
         String sender;
         String messageId;
         long timestampMs;
 
         try {
-            actionId = params.getInt("action_id");
+            currentActionId = params.getInt("action_id");
             messageType = params.getString("message_type");
             sender = params.getString("message_user_id");
             messageId = params.getString("message_id");
             double timestampParam = params.getFloat("message_time");
+            timestampMs = (Double.valueOf(timestampParam).longValue()) * 1000;
             timestampMs = (Double.valueOf(timestampParam).longValue()) * 1000;
         } catch (final Exception e) {
             Log.e(TAG, e.getMessage());
@@ -840,6 +843,11 @@ public final class NinchatSessionManager {
                 // Ignore message
             }
         }
+
+        if (actionId == currentActionId) {
+            EventBus.getDefault().post(new OnPostAudienceQuestionnaire());
+        }
+
         if (!messageType.equals(MessageTypes.TEXT) && !messageType.equals(MessageTypes.FILE)) {
             return;
         }
@@ -1118,7 +1126,7 @@ public final class NinchatSessionManager {
             value.put("post_answers", postAnswers);
             final JSONObject data = new JSONObject();
             data.put("data", value);
-            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(), channelId);
+            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(), channelId, requestCallback);
         } catch (final JSONException e) {
             // Ignore
         }
@@ -1514,6 +1522,12 @@ public final class NinchatSessionManager {
 
     public NinchatQuestionnaireHolder getNinchatQuestionnaireHolder() {
         return ninchatQuestionnaireHolder;
+    }
+
+    private RequestCallback requestCallback = currentActionId -> actionId = currentActionId;
+
+    public interface RequestCallback {
+        void onActionId(long actionId);
     }
 
     public void close() {

@@ -1,6 +1,7 @@
 package com.ninchat.sdk.models.questionnaire;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +15,7 @@ import com.ninchat.sdk.events.OnAudienceRegistered;
 import com.ninchat.sdk.events.OnCompleteQuestionnaire;
 import com.ninchat.sdk.events.OnItemLoaded;
 import com.ninchat.sdk.events.OnNextQuestionnaire;
+import com.ninchat.sdk.events.OnPostAudienceQuestionnaire;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
 import com.ninchat.sdk.tasks.NinchatRegisterAudienceTask;
 
@@ -39,7 +41,7 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
     protected int questionnaireType;
     protected String thankYouText;
     protected NinchatQuestionnaire mQuestionnaireList;
-    protected boolean pendingAudienceRegisterRequest;
+    protected boolean pendingRequest;
     protected T ninchatQuestionnaireAdapter;
 
     public NinchatQuestionnaireBase(String queueId,
@@ -104,7 +106,7 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
     private void handleRegister() {
         JSONObject answers = updateQueueAndGetAnswers();
         setAudienceMetadata(answers);
-        pendingAudienceRegisterRequest = true;
+        pendingRequest = true;
         // a register
         NinchatRegisterAudienceTask.start(queueId);
         // wait for register to complete. Should get event from session manager
@@ -115,8 +117,6 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
         JSONObject answers = updateQueueAndGetAnswers();
         // a post audience questionnaire
         NinchatSessionManager.getInstance().sendPostAnswers(answers);
-        NinchatSessionManager.getInstance().close();
-        EventBus.getDefault().post(new OnCompleteQuestionnaire(false, queueId));
     }
 
     public void dispose() {
@@ -207,10 +207,10 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAudienceRegistered(OnAudienceRegistered onAudienceRegistered) {
-        if (!pendingAudienceRegisterRequest) {
+        if (!pendingRequest) {
             return;
         }
-        pendingAudienceRegisterRequest = false;
+        pendingRequest = false;
         // if no audience register test is set or there is an error to register the audience
         // then skip audience text ( thank you text )
         if (TextUtils.isEmpty(thankYouText) || onAudienceRegistered.withError) {
@@ -221,6 +221,19 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
         }
         int thankYouElementIndex = mQuestionnaireList.updateQuestionWithThankYouElement(thankYouText);
         handleNext(thankYouElementIndex);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onPostAudienceQuestion(OnPostAudienceQuestionnaire onPostAudienceQuestionnaire) {
+        if (NinchatSessionManager.getInstance() != null) {
+            NinchatSessionManager.getInstance().partChannel();
+        }
+        new Handler().postDelayed(() -> {
+            if (NinchatSessionManager.getInstance() != null) {
+                NinchatSessionManager.getInstance().close();
+            }
+            EventBus.getDefault().post(new OnCompleteQuestionnaire(false, queueId));
+        }, 500);
     }
 
 }

@@ -179,7 +179,6 @@ public final class NinchatActivity extends NinchatBaseActivity {
                     this.queueId = newQueueId;
                     openQueueActivity();
                 } else {
-                    // else finish
                     finish();
                 }
             } else if (resultCode == RESULT_CANCELED) {
