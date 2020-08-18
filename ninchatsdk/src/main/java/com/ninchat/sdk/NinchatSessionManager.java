@@ -1114,7 +1114,7 @@ public final class NinchatSessionManager {
             value.put("rating", rating);
             final JSONObject data = new JSONObject();
             data.put("data", value);
-            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(), channelId);
+            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(2), channelId);
         } catch (final JSONException e) {
             // Ignore
         }
@@ -1126,7 +1126,8 @@ public final class NinchatSessionManager {
             value.put("post_answers", postAnswers);
             final JSONObject data = new JSONObject();
             data.put("data", value);
-            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(), channelId, requestCallback);
+            data.put("time", System.currentTimeMillis());
+            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(2), channelId, requestCallback);
         } catch (final JSONException e) {
             // Ignore
         }

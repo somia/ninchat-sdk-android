@@ -46,8 +46,15 @@ public final class NinchatSendMessageTask extends NinchatBaseTask {
         if (messageType.startsWith(NinchatSessionManager.MessageTypes.WEBRTC_PREFIX)) {
             params.setInt("message_ttl", 10);
         } else if (messageType.equals(NinchatSessionManager.MessageTypes.RATING_OR_POST_ANSWERS)) {
-            params.setStringArray("message_recipient_ids", new Strings());
-            params.setBool("message_fold", true);
+            if (requestCallback != null) {
+                // todo (pallab) workaround - request callback now only for post questionnaire
+                params.setBool("message_fold", true);
+
+            } else {
+                params.setStringArray("message_recipient_ids", new Strings());
+                params.setBool("message_fold", false);
+            }
+
         }
         Payload payload = null;
         if (message != null) {

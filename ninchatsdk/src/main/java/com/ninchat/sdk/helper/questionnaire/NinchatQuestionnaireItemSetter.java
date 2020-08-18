@@ -171,11 +171,16 @@ public class NinchatQuestionnaireItemSetter {
     }
 
     public static JSONObject mergeAnswersAndTags(JSONObject answerList, JSONArray tagList) {
-        if (answerList == null || answerList.length() == 0) {
+        // if both answer list and tag list os empty
+        if ((answerList == null || answerList.length() == 0) && (tagList == null || tagList.length() == 0)) {
             return null;
         }
+        if (answerList == null || answerList.length() == 0) {
+            answerList = new JSONObject();
+        }
         try {
-            answerList.putOpt("tags", tagList);
+            if (tagList != null && tagList.length() > 0)
+                answerList.putOpt("tags", tagList);
         } catch (Exception e) {
             e.printStackTrace();
         }
