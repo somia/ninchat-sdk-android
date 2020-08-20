@@ -38,7 +38,7 @@ class NinchatQueueListAdapterTest {
         val ninchatActivity = NinchatQueueListAdapter(activity, mutableListOf(queue, queue, queue, queue, queue))
         val mockedNinchatActivity = spy(ninchatActivity)
         doNothing().`when`(mockedNinchatActivity).notifyDataSetChanged()
-        mockedNinchatActivity.clearData()
+//        mockedNinchatActivity.clearData()
         Assert.assertEquals(0, mockedNinchatActivity.itemCount)
     }
 
@@ -51,7 +51,7 @@ class NinchatQueueListAdapterTest {
         doNothing().`when`(mockedNinchatActivity).notifyItemRangeInserted(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt())
 
         val previousSize = ninchatActivity.itemCount
-        mockedNinchatActivity.addData(queue)
+//        mockedNinchatActivity.addData(queue)
         Assert.assertEquals(previousSize + 1, mockedNinchatActivity.itemCount)
     }
 }

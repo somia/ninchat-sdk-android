@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.matchPattern;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.sanitizeString;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.setAnimation;
 
 public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
@@ -54,7 +55,7 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
 
             @Override
             public void afterTextChanged(Editable s) {
-                setResult(questionnaireElement, s.toString());
+                setResult(questionnaireElement, sanitizeString(s.toString()));
                 setError(questionnaireElement, matchPattern(questionnaireElement) == false);
                 updateUI(questionnaireElement, true);
             }

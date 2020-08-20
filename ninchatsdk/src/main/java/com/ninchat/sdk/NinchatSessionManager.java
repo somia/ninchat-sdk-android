@@ -28,6 +28,7 @@ import com.ninchat.sdk.activities.NinchatActivity;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 import com.ninchat.sdk.events.OnAudienceRegistered;
+import com.ninchat.sdk.events.OnPostAudienceQuestionnaire;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatOption;
@@ -126,6 +127,7 @@ public final class NinchatSessionManager {
 
     private String appDetails = null;
     private String serverAddress = null;
+    private long actionId = -1;
 
     public void setAppDetails(final String appDetails) {
         this.appDetails = appDetails;
@@ -510,7 +512,7 @@ public final class NinchatSessionManager {
         }
         queues.clear();
         if (ninchatQueueListAdapter != null) {
-            ninchatQueueListAdapter.clearData();
+            ninchatQueueListAdapter.clear();
         }
         final List<String> openQueues = getAudienceQueues();
         for (String queueId : parser.properties.keySet()) {
@@ -560,7 +562,7 @@ public final class NinchatSessionManager {
             ninchatQueue.setClosed(closed);
             queues.add(ninchatQueue);
             if (ninchatQueueListAdapter != null) {
-                ninchatQueueListAdapter.addData(ninchatQueue);
+                ninchatQueueListAdapter.addQueue(ninchatQueue);
             }
         }
         final Context context = contextWeakReference.get();
@@ -776,14 +778,14 @@ public final class NinchatSessionManager {
             return;
         }
 
-        long actionId = 0;
+        long currentActionId = 0;
         String messageType;
         String sender;
         String messageId;
         long timestampMs;
 
         try {
-            actionId = params.getInt("action_id");
+            currentActionId = params.getInt("action_id");
             messageType = params.getString("message_type");
             sender = params.getString("message_user_id");
             messageId = params.getString("message_id");
@@ -827,19 +829,24 @@ public final class NinchatSessionManager {
                         for (int k = 0; k < options.length(); ++k) {
                             messageOptions.add(new NinchatOption(options.getJSONObject(k)));
                         }
-                        messageAdapter.addMessage(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, message.getString("label"), message, messageOptions, timestampMs));
+                        messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, message.getString("label"), message, messageOptions, timestampMs));
                     } else {
                         simpleButtonChoice = true;
                         messageOptions.add(new NinchatOption(message));
                     }
                 }
                 if (simpleButtonChoice) {
-                    messageAdapter.addMessage(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, null, null, messageOptions, timestampMs));
+                    messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender,null,  null, messageOptions, timestampMs));
                 }
             } catch (final JSONException e) {
                 // Ignore message
             }
         }
+
+        if (actionId == currentActionId) {
+            EventBus.getDefault().post(new OnPostAudienceQuestionnaire());
+        }
+
         if (!messageType.equals(MessageTypes.TEXT) && !messageType.equals(MessageTypes.FILE)) {
             return;
         }
@@ -863,7 +870,7 @@ public final class NinchatSessionManager {
                         NinchatDescribeFileTask.start(fileId);
                     }
                 } else {
-                    messageAdapter.addMessage(messageId, new NinchatMessage(message.getString("text"), null, sender, timestampMs, !sender.equals(userId)));
+                    messageAdapter.add(messageId, new NinchatMessage(message.getString("text"), null, sender, timestampMs, !sender.equals(userId)));
                 }
             } catch (final JSONException e) {
                 // Ignore
@@ -924,7 +931,7 @@ public final class NinchatSessionManager {
         file.setHeight(height);
         file.setDownloadableFile(width == -1 || height == -1);
 
-        messageAdapter.addMessage(file.getMessageId(), new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
+        messageAdapter.add(file.getMessageId(), new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
     }
 
     private void memberUpdated(final Props params) {
@@ -1106,7 +1113,7 @@ public final class NinchatSessionManager {
             value.put("rating", rating);
             final JSONObject data = new JSONObject();
             data.put("data", value);
-            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(), channelId);
+            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(2), channelId);
         } catch (final JSONException e) {
             // Ignore
         }
@@ -1118,7 +1125,8 @@ public final class NinchatSessionManager {
             value.put("post_answers", postAnswers);
             final JSONObject data = new JSONObject();
             data.put("data", value);
-            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(), channelId);
+            data.put("time", System.currentTimeMillis());
+            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(2), channelId, requestCallback);
         } catch (final JSONException e) {
             // Ignore
         }
@@ -1514,6 +1522,12 @@ public final class NinchatSessionManager {
 
     public NinchatQuestionnaireHolder getNinchatQuestionnaireHolder() {
         return ninchatQuestionnaireHolder;
+    }
+
+    private RequestCallback requestCallback = currentActionId -> actionId = currentActionId;
+
+    public interface RequestCallback {
+        void onActionId(long actionId);
     }
 
     public void close() {
