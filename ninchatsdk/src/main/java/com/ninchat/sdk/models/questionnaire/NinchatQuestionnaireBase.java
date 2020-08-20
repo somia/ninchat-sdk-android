@@ -6,6 +6,7 @@ import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.View;
 
 import com.ninchat.client.Props;
 import com.ninchat.sdk.NinchatSessionManager;
@@ -30,6 +31,7 @@ import java.lang.ref.WeakReference;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.setViewAndChildrenEnabled;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireNavigationUtil.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
@@ -74,6 +76,7 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
                 spaceLeft,
                 spaceRight
         ));
+        if(ninchatQuestionnaireAdapter == null)return ;
         mRecyclerViewWeakReference.get().setAdapter(ninchatQuestionnaireAdapter);
     }
 
@@ -207,6 +210,10 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onItemLoaded(OnItemLoaded onItemLoaded) {
+        for (int i = ninchatQuestionnaireAdapter.getItemCount() - 2; i >= 0; i -= 1) {
+            View view = mLinearLayoutWeakReference.get().getChildAt(i);
+            setViewAndChildrenEnabled(view, false);
+        }
         mLinearLayoutWeakReference.get().scrollToPositionWithOffset(ninchatQuestionnaireAdapter.getItemCount() - 1, 0);
     }
 

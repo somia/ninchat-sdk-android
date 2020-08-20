@@ -17,7 +17,7 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSette
 public class NinchatConversationQuestionnaireAdapter extends NinchatQuestionnaireBaseAdapter {
     private String TAG = NinchatConversationQuestionnaireAdapter.class.getSimpleName();
 
-    public NinchatConversationQuestionnaireAdapter(NinchatQuestionnaire ninchatQuestionnaire, Pair<String,String> botDetails) {
+    public NinchatConversationQuestionnaireAdapter(NinchatQuestionnaire ninchatQuestionnaire, Pair<String, String> botDetails) {
         // expect list of questionnaire with object. later from the bot view holder we will expand to elements
         super(ninchatQuestionnaire, botDetails, false);
     }
@@ -33,11 +33,10 @@ public class NinchatConversationQuestionnaireAdapter extends NinchatQuestionnair
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        if (position + 1 == getItemCount()) {
+        if (position + 1 >= getItemCount()) {
             setViewAndChildrenEnabled(viewHolder.itemView, true);
         } else {
             setViewAndChildrenEnabled(viewHolder.itemView, false);
         }
-
     }
 }

@@ -36,7 +36,7 @@ public class NinchatQuestionnaireMiscUtil {
         if (TextUtils.isEmpty(pattern)) {
             return true;
         }
-        if((currentInput == null ? "" : currentInput).equals(pattern == null ? "" : pattern)) {
+        if ((currentInput == null ? "" : currentInput).equals(pattern == null ? "" : pattern)) {
             return true;
         }
         return (currentInput == null ? "" : currentInput).matches(pattern == null ? "" : pattern);
@@ -82,7 +82,7 @@ public class NinchatQuestionnaireMiscUtil {
         if (buttonElement == null) {
             return false;
         }
-        if(TextUtils.isEmpty(buttonElement.optString(isBack ? "back" : "next"))){
+        if (TextUtils.isEmpty(buttonElement.optString(isBack ? "back" : "next"))) {
             return false;
         }
         return !"false".equalsIgnoreCase(buttonElement.optString(isBack ? "back" : "next"));
@@ -131,5 +131,12 @@ public class NinchatQuestionnaireMiscUtil {
         animator.setDuration(DURATION);
         animatorSet.play(animator);
         animator.start();
+    }
+
+    public static String sanitizeString(final String text) {
+        if (TextUtils.isEmpty(text)) {
+            return text;
+        }
+        return text.replaceAll("^[\\n\\r]", "").replaceAll("[\n\r]$", "").trim();
     }
 }

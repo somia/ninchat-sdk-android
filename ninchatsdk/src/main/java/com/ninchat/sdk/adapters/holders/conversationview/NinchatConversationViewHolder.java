@@ -71,7 +71,7 @@ public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
         mImageView.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator);
         AnimationDrawable animationDrawable = (AnimationDrawable) mImageView.getBackground();
         animationDrawable.start();
-        new Handler().postDelayed(() -> {
+        mRecyclerView.postDelayed(() -> {
             animationDrawable.stop();
             itemView.findViewById(R.id.ninchat_chat_message_bot_writing_root).setVisibility(View.GONE);
 

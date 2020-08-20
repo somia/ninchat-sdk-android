@@ -5,8 +5,8 @@ import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.ninchat.sdk.R;
 
@@ -151,6 +151,7 @@ public class NinchatQuestionnaireItemSetter {
 
 
     public static void setViewAndChildrenEnabled(View view, boolean enabled) {
+        if (view == null) return;
         view.setEnabled(enabled);
         if (view instanceof LinearLayout) {
             if (view.getId() == -1) {
@@ -158,9 +159,12 @@ public class NinchatQuestionnaireItemSetter {
                         enabled ? R.drawable.ninchat_chat_bubble_left_repeated : R.drawable.ninchat_chat_bubble_left_repeated_disabled));
             }
         }
-        /*if (view instanceof Button) {
-            view.setBackground(ContextCompat.getDrawable(view.getContext(), R.drawable.ninchat_chat_disable_button));
-        }*/
+        if (view instanceof TextView) {
+            if (view.getId() != R.id.ninchat_chat_message_bot_text) {
+                ((TextView) view).setTextColor(ContextCompat.getColor(view.getContext(),
+                        enabled ? R.color.ninchat_color_text_normal : R.color.ninchat_colorQuestionnaireDisabled));
+            }
+        }
         if (view instanceof ViewGroup) {
             ViewGroup viewGroup = (ViewGroup) view;
             for (int i = 0; i < viewGroup.getChildCount(); i++) {

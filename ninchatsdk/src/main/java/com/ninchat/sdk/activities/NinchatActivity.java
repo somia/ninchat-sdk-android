@@ -159,7 +159,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
         if (requestCode == NinchatQueueActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK || queueId != null) {
                 final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
-                if (ninchatSessionManager.getNinchatQuestionnaireHolder().hasPostAudienceQuestionnaire()) {
+                if (resultCode == RESULT_OK && ninchatSessionManager.getNinchatQuestionnaireHolder().hasPostAudienceQuestionnaire()) {
                     openPostAudienceQuestionnairesActivity();
                 } else {
                     sessionManager.close();
