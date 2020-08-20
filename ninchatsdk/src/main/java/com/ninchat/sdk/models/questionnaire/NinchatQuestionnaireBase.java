@@ -41,8 +41,12 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
     protected int questionnaireType;
     protected String thankYouText;
     protected NinchatQuestionnaire mQuestionnaireList;
-    protected boolean pendingRequest;
+    protected int pendingRequest;
     protected T ninchatQuestionnaireAdapter;
+
+    private final int AUDIENCE_REGISTER = 1;
+    private final int POST_ANSWERS = 2;
+    private final int NONE = 3;
 
     public NinchatQuestionnaireBase(String queueId,
                                     int questionnaireType,
@@ -106,7 +110,7 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
     private void handleRegister() {
         JSONObject answers = updateQueueAndGetAnswers();
         setAudienceMetadata(answers);
-        pendingRequest = true;
+        pendingRequest = AUDIENCE_REGISTER;
         // a register
         NinchatRegisterAudienceTask.start(queueId);
         // wait for register to complete. Should get event from session manager
@@ -115,6 +119,7 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
 
     private void handlePostAudienceQuestionnaire() {
         JSONObject answers = updateQueueAndGetAnswers();
+        pendingRequest = POST_ANSWERS;
         // a post audience questionnaire
         NinchatSessionManager.getInstance().sendPostAnswers(answers);
     }
@@ -207,24 +212,26 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAudienceRegistered(OnAudienceRegistered onAudienceRegistered) {
-        if (!pendingRequest) {
-            return;
+        if (pendingRequest == AUDIENCE_REGISTER) {
+            pendingRequest = NONE;
+            // if no audience register test is set or there is an error to register the audience
+            // then skip audience text ( thank you text )
+            if (TextUtils.isEmpty(thankYouText) || onAudienceRegistered.withError) {
+                // close the session and exit
+                NinchatSessionManager.getInstance().close();
+                EventBus.getDefault().post(new OnCompleteQuestionnaire(false, queueId));
+                return;
+            }
+            int thankYouElementIndex = mQuestionnaireList.updateQuestionWithThankYouElement(thankYouText);
+            handleNext(thankYouElementIndex);
+        } else if (pendingRequest == POST_ANSWERS) {
+            onPostAudienceQuestion(null);
         }
-        pendingRequest = false;
-        // if no audience register test is set or there is an error to register the audience
-        // then skip audience text ( thank you text )
-        if (TextUtils.isEmpty(thankYouText) || onAudienceRegistered.withError) {
-            // close the session and exit
-            NinchatSessionManager.getInstance().close();
-            EventBus.getDefault().post(new OnCompleteQuestionnaire(false, queueId));
-            return;
-        }
-        int thankYouElementIndex = mQuestionnaireList.updateQuestionWithThankYouElement(thankYouText);
-        handleNext(thankYouElementIndex);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onPostAudienceQuestion(OnPostAudienceQuestionnaire onPostAudienceQuestionnaire) {
+        pendingRequest = NONE;
         if (NinchatSessionManager.getInstance() != null) {
             NinchatSessionManager.getInstance().partChannel();
         }
