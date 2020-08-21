@@ -160,7 +160,10 @@ public class NinchatQuestionnaireItemSetter {
             }
         }
         if (view instanceof TextView) {
-            if (view.getId() != R.id.ninchat_chat_message_bot_text) {
+            if (view.getId() != R.id.ninchat_chat_message_bot_text &&
+                    view.getId() != R.id.ninchat_button_previous &&
+                    view.getId() != R.id.ninchat_button_next &&
+                    view.getId() != R.id.single_radio_item) {
                 ((TextView) view).setTextColor(ContextCompat.getColor(view.getContext(),
                         enabled ? R.color.ninchat_color_text_normal : R.color.ninchat_colorQuestionnaireDisabled));
             }
