@@ -98,9 +98,10 @@ session = new NinchatSession(applicationContext, configurationKey, sessionCreden
 
 The argument `eventListener`, when non-null, must be an instance of the `NinchatSDKEventListener` class, the `logListener` an instance of the `NinchatSDKLogListener`interface, and `ninchatConfiguration` is an instance of `NinchatConfiguration ` class.
 
-As of version 0.5.0 `sessionCredentials` can be added to open up a previous session. Passing `null` will open a new session. Passing invalid/outdated `sessionCredentials` will cause `onSessionInitFailed` to be invoked.
+*As of version 0.5.0 `sessionCredentials` can be added to open up a previous session. Passing `null` will open a new session. Passing invalid/outdated `sessionCredentials` will cause `onSessionInitFailed` to be invoked.*
 
-As of version 0.6.0 aforementioned `NinchatSession` constructors are deprecated and a builder pattern has been introduced. `NinchatSession` object needs to be initialized the following way:
+*As of version 0.6.0 aforementioned `NinchatSession` constructors are deprecated and a builder pattern has been introduced. `NinchatSession` object needs to be initialized the following way:*
+
 ```
 NinchatSession.Builder builder = new NinchatSession.Builder(applicationContext, configurationKey);
 builder.setSessionCredentials(sessionCredentials); // optional
@@ -112,6 +113,70 @@ NinchatSession session = builder.create();
 ```
 
 See [Ninchat API Reference](https://github.com/ninchat/ninchat-api/blob/v2/api.md) for information about the API's outbound Actions and inbound Events.
+
+### Open ninchat using existing session
+
+Ninchat support session resuming. In order to support session resuming feature in your application, you need to create and pass ( *optional* )  `NinchatSessionCredentials` object instance in the builder script
+
+```java
+SharedPreferences pref = 
+  			getApplicationContext().getSharedPreferences("pref", MODE_PRIVATE);
+
+NinchatSessionCredentials sessionCredentials = 
+				new NinchatSessionCredentials(
+									  pref.getString("user_id", null),
+                    pref.getString("user_auth", null), 
+  									pref.getString("session_id", null));
+
+NinchatSession.Builder builder = new NinchatSession.Builder(
+  getApplicationContext(),
+  getString(R.string.ninchat_configuration_key))
+                .setConfiguration(this.ninchatConfiguration)
+							  // ........................................
+						    // ..if we want session to be persistence..
+                .setSessionCredentials(sessionCredentials)
+							  // ........................................
+                .setEventListener(eventListener);
+```
+
+
+
+One way to get and update user credentails is to listen `onSessionInitiated`, `onSessionInitFailed` callback(s) from `NinchatSDKEventListener`.
+
+```java
+private NinchatSDKEventListener eventListener = new NinchatSDKEventListener() {
+    public void onSessionInitiated(NinchatSessionCredentials sessionCredentials) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferences pref = getApplicationContext().getSharedPreferences("pref", MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putString("user_id", sessionCredentials.getUserId());
+                editor.putString("user_auth", sessionCredentials.getUserAuth());
+                editor.putString("session_id", sessionCredentials.getSessionId());
+                editor.apply();
+            }
+        });
+    }
+
+    @Override
+    public void onSessionInitFailed() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferences pref = getApplicationContext().getSharedPreferences("pref", MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.remove("user_id");
+                editor.remove("user_auth");
+                editor.remove("session_id");
+                editor.apply();
+            }
+        });
+    }
+};
+```
+
+
 
 ## Overriding SDK assets
 
