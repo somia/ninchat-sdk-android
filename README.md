@@ -119,24 +119,22 @@ See [Ninchat API Reference](https://github.com/ninchat/ninchat-api/blob/v2/api.m
 Ninchat support session resuming. In order to support session resuming feature in your application, you need to create and pass ( *optional* )  `NinchatSessionCredentials` object instance in the builder script
 
 ```java
-SharedPreferences pref = 
-  			getApplicationContext().getSharedPreferences("pref", MODE_PRIVATE);
+SharedPreferences pref = getApplicationContext().getSharedPreferences("pref", MODE_PRIVATE);
 
-NinchatSessionCredentials sessionCredentials = 
-				new NinchatSessionCredentials(
-									  pref.getString("user_id", null),
-                    pref.getString("user_auth", null), 
-  									pref.getString("session_id", null));
+NinchatSessionCredentials sessionCredentials = new NinchatSessionCredentials(
+  pref.getString("user_id", null),
+  pref.getString("user_auth", null), 
+  pref.getString("session_id", null));
 
 NinchatSession.Builder builder = new NinchatSession.Builder(
   getApplicationContext(),
   getString(R.string.ninchat_configuration_key))
-                .setConfiguration(this.ninchatConfiguration)
-							  // ........................................
-						    // ..if we want session to be persistence..
-                .setSessionCredentials(sessionCredentials)
-							  // ........................................
-                .setEventListener(eventListener);
+  .setConfiguration(this.ninchatConfiguration)
+  // ........................................
+  // ..if we want session to be persistence..
+  .setSessionCredentials(sessionCredentials)
+  // ........................................
+  .setEventListener(eventListener);
 ```
 
 
