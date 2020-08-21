@@ -218,6 +218,27 @@ For now, the application can override certain images/animations of the SDK. The 
 | ninchat_ui_compose_select_button   | Multichoice select button, unselected |  |
 | ninchat_ui_compose_select_button_selected   | Multichoice select button, selected |  |
 | ninchat_ui_compose_select_submit   | Multichoice selection submit button |  |
+| ninchat_border_with_error | Questionnaire input field styling when error occured |  |
+| ninchat_border_with_focus   | Questionnaire input field styling when field is focused |  |
+| ninchat_border_with_ok   | Questionnaire input field styling when field input passed the pattern and condition |  |
+| ninchat_border_with_unfocus   | Questionnaire input field styling when field input field is not focused |  |
+| ninchat_chat_bubble_left_repeated_disabled | Question item background styling where they are disabled or already filled |  |
+| ninchat_chat_disable_button | Questionnaire button element styling when they are disabled |  |
+| ninchat_chat_form_questionnaire_background | Form like questionnaire background styling |  |
+| ninchat_chat_secondary_onclicked_button | Question next button styling when they are clicked |  |
+| ninchat_chat_secondary_onclicked_button | Question previous button styling when they are clicked |  |
+| ninchat_dropdown_border_select | Questionnaire drop down item border styling when they are selected |  |
+| ninchat_dropdown_border_not_selected | Questionnaire drop down item default border styling or when when they are selected | |
+| ninchat_dropdown_border_with_error | Questionnaire drop down item border styling when error occured | |
+| ninchat_dropdown_spinner_arrow | Questionnaire drop down spinner styling | |
+| ninchat_icon_back | Questionnaire back or previous button styling | |
+| ninchat_icon_next | Questionnaire next icon button styling | |
+| ninchat_radio_select_button | Questionnaire radio button syling when it is selected | |
+
+
+
+
+
 
 ### Colors
 
