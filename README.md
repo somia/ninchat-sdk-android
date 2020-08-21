@@ -129,12 +129,12 @@ NinchatSessionCredentials sessionCredentials = new NinchatSessionCredentials(
 NinchatSession.Builder builder = new NinchatSession.Builder(
   getApplicationContext(),
   getString(R.string.ninchat_configuration_key))
-  .setConfiguration(this.ninchatConfiguration)
-  // ........................................
-  // ..if we want session to be persistence..
-  .setSessionCredentials(sessionCredentials)
-  // ........................................
-  .setEventListener(eventListener);
+                .setConfiguration(this.ninchatConfiguration)
+							  // ........................................
+						    // ..if we want session to be persistence..
+                .setSessionCredentials(sessionCredentials)
+							  // ........................................
+                .setEventListener(eventListener);
 ```
 
 
@@ -249,6 +249,22 @@ In addition, the application can override colors used in the SDK. The colors nee
 | ninchat_color_ui_compose_select_unselected_text | Text on the unselected multichoice button |
 | ninchat_color_ui_compose_select_selected_text | Text on the selected multichoice button |
 | ninchat_color_ui_compose_submit_text | Text on the multichoice selection submit button |
+| ninchat_colorDisabled | Questionnaire Button color when questionnaire(s) are disabled |
+| ninchat_colorOnClicked | Questionnaire Button color when they are clicked |
+| ninchat_colorWhite | Ninchat color white |
+| ninchat_colorQuestionnaireDisabled | Ninchat questionnaire TextView item color when the item is disabled |
+| ninchat_backgroundColorDisabled | Ninchat conversation like questionnaire chat bubble background color when the item is disabled |
+| ninchat_color_transparent | Ninchat transparent color |
+| ninchat_color_button_disable_text | Ninchat questionnaire Button text color when it is disabled |
+| ninchat_color_text_normal | Ninchat questionnaire TextView default item color |
+| ninchat_color_radio_item_selected_text | Ninchat questionnaire Radio Button item color when the item is selected |
+| ninchat_color_radio_item_unselected_text | Ninchat questionnaire Radio Button item color when the item is not selected |
+| ninchat_color_dropdown_selected_text | Ninchat questionnaire dropdown select item text color when the item is selected |
+| ninchat_color_dropdown_unselected_text | Ninchat questionnaire dropdown select item text color when the item is not selected |
+| ninchat_color_checkbox_selected | Ninchat questionnaire checkbox item  color when the item is selected |
+| ninchat_color_checkbox_unselected | Ninchat questionnaire checkbox item  color when the item is not selected |
+
+
 
 ## Building the Go library
 
