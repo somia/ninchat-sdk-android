@@ -130,7 +130,7 @@ NinchatSession.Builder builder = new NinchatSession.Builder(
   getApplicationContext(),
   getString(R.string.ninchat_configuration_key))
                 .setConfiguration(this.ninchatConfiguration)
-						    // If session should be established using saved credentials
+                // If session should be established using saved credentials
                 .setSessionCredentials(sessionCredentials)
                 .setEventListener(eventListener);
 ```
