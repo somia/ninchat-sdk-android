@@ -18,6 +18,7 @@ import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
+
 import static com.ninchat.sdk.activities.NinchatQuestionnaireActivity.OPEN_QUEUE;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
@@ -49,6 +50,9 @@ public final class NinchatActivity extends NinchatBaseActivity {
     };
 
     private void setQueueAdapter() {
+        if (sessionManager == null) {
+            sessionManager = NinchatSessionManager.getInstance();
+        }
         final RecyclerView queueList = (RecyclerView) findViewById(R.id.ninchat_activity_queue_list);
         final NinchatQueueListAdapter ninchatQueueListAdapter = sessionManager.getNinchatQueueListAdapter(NinchatActivity.this);
         queueList.setAdapter(ninchatQueueListAdapter);
@@ -175,7 +179,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
                 setResult(resultCode, data);
                 final boolean openQueue = data.getBooleanExtra(OPEN_QUEUE, false);
                 final String newQueueId = data.getStringExtra(QUEUE_ID);
-                if(openQueue && !TextUtils.isEmpty(newQueueId)){
+                if (openQueue && !TextUtils.isEmpty(newQueueId)) {
                     this.queueId = newQueueId;
                     openQueueActivity();
                 } else {
