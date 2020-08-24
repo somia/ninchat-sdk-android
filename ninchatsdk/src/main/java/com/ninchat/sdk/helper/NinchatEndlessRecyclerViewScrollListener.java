@@ -19,4 +19,5 @@ public abstract class NinchatEndlessRecyclerViewScrollListener extends RecyclerV
 
     public abstract void onUpdateView(RecyclerView recyclerView, int newState);
 
+
 }

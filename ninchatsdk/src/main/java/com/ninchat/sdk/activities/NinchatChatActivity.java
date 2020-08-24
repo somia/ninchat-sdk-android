@@ -24,7 +24,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -76,6 +75,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NinchatReviewActivity.REQUEST_CODE) {
+            // coming from ninchat review
+            if (sessionManager != null && !sessionManager.getNinchatQuestionnaireHolder().hasPostAudienceQuestionnaire()) {
+                sessionManager.partChannel();
+            }
             quit(data);
         } else if (requestCode == NinchatChatActivity.PICK_PHOTO_VIDEO_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             try {
@@ -191,7 +194,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     public void chatClosed() {
         onVideoHangUp(null);
-        sessionManager.partChannel();
+        // sessionManager.partChannel();
         if (sessionManager.showRating()) {
             startActivityForResult(NinchatReviewActivity.getLaunchIntent(NinchatChatActivity.this), NinchatReviewActivity.REQUEST_CODE);
         } else {
@@ -356,7 +359,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     public void onEditTextClick(final View view) {
         final EditText editText = findViewById(R.id.message);
-        if(editText.requestFocus()) {
+        if (editText.requestFocus()) {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
         }
@@ -380,10 +383,12 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     private TextWatcher textWatcher = new TextWatcher() {
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
         @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
 
         @Override
         public void afterTextChanged(Editable s) {

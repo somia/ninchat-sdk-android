@@ -98,9 +98,10 @@ session = new NinchatSession(applicationContext, configurationKey, sessionCreden
 
 The argument `eventListener`, when non-null, must be an instance of the `NinchatSDKEventListener` class, the `logListener` an instance of the `NinchatSDKLogListener`interface, and `ninchatConfiguration` is an instance of `NinchatConfiguration ` class.
 
-As of version 0.5.0 `sessionCredentials` can be added to open up a previous session. Passing `null` will open a new session. Passing invalid/outdated `sessionCredentials` will cause `onSessionInitFailed` to be invoked.
+*As of version 0.5.0 `sessionCredentials` can be added to open up a previous session. Passing `null` will open a new session. Passing invalid/outdated `sessionCredentials` will cause `onSessionInitFailed` to be invoked.*
 
-As of version 0.6.0 aforementioned `NinchatSession` constructors are deprecated and a builder pattern has been introduced. `NinchatSession` object needs to be initialized the following way:
+*As of version 0.6.0 aforementioned `NinchatSession` constructors are deprecated and a builder pattern has been introduced. `NinchatSession` object needs to be initialized the following way:*
+
 ```
 NinchatSession.Builder builder = new NinchatSession.Builder(applicationContext, configurationKey);
 builder.setSessionCredentials(sessionCredentials); // optional
@@ -112,6 +113,66 @@ NinchatSession session = builder.create();
 ```
 
 See [Ninchat API Reference](https://github.com/ninchat/ninchat-api/blob/v2/api.md) for information about the API's outbound Actions and inbound Events.
+
+### Resuming ninchat session using saved credentials
+
+Ninchat support session resuming. In order to support session resuming feature using existing saved credentials in your application, you need to create and pass ( *optional* )  `NinchatSessionCredentials` object instance in the builder script
+
+```java
+SharedPreferences pref = getApplicationContext().getSharedPreferences("pref", MODE_PRIVATE);
+
+NinchatSessionCredentials sessionCredentials = new NinchatSessionCredentials(
+  pref.getString("user_id", null),
+  pref.getString("user_auth", null), 
+  pref.getString("session_id", null));
+
+NinchatSession.Builder builder = new NinchatSession.Builder(
+  getApplicationContext(),
+  getString(R.string.ninchat_configuration_key))
+                .setConfiguration(this.ninchatConfiguration)
+                // If session should be established using saved credentials
+                .setSessionCredentials(sessionCredentials)
+                .setEventListener(eventListener);
+```
+
+
+
+One way to get and update user credentails is to listen `onSessionInitiated`, `onSessionInitFailed` callback(s) from `NinchatSDKEventListener`.
+
+```java
+private NinchatSDKEventListener eventListener = new NinchatSDKEventListener() {
+    public void onSessionInitiated(NinchatSessionCredentials sessionCredentials) {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferences pref = getApplicationContext().getSharedPreferences("pref", MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.putString("user_id", sessionCredentials.getUserId());
+                editor.putString("user_auth", sessionCredentials.getUserAuth());
+                editor.putString("session_id", sessionCredentials.getSessionId());
+                editor.apply();
+            }
+        });
+    }
+
+    @Override
+    public void onSessionInitFailed() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferences pref = getApplicationContext().getSharedPreferences("pref", MODE_PRIVATE);
+                SharedPreferences.Editor editor = pref.edit();
+                editor.remove("user_id");
+                editor.remove("user_auth");
+                editor.remove("session_id");
+                editor.apply();
+            }
+        });
+    }
+};
+```
+
+
 
 ## Overriding SDK assets
 
@@ -155,6 +216,27 @@ For now, the application can override certain images/animations of the SDK. The 
 | ninchat_ui_compose_select_button   | Multichoice select button, unselected |  |
 | ninchat_ui_compose_select_button_selected   | Multichoice select button, selected |  |
 | ninchat_ui_compose_select_submit   | Multichoice selection submit button |  |
+| ninchat_border_with_error | Questionnaire input field styling when error occured |  |
+| ninchat_border_with_focus   | Questionnaire input field styling when field is focused |  |
+| ninchat_border_with_ok   | Questionnaire input field styling when field input passed the pattern and condition |  |
+| ninchat_border_with_unfocus   | Questionnaire input field styling when field input field is not focused |  |
+| ninchat_chat_bubble_left_repeated_disabled | Question item background styling where they are disabled or already filled |  |
+| ninchat_chat_disable_button | Questionnaire button element styling when they are disabled |  |
+| ninchat_chat_form_questionnaire_background | Form like questionnaire background styling |  |
+| ninchat_chat_secondary_onclicked_button | Question next button styling when they are clicked |  |
+| ninchat_chat_secondary_onclicked_button | Question previous button styling when they are clicked |  |
+| ninchat_dropdown_border_select | Questionnaire drop down item border styling when they are selected |  |
+| ninchat_dropdown_border_not_selected | Questionnaire drop down item default border styling or when when they are selected | |
+| ninchat_dropdown_border_with_error | Questionnaire drop down item border styling when error occured | |
+| ninchat_dropdown_spinner_arrow | Questionnaire drop down spinner styling | |
+| ninchat_icon_back | Questionnaire back or previous button styling | |
+| ninchat_icon_next | Questionnaire next icon button styling | |
+| ninchat_radio_select_button | Questionnaire radio button syling when it is selected | |
+
+
+
+
+
 
 ### Colors
 
@@ -186,6 +268,22 @@ In addition, the application can override colors used in the SDK. The colors nee
 | ninchat_color_ui_compose_select_unselected_text | Text on the unselected multichoice button |
 | ninchat_color_ui_compose_select_selected_text | Text on the selected multichoice button |
 | ninchat_color_ui_compose_submit_text | Text on the multichoice selection submit button |
+| ninchat_colorDisabled | Questionnaire Button color when questionnaire(s) are disabled |
+| ninchat_colorOnClicked | Questionnaire Button color when they are clicked |
+| ninchat_colorWhite | Ninchat color white |
+| ninchat_colorQuestionnaireDisabled | Ninchat questionnaire TextView item color when the item is disabled |
+| ninchat_backgroundColorDisabled | Ninchat conversation like questionnaire chat bubble background color when the item is disabled |
+| ninchat_color_transparent | Ninchat transparent color |
+| ninchat_color_button_disable_text | Ninchat questionnaire Button text color when it is disabled |
+| ninchat_color_text_normal | Ninchat questionnaire TextView default item color |
+| ninchat_color_radio_item_selected_text | Ninchat questionnaire Radio Button item color when the item is selected |
+| ninchat_color_radio_item_unselected_text | Ninchat questionnaire Radio Button item color when the item is not selected |
+| ninchat_color_dropdown_selected_text | Ninchat questionnaire dropdown select item text color when the item is selected |
+| ninchat_color_dropdown_unselected_text | Ninchat questionnaire dropdown select item text color when the item is not selected |
+| ninchat_color_checkbox_selected | Ninchat questionnaire checkbox item  color when the item is selected |
+| ninchat_color_checkbox_unselected | Ninchat questionnaire checkbox item  color when the item is not selected |
+
+
 
 ## Building the Go library
 

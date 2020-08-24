@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ninchat_audience_questionnaire_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fadeScrollbars="false"
+    android:background="@drawable/ninchat_chat_background_tiled"
+    android:theme="@style/NinchatTheme.Questionnaire"
+    tools:context=".activities.NinchatQuestionnaireActivity">
+
+
+    <android.support.v7.widget.RecyclerView
+        android:background="@android:color/transparent"
+        android:id="@+id/questionnaire_form_rview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        tools:itemCount="5"/>
+</RelativeLayout>

@@ -4,19 +4,27 @@
     <color name="ninchat_colorPrimary">#242424</color>
     <color name="ninchat_colorPrimaryDark">#0D2230</color>
     <color name="ninchat_colorAccent">#008aff</color>
+    <color name="ninchat_colorDisabled">#abd8ff</color>
+    <color name="ninchat_colorOnClicked">#006FCE</color>
+    <color name="ninchat_colorWhite">#FFFFFF</color>
+    <color name="ninchat_colorQuestionnaireDisabled">#B8B8B8</color>
+    <color name="ninchat_backgroundColorDisabled">#F8F8F8</color>
     <color name="ninchat_colorTimestamp">#7492AA</color>
     <color name="ninchat_activity_top_matter_background">@android:color/white</color>
     <color name="ninchat_activity_bottom_matter_background">#e9e9e9</color>
     <color name="ninchat_color_hint">#A2A2A2</color>
+    <color name="ninchat_color_transparent">@android:color/transparent</color>
 
     <!-- Public colors -->
     <color name="ninchat_color_button_primary_text">@android:color/white</color>
     <color name="ninchat_color_button_secondary_text">@color/ninchat_colorAccent</color>
+    <color name="ninchat_color_button_disable_text">@android:color/white</color>
 
     <color name="ninchat_color_background_top">@color/ninchat_activity_top_matter_background</color>
     <color name="ninchat_color_text_top">@color/ninchat_colorPrimary</color>
     <color name="ninchat_color_background_bottom">@color/ninchat_activity_bottom_matter_background</color>
     <color name="ninchat_color_text_bottom">@color/ninchat_colorPrimary</color>
+    <color name="ninchat_color_text_normal">@color/ninchat_colorPrimary</color>
 
     <color name="ninchat_color_error_background">#983637</color>
 
@@ -43,4 +51,12 @@
     <color name="ninchat_color_ui_compose_submit_text">@color/ninchat_colorPrimary</color>
     <color name="ninchat_color_ui_compose_select_unselected_text">@color/ninchat_color_hint</color>
     <color name="ninchat_color_ui_compose_select_selected_text">@android:color/white</color>
+    <color name="ninchat_color_radio_item_selected_text">@color/ninchat_colorAccent</color>
+    <color name="ninchat_color_radio_item_unselected_text">@color/ninchat_color_textarea_text</color>
+
+    <color name="ninchat_color_dropdown_selected_text">@color/ninchat_colorAccent</color>
+    <color name="ninchat_color_dropdown_unselected_text">@color/ninchat_color_hint</color>
+
+    <color name="ninchat_color_checkbox_selected">@color/ninchat_colorAccent</color>
+    <color name="ninchat_color_checkbox_unselected">@color/ninchat_color_hint</color>
 </resources>
