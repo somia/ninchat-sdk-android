@@ -114,9 +114,9 @@ NinchatSession session = builder.create();
 
 See [Ninchat API Reference](https://github.com/ninchat/ninchat-api/blob/v2/api.md) for information about the API's outbound Actions and inbound Events.
 
-### Open ninchat using existing session
+### Resuming ninchat session using saved credentials
 
-Ninchat support session resuming. In order to support session resuming feature in your application, you need to create and pass ( *optional* )  `NinchatSessionCredentials` object instance in the builder script
+Ninchat support session resuming. In order to support session resuming feature using existing saved credentials in your application, you need to create and pass ( *optional* )  `NinchatSessionCredentials` object instance in the builder script
 
 ```java
 SharedPreferences pref = getApplicationContext().getSharedPreferences("pref", MODE_PRIVATE);
@@ -131,7 +131,7 @@ NinchatSession.Builder builder = new NinchatSession.Builder(
   getString(R.string.ninchat_configuration_key))
                 .setConfiguration(this.ninchatConfiguration)
 							  // ........................................
-						    // ..if we want session to be persistence..
+						    // ..If session should be established using saved credentials.
                 .setSessionCredentials(sessionCredentials)
 							  // ........................................
                 .setEventListener(eventListener);
