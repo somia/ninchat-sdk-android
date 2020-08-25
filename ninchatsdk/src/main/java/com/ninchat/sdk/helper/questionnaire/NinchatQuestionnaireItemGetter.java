@@ -313,10 +313,21 @@ public class NinchatQuestionnaireItemGetter {
             JSONObject currentElement = questionnaireList.optJSONObject(i);
             if (seen.contains(getName(currentElement))) continue;
             seen.add(getName(currentElement));
-            JSONArray tagList = currentElement == null ? null : currentElement.optJSONArray("tags");
-            for (int j = 0; tagList != null && j < tagList.length(); j += 1) {
-                if (tagList.optString(j) == null) continue;
-                retval.put(tagList.optString(j));
+            // check parent level entry
+            JSONArray parentTagList = currentElement.optJSONArray("tags");
+            for (int k = 0; parentTagList != null && k < parentTagList.length(); k += 1) {
+                if (parentTagList.optString(k) == null) continue;
+                retval.put(parentTagList.optString(k));
+            }
+            // check child level entry
+            JSONArray elementList = getElements(currentElement);
+            for (int j = 0; elementList != null && j < elementList.length(); j += 1) {
+                if (elementList.optJSONObject(j) == null) continue;
+                JSONArray childTagList = elementList.optJSONObject(j).optJSONArray("tags");
+                for (int k = 0; childTagList != null && k < childTagList.length(); k += 1) {
+                    if (childTagList.optString(k) == null) continue;
+                    retval.put(childTagList.optString(k));
+                }
             }
         }
         return retval;
@@ -328,9 +339,20 @@ public class NinchatQuestionnaireItemGetter {
         }
         for (int i = questionnaireList.length() - 1; i >= 0; i -= 1) {
             JSONObject currentElement = questionnaireList.optJSONObject(i);
-            String queue = currentElement == null ? null : currentElement.optString("queue", null);
-            if (!TextUtils.isEmpty(queue)) {
-                return queue;
+            // check parent level entry
+            final String parentQueue = currentElement == null ? null : currentElement.optString("queue", null);
+            if (!TextUtils.isEmpty(parentQueue)) {
+                return parentQueue;
+            }
+            // check child level entry
+            JSONArray elementList = getElements(currentElement);
+            for (int j = 0; elementList != null && j < elementList.length(); j += 1) {
+                if (elementList.optJSONObject(j) == null) continue;
+                final String childQueue = elementList.optJSONObject(j).optString("queue", null);
+                if (!TextUtils.isEmpty(childQueue)) {
+                    // extract the first queue item and return it
+                    return childQueue;
+                }
             }
         }
         return null;
