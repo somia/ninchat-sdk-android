@@ -371,11 +371,11 @@ public class NinchatQuestionnaireItemGetter {
     public static int getInputType(JSONObject item) {
         final String inputMode = item == null ? null : item.optString("inputmode");
         if (TextUtils.isEmpty(inputMode)) {
-            return InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
+            return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
         }
 
         if (inputMode.contains("text")) {
-            return InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
+            return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
         }
         if (inputMode.contains("tel")) {
             return InputType.TYPE_CLASS_PHONE;
@@ -392,7 +392,7 @@ public class NinchatQuestionnaireItemGetter {
         if (inputMode.contains("url")) {
             return InputType.TYPE_TEXT_VARIATION_URI;
         }
-        return InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
+        return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
     }
 
     public static String getBotQuestionnaireNameFromConfig(JSONObject item) {
