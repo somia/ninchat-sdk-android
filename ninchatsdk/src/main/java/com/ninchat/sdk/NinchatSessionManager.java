@@ -215,6 +215,7 @@ public final class NinchatSessionManager {
         this.files = new HashMap<>();
         this.activityWeakReference = new WeakReference<>(null);
         this.sessionCredentials = sessionCredentials;
+        this.resumedSession = false;
         this.ninchatConfiguration = configurationManager;
     }
 
@@ -240,6 +241,7 @@ public final class NinchatSessionManager {
 
     @Nullable
     private NinchatSessionCredentials sessionCredentials;
+    private boolean resumedSession;
     @Nullable
     private NinchatConfiguration ninchatConfiguration;
 
@@ -303,8 +305,8 @@ public final class NinchatSessionManager {
                         userId = params.getString("user_id");
 
                         String userAuth = sessionCredentials != null ? sessionCredentials.getUserAuth() : params.getString("user_auth");
-                        String oldSessionId = sessionCredentials != null ? sessionCredentials.getSessionId() : null;
-
+                        // a resumed session if session credentials were used
+                        resumedSession = sessionCredentials != null;
                         sessionCredentials = new NinchatSessionCredentials(
                                 params.getString("user_id"),
                                 userAuth,
@@ -322,14 +324,17 @@ public final class NinchatSessionManager {
                             } else if (configuration != null) {
                                 listener.onSessionInitiated(sessionCredentials);
                             } else {
+                                resumedSession = false;
                                 listener.onSessionInitFailed();
                             }
                         }
                     } else {
+                        resumedSession = false;
                         listener.onSessionInitFailed();
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);
+                    resumedSession = false;
                     listener.onSessionInitFailed();
                 }
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -836,7 +841,7 @@ public final class NinchatSessionManager {
                     }
                 }
                 if (simpleButtonChoice) {
-                    messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender,null,  null, messageOptions, timestampMs));
+                    messageAdapter.add(messageId, new NinchatMessage(NinchatMessage.Type.MULTICHOICE, sender, null, null, messageOptions, timestampMs));
                 }
             } catch (final JSONException e) {
                 // Ignore message
@@ -957,6 +962,8 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             // Ignore
         }
+        // null check
+        if (messageAdapter == null) return;
         if (addWritingMessage) {
             messageAdapter.addWriting(sender);
         } else {
@@ -1528,6 +1535,10 @@ public final class NinchatSessionManager {
 
     public interface RequestCallback {
         void onActionId(long actionId);
+    }
+
+    public boolean isResumedSession() {
+        return resumedSession;
     }
 
     public void close() {
