@@ -1,5 +1,6 @@
 package com.ninchat.sdk.models.questionnaire.conversation;
 
+import android.os.Handler;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -62,7 +63,9 @@ public class NinchatConversationQuestionnaire extends NinchatQuestionnaireBase<N
         markDirty = true;
         ninchatQuestionnaireAdapter.removeLast();
         ninchatQuestionnaireAdapter.notifyDataSetChanged();
-        mRecyclerViewWeakReference.get().scrollToPosition(ninchatQuestionnaireAdapter.getItemCount() - 1);
+        new Handler().postDelayed(()-> {
+            mRecyclerViewWeakReference.get().scrollToPosition(ninchatQuestionnaireAdapter.getItemCount() - 1);
+        },200);
     }
 
     @Override
