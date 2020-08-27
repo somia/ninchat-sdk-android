@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="ninchat_text_size">16sp</dimen>
-    <dimen name="ninchat_button_height">60dp</dimen>
-    <dimen name="ninchat_button_corner_radius">30dp</dimen>
+    <dimen name="ninchat_button_height">50dp</dimen>
+    <dimen name="ninchat_button_corner_radius">23dp</dimen>
     <dimen name="ninchat_button_horizontal_padding">20dp</dimen>
     <dimen name="ninchat_button_vertical_margin">7dp</dimen>
     <dimen name="ninchat_dialog_button_height">45dp</dimen>
@@ -87,4 +87,19 @@
     <dimen name="ninchat_review_activity_icon_size">80dp</dimen>
     <dimen name="ninchat_review_activity_icon_text_margin">14dp</dimen>
     <dimen name="ninchat_review_activity_skip_bottom_margin">60dp</dimen>
+
+
+    <dimen name="ninchat_chat_control_follow_button_width">150dp</dimen>
+
+
+    <!-- Questionnaire-->
+    <dimen name="ninchat_questionnaire_item_margin_start">15dp</dimen>
+    <dimen name="ninchat_questionnaire_item_margin_end">15dp</dimen>
+    <dimen name="ninchat_questionnaire_item_margin_bottom">10dp</dimen>
+    <dimen name="ninchat_questionnaire_items_margin_top">25dp</dimen>
+    <dimen name="ninchat_questionnaire_items_margin_left">15dp</dimen>
+    <dimen name="ninchat_questionnaire_items_margin_right">15dp</dimen>
+    <dimen name="ninchat_questionnaire_item_label_text_size">20sp</dimen>
+    <dimen name="ninchat_questionnaire_item_dropdown_height">40dp</dimen>
+
 </resources>

@@ -9,14 +9,18 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSession;
+import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 
+import static com.ninchat.sdk.activities.NinchatQuestionnaireActivity.OPEN_QUEUE;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
 
 public final class NinchatActivity extends NinchatBaseActivity {
 
@@ -46,7 +50,10 @@ public final class NinchatActivity extends NinchatBaseActivity {
     };
 
     private void setQueueAdapter() {
-        final RecyclerView queueList = findViewById(R.id.ninchat_activity_queue_list);
+        if (sessionManager == null) {
+            sessionManager = NinchatSessionManager.getInstance();
+        }
+        final RecyclerView queueList = (RecyclerView) findViewById(R.id.ninchat_activity_queue_list);
         final NinchatQueueListAdapter ninchatQueueListAdapter = sessionManager.getNinchatQueueListAdapter(NinchatActivity.this);
         queueList.setAdapter(ninchatQueueListAdapter);
         if (ninchatQueueListAdapter.getItemCount() == 0) {
@@ -55,7 +62,6 @@ public final class NinchatActivity extends NinchatBaseActivity {
             motd.setText(sessionManager.getNoQueues());
             findViewById(R.id.ninchat_activity_close).setVisibility(View.VISIBLE);
         }
-
         ninchatQueueListAdapter.notifyDataSetChanged();
     }
 
@@ -88,34 +94,31 @@ public final class NinchatActivity extends NinchatBaseActivity {
         // If the app is killed in the background sessionManager is not initialized the SDK must
         // be exited and the NinchatSession needs to be initialzed again
         if (sessionManager == null) {
-
             // Use a small delay before transition for UX purposes. Without the delay the app looks
             // like it's crashing since there can be 3 activities that will be finished.
             new android.os.Handler().postDelayed(() -> {
                 setResult(Activity.RESULT_CANCELED, null);
                 finish();
-
                 // Use a slide transition just to minimize the impression that the app has crashed
                 this.overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             }, TRANSITION_DELAY);
 
             return;
         }
-
         if (intent != null) {
             queueId = intent.getStringExtra(QUEUE_ID);
-            if (queueId != null) {
+        }
+        if (queueId != null) {
+            final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
+            if (ninchatSessionManager.getNinchatQuestionnaireHolder().hasPreAudienceQuestionnaire() && !ninchatSessionManager.isResumedSession()) {
+                openPreAudienceQuestionnairesActivity();
+            } else {
                 openQueueActivity();
             }
         }
-
-        final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-        broadcastManager.registerReceiver(queuesUpdatedReceiver, new IntentFilter(NinchatSession.Broadcast.QUEUES_UPDATED));
-        broadcastManager.registerReceiver(configurationFetchedReceiver, new IntentFilter(NinchatSession.Broadcast.CONFIGURATION_FETCHED));
-        findViewById(R.id.ninchat_activity_close).setVisibility(View.VISIBLE);
-        setQueueAdapter();
-        setTexts();
+        registerQueueListener();
     }
+
 
     @Override
     protected void onDestroy() {
@@ -130,21 +133,63 @@ public final class NinchatActivity extends NinchatBaseActivity {
         finish();
     }
 
+    public void registerQueueListener() {
+        final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
+        broadcastManager.registerReceiver(queuesUpdatedReceiver, new IntentFilter(NinchatSession.Broadcast.QUEUES_UPDATED));
+        broadcastManager.registerReceiver(configurationFetchedReceiver, new IntentFilter(NinchatSession.Broadcast.CONFIGURATION_FETCHED));
+        findViewById(R.id.ninchat_activity_close).setVisibility(View.VISIBLE);
+        setQueueAdapter();
+        setTexts();
+    }
+
     private void openQueueActivity() {
         startActivityForResult(NinchatQueueActivity.getLaunchIntent(this, queueId), NinchatQueueActivity.REQUEST_CODE);
+    }
+
+    private void openPreAudienceQuestionnairesActivity() {
+        startActivityForResult(NinchatQuestionnaireActivity.getLaunchIntent(
+                this, queueId, PRE_AUDIENCE_QUESTIONNAIRE),
+                NinchatQuestionnaireActivity.REQUEST_CODE);
+    }
+
+    private void openPostAudienceQuestionnairesActivity() {
+        startActivityForResult(NinchatQuestionnaireActivity.getLaunchIntent(
+                this, queueId, POST_AUDIENCE_QUESTIONNAIRE),
+                NinchatQuestionnaireActivity.REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NinchatQueueActivity.REQUEST_CODE) {
             if (resultCode == RESULT_OK || queueId != null) {
-                sessionManager.close();
-                setResult(resultCode, data);
+                final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
+                if (resultCode == RESULT_OK && ninchatSessionManager.getNinchatQuestionnaireHolder().hasPostAudienceQuestionnaire()) {
+                    openPostAudienceQuestionnairesActivity();
+                } else {
+                    sessionManager.close();
+                    setResult(resultCode, data);
+                    finish();
+                }
+
+            } else if (resultCode == RESULT_CANCELED) {
                 finish();
+            }
+        } else if (requestCode == NinchatQuestionnaireActivity.REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                setResult(resultCode, data);
+                final boolean openQueue = data.getBooleanExtra(OPEN_QUEUE, false);
+                final String newQueueId = data.getStringExtra(QUEUE_ID);
+                if (openQueue && !TextUtils.isEmpty(newQueueId)) {
+                    this.queueId = newQueueId;
+                    openQueueActivity();
+                } else {
+                    finish();
+                }
             } else if (resultCode == RESULT_CANCELED) {
                 finish();
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
 }

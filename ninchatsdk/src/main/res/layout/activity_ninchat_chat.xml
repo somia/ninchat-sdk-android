@@ -24,6 +24,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_marginTop="5dp"
         android:background="@android:color/white"
         android:onClick="onEditTextClick">
 
@@ -33,6 +34,7 @@
             android:layout_height="wrap_content"
             tools:hint="Enter your message"
             android:layout_margin="@dimen/ninchat_chat_activity_message_margin"
+            android:inputType="textCapSentences"
             android:textColorHint="@color/ninchat_color_textarea_text"
             android:background="@null"/>
 

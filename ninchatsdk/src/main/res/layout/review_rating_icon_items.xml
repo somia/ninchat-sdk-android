@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_gravity="center_horizontal"
+    android:layout_marginTop="@dimen/ninchat_review_activity_icons_top_margin"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/ninchat_review_activity_icon_margin"
+        android:onClick="onGoodClick"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="@dimen/ninchat_review_activity_icon_size"
+            android:layout_height="@dimen/ninchat_review_activity_icon_size"
+            android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/ninchat_review_positive"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ninchat_icon_rating_positive" />
+
+        <TextView
+            android:id="@+id/ninchat_review_positive"
+            tools:text="@string/ninchat_review_positive"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/ninchat_review_activity_icon_text_margin"
+            android:gravity="center_horizontal"
+            android:textColor="@color/ninchat_color_rating_positive_text" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/ninchat_review_activity_icon_margin"
+        android:onClick="onFairClick"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="@dimen/ninchat_review_activity_icon_size"
+            android:layout_height="@dimen/ninchat_review_activity_icon_size"
+            android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/ninchat_review_neutral"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ninchat_icon_rating_neutral" />
+
+        <TextView
+            android:id="@+id/ninchat_review_neutral"
+            tools:text="@string/ninchat_review_neutral"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/ninchat_review_activity_icon_text_margin"
+            android:gravity="center_horizontal"
+            android:textColor="@color/ninchat_color_rating_neutral_text" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onPoorClick"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="@dimen/ninchat_review_activity_icon_size"
+            android:layout_height="@dimen/ninchat_review_activity_icon_size"
+            android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/ninchat_review_sad"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ninchat_icon_rating_negative" />
+
+        <TextView
+            android:id="@+id/ninchat_review_negative"
+            tools:text="@string/ninchat_review_sad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/ninchat_review_activity_icon_text_margin"
+            android:gravity="center_horizontal"
+            android:textColor="@color/ninchat_color_rating_negative_text" />
+
+    </LinearLayout>
+
+</LinearLayout>
