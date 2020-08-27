@@ -12,7 +12,7 @@ Add the following maven repository to the project dependency repositories:
 
 Then you need to add the following dependency to the project dependencies:
 
-    implementation 'com.ninchat:sdk:0.6.1'
+    implementation 'com.ninchat:sdk:0.7.0'
 
 ## Usage
 
@@ -313,4 +313,4 @@ The test application can be found from the ninchat-sdk-android-testclient projec
 
 If you have any questions, contact:
 
-Jussi Pekonen / Qvik jussi.pekonen@qvik.fi
+Pallab Gain pallab.gain@somia.fi
