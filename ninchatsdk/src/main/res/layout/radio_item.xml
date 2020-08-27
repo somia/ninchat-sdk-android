@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/NinchatTheme.Radio.UnSelected"
+
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/single_radio_item"
+    android:minHeight="50dp"
+    tools:text="Option" />

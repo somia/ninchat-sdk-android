@@ -2,7 +2,7 @@
 <animation-list android:id="@+id/ninchat_writing"
     android:oneshot="false"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/ninchat_writing_01" android:duration="50" />
+    <item android:drawable="@drawable/ninchat_writing_01" android:duration="50"/>
     <item android:drawable="@drawable/ninchat_writing_02" android:duration="50" />
     <item android:drawable="@drawable/ninchat_writing_03" android:duration="50" />
     <item android:drawable="@drawable/ninchat_writing_04" android:duration="50" />

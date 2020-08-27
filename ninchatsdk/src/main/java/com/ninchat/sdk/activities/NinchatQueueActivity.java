@@ -39,7 +39,8 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NinchatChatActivity.REQUEST_CODE) {
-            final String queueId = data.getStringExtra(NinchatSessionManager.Parameter.QUEUE_ID);
+            // check data is null or not. Can through exception
+            final String queueId = data == null ? null : data.getStringExtra(NinchatSessionManager.Parameter.QUEUE_ID);
             if (queueId == null) {
                 setResult(RESULT_OK, data);
                 finish();
@@ -107,9 +108,11 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         animation.setDuration(3000);
         findViewById(R.id.ninchat_queue_activity_progress).setAnimation(animation);
         final TextView message = findViewById(R.id.ninchat_queue_activity_queue_message);
-        message.setText(sessionManager.getQueueMessage());
+        if (message != null)
+            message.setText(sessionManager.getQueueMessage());
         final Button closeButton = findViewById(R.id.ninchat_queue_activity_close_button);
-        closeButton.setText(sessionManager.getCloseChat());
+        if (closeButton != null)
+            closeButton.setText(sessionManager.getCloseChat());
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         broadcastManager.registerReceiver(channelJoinedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_JOINED));
         broadcastManager.registerReceiver(channelUpdatedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.QUEUE_UPDATED));
