@@ -40,6 +40,7 @@ import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
 import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
 import com.ninchat.sdk.tasks.NinchatDeleteUserTask;
 import com.ninchat.sdk.tasks.NinchatDescribeFileTask;
+import com.ninchat.sdk.tasks.NinchatDescribeChannelTask;
 import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
 import com.ninchat.sdk.tasks.NinchatListQueuesTask;
 import com.ninchat.sdk.tasks.NinchatOpenSessionTask;
@@ -154,6 +155,7 @@ public final class NinchatSessionManager {
     }
 
     protected Props audienceMetadata;
+    protected Props userChannels;
 
     public void setAudienceMetadata(final Props audienceMetadata) {
         this.audienceMetadata = audienceMetadata;
@@ -177,6 +179,15 @@ public final class NinchatSessionManager {
 
     public static void joinQueue(final String queueId) {
         instance.queueId = queueId;
+        // if there is already audience in the user session
+        if (instance.hasUserChannel(instance.userChannels)) {
+            instance.audienceEnqueued(queueId);
+            final String currentChannelId = instance.parseChannelId(instance.userChannels);
+            if (currentChannelId != null) {
+                NinchatDescribeChannelTask.start(currentChannelId, instance.requestCallback);
+                return;
+            }
+        }
         NinchatJoinQueueTask.start(queueId);
     }
 
@@ -303,10 +314,14 @@ public final class NinchatSessionManager {
 
                     if (event.equals("session_created")) {
                         userId = params.getString("user_id");
-
+                        userChannels = params.getObject("user_channels");
                         String userAuth = sessionCredentials != null ? sessionCredentials.getUserAuth() : params.getString("user_auth");
                         // a resumed session if session credentials were used
-                        resumedSession = sessionCredentials != null;
+                        resumedSession = hasUserChannel(userChannels);
+                        final String existingQueueId = resumedSession ? parseQueueId(userChannels) : null;
+                        if (existingQueueId != null && queueId == null) {
+                            queueId = existingQueueId;
+                        }
                         sessionCredentials = new NinchatSessionCredentials(
                                 params.getString("user_id"),
                                 userAuth,
@@ -316,7 +331,6 @@ public final class NinchatSessionManager {
                         NinchatListQueuesTask.start();
 
                         if (listener != null) {
-
                             // TODO: Close previous session, hasn't been added since it didn't work
                             if (configuration != null && sessionCredentials != null) {
                                 listener.onSessionInitiated(sessionCredentials);
@@ -354,6 +368,7 @@ public final class NinchatSessionManager {
                 Log.v(TAG, "onEvent: " + params.string() + ", " + payload.string() + ", " + lastReply);
                 try {
                     final String event = params.getString("event");
+                    final long currentActionId = params.getInt("action_id");
                     if (event.equals("realm_queues_found")) {
                         NinchatSessionManager.getInstance().parseQueues(params);
                     } else if (event.equals("queue_found") || event.equals("queue_updated")) {
@@ -361,6 +376,8 @@ public final class NinchatSessionManager {
                     } else if (event.equals("audience_enqueued")) {
                         NinchatSessionManager.getInstance().audienceEnqueued(params);
                     } else if (event.equals("channel_joined")) {
+                        NinchatSessionManager.getInstance().channelJoined(params);
+                    } else if (event.equals("channel_found") && actionId == currentActionId) {
                         NinchatSessionManager.getInstance().channelJoined(params);
                     } else if (event.equals("channel_found") || event.equals("channel_updated")) {
                         NinchatSessionManager.getInstance().channelUpdated(params);
@@ -420,6 +437,47 @@ public final class NinchatSessionManager {
     public Session getSession() {
         return session;
     }
+
+    private String parseQueueId(final Props currentUserChannel) {
+        final NinchatPropVisitor parser = new NinchatPropVisitor();
+        try {
+            currentUserChannel.accept(parser);
+            // audience has one or multiple channel
+            for (String channelId : parser.properties.keySet()) {
+                final Props channelInfo = (Props) parser.properties.get(channelId);
+                final Props channelAttrs = channelInfo.getObject("channel_attrs");
+                return channelAttrs.getString("queue_id");
+            }
+        } catch (final Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+    private String parseChannelId(final Props currentUserChannel) {
+        final NinchatPropVisitor parser = new NinchatPropVisitor();
+        try {
+            currentUserChannel.accept(parser);
+            // audience has one or multiple channel
+            for (String channelId : parser.properties.keySet()) {
+                return channelId;
+            }
+        } catch (final Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+    public boolean hasUserChannel(final Props currentUserChannel) {
+        final NinchatPropVisitor parser = new NinchatPropVisitor();
+        try {
+            currentUserChannel.accept(parser);
+            return parser.properties.keySet().size() > 0;
+        } catch (final Exception e) {
+            return false;
+        }
+    }
+
 
     public NinchatQueueListAdapter getNinchatQueueListAdapter(final Activity activity) {
         if (ninchatQueueListAdapter == null) {
@@ -641,6 +699,14 @@ public final class NinchatSessionManager {
 
     private void audienceEnqueued(final Props params) {
         final String queueId = parseQueue(params);
+        final Context context = contextWeakReference.get();
+        if (context != null) {
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.AUDIENCE_ENQUEUED).putExtra(Parameter.QUEUE_ID, queueId));
+            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.QUEUE_UPDATED));
+        }
+    }
+
+    private void audienceEnqueued(final String queueId) {
         final Context context = contextWeakReference.get();
         if (context != null) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.AUDIENCE_ENQUEUED).putExtra(Parameter.QUEUE_ID, queueId));
@@ -1547,6 +1613,10 @@ public final class NinchatSessionManager {
         }
         if (messageAdapter != null) {
             messageAdapter.clear();
+        }
+
+        if (userChannels != null) {
+            userChannels = null;
         }
     }
 

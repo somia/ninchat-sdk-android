@@ -81,7 +81,13 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
 
     private void updateQueueStatus() {
         final TextView queueStatus = findViewById(R.id.ninchat_queue_activity_queue_status);
-        queueStatus.setText(sessionManager.getQueueStatus(queueId));
+        if (sessionManager != null && sessionManager.isResumedSession()) {
+            queueStatus.setVisibility(View.INVISIBLE);
+        } else {
+            queueStatus.setVisibility(View.VISIBLE);
+            queueStatus.setText(sessionManager.getQueueStatus(queueId));
+        }
+
     }
 
     @Override
@@ -108,11 +114,23 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         animation.setDuration(3000);
         findViewById(R.id.ninchat_queue_activity_progress).setAnimation(animation);
         final TextView message = findViewById(R.id.ninchat_queue_activity_queue_message);
-        if (message != null)
-            message.setText(sessionManager.getQueueMessage());
         final Button closeButton = findViewById(R.id.ninchat_queue_activity_close_button);
-        if (closeButton != null)
-            closeButton.setText(sessionManager.getCloseChat());
+
+        if (!sessionManager.isResumedSession()) {
+            if (message != null) {
+                message.setVisibility(View.VISIBLE);
+                message.setText(sessionManager.getQueueMessage());
+            }
+            if (closeButton != null) {
+                closeButton.setVisibility(View.VISIBLE);
+                closeButton.setText(sessionManager.getCloseChat());
+            }
+        } else {
+            if (message != null)
+                message.setVisibility(View.INVISIBLE);
+            if (closeButton != null)
+                closeButton.setVisibility(View.INVISIBLE);
+        }
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         broadcastManager.registerReceiver(channelJoinedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_JOINED));
         broadcastManager.registerReceiver(channelUpdatedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.QUEUE_UPDATED));
