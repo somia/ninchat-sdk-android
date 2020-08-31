@@ -39,6 +39,7 @@ import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.managers.OrientationManager;
 import com.ninchat.sdk.models.NinchatUser;
+import com.ninchat.sdk.tasks.NinchatDeleteUserTask;
 import com.ninchat.sdk.views.NinchatWebRTCView;
 
 import java.io.InputStream;
@@ -78,6 +79,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             // coming from ninchat review
             if (sessionManager != null && !sessionManager.getNinchatQuestionnaireHolder().hasPostAudienceQuestionnaire()) {
                 sessionManager.partChannel();
+                // delete the user if current user is a guest
+                if (NinchatSessionManager.getInstance().isGuestMemeber()) {
+                    NinchatDeleteUserTask.start();
+                }
             }
             quit(data);
         } else if (requestCode == NinchatChatActivity.PICK_PHOTO_VIDEO_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
