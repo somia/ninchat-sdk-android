@@ -18,6 +18,7 @@ import com.ninchat.sdk.events.OnItemLoaded;
 import com.ninchat.sdk.events.OnNextQuestionnaire;
 import com.ninchat.sdk.events.OnPostAudienceQuestionnaire;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
+import com.ninchat.sdk.tasks.NinchatDeleteUserTask;
 import com.ninchat.sdk.tasks.NinchatRegisterAudienceTask;
 
 import org.greenrobot.eventbus.EventBus;
@@ -76,7 +77,7 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
                 spaceLeft,
                 spaceRight
         ));
-        if(ninchatQuestionnaireAdapter == null)return ;
+        if (ninchatQuestionnaireAdapter == null) return;
         mRecyclerViewWeakReference.get().setAdapter(ninchatQuestionnaireAdapter);
     }
 
@@ -241,6 +242,10 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
         pendingRequest = NONE;
         if (NinchatSessionManager.getInstance() != null) {
             NinchatSessionManager.getInstance().partChannel();
+            // delete the user if current user is a guest
+            if (NinchatSessionManager.getInstance().isGuestMemeber()) {
+                NinchatDeleteUserTask.start();
+            }
         }
         new Handler().postDelayed(() -> {
             if (NinchatSessionManager.getInstance() != null) {
