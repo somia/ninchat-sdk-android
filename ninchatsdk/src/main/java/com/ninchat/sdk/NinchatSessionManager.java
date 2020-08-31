@@ -64,6 +64,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.HAS_CHANNEL;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.IN_QUEUE;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.NEW_SESSION;
+
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 24/08/2018.
  */
@@ -179,8 +183,8 @@ public final class NinchatSessionManager {
 
     public static void joinQueue(final String queueId) {
         instance.queueId = queueId;
-        // if there is already audience in the user session
-        if (instance.hasUserChannel(instance.userChannels)) {
+        // if there is already audience queue or user is in the queue in the user session
+        if (instance.isResumedSession()) {
             instance.audienceEnqueued(queueId);
             final String currentChannelId = instance.parseChannelId(instance.userChannels);
             if (currentChannelId != null) {
@@ -226,7 +230,7 @@ public final class NinchatSessionManager {
         this.files = new HashMap<>();
         this.activityWeakReference = new WeakReference<>(null);
         this.sessionCredentials = sessionCredentials;
-        this.resumedSession = false;
+        this.resumedSession = NEW_SESSION;
         this.ninchatConfiguration = configurationManager;
     }
 
@@ -252,7 +256,7 @@ public final class NinchatSessionManager {
 
     @Nullable
     private NinchatSessionCredentials sessionCredentials;
-    private boolean resumedSession;
+    private int resumedSession;
     @Nullable
     private NinchatConfiguration ninchatConfiguration;
 
@@ -317,8 +321,8 @@ public final class NinchatSessionManager {
                         userChannels = params.getObject("user_channels");
                         String userAuth = sessionCredentials != null ? sessionCredentials.getUserAuth() : params.getString("user_auth");
                         // a resumed session if session credentials were used
-                        resumedSession = hasUserChannel(userChannels);
-                        final String existingQueueId = resumedSession ? parseQueueId(userChannels) : null;
+                        resumedSession = hasUserChannel(userChannels) ? HAS_CHANNEL : NEW_SESSION;
+                        final String existingQueueId = hasChannel() ? parseQueueId(userChannels) : null;
                         if (existingQueueId != null && queueId == null) {
                             queueId = existingQueueId;
                         }
@@ -338,17 +342,17 @@ public final class NinchatSessionManager {
                             } else if (configuration != null) {
                                 listener.onSessionInitiated(sessionCredentials);
                             } else {
-                                resumedSession = false;
+                                resumedSession = NEW_SESSION;
                                 listener.onSessionInitFailed();
                             }
                         }
                     } else {
-                        resumedSession = false;
+                        resumedSession = NEW_SESSION;
                         listener.onSessionInitFailed();
                     }
                 } catch (final Exception e) {
                     Log.e(TAG, "Failed to get the event from " + params.string(), e);
-                    resumedSession = false;
+                    resumedSession = NEW_SESSION;
                     listener.onSessionInitFailed();
                 }
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
@@ -578,13 +582,13 @@ public final class NinchatSessionManager {
             ninchatQueueListAdapter.clear();
         }
         final List<String> openQueues = getAudienceQueues();
-        for (String queueId : parser.properties.keySet()) {
-            if (!openQueues.contains(queueId)) {
+        for (String currentQueueId : parser.properties.keySet()) {
+            if (!openQueues.contains(currentQueueId)) {
                 continue;
             }
             Props info;
             try {
-                info = (Props) parser.properties.get(queueId);
+                info = (Props) parser.properties.get(currentQueueId);
             } catch (final Exception e) {
                 sessionError(e);
                 sendQueueParsingError();
@@ -597,6 +601,14 @@ public final class NinchatSessionManager {
                 sessionError(e);
                 sendQueueParsingError();
                 return;
+            }
+            try {
+                long queuePosition = info.getInt("queue_position");
+                if (queuePosition != 0) {
+                    resumedSession = IN_QUEUE;
+                    queueId = currentQueueId;
+                }
+            } catch (final Exception e) {
             }
             Props queueAttributes;
             try {
@@ -620,7 +632,7 @@ public final class NinchatSessionManager {
             } catch (final Exception e) {
                 // Ignore
             }
-            final NinchatQueue ninchatQueue = new NinchatQueue(queueId, name);
+            final NinchatQueue ninchatQueue = new NinchatQueue(currentQueueId, name);
             ninchatQueue.setPosition(position);
             ninchatQueue.setClosed(closed);
             queues.add(ninchatQueue);
@@ -1604,7 +1616,15 @@ public final class NinchatSessionManager {
     }
 
     public boolean isResumedSession() {
-        return resumedSession;
+        return isInQueue() || hasChannel();
+    }
+
+    public boolean isInQueue() {
+        return resumedSession == IN_QUEUE;
+    }
+
+    public boolean hasChannel() {
+        return resumedSession == HAS_CHANNEL;
     }
 
     public void close() {
