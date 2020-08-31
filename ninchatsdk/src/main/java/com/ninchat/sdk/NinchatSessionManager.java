@@ -502,6 +502,14 @@ public final class NinchatSessionManager {
         return members.get(userId);
     }
 
+    public boolean isGuestMemeber() {
+        final NinchatUser currentUser = members.get(userId);
+        if (currentUser == null) {
+            return false;
+        }
+        return currentUser.isGuest();
+    }
+
     public int getMemberCount() {
         return members.size();
     }
