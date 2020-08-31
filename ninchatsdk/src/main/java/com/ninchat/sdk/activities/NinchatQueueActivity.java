@@ -81,10 +81,15 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
 
     private void updateQueueStatus() {
         final TextView queueStatus = findViewById(R.id.ninchat_queue_activity_queue_status);
+        final TextView message = findViewById(R.id.ninchat_queue_activity_queue_message);
+        final Button closeButton = findViewById(R.id.ninchat_queue_activity_close_button);
+
         if (sessionManager != null && sessionManager.hasChannel()) {
             queueStatus.setVisibility(View.INVISIBLE);
         } else {
             queueStatus.setVisibility(View.VISIBLE);
+            message.setVisibility(View.VISIBLE);
+            closeButton.setVisibility(View.VISIBLE);
             queueStatus.setText(sessionManager.getQueueStatus(queueId));
         }
 
@@ -116,14 +121,20 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         final TextView message = findViewById(R.id.ninchat_queue_activity_queue_message);
         final Button closeButton = findViewById(R.id.ninchat_queue_activity_close_button);
 
+        if (message != null) {
+            message.setText(sessionManager.getQueueMessage());
+        }
+
+        if (closeButton != null) {
+            closeButton.setText(sessionManager.getCloseChat());
+        }
+
         if (!sessionManager.hasChannel()) {
             if (message != null) {
                 message.setVisibility(View.VISIBLE);
-                message.setText(sessionManager.getQueueMessage());
             }
             if (closeButton != null) {
                 closeButton.setVisibility(View.VISIBLE);
-                closeButton.setText(sessionManager.getCloseChat());
             }
         } else {
             if (message != null)

@@ -67,6 +67,7 @@ import java.util.Map;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.HAS_CHANNEL;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.IN_QUEUE;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.NEW_SESSION;
+import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.NONE;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 24/08/2018.
@@ -710,6 +711,7 @@ public final class NinchatSessionManager {
     }
 
     private void audienceEnqueued(final Props params) {
+        resumedSession = NONE;
         final String queueId = parseQueue(params);
         final Context context = contextWeakReference.get();
         if (context != null) {
@@ -1625,6 +1627,10 @@ public final class NinchatSessionManager {
 
     public boolean hasChannel() {
         return resumedSession == HAS_CHANNEL;
+    }
+
+    public void resetSession() {
+        resumedSession = NEW_SESSION;
     }
 
     public void close() {
