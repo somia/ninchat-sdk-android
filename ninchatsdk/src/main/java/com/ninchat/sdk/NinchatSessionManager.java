@@ -67,7 +67,6 @@ import java.util.Map;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.HAS_CHANNEL;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.IN_QUEUE;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.NEW_SESSION;
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.NONE;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 24/08/2018.
@@ -187,9 +186,12 @@ public final class NinchatSessionManager {
         // if there is already audience queue or user is in the queue in the user session
         if (instance.isResumedSession()) {
             instance.audienceEnqueued(queueId);
-            final String currentChannelId = instance.parseChannelId(instance.userChannels);
-            if (currentChannelId != null) {
+            if (instance.hasChannel()) {
+                final String currentChannelId = instance.parseChannelId(instance.userChannels);
                 NinchatDescribeChannelTask.start(currentChannelId, instance.requestCallback);
+                return;
+            }
+            if (instance.isInQueue()) {
                 return;
             }
         }
@@ -322,7 +324,7 @@ public final class NinchatSessionManager {
                         userChannels = params.getObject("user_channels");
                         String userAuth = sessionCredentials != null ? sessionCredentials.getUserAuth() : params.getString("user_auth");
                         // a resumed session if session credentials were used
-                        resumedSession = hasUserChannel(userChannels) ? HAS_CHANNEL : NEW_SESSION;
+                        resumedSession = 1 << (hasUserChannel(userChannels) ? HAS_CHANNEL : NEW_SESSION);
                         final String existingQueueId = hasChannel() ? parseQueueId(userChannels) : null;
                         if (existingQueueId != null && queueId == null) {
                             queueId = existingQueueId;
@@ -614,8 +616,9 @@ public final class NinchatSessionManager {
             try {
                 long queuePosition = info.getInt("queue_position");
                 if (queuePosition != 0) {
-                    resumedSession = IN_QUEUE;
+                    resumedSession = resumedSession | (1 << IN_QUEUE);
                     queueId = currentQueueId;
+                    position = queuePosition;
                 }
             } catch (final Exception e) {
             }
@@ -719,7 +722,7 @@ public final class NinchatSessionManager {
     }
 
     private void audienceEnqueued(final Props params) {
-        resumedSession = NONE;
+        resumedSession = NEW_SESSION;
         final String queueId = parseQueue(params);
         final Context context = contextWeakReference.get();
         if (context != null) {
@@ -1630,11 +1633,11 @@ public final class NinchatSessionManager {
     }
 
     public boolean isInQueue() {
-        return resumedSession == IN_QUEUE;
+        return (resumedSession & (1 << IN_QUEUE)) != 0;
     }
 
     public boolean hasChannel() {
-        return resumedSession == HAS_CHANNEL;
+        return (resumedSession & (1 << HAS_CHANNEL)) != 0;
     }
 
     public void resetSession() {
