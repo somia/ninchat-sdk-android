@@ -21,7 +21,7 @@ public class NinchatQuestionnaireTypeUtil {
     public static final int POST_AUDIENCE_QUESTIONNAIRE = 2;
     public static final int DEFAULT_INT_VALUE = -1;
 
-    public static final int NEW_SESSION = 1;
+    public static final int NEW_SESSION = 0;
     public static final int IN_QUEUE = 2;
     public static final int HAS_CHANNEL = 3;
     public static final int NONE = 4;
