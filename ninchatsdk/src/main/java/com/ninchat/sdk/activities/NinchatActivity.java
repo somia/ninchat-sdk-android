@@ -79,7 +79,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
         topHeader.setText(sessionManager.getWelcome());
         final Button closeButton = findViewById(R.id.ninchat_activity_close);
         closeButton.setText(sessionManager.getCloseWindow());
-        closeButton.setVisibility(sessionManager.showNoThanksButton() ? View.VISIBLE : View.GONE);
+        closeButton.setVisibility(View.VISIBLE);
         final TextView motd = findViewById(R.id.ninchat_activity_motd);
         motd.setText(sessionManager.getMOTD());
         final TextView noQueues = findViewById(R.id.ninchat_activity_no_queues);
