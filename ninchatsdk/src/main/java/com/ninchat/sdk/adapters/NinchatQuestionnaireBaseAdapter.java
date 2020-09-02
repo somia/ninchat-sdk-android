@@ -1,8 +1,8 @@
 package com.ninchat.sdk.adapters;
 
-import android.support.annotation.NonNull;
-import android.support.v4.util.Pair;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;

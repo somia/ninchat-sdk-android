@@ -1,6 +1,6 @@
 package com.ninchat.sdk;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Ninchat configuration

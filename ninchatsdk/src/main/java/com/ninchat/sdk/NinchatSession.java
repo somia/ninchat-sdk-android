@@ -2,9 +2,8 @@ package com.ninchat.sdk;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
-import android.support.annotation.Nullable;
-import android.support.design.widget.BaseTransientBottomBar;
+
+import androidx.annotation.Nullable;
 
 import com.ninchat.client.Props;
 import com.ninchat.client.Session;

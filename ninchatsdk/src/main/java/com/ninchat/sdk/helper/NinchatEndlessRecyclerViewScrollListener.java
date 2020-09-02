@@ -1,9 +1,7 @@
 package com.ninchat.sdk.helper;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
-
-import org.jetbrains.annotations.NotNull;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 public abstract class NinchatEndlessRecyclerViewScrollListener extends RecyclerView.OnScrollListener {
 

@@ -1,7 +1,7 @@
 package com.ninchat.sdk.helper.questionnaire;
 
 
-import android.support.v4.util.Pair;
+import androidx.core.util.Pair;
 import android.text.InputType;
 import android.text.TextUtils;
 
