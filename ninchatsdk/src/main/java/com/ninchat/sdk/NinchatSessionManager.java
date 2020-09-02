@@ -280,7 +280,7 @@ public final class NinchatSessionManager {
         try {
             Log.v(TAG, "Got configuration: " + config);
             this.configuration = new JSONObject(config);
-            this.ninchatQuestionnaireHolder = new NinchatQuestionnaireHolder(this.getDefault());
+            this.ninchatQuestionnaireHolder = new NinchatQuestionnaireHolder(this.getQuestionnaireFromConfiguration());
             Log.i(TAG, "Configuration fetched successfully!");
         } catch (final JSONException e) {
             this.configuration = null;
@@ -1302,6 +1302,31 @@ public final class NinchatSessionManager {
         }
         throw new JSONException("");
 
+    }
+
+    private JSONObject getQuestionnaireFromConfiguration() {
+        JSONObject value = null;
+        if (configuration != null) {
+            if (preferredEnvironments != null) {
+                for (final String configuration : preferredEnvironments) {
+                    try {
+                        JSONObject temp = this.configuration.getJSONObject(configuration);
+                        if (temp != null)
+                            value = temp;
+                    } catch (final Exception e) {
+                        // Ignore…
+                    }
+                }
+                if (value != null) {
+                    return value;
+                }
+            }
+        }
+        try {
+            return getDefault();
+        } catch (Exception e) {
+            return value;
+        }
     }
 
     private JSONObject getDefault() throws JSONException {
