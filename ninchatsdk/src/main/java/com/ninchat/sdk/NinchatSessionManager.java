@@ -279,7 +279,7 @@ public final class NinchatSessionManager {
         try {
             Log.v(TAG, "Got configuration: " + config);
             this.configuration = new JSONObject(config);
-            this.ninchatQuestionnaireHolder = new NinchatQuestionnaireHolder(this.getDefault());
+            this.ninchatQuestionnaireHolder = new NinchatQuestionnaireHolder(this);
             Log.i(TAG, "Configuration fetched successfully!");
         } catch (final JSONException e) {
             this.configuration = null;
@@ -1230,7 +1230,7 @@ public final class NinchatSessionManager {
         }
     }
 
-    private JSONArray getArrayFromConfiguration(final String key) {
+    public JSONArray getArrayFromConfiguration(final String key) {
         JSONArray array = null;
         if (configuration != null) {
             if (preferredEnvironments != null) {
@@ -1254,7 +1254,7 @@ public final class NinchatSessionManager {
         return array;
     }
 
-    private boolean getBooleanFromConfiguration(final String key) throws JSONException {
+    public boolean getBooleanFromConfiguration(final String key) throws JSONException {
         Boolean value = null;
         if (configuration != null) {
             if (preferredEnvironments != null) {
@@ -1278,7 +1278,7 @@ public final class NinchatSessionManager {
         throw new JSONException("");
     }
 
-    private String getStringFromConfiguration(final String key) throws JSONException {
+    public String getStringFromConfiguration(final String key) throws JSONException {
         String value = null;
         if (configuration != null) {
             if (preferredEnvironments != null) {
