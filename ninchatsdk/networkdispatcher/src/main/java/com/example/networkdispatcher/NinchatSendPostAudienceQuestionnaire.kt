@@ -3,27 +3,23 @@ package com.example.networkdispatcher
 import com.ninchat.client.Payload
 import com.ninchat.client.Props
 import com.ninchat.client.Session
+import com.ninchat.client.Strings
 
-class NinchatSendMessage {
+class NinchatSendPostAudienceQuestionnaire {
     fun execute(currentSession: Session? = null,
                 channelId: String? = null,
-                messageType: String? = null,
                 message: String? = null
     ): Long {
 
         val params = Props()
         params.setString("action", "send_message")
-        params.setString("message_type", messageType)
+        params.setString("message_type", "ninchat.com/metadata")
         params.setString("channel_id", channelId)
-        
-        messageType?.let {
-            messageType.startsWith("ninchat.com/rtc/").let {
-                params.setInt("message_ttl", 10)
-            }
-        }
+        params.setStringArray("message_recipient_ids", Strings())
+        params.setBool("message_fold", false)
 
         val payload = Payload()
-        message?.let {
+        message?.let{
             payload.append(message.toByteArray())
         }
 
