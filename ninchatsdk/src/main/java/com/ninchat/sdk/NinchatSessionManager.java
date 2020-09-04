@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
@@ -324,6 +325,11 @@ public final class NinchatSessionManager {
                         userId = params.getString("user_id");
                         userChannels = params.getObject("user_channels");
                         userQueues = params.getObject("user_queues");
+                        // if queue id is not given and site config has audienceAutoQueue
+                        if (TextUtils.isEmpty(queueId) && !TextUtils.isEmpty(parseQueueIdFromSiteConfig())) {
+                            queueId = parseQueueIdFromSiteConfig();
+                        }
+
                         String userAuth = sessionCredentials != null ? sessionCredentials.getUserAuth() : params.getString("user_auth");
                         // a resumed session with use channels
                         resumedSession |= (1 << (hasUserChannel(userChannels) ? HAS_CHANNEL : NEW_SESSION));
@@ -337,7 +343,7 @@ public final class NinchatSessionManager {
                                 queueId = existingQueueId;
                         }
 
-                        if(isInQueue()) {
+                        if (isInQueue()) {
                             final String existingQueueId = parseQueueIdFromUserQueues(userQueues);
                             // if existing queue id is present update his queueId
                             if (existingQueueId != null)
@@ -461,6 +467,7 @@ public final class NinchatSessionManager {
     }
 
     private String parseQueueIdFromUserChannels(final Props currentUserChannels) {
+        if (currentUserChannels == null) return null;
         final NinchatPropVisitor parser = new NinchatPropVisitor();
         try {
             currentUserChannels.accept(parser);
@@ -477,6 +484,7 @@ public final class NinchatSessionManager {
     }
 
     private String parseQueueIdFromUserQueues(final Props currentUserQueues) {
+        if (userQueues == null) return null;
         final NinchatPropVisitor parser = new NinchatPropVisitor();
         try {
             currentUserQueues.accept(parser);
@@ -486,6 +494,57 @@ public final class NinchatSessionManager {
                 final long queuePosition = queueInfo.getInt("queue_position");
                 if (queuePosition != 0) {
                     return currentQueueId;
+                }
+            }
+        } catch (final Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+    // If audienceAutoQueue is available
+    private String parseQueueIdFromSiteConfig() {
+        try {
+            final String queueId = getStringFromConfiguration("audienceAutoQueue");
+            return queueId;
+        } catch (JSONException e) {
+            return null;
+        }
+    }
+
+    private long parseQueuePositionFromUserQueues(final Props currentUserQueues, final String queueId) {
+        if (userQueues == null) return -1;
+        final NinchatPropVisitor parser = new NinchatPropVisitor();
+        try {
+            currentUserQueues.accept(parser);
+            // audience has one or multiple channel
+            for (String currentQueueId : parser.properties.keySet()) {
+                final Props queueInfo = (Props) parser.properties.get(currentQueueId);
+                final long queuePosition = queueInfo.getInt("queue_position");
+                if (queuePosition != 0 && currentQueueId.equals(queueId)) {
+                    return queuePosition;
+                }
+            }
+        } catch (final Exception e) {
+            return -1;
+        }
+        return -1;
+    }
+
+    private String parseQueueNameFromUserQueues(final Props currentUserQueues, final String queueId) {
+        if (userQueues == null) return null;
+        final NinchatPropVisitor parser = new NinchatPropVisitor();
+        try {
+            currentUserQueues.accept(parser);
+            // audience has one or multiple channel
+            for (String currentQueueId : parser.properties.keySet()) {
+                final Props queueInfo = (Props) parser.properties.get(currentQueueId);
+                final long queuePosition = queueInfo.getInt("queue_position");
+                if (queuePosition != 0 && currentQueueId.equals(queueId)) {
+                    final Props queueAttrs = queueInfo.getObject("queue_attrs");
+                    if(queueAttrs != null) {
+                        return queueAttrs.getString("name");
+                    }
                 }
             }
         } catch (final Exception e) {
@@ -1614,16 +1673,30 @@ public final class NinchatSessionManager {
 
     public Spanned getQueueStatus(final String queueId) {
         NinchatQueue selectedQueue = getQueue(queueId);
-        if (selectedQueue == null) {
+        long position = -1;
+        String name = "";
+        if (selectedQueue != null) {
+            position = selectedQueue.getPosition();
+            name = selectedQueue.getName();
+        } else if (isInQueue()) {
+            final long queuePosition = parseQueuePositionFromUserQueues(userQueues, queueId);
+            if (queuePosition != -1){
+                position = queuePosition;
+                name = parseQueueNameFromUserQueues(userQueues, queueId);
+            }
+        }
+
+        // if there is no queue position
+        if(position == -1) {
             return null;
         }
-        final long position = selectedQueue.getPosition();
+
         final String key = position == 1
                 ? "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are next."
                 : "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are at position {{audienceQueue.queue_position}}.";
         String queueStatus = getTranslation(key);
         if (queueStatus.contains("audienceQueue.queue_attrs.name")) {
-            queueStatus = replacePlaceholder(queueStatus, selectedQueue.getName());
+            queueStatus = replacePlaceholder(queueStatus, name);
         }
         if (queueStatus.contains("audienceQueue.queue_position")) {
             queueStatus = replacePlaceholder(queueStatus, String.valueOf(position));
