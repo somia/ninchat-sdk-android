@@ -484,7 +484,7 @@ public final class NinchatSessionManager {
     }
 
     private String parseQueueIdFromUserQueues(final Props currentUserQueues) {
-        if (userQueues == null) return null;
+        if (currentUserQueues == null) return null;
         final NinchatPropVisitor parser = new NinchatPropVisitor();
         try {
             currentUserQueues.accept(parser);
@@ -513,7 +513,7 @@ public final class NinchatSessionManager {
     }
 
     private long parseQueuePositionFromUserQueues(final Props currentUserQueues, final String queueId) {
-        if (userQueues == null) return -1;
+        if (currentUserQueues == null) return -1;
         final NinchatPropVisitor parser = new NinchatPropVisitor();
         try {
             currentUserQueues.accept(parser);
@@ -532,7 +532,7 @@ public final class NinchatSessionManager {
     }
 
     private String parseQueueNameFromUserQueues(final Props currentUserQueues, final String queueId) {
-        if (userQueues == null) return null;
+        if (currentUserQueues == null) return null;
         final NinchatPropVisitor parser = new NinchatPropVisitor();
         try {
             currentUserQueues.accept(parser);
