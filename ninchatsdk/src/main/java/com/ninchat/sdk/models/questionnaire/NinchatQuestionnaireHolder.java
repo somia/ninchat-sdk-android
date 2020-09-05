@@ -1,7 +1,7 @@
 package com.ninchat.sdk.models.questionnaire;
 
+import com.ninchat.sdk.NinchatSessionManager;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireSantizer.*;
@@ -19,24 +19,24 @@ public class NinchatQuestionnaireHolder {
     private boolean conversationLikePreAudienceQuestionnaire;
     private boolean conversationLikePostAudienceQuestionnaire;
 
-    public NinchatQuestionnaireHolder(JSONObject configuration) {
+    public NinchatQuestionnaireHolder(NinchatSessionManager ninchatSessionManager) {
         preAudienceQuestionnaire = new NinchatQuestionnaire(
-                parseQuestionnaire(configuration, true)
+                parseQuestionnaire(ninchatSessionManager, true)
         );
         postAudienceQuestionnaire = new NinchatQuestionnaire(
-                parseQuestionnaire(configuration, false)
+                parseQuestionnaire(ninchatSessionManager, false)
         );
-        conversationLikePreAudienceQuestionnaire = isConversationLikePreAudienceQuestionnaire(configuration);
-        conversationLikePostAudienceQuestionnaire = isConversationLikePostAudienceQuestionnaire(configuration);
-        audienceRegisteredText = getAudienceRegisteredTextFromConfig(configuration);
-        audienceRegisteredClosedText = getAudienceRegisteredClosedTextFromConfig(configuration);
-        botQuestionnaireName = getBotQuestionnaireNameFromConfig(configuration);
-        botQuestionnaireAvatar = getBotQuestionnaireAvatarFromConfig(configuration);
+        conversationLikePreAudienceQuestionnaire = isConversationLikePreAudienceQuestionnaire(ninchatSessionManager);
+        conversationLikePostAudienceQuestionnaire = isConversationLikePostAudienceQuestionnaire(ninchatSessionManager);
+        audienceRegisteredText = getAudienceRegisteredTextFromConfig(ninchatSessionManager);
+        audienceRegisteredClosedText = getAudienceRegisteredClosedTextFromConfig(ninchatSessionManager);
+        botQuestionnaireName = getBotQuestionnaireNameFromConfig(ninchatSessionManager);
+        botQuestionnaireAvatar = getBotQuestionnaireAvatarFromConfig(ninchatSessionManager);
     }
 
-    public JSONArray parseQuestionnaire(JSONObject configuration, boolean isPreAudienceQuestionnaire) {
+    public JSONArray parseQuestionnaire(NinchatSessionManager ninchatSessionManager, boolean isPreAudienceQuestionnaire) {
         JSONArray questionnaireList = isPreAudienceQuestionnaire ?
-                getPreAudienceQuestionnaire(configuration) : getPostAudienceQuestionnaire(configuration);
+                getPreAudienceQuestionnaire(ninchatSessionManager) : getPostAudienceQuestionnaire(ninchatSessionManager);
 
         try {
             if (isSimpleFormLikeQuestionnaire(questionnaireList)) {
