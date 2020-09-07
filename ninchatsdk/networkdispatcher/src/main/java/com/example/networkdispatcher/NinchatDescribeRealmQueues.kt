@@ -3,12 +3,14 @@ package com.example.networkdispatcher
 import com.ninchat.client.Props
 import com.ninchat.client.Session
 import com.ninchat.client.Strings
+import kotlinx.coroutines.channels.SendChannel
 
 class NinchatDescribeRealmQueues {
     companion object {
-        fun execute(currentSession: Session? = null,
-                    realmId: String? = null,
-                    audienceQueues: Collection<String>): Long {
+        suspend fun execute(currentSession: Session? = null,
+                            channel: SendChannel<Long>,
+                            realmId: String? = null,
+                            audienceQueues: Collection<String>) {
 
             val params = Props()
             params.setString("action", "describe_realm_queues")
@@ -21,9 +23,9 @@ class NinchatDescribeRealmQueues {
             val actionId: Long = try {
                 currentSession?.send(params, null) ?: -1
             } catch (e: Exception) {
-                return -1
+                return channel.send(-1)
             }
-            return actionId
+            return channel.send(actionId)
         }
     }
 }

@@ -2,10 +2,13 @@ package com.example.networkdispatcher
 
 import com.ninchat.client.Props
 import com.ninchat.client.Session
+import kotlinx.coroutines.channels.SendChannel
 
 class NinchatDescribeFile {
     companion object {
-        fun execute(currentSession: Session? = null, fileId: String? = null): Long {
+        suspend fun execute(currentSession: Session? = null,
+                            channel: SendChannel<Long>,
+                            fileId: String? = null) {
             val params = Props()
             params.setString("action", "describe_file");
             fileId?.let {
@@ -14,9 +17,9 @@ class NinchatDescribeFile {
             val actionId: Long = try {
                 currentSession?.send(params, null) ?: -1
             } catch (e: Exception) {
-                return -1
+                return channel.send(-1)
             }
-            return actionId
+            return channel.send(actionId)
         }
     }
 }

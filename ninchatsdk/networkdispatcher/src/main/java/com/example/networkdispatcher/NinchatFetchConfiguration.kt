@@ -2,7 +2,7 @@ package com.example.networkdispatcher
 
 import android.annotation.SuppressLint
 import android.util.Log
-import com.ninchat.client.Session
+import kotlinx.coroutines.channels.SendChannel
 import org.json.JSONException
 import java.io.BufferedInputStream
 import java.io.IOException
@@ -17,9 +17,9 @@ class NinchatFetchConfiguration {
         const val TIMEOUT = 10000
 
         @SuppressLint("LongLogTag")
-        fun execute(currentSession: Session? = null,
-                    serverAddress: String? = null,
-                    configurationKey: String? = null
+        suspend fun execute(channel: SendChannel<String>,
+                            serverAddress: String? = null,
+                            configurationKey: String? = null
         ) {
             val configurationUrl = "https://$serverAddress/config/$configurationKey"
             Log.i(TAG, "Fetching configuration...")
@@ -75,8 +75,7 @@ class NinchatFetchConfiguration {
             connection?.disconnect()
             jsonDataBuilder.trimToSize()
             try {
-                // NinchatSessionManager.getInstance().setConfiguration(jsonDataBuilder.toString())
-                // todo (pallab) send event that configuration needs to be set
+                channel.send(jsonDataBuilder.toString())
             } catch (e: JSONException) {
                 Log.e(TAG, "Configuration parsing error", e)
             }
