@@ -3,16 +3,17 @@ package com.example.networkdispatcher
 import com.ninchat.client.Props
 import com.ninchat.client.Session
 import com.ninchat.client.Strings
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class NinchatOpenSession {
     companion object {
-        fun execute(currentSession: Session? = null,
-                    siteSecret: String? = null,
-                    userName: String? = null,
-                    userId: String? = null,
-                    userAuth: String? = null,
-                    userAgent: String,
-                    serverAddress: String) {
+        suspend fun execute(siteSecret: String? = null,
+                            userName: String? = null,
+                            userId: String? = null,
+                            userAuth: String? = null,
+                            userAgent: String,
+                            serverAddress: String) = withContext(Dispatchers.IO) {
 
             val sessionParams = Props()
             siteSecret?.let {
