@@ -1,4 +1,3 @@
-package com.example.networkdispatcher
 
 import com.ninchat.client.Payload
 import com.ninchat.client.Props
@@ -13,10 +12,12 @@ class NinchatSendMessage {
 
         val params = Props()
         params.setString("action", "send_message")
-        params.setString("message_type", messageType)
-        params.setString("channel_id", channelId)
         
+        channelId?.let {
+            params.setString("channel_id", channelId)    
+        }
         messageType?.let {
+            params.setString("message_type", messageType)
             messageType.startsWith("ninchat.com/rtc/").let {
                 params.setInt("message_ttl", 10)
             }

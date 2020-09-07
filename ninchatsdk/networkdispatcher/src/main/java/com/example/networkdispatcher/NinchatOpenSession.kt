@@ -40,6 +40,7 @@ class NinchatOpenSession {
             session.setHeader("User-Agent", userAgent)
             session.setAddress(serverAddress)
             session.setParams(sessionParams)
+            // set a callback before opening a session
             session.open()
         }
     }

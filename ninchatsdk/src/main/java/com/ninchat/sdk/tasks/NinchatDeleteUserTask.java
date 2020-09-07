@@ -1,8 +1,6 @@
 package com.ninchat.sdk.tasks;
 
 import android.os.AsyncTask;
-import android.util.Log;
-
 import com.ninchat.client.Props;
 import com.ninchat.sdk.NinchatSessionManager;
 

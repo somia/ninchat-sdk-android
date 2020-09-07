@@ -14,8 +14,11 @@ class NinchatSendRatings {
         val params = Props()
         params.setString("action", "send_message")
         params.setString("message_type", "ninchat.com/metadata")
-        params.setString("channel_id", channelId)
-        params.setBool("message_fold", true)
+        channelId?.let {
+            params.setString("channel_id", channelId)
+        }
+        params.setStringArray("message_recipient_ids", Strings())
+        params.setBool("message_fold", false)
 
         val payload = Payload()
         message?.let{

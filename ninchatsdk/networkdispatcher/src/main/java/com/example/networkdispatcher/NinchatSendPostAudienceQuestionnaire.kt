@@ -14,9 +14,10 @@ class NinchatSendPostAudienceQuestionnaire {
         val params = Props()
         params.setString("action", "send_message")
         params.setString("message_type", "ninchat.com/metadata")
-        params.setString("channel_id", channelId)
-        params.setStringArray("message_recipient_ids", Strings())
-        params.setBool("message_fold", false)
+        channelId?.let {
+            params.setString("channel_id", channelId)
+        }
+        params.setBool("message_fold", true)
 
         val payload = Payload()
         message?.let{
