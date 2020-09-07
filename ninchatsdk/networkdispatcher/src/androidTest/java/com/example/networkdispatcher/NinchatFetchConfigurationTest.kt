@@ -13,14 +13,14 @@ import org.junit.Assert
 @RunWith(AndroidJUnit4::class)
 class NinchatFetchConfigurationTest {
     @Test
-    fun withCorrentServerAddressAndConfiguration() = runBlocking<Unit> {
+    fun withCorrectServerAddressAndConfiguration() = runBlocking<Unit> {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         val serverAddress = appContext.getString(R.string.ninchat_server_address)
         val configurationKey = appContext.getString(R.string.ninchat_configuration_key)
         try {
             val configuration = NinchatFetchConfiguration.execute(serverAddress, configurationKey)
             val configurationJson = JSONObject(configuration)
-            Assert.assertNotNull("should fetch configuration with right configuration key", configurationJson)
+            Assert.assertNotNull("should fetch configuration with right server and configuration key", configurationJson)
         } catch (e: Exception) {
             Assert.assertNull(e)
         }

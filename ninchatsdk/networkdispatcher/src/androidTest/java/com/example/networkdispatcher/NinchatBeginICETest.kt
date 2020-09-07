@@ -10,8 +10,20 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class NinchatBeginICETest {
     @Test
-    fun ninchatBeginICE() = runBlocking<Unit> {
+    fun getICEWithEmptySession() = runBlocking<Unit> {
         val actionId = NinchatBeginICE.execute(null)
         Assert.assertEquals("should return -1 when session is null", -1, actionId)
+    }
+
+    @Test
+    fun getICEWithRightSession() = runBlocking<Unit> {
+        val actionId = NinchatBeginICE.execute(null)
+        Assert.assertEquals("should return ICE details with right session", -1, actionId)
+    }
+
+    @Test
+    fun getICEWithClosedSession() = runBlocking<Unit> {
+        val actionId = NinchatBeginICE.execute(null)
+        Assert.assertEquals("should return -1 when closed session", -1, actionId)
     }
 }
