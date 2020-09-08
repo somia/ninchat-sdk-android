@@ -211,7 +211,10 @@ class NinchatOpenSessionTest {
                 }
                 currentSession.setOnSessionEvent(SessionEventHandler { params: Props ->
                     val event: String = params.getString("event")
+                    val currentUserId = params.getString("user_id")
+                    val currentUserAuth = params.getString("user_auth")
                     println("onSessionEvent $event | ${params.toString()}")
+                    println("userId, userAuth = $userId, $userAuth | $currentUserId, $currentUserAuth")
                     if (event == "session_created") {
                         launch {
                             done.send(true)
@@ -244,6 +247,102 @@ class NinchatOpenSessionTest {
         repeat(1) {
             val success = done.receive()
             Assert.assertEquals("should resume a session using userId and userAuth", true, success)
+        }
+    }
+
+    @Test
+    fun resumeSession_fromClosedSession() = runBlocking<Unit> {
+        val appContext = getInstrumentation().targetContext
+        val siteSecret = appContext.getString(R.string.ninchat_site_secret)
+        val serverAddress = appContext.getString(R.string.ninchat_server_address)
+        val sessionCreated = Channel<Boolean>()
+        val done = Channel<Boolean>()
+        var userId: String? = null
+        var userAuth: String? = null
+
+        NinchatOpenSession.execute(
+                siteSecret = siteSecret,
+                serverAddress = serverAddress,
+                userName = null,
+                userAgent = null,
+                userId = null,
+                userAuth = null,
+                onSession = { currentSession: Session ->
+                    currentSession.setOnClose {
+                        println("closed")
+                    }
+                    currentSession.setOnSessionEvent(SessionEventHandler { params: Props ->
+                        val event: String = params.getString("event")
+                        println("onSessionEvent $event | ${params.toString()}")
+                        if (event == "session_created") {
+                            userId = params.getString("user_id")
+                            userAuth = params.getString("user_auth")
+                            launch {
+                                currentSession.close()
+                                sessionCreated.send(true)
+                            }
+                        } else if (event == "error") {
+                            launch {
+                                sessionCreated.send(false)
+                            }
+                        }
+                    })
+                }
+        )
+
+
+        fun resumeSession() {
+            val onResumeSession = { currentSession: Session ->
+                currentSession.setOnClose {
+                    println("closed")
+                    launch {
+                        done.send(false)
+                    }
+                }
+                currentSession.setOnConnState() { state: String ->
+                    println("onConnectionStateChange $state")
+                }
+                currentSession.setOnSessionEvent(SessionEventHandler { params: Props ->
+                    val event: String = params.getString("event")
+                    val currentUserId = params.getString("user_id")
+                    val currentUserAuth = params.getString("user_auth")
+                    println("onSessionEvent $event | ${params.toString()}")
+                    println("userId, userAuth = $userId, $userAuth | $currentUserId, $currentUserAuth")
+                    if (event == "session_created") {
+                        launch {
+                            done.send(true)
+                        }
+                    } else if (event == "error") {
+                        launch {
+                            done.send(false)
+                        }
+                    }
+                })
+            }
+
+            launch {
+                NinchatOpenSession.execute(
+                        siteSecret = siteSecret,
+                        serverAddress = serverAddress,
+                        userName = null,
+                        userAgent = null,
+                        userId = userId,
+                        userAuth = userAuth,
+                        onSession = onResumeSession
+                )
+            }
+
+        }
+
+        repeat(1) {
+            val success = sessionCreated.receive()
+            Assert.assertEquals("should create a new session", true, success)
+            resumeSession()
+        }
+
+        repeat(1) {
+            val success = done.receive()
+            Assert.assertEquals("should resume session by creating new session for already closed session", true, success)
         }
     }
 }
