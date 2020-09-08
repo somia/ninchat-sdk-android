@@ -12,7 +12,7 @@ class NinchatBeginICETest {
     @Test
     fun getICEWithEmptySession() = runBlocking<Unit> {
         val actionId = NinchatBeginICE.execute(null)
-        Assert.assertEquals("should return -1 when session is null", -1, actionId)
+        Assert.assertEquals("should return -1 when providing an empty session", -1, actionId)
     }
 
     @Test
@@ -24,6 +24,6 @@ class NinchatBeginICETest {
     @Test
     fun getICEWithClosedSession() = runBlocking<Unit> {
         val actionId = NinchatBeginICE.execute(null)
-        Assert.assertEquals("should return -1 when closed session", -1, actionId)
+        Assert.assertEquals("should return -1 when providing a closed session", -1, actionId)
     }
 }
