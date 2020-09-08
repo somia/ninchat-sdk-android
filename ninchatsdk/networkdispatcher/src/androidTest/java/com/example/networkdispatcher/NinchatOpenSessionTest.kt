@@ -6,6 +6,7 @@ import com.ninchat.client.Props
 import com.ninchat.client.Session
 import com.ninchat.client.SessionEventHandler
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.selects.select
@@ -179,6 +180,9 @@ class NinchatOpenSessionTest {
                 userId = null,
                 userAuth = null,
                 onSession = { currentSession: Session ->
+                    currentSession.setOnClose {
+                        println("closed")
+                    }
                     currentSession.setOnSessionEvent(SessionEventHandler { params: Props ->
                         val event: String = params.getString("event")
                         println("onSessionEvent $event | ${params.toString()}")
@@ -198,8 +202,8 @@ class NinchatOpenSessionTest {
         )
 
 
-        fun resumeSession() = launch {
-            val onSession = { currentSession: Session ->
+        fun resumeSession() {
+            val onResumeSession = { currentSession: Session ->
                 currentSession.setOnClose {
                     println("closed")
                     launch {
@@ -227,15 +231,18 @@ class NinchatOpenSessionTest {
                 })
             }
 
-            NinchatOpenSession.execute(
-                    siteSecret = siteSecret,
-                    serverAddress = serverAddress,
-                    userName = null,
-                    userAgent = null,
-                    userId = userId,
-                    userAuth = userAuth,
-                    onSession = onSession
-            )
+            launch {
+                NinchatOpenSession.execute(
+                        siteSecret = siteSecret,
+                        serverAddress = serverAddress,
+                        userName = null,
+                        userAgent = null,
+                        userId = userId,
+                        userAuth = userAuth,
+                        onSession = onResumeSession
+                )
+            }
+
         }
 
         repeat(1) {
@@ -246,7 +253,7 @@ class NinchatOpenSessionTest {
 
         repeat(1) {
             val success = done.receive()
-            Assert.assertEquals("should resume a session using userId and userAuth", true, success)
+            Assert.assertEquals("should resume session by from existing session", true, success)
         }
     }
 
@@ -270,6 +277,9 @@ class NinchatOpenSessionTest {
                 onSession = { currentSession: Session ->
                     currentSession.setOnClose {
                         println("closed")
+                        launch {
+                            sessionCreated.send(true)
+                        }
                     }
                     currentSession.setOnSessionEvent(SessionEventHandler { params: Props ->
                         val event: String = params.getString("event")
@@ -278,8 +288,8 @@ class NinchatOpenSessionTest {
                             userId = params.getString("user_id")
                             userAuth = params.getString("user_auth")
                             launch {
+                                delay(1500)
                                 currentSession.close()
-                                sessionCreated.send(true)
                             }
                         } else if (event == "error") {
                             launch {
