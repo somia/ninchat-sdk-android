@@ -3,6 +3,7 @@ package com.ninchat.sdk
 import com.ninchat.client.Props
 import com.ninchat.client.Session
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
 class NinchatBeginICE {
@@ -18,5 +19,11 @@ class NinchatBeginICE {
                     }
                     actionId
                 }
+        fun executeAsync(currentSession: Session?, callback: (actionId: Long) -> Long) {
+            runBlocking {
+                val actionId = execute(currentSession)
+                callback(actionId)
+            }
+        }
     }
 }
