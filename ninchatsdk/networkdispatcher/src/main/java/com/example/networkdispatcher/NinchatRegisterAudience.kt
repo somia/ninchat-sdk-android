@@ -2,24 +2,29 @@ package com.example.networkdispatcher
 
 import com.ninchat.client.Props
 import com.ninchat.client.Session
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class NinchatRegisterAudience {
-    fun execute(currentSession: Session? = null,
-                queueId: String? = null,
-                audienceMetadata: Props? = null): Long {
-        val params = Props()
-        params.setString("action", "register_audience")
-        queueId.let {
-            params.setString("queue_id", queueId)
-        }
-        audienceMetadata?.let {
-            params.setObject("audience_metadata", audienceMetadata)
-        }
-        val actionId: Long = try {
-            currentSession?.send(params, null) ?: -1
-        } catch (e: Exception) {
-            return -1
-        }
-        return actionId
+    companion object {
+        suspend fun execute(currentSession: Session? = null,
+                            queueId: String? = null,
+                            audienceMetadata: Props? = null): Long =
+                withContext(Dispatchers.IO) {
+                    val params = Props()
+                    params.setString("action", "register_audience")
+                    val actionId: Long = if (!queueId.isNullOrEmpty() && audienceMetadata != null) {
+                        params.setString("queue_id", queueId)
+                        params.setObject("audience_metadata", audienceMetadata)
+                        try {
+                            currentSession?.send(params, null) ?: -1L
+                        } catch (e: Exception) {
+                            -1L
+                        }
+                    } else {
+                        -1L
+                    }
+                    actionId
+                }
     }
 }
