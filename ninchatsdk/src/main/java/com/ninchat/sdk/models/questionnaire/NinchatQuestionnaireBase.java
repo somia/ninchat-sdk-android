@@ -2,9 +2,11 @@ package com.ninchat.sdk.models.questionnaire;
 
 import android.content.Context;
 import android.os.Handler;
+
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.view.View;
 
@@ -18,8 +20,9 @@ import com.ninchat.sdk.events.OnItemLoaded;
 import com.ninchat.sdk.events.OnNextQuestionnaire;
 import com.ninchat.sdk.events.OnPostAudienceQuestionnaire;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
-import com.ninchat.sdk.tasks.NinchatDeleteUserTask;
+import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
 import com.ninchat.sdk.tasks.NinchatRegisterAudienceTask;
+import com.ninchat.sdk.threadutils.ScopeHandler;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -244,7 +247,11 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
             NinchatSessionManager.getInstance().partChannel();
             // delete the user if current user is a guest
             if (NinchatSessionManager.getInstance().isGuestMemeber()) {
-                NinchatDeleteUserTask.start();
+                NinchatDeleteUser.executeAsync(
+                        ScopeHandler.getIOScope(),
+                        NinchatSessionManager.getInstance().getSession(),
+                        aLong -> null
+                );
             }
         }
         new Handler().postDelayed(() -> {

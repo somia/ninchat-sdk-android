@@ -39,11 +39,11 @@ import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
 import com.ninchat.sdk.networkdispatchers.NinchatBeginICE;
+import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
+import com.ninchat.sdk.networkdispatchers.NinchatDescribeChannel;
+import com.ninchat.sdk.networkdispatchers.NinchatDescribeFile;
 import com.ninchat.sdk.networkdispatchers.NinchatFetchConfiguration;
 import com.ninchat.sdk.networkdispatchers.NinchatOpenSession;
-import com.ninchat.sdk.tasks.NinchatDeleteUserTask;
-import com.ninchat.sdk.tasks.NinchatDescribeChannelTask;
-import com.ninchat.sdk.tasks.NinchatDescribeFileTask;
 import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
 import com.ninchat.sdk.tasks.NinchatListQueuesTask;
 import com.ninchat.sdk.tasks.NinchatPartChannelTask;
@@ -190,7 +190,15 @@ public final class NinchatSessionManager {
             instance.audienceEnqueued(queueId);
             if (instance.hasChannel()) {
                 final String currentChannelId = instance.parseChannelId(instance.userChannels);
-                NinchatDescribeChannelTask.start(currentChannelId, instance.requestCallback);
+                NinchatDescribeChannel.executeAsync(
+                        ScopeHandler.getIOScope(),
+                        instance.session,
+                        currentChannelId,
+                        actionId -> {
+                            instance.actionId = actionId;
+                            return null;
+                        }
+                );
                 return;
             }
             if (instance.isInQueue()) {
@@ -201,7 +209,11 @@ public final class NinchatSessionManager {
     }
 
     public static void exitQueue() {
-        NinchatDeleteUserTask.start();
+        NinchatDeleteUser.executeAsync(
+                ScopeHandler.getIOScope(),
+                getInstance().session,
+                aLong -> null
+        );
     }
 
     public void partChannel() {
@@ -995,7 +1007,17 @@ public final class NinchatSessionManager {
                         final String fileId = file.getString("file_id");
                         final NinchatFile ninchatFile = new NinchatFile(messageId, fileId, filename, filesize, filetype, timestampMs, sender, !sender.equals(userId));
                         this.files.put(fileId, ninchatFile);
-                        NinchatDescribeFileTask.start(fileId);
+                        if (ninchatFile.getUrl() == null ||
+                                ninchatFile.getUrlExpiry() == null ||
+                                ninchatFile.getUrlExpiry().before(new Date())) {
+
+                            NinchatDescribeFile.executeAsync(
+                                    ScopeHandler.getIOScope(),
+                                    getSession(),
+                                    fileId,
+                                    aLong -> null
+                            );
+                        }
                     }
                 } else {
                     messageAdapter.add(messageId, new NinchatMessage(message.getString("text"), null, sender, timestampMs, !sender.equals(userId)));
