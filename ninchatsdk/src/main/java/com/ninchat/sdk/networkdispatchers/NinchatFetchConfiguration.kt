@@ -2,9 +2,7 @@ package com.ninchat.sdk.networkdispatchers
 
 import android.annotation.SuppressLint
 import android.util.Log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import org.json.JSONException
 import java.io.BufferedInputStream
 import java.io.IOException
@@ -78,6 +76,7 @@ class NinchatFetchConfiguration {
                     }
                     retval
                 }
+
         private fun clearBuffer(buffer: ByteArray) {
             for (i in buffer.indices) {
                 buffer[i] = '\u0000'.toByte()
@@ -85,11 +84,14 @@ class NinchatFetchConfiguration {
         }
 
         @JvmStatic
-        fun executeAsync(serverAddress: String? = null,
-                         configurationKey: String? = null, callback: (actionId: String) -> String) {
-            runBlocking {
-                val actionId = NinchatFetchConfiguration.execute(serverAddress, configurationKey)
-                callback(actionId)
+        fun executeAsync(
+                scope: CoroutineScope,
+                serverAddress: String? = null,
+                configurationKey: String? = null,
+                callback: ((configuration: String) -> Long)? = null) {
+            scope.launch {
+                val configuration = execute(serverAddress, configurationKey)
+                callback?.let { it(configuration) }
             }
         }
     }

@@ -1,7 +1,5 @@
 package com.ninchat.sdk;
 
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Test;
@@ -18,9 +16,6 @@ import static org.junit.Assert.*;
 public class ExampleInstrumentedTest {
     @Test
     public void useAppContext() {
-        // Context of the app under test.
-        Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.ninchat.sdk.test", appContext.getPackageName());
     }
 }

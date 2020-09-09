@@ -40,16 +40,17 @@ import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
 import com.ninchat.sdk.networkdispatchers.NinchatBeginICE;
 import com.ninchat.sdk.networkdispatchers.NinchatFetchConfiguration;
+import com.ninchat.sdk.networkdispatchers.NinchatOpenSession;
 import com.ninchat.sdk.tasks.NinchatDeleteUserTask;
 import com.ninchat.sdk.tasks.NinchatDescribeChannelTask;
 import com.ninchat.sdk.tasks.NinchatDescribeFileTask;
 import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
 import com.ninchat.sdk.tasks.NinchatListQueuesTask;
-import com.ninchat.sdk.tasks.NinchatOpenSessionTask;
 import com.ninchat.sdk.tasks.NinchatPartChannelTask;
 import com.ninchat.sdk.tasks.NinchatSendFileTask;
 import com.ninchat.sdk.tasks.NinchatSendIsWritingTask;
 import com.ninchat.sdk.tasks.NinchatSendMessageTask;
+import com.ninchat.sdk.threadutils.ScopeHandler;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
@@ -270,6 +271,7 @@ public final class NinchatSessionManager {
         this.requestCode = requestCode;
         this.queueId = queueId;
         NinchatFetchConfiguration.executeAsync(
+                ScopeHandler.getIOScope(),
                 serverAddress,
                 configurationKey,
                 s -> {
@@ -302,7 +304,25 @@ public final class NinchatSessionManager {
             LocalBroadcastManager.getInstance(context)
                     .sendBroadcast(new Intent(NinchatSession.Broadcast.CONFIGURATION_FETCHED));
         }
-        NinchatOpenSessionTask.start(siteSecret, sessionCredentials);
+        String userAuth = null;
+        String userId = null;
+        if (sessionCredentials != null) {
+            userId = sessionCredentials.getUserId();
+            userAuth = sessionCredentials.getUserAuth();
+        }
+        NinchatOpenSession.executeAsync(
+                ScopeHandler.getIOScope(),
+                siteSecret,
+                getUserName(),
+                userId,
+                userAuth,
+                getUserAgent(),
+                getServerAddress(),
+                currentSession -> {
+                    setSession(currentSession);
+                    return null;
+                }
+        );
     }
 
     public void sessionError(final Exception error) {
@@ -1174,8 +1194,9 @@ public final class NinchatSessionManager {
     }
 
     public void sendWebRTCBeginIce() {
-        // NinchatSendBeginIceTask.start();
-        NinchatBeginICE.executeAsync(session, aLong -> null);
+        NinchatBeginICE.executeAsync(
+                ScopeHandler.getIOScope(),
+                session, aLong -> null);
     }
 
     public void sendWebRTCSDPReply(final SessionDescription sessionDescription) {

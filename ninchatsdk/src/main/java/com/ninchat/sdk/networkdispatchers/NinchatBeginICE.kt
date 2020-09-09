@@ -2,9 +2,7 @@ package com.ninchat.sdk.networkdispatchers
 
 import com.ninchat.client.Props
 import com.ninchat.client.Session
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class NinchatBeginICE {
     companion object {
@@ -19,11 +17,15 @@ class NinchatBeginICE {
                     }
                     actionId
                 }
+
         @JvmStatic
-        fun executeAsync(currentSession: Session?, callback: (actionId: Long) -> Long) {
-            runBlocking {
+        fun executeAsync(
+                scope: CoroutineScope,
+                currentSession: Session?,
+                callback: ((actionId: Long) -> Long)? = null) {
+            scope.launch {
                 val actionId = execute(currentSession)
-                callback(actionId)
+                callback?.let { it(actionId) }
             }
         }
     }
