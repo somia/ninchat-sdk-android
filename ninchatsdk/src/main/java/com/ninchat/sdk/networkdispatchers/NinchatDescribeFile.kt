@@ -1,25 +1,19 @@
-package com.ninchat.sdk
+package com.ninchat.sdk.networkdispatchers
 
 import com.ninchat.client.Props
 import com.ninchat.client.Session
-import com.ninchat.client.Strings
 import kotlinx.coroutines.channels.SendChannel
 
-class NinchatDescribeRealmQueues {
+class NinchatDescribeFile {
     companion object {
         suspend fun execute(currentSession: Session? = null,
                             channel: SendChannel<Long>,
-                            realmId: String? = null,
-                            audienceQueues: Collection<String>) {
-
+                            fileId: String? = null) {
             val params = Props()
-            params.setString("action", "describe_realm_queues")
-            params.setString("realm_id", realmId)
-            val queues = Strings()
-            for (queue in audienceQueues) {
-                queues.append(queue)
+            params.setString("action", "describe_file");
+            fileId?.let {
+                params.setString("file_id", fileId);
             }
-            params.setStringArray("queue_ids", queues)
             val actionId: Long = try {
                 currentSession?.send(params, null) ?: -1
             } catch (e: Exception) {

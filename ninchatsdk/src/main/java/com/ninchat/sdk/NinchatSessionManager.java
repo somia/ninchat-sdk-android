@@ -38,7 +38,8 @@ import com.ninchat.sdk.models.NinchatSessionCredentials;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
-import com.ninchat.sdk.tasks.NinchatConfigurationFetchTask;
+import com.ninchat.sdk.networkdispatchers.NinchatBeginICE;
+import com.ninchat.sdk.networkdispatchers.NinchatFetchConfiguration;
 import com.ninchat.sdk.tasks.NinchatDeleteUserTask;
 import com.ninchat.sdk.tasks.NinchatDescribeChannelTask;
 import com.ninchat.sdk.tasks.NinchatDescribeFileTask;
@@ -46,7 +47,6 @@ import com.ninchat.sdk.tasks.NinchatJoinQueueTask;
 import com.ninchat.sdk.tasks.NinchatListQueuesTask;
 import com.ninchat.sdk.tasks.NinchatOpenSessionTask;
 import com.ninchat.sdk.tasks.NinchatPartChannelTask;
-import com.ninchat.sdk.tasks.NinchatSendBeginIceTask;
 import com.ninchat.sdk.tasks.NinchatSendFileTask;
 import com.ninchat.sdk.tasks.NinchatSendIsWritingTask;
 import com.ninchat.sdk.tasks.NinchatSendMessageTask;
@@ -269,7 +269,18 @@ public final class NinchatSessionManager {
         this.siteSecret = siteSecret;
         this.requestCode = requestCode;
         this.queueId = queueId;
-        NinchatConfigurationFetchTask.start(configurationKey);
+        NinchatFetchConfiguration.executeAsync(
+                serverAddress,
+                configurationKey,
+                s -> {
+                    try {
+                        setConfiguration(s);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+        );
     }
 
     public NinchatMessageAdapter getMessageAdapter() {
@@ -1163,7 +1174,8 @@ public final class NinchatSessionManager {
     }
 
     public void sendWebRTCBeginIce() {
-        NinchatSendBeginIceTask.start();
+        // NinchatSendBeginIceTask.start();
+        NinchatBeginICE.executeAsync(session, aLong -> null);
     }
 
     public void sendWebRTCSDPReply(final SessionDescription sessionDescription) {

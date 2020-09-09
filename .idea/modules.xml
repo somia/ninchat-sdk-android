@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/networkdispatcher2/networkdispatchers.iml" filepath="$PROJECT_DIR$/.idea/modules/networkdispatcher2/networkdispatchers.iml" group="ninchat-sdk-android/networkdispatchers" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ninchat-migration-ninchat-sdk-android.iml" filepath="$PROJECT_DIR$/.idea/modules/ninchat-migration-ninchat-sdk-android.iml" group="ninchat-sdk-android" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ninchatsdk/ninchat-migration-ninchat-sdk-android-ninchatsdk.iml" filepath="$PROJECT_DIR$/.idea/modules/ninchatsdk/ninchat-migration-ninchat-sdk-android-ninchatsdk.iml" group="ninchat-sdk-android/ninchatsdk" />
       <module fileurl="file://$PROJECT_DIR$/ninchat-ninchat-sdk-android.iml" filepath="$PROJECT_DIR$/ninchat-ninchat-sdk-android.iml" group="ninchat-sdk-android" />

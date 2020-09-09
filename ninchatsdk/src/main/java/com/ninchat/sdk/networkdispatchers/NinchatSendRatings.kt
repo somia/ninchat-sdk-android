@@ -1,11 +1,11 @@
-package com.ninchat.sdk
+package com.ninchat.sdk.networkdispatchers
 
 import com.ninchat.client.Payload
 import com.ninchat.client.Props
 import com.ninchat.client.Session
 import com.ninchat.client.Strings
 
-class NinchatSendPostAudienceQuestionnaire {
+class NinchatSendRatings {
     fun execute(currentSession: Session? = null,
                 channelId: String? = null,
                 message: String? = null
@@ -17,7 +17,8 @@ class NinchatSendPostAudienceQuestionnaire {
         channelId?.let {
             params.setString("channel_id", channelId)
         }
-        params.setBool("message_fold", true)
+        params.setStringArray("message_recipient_ids", Strings())
+        params.setBool("message_fold", false)
 
         val payload = Payload()
         message?.let{

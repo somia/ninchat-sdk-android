@@ -1,4 +1,4 @@
-package com.ninchat.sdk
+package com.ninchat.sdk.networkdispatchers
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -6,6 +6,7 @@ import com.ninchat.client.Payload
 import com.ninchat.client.Props
 import com.ninchat.client.Session
 import com.ninchat.client.Strings
+import com.ninchat.sdk.R
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch

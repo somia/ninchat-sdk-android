@@ -17,4 +17,15 @@
     <string name="ninchat_review_neutral">Okay</string>
     <string name="ninchat_review_sad">Poor</string>
 
+
+    <!--test specific values-->
+    <string name="ninchat_site_secret">dummy_value</string>
+    <string name="ninchat_site_secret_wrong">dummy_value</string>
+    <string name="ninchat_server_address">dummy_value</string>
+    <string name="ninchat_server_address_wrong">dummy_value</string>
+    <string name="ninchat_configuration_key">dummy_value</string>
+    <string name="ninchat_configuration_key_wrong">dummy_value</string>
+    <string name="ninchat_queue">dummy_value</string>
+    <string name="ninchat_queue_wrong">dummy_value</string>
+
 </resources>

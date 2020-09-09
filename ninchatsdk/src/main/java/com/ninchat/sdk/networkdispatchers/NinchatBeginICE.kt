@@ -1,4 +1,4 @@
-package com.ninchat.sdk
+package com.ninchat.sdk.networkdispatchers
 
 import com.ninchat.client.Props
 import com.ninchat.client.Session
@@ -19,6 +19,7 @@ class NinchatBeginICE {
                     }
                     actionId
                 }
+        @JvmStatic
         fun executeAsync(currentSession: Session?, callback: (actionId: Long) -> Long) {
             runBlocking {
                 val actionId = execute(currentSession)

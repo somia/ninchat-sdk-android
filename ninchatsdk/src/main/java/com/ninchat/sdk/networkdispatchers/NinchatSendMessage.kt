@@ -1,4 +1,4 @@
-package com.ninchat.sdk
+package com.ninchat.sdk.networkdispatchers
 import com.ninchat.client.Payload
 import com.ninchat.client.Props
 import com.ninchat.client.Session

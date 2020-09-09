@@ -1,7 +1,8 @@
-package com.ninchat.sdk
+package com.ninchat.sdk.networkdispatchers
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.ninchat.sdk.R
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import org.junit.Test

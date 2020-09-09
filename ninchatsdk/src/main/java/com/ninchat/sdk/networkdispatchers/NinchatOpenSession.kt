@@ -1,9 +1,10 @@
-package com.ninchat.sdk
+package com.ninchat.sdk.networkdispatchers
 
 import android.os.Build
 import com.ninchat.client.Props
 import com.ninchat.client.Session
 import com.ninchat.client.Strings
+import com.ninchat.sdk.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.withContext

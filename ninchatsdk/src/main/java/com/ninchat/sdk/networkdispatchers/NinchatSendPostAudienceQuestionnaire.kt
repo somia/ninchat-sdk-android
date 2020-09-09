@@ -1,37 +1,33 @@
-package com.ninchat.sdk
+package com.ninchat.sdk.networkdispatchers
 
 import com.ninchat.client.Payload
 import com.ninchat.client.Props
 import com.ninchat.client.Session
 
-class NinchatSendFile {
+class NinchatSendPostAudienceQuestionnaire {
     fun execute(currentSession: Session? = null,
                 channelId: String? = null,
-                fileName: String? = null,
-                data: ByteArray? = null): Long {
+                message: String? = null
+    ): Long {
+
         val params = Props()
-        params.setString("action", "request_audience")
-        channelId.let {
+        params.setString("action", "send_message")
+        params.setString("message_type", "ninchat.com/metadata")
+        channelId?.let {
             params.setString("channel_id", channelId)
         }
-
-        val fileAttrs = Props()
-        fileName?.let {
-            fileAttrs.setString("name", fileName)
-        }
-        params.setObject("file_attrs", fileAttrs)
+        params.setBool("message_fold", true)
 
         val payload = Payload()
-        data?.let {
-            payload.append(data)
+        message?.let{
+            payload.append(message.toByteArray())
         }
-        
+
         val actionId: Long = try {
             currentSession?.send(params, payload) ?: -1
         } catch (e: Exception) {
             return -1
         }
         return actionId
-
     }
 }
