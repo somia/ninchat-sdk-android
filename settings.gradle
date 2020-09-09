@@ -1,2 +1,2 @@
-include ':ninchatsdk:networkdispatcher'
+include ':networkdispatcher2'
 include ':ninchatsdk'
