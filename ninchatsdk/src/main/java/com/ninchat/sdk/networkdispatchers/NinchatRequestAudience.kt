@@ -29,6 +29,7 @@ class NinchatRequestAudience {
                     actionId
                 }
 
+        @JvmStatic
         fun executeAsync(
                 scope: CoroutineScope,
                 currentSession: Session?,
