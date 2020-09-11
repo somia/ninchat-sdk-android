@@ -9,16 +9,24 @@ import com.ninchat.sdk.NinchatSessionManager;
 // Used for removing user from queue
 public class NinchatDeleteUserTask extends NinchatBaseTask {
 
-    public static void start() {
-        new NinchatDeleteUserTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    public static void start(final NinchatSessionManager.RequestCallback requestCallback) {
+        new NinchatDeleteUserTask(requestCallback).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private NinchatSessionManager.RequestCallback requestCallback;
+
+    protected NinchatDeleteUserTask(final NinchatSessionManager.RequestCallback requestCallback) {
+        this.requestCallback = requestCallback;
     }
 
     @Override
     protected Exception doInBackground(Void... voids) {
         final Props params = new Props();
-        params.setString("action","delete_user");
+        params.setString("action", "delete_user");
         try {
-            NinchatSessionManager.getInstance().getSession().send(params, null);
+            long actionId = NinchatSessionManager.getInstance().getSession().send(params, null);
+            if (requestCallback != null)
+                requestCallback.onActionId(actionId);
         } catch (final Exception e) {
             return e;
         }

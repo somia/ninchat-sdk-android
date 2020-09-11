@@ -201,7 +201,7 @@ public final class NinchatSessionManager {
     }
 
     public static void exitQueue() {
-        NinchatDeleteUserTask.start();
+        NinchatDeleteUserTask.start(instance.requestCallback);
     }
 
     public void partChannel() {
@@ -370,6 +370,8 @@ public final class NinchatSessionManager {
                                 listener.onSessionInitFailed();
                             }
                         }
+                    } else if (event.equals("user_deleted") && actionId == params.getInt("action_id")) {
+                        // ignore
                     } else {
                         resumedSession = NEW_SESSION;
                         listener.onSessionInitFailed();
@@ -542,7 +544,7 @@ public final class NinchatSessionManager {
                 final long queuePosition = queueInfo.getInt("queue_position");
                 if (queuePosition != 0 && currentQueueId.equals(queueId)) {
                     final Props queueAttrs = queueInfo.getObject("queue_attrs");
-                    if(queueAttrs != null) {
+                    if (queueAttrs != null) {
                         return queueAttrs.getString("name");
                     }
                 }
@@ -1680,14 +1682,14 @@ public final class NinchatSessionManager {
             name = selectedQueue.getName();
         } else if (isInQueue()) {
             final long queuePosition = parseQueuePositionFromUserQueues(userQueues, queueId);
-            if (queuePosition != -1){
+            if (queuePosition != -1) {
                 position = queuePosition;
                 name = parseQueueNameFromUserQueues(userQueues, queueId);
             }
         }
 
         // if there is no queue position
-        if(position == -1) {
+        if (position == -1) {
             return null;
         }
 
