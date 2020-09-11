@@ -45,8 +45,8 @@ import com.ninchat.sdk.networkdispatchers.NinchatDescribeFile;
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeRealmQueues;
 import com.ninchat.sdk.networkdispatchers.NinchatFetchConfiguration;
 import com.ninchat.sdk.networkdispatchers.NinchatOpenSession;
+import com.ninchat.sdk.networkdispatchers.NinchatPartChannel;
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience;
-import com.ninchat.sdk.tasks.NinchatPartChannelTask;
 import com.ninchat.sdk.tasks.NinchatSendFileTask;
 import com.ninchat.sdk.tasks.NinchatSendIsWritingTask;
 import com.ninchat.sdk.tasks.NinchatSendMessageTask;
@@ -223,7 +223,12 @@ public final class NinchatSessionManager {
     }
 
     public void partChannel() {
-        NinchatPartChannelTask.start(channelId);
+        NinchatPartChannel.executeAsync(
+                ScopeHandler.getIOScope(),
+                session,
+                channelId,
+                aLong -> null
+        );
     }
 
     protected static NinchatSessionManager instance;
