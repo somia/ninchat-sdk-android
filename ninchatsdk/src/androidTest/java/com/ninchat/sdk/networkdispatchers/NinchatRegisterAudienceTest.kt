@@ -39,14 +39,18 @@ class NinchatRegisterAudienceTest {
                     currentSession.setOnSessionEvent { params: Props ->
                         val event: String = params.getString("event")
                         println("onSessionEvent $event | ${params.toString()}")
-                        if (event == "session_created") {
-                            runBlocking {
-                                channel.send(currentSession)
+                        when (event) {
+                            "session_created" -> {
+                                runBlocking {
+                                    channel.send(currentSession)
+                                }
                             }
-                        } else if (event == "error") {
-                            runBlocking {
-                                channel.send(null)
+                            "error" -> {
+                                runBlocking {
+                                    channel.send(null)
+                                }
                             }
+
                         }
                     }
                 }

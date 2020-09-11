@@ -8,6 +8,7 @@ import com.ninchat.client.Session
 import com.ninchat.client.SessionEventHandler
 import com.ninchat.sdk.R
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -19,6 +20,43 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class NinchatBeginICETest {
+    suspend fun createSession(): ReceiveChannel<Session?> {
+        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        val siteSecret = appContext.getString(R.string.ninchat_site_secret)
+        val serverAddress = appContext.getString(R.string.ninchat_server_address)
+        val channel = Channel<Session?>()
+        NinchatOpenSession.execute(
+                siteSecret = siteSecret,
+                serverAddress = serverAddress,
+                userName = null,
+                userAgent = null,
+                userId = null,
+                userAuth = null,
+                onSession = { currentSession: Session ->
+                    currentSession.setOnClose {
+                        println("closed")
+                        runBlocking {
+                            channel.send(null)
+                        }
+                    }
+                    currentSession.setOnSessionEvent { params: Props ->
+                        val event: String = params.getString("event")
+                        println("onSessionEvent $event | ${params.toString()}")
+                        if (event == "session_created") {
+                            runBlocking {
+                                channel.send(currentSession)
+                            }
+                        } else if (event == "error") {
+                            runBlocking {
+                                channel.send(null)
+                            }
+                        }
+                    }
+                }
+        )
+        return channel
+    }
+
     @Test
     fun getICEWithEmptySession() = runBlocking<Unit> {
         val actionId = NinchatBeginICE.execute(null)

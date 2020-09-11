@@ -42,10 +42,10 @@ import com.ninchat.sdk.networkdispatchers.NinchatBeginICE;
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeChannel;
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeFile;
+import com.ninchat.sdk.networkdispatchers.NinchatDescribeRealmQueues;
 import com.ninchat.sdk.networkdispatchers.NinchatFetchConfiguration;
 import com.ninchat.sdk.networkdispatchers.NinchatOpenSession;
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience;
-import com.ninchat.sdk.tasks.NinchatListQueuesTask;
 import com.ninchat.sdk.tasks.NinchatPartChannelTask;
 import com.ninchat.sdk.tasks.NinchatSendFileTask;
 import com.ninchat.sdk.tasks.NinchatSendIsWritingTask;
@@ -384,9 +384,13 @@ public final class NinchatSessionManager {
                                 userAuth,
                                 params.getString("session_id")
                         );
-
-                        NinchatListQueuesTask.start();
-
+                        NinchatDescribeRealmQueues.executeAsync(
+                                ScopeHandler.getIOScope(),
+                                session,
+                                getRealmId(),
+                                getAudienceQueues(),
+                                aLong -> null
+                        );
                         if (listener != null) {
                             // TODO: Close previous session, hasn't been added since it didn't work
                             if (configuration != null && sessionCredentials != null) {
