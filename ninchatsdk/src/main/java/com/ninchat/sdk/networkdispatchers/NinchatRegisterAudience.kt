@@ -2,7 +2,9 @@ package com.ninchat.sdk.networkdispatchers
 
 import com.ninchat.client.Props
 import com.ninchat.client.Session
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class NinchatRegisterAudience {
@@ -26,5 +28,22 @@ class NinchatRegisterAudience {
                     }
                     actionId
                 }
+
+        @JvmStatic
+        fun executeAsync(
+                scope: CoroutineScope,
+                currentSession: Session?,
+                queueId: String? = null,
+                audienceMetadata: Props? = null,
+                callback: ((actionId: Long) -> Long)? = null) {
+            scope.launch {
+                val actionId = NinchatRegisterAudience.execute(
+                        currentSession = currentSession,
+                        queueId = queueId,
+                        audienceMetadata = audienceMetadata
+                )
+                callback?.let { it(actionId) }
+            }
+        }
     }
 }

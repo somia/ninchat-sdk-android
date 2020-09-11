@@ -21,7 +21,7 @@ import com.ninchat.sdk.events.OnNextQuestionnaire;
 import com.ninchat.sdk.events.OnPostAudienceQuestionnaire;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
-import com.ninchat.sdk.tasks.NinchatRegisterAudienceTask;
+import com.ninchat.sdk.networkdispatchers.NinchatRegisterAudience;
 import com.ninchat.sdk.threadutils.ScopeHandler;
 
 import org.greenrobot.eventbus.EventBus;
@@ -119,7 +119,13 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
         setAudienceMetadata(answers);
         pendingRequest = AUDIENCE_REGISTER;
         // a register
-        NinchatRegisterAudienceTask.start(queueId);
+        NinchatRegisterAudience.executeAsync(
+                ScopeHandler.getIOScope(),
+                NinchatSessionManager.getInstance().getSession(),
+                queueId,
+                NinchatSessionManager.getInstance().getAudienceMetadata(),
+                aLong -> null
+        );
         // wait for register to complete. Should get event from session manager
         // that register is complete with or without error onAudienceRegistered
     }
