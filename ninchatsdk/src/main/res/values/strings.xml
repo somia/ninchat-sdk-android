@@ -26,6 +26,11 @@
     <string name="ninchat_configuration_key">dummy_value</string>
     <string name="ninchat_configuration_key_wrong">dummy_value</string>
     <string name="ninchat_queue">dummy_value</string>
+    <string name="ninchat_queue_closed">dummy_value</string>
     <string name="ninchat_queue_wrong">dummy_value</string>
+    <string name="ninchat_realm_id">dummy_value</string>
+    <string name="ninchat_realm_id_wrong">dummy_value</string>
+    <string name="ninchat_audience_queue">dummy_value</string>
+    <string name="ninchat_audience_queue_wrong">dummy_value</string>
 
 </resources>

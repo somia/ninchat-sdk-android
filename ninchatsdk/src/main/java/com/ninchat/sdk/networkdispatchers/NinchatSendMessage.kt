@@ -13,10 +13,8 @@ class NinchatSendMessage {
         suspend fun execute(currentSession: Session? = null,
                             channelId: String? = null,
                             messageType: String? = null,
-                            message: String? = null
-        ): Long =
+                            message: String? = null): Long =
                 withContext(Dispatchers.IO) {
-
                     val params = Props()
                     params.setString("action", "send_message")
 
@@ -25,7 +23,7 @@ class NinchatSendMessage {
                     }
                     messageType?.let {
                         params.setString("message_type", messageType)
-                        messageType.startsWith("ninchat.com/rtc/").let {
+                        if (messageType.startsWith("ninchat.com/rtc/")) {
                             params.setInt("message_ttl", 10)
                         }
                     }
@@ -52,7 +50,7 @@ class NinchatSendMessage {
                 message: String? = null,
                 callback: ((actionId: Long) -> Long)? = null) {
             scope.launch {
-                val actionId = NinchatSendMessage.execute(
+                val actionId = execute(
                         currentSession = currentSession,
                         channelId = channelId,
                         messageType = messageType,
