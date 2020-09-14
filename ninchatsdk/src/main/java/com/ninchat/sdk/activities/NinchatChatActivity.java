@@ -81,7 +81,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 sessionManager.partChannel();
                 // delete the user if current user is a guest
                 if (NinchatSessionManager.getInstance().isGuestMemeber()) {
-                    NinchatDeleteUserTask.start();
+                    NinchatSessionManager.exitQueue();
                 }
             }
             quit(data);
