@@ -395,35 +395,71 @@ public class NinchatQuestionnaireItemGetter {
         return InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES;
     }
 
-    public static String getBotQuestionnaireNameFromConfig(JSONObject item) {
-        return item.optString("questionnaireName", "");
+    public static String getBotQuestionnaireNameFromConfig(@NotNull NinchatSessionManager ninchatSessionManager) {
+        String text = "";
+        try {
+            text = ninchatSessionManager.getStringFromConfiguration("questionnaireName");
+        } catch (JSONException e) {
+            text = "";
+        }
+        return text;
     }
 
-    public static String getBotQuestionnaireAvatarFromConfig(JSONObject item) {
-        return item.optString("questionnaireAvatar", "");
+    public static String getBotQuestionnaireAvatarFromConfig(@NotNull NinchatSessionManager ninchatSessionManager) {
+        String text = "";
+        try {
+            text = ninchatSessionManager.getStringFromConfiguration("questionnaireAvatar");
+        } catch (JSONException e) {
+            text = "";
+        }
+        return text;
     }
 
-    public static String getAudienceRegisteredTextFromConfig(JSONObject item) {
-        return item.optString("audienceRegisteredText", "");
+    public static String getAudienceRegisteredTextFromConfig(@NotNull NinchatSessionManager ninchatSessionManager) {
+        String text = "";
+        try {
+            text = ninchatSessionManager.getStringFromConfiguration("audienceRegisteredText");
+        } catch (JSONException e) {
+            text = "";
+        }
+        return text;
     }
 
-    public static String getAudienceRegisteredClosedTextFromConfig(JSONObject item) {
-        return item.optString("audienceRegisteredClosedText", "");
+    public static String getAudienceRegisteredClosedTextFromConfig(@NotNull NinchatSessionManager ninchatSessionManager) {
+        String text = "";
+        try {
+            text = ninchatSessionManager.getStringFromConfiguration("audienceRegisteredClosedText");
+        } catch (JSONException e) {
+            text = "";
+        }
+        return text;
     }
 
-    public static JSONArray getPreAudienceQuestionnaire(@NotNull JSONObject item) {
-        return item.optJSONArray("preAudienceQuestionnaire");
+    public static JSONArray getPreAudienceQuestionnaire(@NotNull NinchatSessionManager ninchatSessionManager) {
+        return ninchatSessionManager.getArrayFromConfiguration("preAudienceQuestionnaire");
     }
 
-    public static JSONArray getPostAudienceQuestionnaire(@NotNull JSONObject item) {
-        return item.optJSONArray("postAudienceQuestionnaire");
+    public static JSONArray getPostAudienceQuestionnaire(@NotNull NinchatSessionManager ninchatSessionManager) {
+        return ninchatSessionManager.getArrayFromConfiguration("postAudienceQuestionnaire");
     }
 
-    public static boolean isConversationLikePreAudienceQuestionnaire(JSONObject item) {
-        return item.optString("preAudienceQuestionnaireStyle", "").equalsIgnoreCase("conversation");
+    public static boolean isConversationLikePreAudienceQuestionnaire(@NotNull NinchatSessionManager ninchatSessionManager) {
+        String questionnaireStyle = "";
+        try {
+            questionnaireStyle = ninchatSessionManager.getStringFromConfiguration("preAudienceQuestionnaireStyle");
+        } catch (JSONException e) {
+            questionnaireStyle = null;
+        }
+        return (questionnaireStyle == null ? "" : questionnaireStyle).equalsIgnoreCase("conversation");
     }
 
-    public static boolean isConversationLikePostAudienceQuestionnaire(JSONObject item) {
-        return item.optString("postAudienceQuestionnaireStyle", "").equalsIgnoreCase("conversation");
+    public static boolean isConversationLikePostAudienceQuestionnaire(@NotNull NinchatSessionManager ninchatSessionManager) {
+        String questionnaireStyle = "";
+        try {
+            questionnaireStyle = ninchatSessionManager.getStringFromConfiguration("postAudienceQuestionnaireStyle");
+        } catch (JSONException e) {
+            questionnaireStyle = null;
+        }
+        return (questionnaireStyle == null ? "" : questionnaireStyle).equalsIgnoreCase("conversation");
     }
 }
