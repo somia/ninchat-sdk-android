@@ -244,7 +244,7 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
             NinchatSessionManager.getInstance().partChannel();
             // delete the user if current user is a guest
             if (NinchatSessionManager.getInstance().isGuestMemeber()) {
-                NinchatDeleteUserTask.start();
+                NinchatSessionManager.exitQueue();
             }
         }
         new Handler().postDelayed(() -> {
