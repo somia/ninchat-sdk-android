@@ -370,7 +370,7 @@ public final class NinchatSessionManager {
                                 listener.onSessionInitFailed();
                             }
                         }
-                    } else if (event.equals("user_deleted") && actionId == params.getInt("action_id")) {
+                    } else if (event.equals("user_deleted")) {
                         // ignore
                     } else {
                         resumedSession = NEW_SESSION;
