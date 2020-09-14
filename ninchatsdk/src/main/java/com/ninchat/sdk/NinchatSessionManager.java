@@ -47,9 +47,11 @@ import com.ninchat.sdk.networkdispatchers.NinchatFetchConfiguration;
 import com.ninchat.sdk.networkdispatchers.NinchatOpenSession;
 import com.ninchat.sdk.networkdispatchers.NinchatPartChannel;
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience;
-import com.ninchat.sdk.tasks.NinchatSendFileTask;
-import com.ninchat.sdk.tasks.NinchatSendIsWritingTask;
-import com.ninchat.sdk.tasks.NinchatSendMessageTask;
+import com.ninchat.sdk.networkdispatchers.NinchatSendFile;
+import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
+import com.ninchat.sdk.networkdispatchers.NinchatSendPostAudienceQuestionnaire;
+import com.ninchat.sdk.networkdispatchers.NinchatSendRatings;
+import com.ninchat.sdk.networkdispatchers.NinchatUpdateMember;
 import com.ninchat.sdk.threadutils.ScopeHandler;
 
 import org.greenrobot.eventbus.EventBus;
@@ -1191,7 +1193,14 @@ public final class NinchatSessionManager {
         try {
             final JSONObject data = new JSONObject();
             data.put("text", message);
-            NinchatSendMessageTask.start(MessageTypes.TEXT, data.toString(), channelId);
+            NinchatSendMessage.executeAsync(
+                    ScopeHandler.getIOScope(),
+                    getSession(),
+                    channelId,
+                    MessageTypes.TEXT,
+                    data.toString(),
+                    aLong -> null
+            );
         } catch (final JSONException e) {
             sessionError(e);
         }
@@ -1202,29 +1211,64 @@ public final class NinchatSessionManager {
             final JSONObject data = new JSONObject();
             data.put("action", "click");
             data.put("target", selected);
-            NinchatSendMessageTask.start(MessageTypes.UI_ACTION, data.toString(), channelId);
+            NinchatSendMessage.executeAsync(
+                    ScopeHandler.getIOScope(),
+                    getSession(),
+                    channelId,
+                    MessageTypes.UI_ACTION,
+                    data.toString(),
+                    aLong -> null
+            );
         } catch (final JSONException e) {
             Log.e(TAG, "Error when sending multichoice answer!", e);
         }
     }
 
     public void sendIsWritingUpdate(final boolean isWriting) {
-        NinchatSendIsWritingTask.start(channelId, userId, isWriting);
+        NinchatUpdateMember.executeAsync(
+                ScopeHandler.getIOScope(),
+                getSession(),
+                channelId,
+                userId,
+                isWriting,
+                aLong -> null
+        );
     }
 
     public void sendImage(final String name, final byte[] data) {
-        NinchatSendFileTask.start(name, data, channelId);
+        NinchatSendFile.executeAsync(
+                ScopeHandler.getIOScope(),
+                getSession(),
+                channelId,
+                name,
+                data,
+                aLong -> null
+        );
     }
 
     public void sendWebRTCCall() {
-        NinchatSendMessageTask.start(MessageTypes.CALL, "{}", channelId);
+        NinchatSendMessage.executeAsync(
+                ScopeHandler.getIOScope(),
+                getSession(),
+                channelId,
+                MessageTypes.CALL,
+                "{}",
+                aLong -> null
+        );
     }
 
     public void sendWebRTCCallAnswer(final boolean answer) {
         try {
             final JSONObject data = new JSONObject();
             data.put("answer", answer);
-            NinchatSendMessageTask.start(MessageTypes.PICK_UP, data.toString(), channelId);
+            NinchatSendMessage.executeAsync(
+                    ScopeHandler.getIOScope(),
+                    getSession(),
+                    channelId,
+                    MessageTypes.PICK_UP,
+                    data.toString(),
+                    aLong -> null
+            );
         } catch (final JSONException e) {
             sessionError(e);
         }
@@ -1250,7 +1294,15 @@ public final class NinchatSessionManager {
             sdp.put("type", sessionDescription.type.canonicalForm());
             sdp.put("sdp", sessionDescription.description);
             data.put("sdp", sdp);
-            NinchatSendMessageTask.start(messageType, data.toString(), channelId);
+            NinchatSendMessage.executeAsync(
+                    ScopeHandler.getIOScope(),
+                    getSession(),
+                    channelId,
+                    messageType,
+                    data.toString(),
+                    aLong -> null
+            );
+
         } catch (final JSONException e) {
             sessionError(e);
         }
@@ -1266,14 +1318,30 @@ public final class NinchatSessionManager {
             candidate.put("id", iceCandidate.sdpMLineIndex);
             candidate.put("label", iceCandidate.sdpMid);
             data.put("candidate", candidate);
-            NinchatSendMessageTask.start(MessageTypes.ICE_CANDIDATE, data.toString(), channelId);
+            NinchatSendMessage.executeAsync(
+                    ScopeHandler.getIOScope(),
+                    getSession(),
+                    channelId,
+                    MessageTypes.ICE_CANDIDATE,
+                    data.toString(),
+                    aLong -> null
+            );
+
         } catch (final JSONException e) {
             sessionError(e);
         }
     }
 
     public void sendWebRTCHangUp() {
-        NinchatSendMessageTask.start(MessageTypes.HANG_UP, "{}", channelId);
+        NinchatSendMessage.executeAsync(
+                ScopeHandler.getIOScope(),
+                getSession(),
+                channelId,
+                MessageTypes.HANG_UP,
+                "{}",
+                aLong -> null
+        );
+
     }
 
     public void sendRating(final int rating) {
@@ -1282,7 +1350,13 @@ public final class NinchatSessionManager {
             value.put("rating", rating);
             final JSONObject data = new JSONObject();
             data.put("data", value);
-            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(2), channelId);
+            NinchatSendRatings.executeAsync(
+                    ScopeHandler.getIOScope(),
+                    getSession(),
+                    channelId,
+                    data.toString(2),
+                    aLong -> null
+            );
         } catch (final JSONException e) {
             // Ignore
         }
@@ -1295,7 +1369,13 @@ public final class NinchatSessionManager {
             final JSONObject data = new JSONObject();
             data.put("data", value);
             data.put("time", System.currentTimeMillis());
-            NinchatSendMessageTask.start(MessageTypes.RATING_OR_POST_ANSWERS, data.toString(2), channelId, requestCallback);
+            NinchatSendPostAudienceQuestionnaire.executeAsync(
+                    ScopeHandler.getIOScope(),
+                    getSession(),
+                    channelId,
+                    data.toString(2),
+                    aLong -> null
+            );
         } catch (final JSONException e) {
             // Ignore
         }
