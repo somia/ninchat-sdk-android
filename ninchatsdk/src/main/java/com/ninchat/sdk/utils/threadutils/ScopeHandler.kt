@@ -1,4 +1,4 @@
-package com.ninchat.sdk.threadutils
+package com.ninchat.sdk.utils.threadutils
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

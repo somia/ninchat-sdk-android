@@ -14,6 +14,7 @@ import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.managers.webrtc.NinchatAudioManager;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
+import com.ninchat.sdk.utils.messagetype.MessageTypes;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -149,7 +150,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     public boolean handleWebRTCMessage(final String messageType, final String payload) {
-        if (NinchatSessionManager.MessageTypes.OFFER.equals(messageType)) {
+        if (MessageTypes.OFFER.equals(messageType)) {
             try {
                 offer = new JSONObject(payload);
                 videoContainer.setVisibility(View.VISIBLE);
@@ -159,7 +160,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                 return false;
             }
             NinchatSessionManager.getInstance().sendWebRTCBeginIce();
-        } else if (NinchatSessionManager.MessageTypes.PICK_UP.equals(messageType)) {
+        } else if (MessageTypes.PICK_UP.equals(messageType)) {
             try {
                 removeSpinner();
                 final JSONObject answer = new JSONObject(payload);
@@ -173,13 +174,13 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                 videoContainer.setVisibility(View.GONE);
                 return true;
             }
-        } else if (NinchatSessionManager.MessageTypes.WEBRTC_SERVERS_PARSED.equals(messageType)) {
+        } else if (MessageTypes.WEBRTC_SERVERS_PARSED.equals(messageType)) {
             try {
                 startWithSDP(offer != null ? offer.getJSONObject("sdp") : null);
             } catch (final JSONException e) {
                 NinchatSessionManager.getInstance().sessionError(e);
             }
-        } else if (NinchatSessionManager.MessageTypes.ANSWER.equals(messageType) && peerConnection != null) {
+        } else if (MessageTypes.ANSWER.equals(messageType) && peerConnection != null) {
             try {
                 answer = new JSONObject(payload);
                 if (peerConnection.getRemoteDescription() == null) {
@@ -188,7 +189,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             } catch (final JSONException e) {
                 NinchatSessionManager.getInstance().sessionError(e);
             }
-        } else if (NinchatSessionManager.MessageTypes.ICE_CANDIDATE.equals(messageType) && peerConnection != null && peerConnection.iceGatheringState() == PeerConnection.IceGatheringState.GATHERING) {
+        } else if (MessageTypes.ICE_CANDIDATE.equals(messageType) && peerConnection != null && peerConnection.iceGatheringState() == PeerConnection.IceGatheringState.GATHERING) {
             JSONObject candidate;
             try {
                 candidate = new JSONObject(payload).getJSONObject("candidate");
@@ -212,7 +213,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             } catch (final JSONException e) {
                 NinchatSessionManager.getInstance().sessionError(e);
             }
-        } else if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType)) {
+        } else if (MessageTypes.HANG_UP.equals(messageType)) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {

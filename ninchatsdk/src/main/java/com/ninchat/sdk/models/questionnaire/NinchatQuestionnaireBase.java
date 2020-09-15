@@ -22,7 +22,7 @@ import com.ninchat.sdk.events.OnPostAudienceQuestionnaire;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
 import com.ninchat.sdk.networkdispatchers.NinchatRegisterAudience;
-import com.ninchat.sdk.threadutils.ScopeHandler;
+import com.ninchat.sdk.utils.threadutils.ScopeHandler;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

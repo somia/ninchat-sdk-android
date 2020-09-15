@@ -42,7 +42,8 @@ import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.managers.OrientationManager;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
-import com.ninchat.sdk.threadutils.ScopeHandler;
+import com.ninchat.sdk.utils.messagetype.MessageTypes;
+import com.ninchat.sdk.utils.threadutils.ScopeHandler;
 import com.ninchat.sdk.views.NinchatWebRTCView;
 
 import java.io.InputStream;
@@ -234,7 +235,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             final String action = intent.getAction();
             if (NinchatSessionManager.Broadcast.WEBRTC_MESSAGE.equals(action)) {
                 final String messageType = intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_TYPE);
-                if (NinchatSessionManager.MessageTypes.CALL.equals(messageType)) {
+                if (MessageTypes.CALL.equals(messageType)) {
                     final AlertDialog dialog = new AlertDialog.Builder(NinchatChatActivity.this, R.style.NinchatTheme_Dialog)
                             .setView(R.layout.dialog_video_call_consent)
                             .setCancelable(false)
@@ -283,7 +284,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                     hideKeyboard();
                     messageAdapter.addMetaMessage(intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_ID), sessionManager.getVideoCallMetaMessage());
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT))) {
-                    if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType)) {
+                    if (MessageTypes.HANG_UP.equals(messageType)) {
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
                     }
                 }

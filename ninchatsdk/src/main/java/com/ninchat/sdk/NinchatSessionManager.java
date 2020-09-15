@@ -53,7 +53,8 @@ import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
 import com.ninchat.sdk.networkdispatchers.NinchatSendPostAudienceQuestionnaire;
 import com.ninchat.sdk.networkdispatchers.NinchatSendRatings;
 import com.ninchat.sdk.networkdispatchers.NinchatUpdateMember;
-import com.ninchat.sdk.threadutils.ScopeHandler;
+import com.ninchat.sdk.utils.messagetype.MessageTypes;
+import com.ninchat.sdk.utils.threadutils.ScopeHandler;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
@@ -93,33 +94,6 @@ public final class NinchatSessionManager {
     public static final class Parameter {
         public static final String QUEUE_ID = "queueId";
         public static final String CHAT_IS_CLOSED = "isClosed";
-    }
-
-    public static final class MessageTypes {
-        public static final String TEXT = "ninchat.com/text";
-        public static final String FILE = "ninchat.com/file";
-        public static final String UI_COMPOSE = "ninchat.com/ui/compose";
-        public static final String UI_ACTION = "ninchat.com/ui/action";
-        public static final String WEBRTC_PREFIX = "ninchat.com/rtc/";
-        public static final String ICE_CANDIDATE = WEBRTC_PREFIX + "ice-candidate";
-        public static final String ANSWER = WEBRTC_PREFIX + "answer";
-        public static final String OFFER = WEBRTC_PREFIX + "offer";
-        public static final String CALL = WEBRTC_PREFIX + "call";
-        public static final String PICK_UP = WEBRTC_PREFIX + "pick-up";
-        public static final String HANG_UP = WEBRTC_PREFIX + "hang-up";
-        public static final String WEBRTC_SERVERS_PARSED = WEBRTC_PREFIX + "serversParsed";
-        public static final String RATING_OR_POST_ANSWERS = "ninchat.com/metadata";
-
-        static final List<String> WEBRTC_MESSAGE_TYPES = new ArrayList<>();
-
-        static {
-            WEBRTC_MESSAGE_TYPES.add(ICE_CANDIDATE);
-            WEBRTC_MESSAGE_TYPES.add(ANSWER);
-            WEBRTC_MESSAGE_TYPES.add(OFFER);
-            WEBRTC_MESSAGE_TYPES.add(CALL);
-            WEBRTC_MESSAGE_TYPES.add(PICK_UP);
-            WEBRTC_MESSAGE_TYPES.add(HANG_UP);
-        }
     }
 
     public static final String DEFAULT_USER_AGENT = "ninchat-sdk-android/" + BuildConfig.VERSION_NAME + " (Android " + Build.VERSION.RELEASE + "; " + Build.MANUFACTURER + " " + Build.MODEL + ")";
@@ -1069,7 +1043,7 @@ public final class NinchatSessionManager {
             return;
         }
 
-        if (MessageTypes.WEBRTC_MESSAGE_TYPES.contains(messageType) && !sender.equals(userId)) {
+        if (MessageTypes.webrtcMessage(messageType) && !sender.equals(userId)) {
             final StringBuilder builder = new StringBuilder();
             for (int i = 0; i < payload.length(); ++i) {
                 builder.append(new String(payload.get(i)));
