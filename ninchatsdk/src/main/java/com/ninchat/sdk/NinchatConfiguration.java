@@ -1,5 +1,6 @@
 package com.ninchat.sdk;
 
+
 import androidx.annotation.Nullable;
 
 /**
