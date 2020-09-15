@@ -22,7 +22,7 @@ import com.ninchat.sdk.events.OnPostAudienceQuestionnaire;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
 import com.ninchat.sdk.networkdispatchers.NinchatRegisterAudience;
-import com.ninchat.sdk.utils.threadutils.ScopeHandler;
+import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -120,7 +120,7 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
         pendingRequest = AUDIENCE_REGISTER;
         // a register
         NinchatRegisterAudience.executeAsync(
-                ScopeHandler.getIOScope(),
+                NinchatScopeHandler.getIOScope(),
                 NinchatSessionManager.getInstance().getSession(),
                 queueId,
                 NinchatSessionManager.getInstance().getAudienceMetadata(),
@@ -254,7 +254,7 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
             // delete the user if current user is a guest
             if (NinchatSessionManager.getInstance().isGuestMemeber()) {
                 NinchatDeleteUser.executeAsync(
-                        ScopeHandler.getIOScope(),
+                        NinchatScopeHandler.getIOScope(),
                         NinchatSessionManager.getInstance().getSession(),
                         aLong -> null
                 );

@@ -1,6 +1,6 @@
 package com.ninchat.sdk.utils.messagetype
 
-object MessageTypes {
+object NinchatMessageTypes {
     const val TEXT = "ninchat.com/text"
     const val FILE = "ninchat.com/file"
     const val UI_COMPOSE = "ninchat.com/ui/compose"
