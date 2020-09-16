@@ -84,6 +84,7 @@ class PropsParserTest {
 
     @Test
     fun `get_queue_id_from_user_queue_with_non_zero_queue_position`() {
+        // TODO: 16.9.2020 (pallab) throw exception test and fix it
         val queuePosition: Long = 1
         val queueDetails = Props()
         queueDetails.setInt("queue_position", queuePosition)
