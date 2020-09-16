@@ -6,6 +6,7 @@ import com.ninchat.client.Props
 import com.ninchat.client.Strings
 
 class NinchatPropVisitor : PropVisitor {
+    @JvmField
     val properties = mutableMapOf<String, Any>()
 
     @Throws(Exception::class)

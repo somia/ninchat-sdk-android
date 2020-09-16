@@ -20,7 +20,6 @@ import com.ninchat.client.ConnStateHandler;
 import com.ninchat.client.LogHandler;
 import com.ninchat.client.Objects;
 import com.ninchat.client.Payload;
-import com.ninchat.client.PropVisitor;
 import com.ninchat.client.Props;
 import com.ninchat.client.Session;
 import com.ninchat.client.Strings;
@@ -52,6 +51,7 @@ import com.ninchat.sdk.networkdispatchers.NinchatSendPostAudienceQuestionnaire;
 import com.ninchat.sdk.networkdispatchers.NinchatSendRatings;
 import com.ninchat.sdk.networkdispatchers.NinchatUpdateMember;
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
+import com.ninchat.sdk.utils.propsvisitor.NinchatPropVisitor;
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
 import org.greenrobot.eventbus.EventBus;
@@ -68,6 +68,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.ninchat.sdk.helper.propsparser.PropsParser.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.HAS_CHANNEL;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.IN_QUEUE;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.NEW_SESSION;
@@ -165,7 +166,7 @@ public final class NinchatSessionManager {
         if (instance.isResumedSession()) {
             instance.audienceEnqueued(queueId);
             if (instance.hasChannel()) {
-                final String currentChannelId = instance.parseChannelId(instance.userChannels);
+                final String currentChannelId = parseChannelId(instance.userChannels);
                 NinchatDescribeChannel.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         instance.session,
@@ -364,14 +365,14 @@ public final class NinchatSessionManager {
                     resumedSession |= (1 << (hasUserQueues(userQueues) ? IN_QUEUE : NEW_SESSION));
 
                     if (hasChannel()) {
-                        final String existingQueueId = parseQueueIdFromUserChannels(userChannels);
+                        final String existingQueueId = getQueueIdFromUserChannels(userChannels);
                         // if existing queue id is present update his queueId
                         if (existingQueueId != null)
                             queueId = existingQueueId;
                     }
 
                     if (isInQueue()) {
-                        final String existingQueueId = parseQueueIdFromUserQueues(userQueues);
+                        final String existingQueueId = getQueueIdFromUserQueue(userQueues);
                         // if existing queue id is present update his queueId
                         if (existingQueueId != null)
                             queueId = existingQueueId;
@@ -495,41 +496,8 @@ public final class NinchatSessionManager {
         return session;
     }
 
-    private String parseQueueIdFromUserChannels(final Props currentUserChannels) {
-        if (currentUserChannels == null) return null;
-        final NinchatPropVisitor parser = new NinchatPropVisitor();
-        try {
-            currentUserChannels.accept(parser);
-            // audience has one or multiple channel
-            for (String channelId : parser.properties.keySet()) {
-                final Props channelInfo = (Props) parser.properties.get(channelId);
-                final Props channelAttrs = channelInfo.getObject("channel_attrs");
-                return channelAttrs.getString("queue_id");
-            }
-        } catch (final Exception e) {
-            return null;
-        }
-        return null;
-    }
 
-    private String parseQueueIdFromUserQueues(final Props currentUserQueues) {
-        if (currentUserQueues == null) return null;
-        final NinchatPropVisitor parser = new NinchatPropVisitor();
-        try {
-            currentUserQueues.accept(parser);
-            // audience has one or multiple channel
-            for (String currentQueueId : parser.properties.keySet()) {
-                final Props queueInfo = (Props) parser.properties.get(currentQueueId);
-                final long queuePosition = queueInfo.getInt("queue_position");
-                if (queuePosition != 0) {
-                    return currentQueueId;
-                }
-            }
-        } catch (final Exception e) {
-            return null;
-        }
-        return null;
-    }
+
 
     // If audienceAutoQueue is available
     private String parseQueueIdFromSiteConfig() {
@@ -540,94 +508,6 @@ public final class NinchatSessionManager {
             return null;
         }
     }
-
-    private long parseQueuePositionFromUserQueues(final Props currentUserQueues, final String queueId) {
-        if (currentUserQueues == null) return -1;
-        final NinchatPropVisitor parser = new NinchatPropVisitor();
-        try {
-            currentUserQueues.accept(parser);
-            // audience has one or multiple channel
-            for (String currentQueueId : parser.properties.keySet()) {
-                final Props queueInfo = (Props) parser.properties.get(currentQueueId);
-                final long queuePosition = queueInfo.getInt("queue_position");
-                if (queuePosition != 0 && currentQueueId.equals(queueId)) {
-                    return queuePosition;
-                }
-            }
-        } catch (final Exception e) {
-            return -1;
-        }
-        return -1;
-    }
-
-    private String parseQueueNameFromUserQueues(final Props currentUserQueues, final String queueId) {
-        if (currentUserQueues == null) return null;
-        final NinchatPropVisitor parser = new NinchatPropVisitor();
-        try {
-            currentUserQueues.accept(parser);
-            // audience has one or multiple channel
-            for (String currentQueueId : parser.properties.keySet()) {
-                final Props queueInfo = (Props) parser.properties.get(currentQueueId);
-                final long queuePosition = queueInfo.getInt("queue_position");
-                if (queuePosition != 0 && currentQueueId.equals(queueId)) {
-                    final Props queueAttrs = queueInfo.getObject("queue_attrs");
-                    if (queueAttrs != null) {
-                        return queueAttrs.getString("name");
-                    }
-                }
-            }
-        } catch (final Exception e) {
-            return null;
-        }
-        return null;
-    }
-
-    private String parseChannelId(final Props currentUserChannel) {
-        final NinchatPropVisitor parser = new NinchatPropVisitor();
-        try {
-            currentUserChannel.accept(parser);
-            // audience has one or multiple channel
-            for (String channelId : parser.properties.keySet()) {
-                return channelId;
-            }
-        } catch (final Exception e) {
-            return null;
-        }
-        return null;
-    }
-
-
-    public boolean hasUserChannel(final Props currentUserChannel) {
-        final NinchatPropVisitor parser = new NinchatPropVisitor();
-        try {
-            currentUserChannel.accept(parser);
-            return parser.properties.keySet().size() > 0;
-        } catch (final Exception e) {
-            return false;
-        }
-    }
-
-    public boolean hasUserQueues(final Props currentUserQueues) {
-        final NinchatPropVisitor parser = new NinchatPropVisitor();
-        try {
-            currentUserQueues.accept(parser);
-            for (String currentQueueId : parser.properties.keySet()) {
-                Props info = (Props) parser.properties.get(currentQueueId);
-                try {
-                    long queuePosition = info.getInt("queue_position");
-                    if (queuePosition != 0) {
-                        return true;
-                    }
-                } catch (final Exception e) {
-                    // passed
-                }
-            }
-        } catch (final Exception e) {
-            return false;
-        }
-        return false;
-    }
-
 
     public NinchatQueueListAdapter getNinchatQueueListAdapter(final Activity activity) {
         if (ninchatQueueListAdapter == null) {
@@ -665,41 +545,6 @@ public final class NinchatSessionManager {
 
     public List<NinchatWebRTCServerInfo> getTurnServers() {
         return turnServers;
-    }
-
-    private class NinchatPropVisitor implements PropVisitor {
-
-        private Map<String, Object> properties = new HashMap<>();
-
-        @Override
-        public void visitBool(String p0, boolean p1) throws Exception {
-            properties.put(p0, p1);
-        }
-
-        @Override
-        public void visitNumber(String p0, double p1) throws Exception {
-            properties.put(p0, p1);
-        }
-
-        @Override
-        public void visitObject(String p0, Props p1) throws Exception {
-            properties.put(p0, p1);
-        }
-
-        @Override
-        public void visitString(String p0, String p1) throws Exception {
-            properties.put(p0, p1);
-        }
-
-        @Override
-        public void visitStringArray(String p0, Strings p1) throws Exception {
-            properties.put(p0, p1);
-        }
-
-        @Override
-        public void visitObjectArray(String p0, Objects p1) throws Exception {
-            properties.put(p0, p1);
-        }
     }
 
     private void sendQueueParsingError() {
@@ -1798,7 +1643,7 @@ public final class NinchatSessionManager {
             position = selectedQueue.getPosition();
             name = selectedQueue.getName();
         } else if (isInQueue()) {
-            final long queuePosition = parseQueuePositionFromUserQueues(userQueues, queueId);
+            final long queuePosition = getQueuePositionByQueueId(userQueues, queueId);
             if (queuePosition != -1) {
                 position = queuePosition;
                 name = parseQueueNameFromUserQueues(userQueues, queueId);
