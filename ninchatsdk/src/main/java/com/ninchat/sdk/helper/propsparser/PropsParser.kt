@@ -14,19 +14,16 @@ class PropsParser {
         @JvmStatic
         fun getQueueIdFromUserChannels(props: Props?): String? {
             val parser = NinchatPropVisitor()
-            try {
+            return try {
                 props?.accept(parser)
-                for (channelId in parser.properties.keys) {
-                    val channelInfo = parser.properties[channelId] as Props?
-                    val channelAttrs = channelInfo?.getObject("channel_attrs")
-                    val queueId = channelAttrs?.getString("queue_id")
-                    queueId?.let {
-                        if (it.isNotBlank()) return queueId
-                    }
-                }
+                return parser.properties.values.map {
+                    (it as Props).getObject("channel_attrs")
+                }.map {
+                    it.getString("queue_id")
+                }.firstOrNull { it.isNotBlank() }
             } catch (_: Exception) {
+                null
             }
-            return null
         }
 
         /**
@@ -36,17 +33,16 @@ class PropsParser {
         @JvmStatic
         fun getQueueIdFromUserQueue(props: Props?): String? {
             val parser = NinchatPropVisitor()
-            try {
+            return try {
                 props?.accept(parser)
-                for (currentQueueId in parser.properties.keys) {
-                    val queueInfo = parser.properties[currentQueueId] as Props?
-                    val queuePosition = queueInfo?.getInt("queue_position")
-                    if (queuePosition != 0L) return currentQueueId
-                }
-            } catch (_: Exception) {
+                return parser.properties.filterValues { value ->
+                    val position = (value as Props).getInt("queue_position")
+                    position > 0L
+                }.keys.firstOrNull()
+            } catch (e: Exception) {
+                println("error: ${e.localizedMessage}")
+                null
             }
-
-            return null
         }
 
         /**
@@ -58,56 +54,52 @@ class PropsParser {
             return try {
                 props?.accept(parser)
                 // audience has one or multiple channel
-                val queueInfo = parser.properties.filterKeys { it == queueId } as Props?
-                return queueInfo?.getInt("queue_position") ?: -1
+                val queuePosition = parser.properties.filterKeys {
+                    it == queueId
+                }.map { (it as Props).getInt("queue_position") }.firstOrNull()
+                return queuePosition ?: -1
             } catch (e: java.lang.Exception) {
                 -1
             }
+
         }
 
         @JvmStatic
-        fun parseQueueNameFromUserQueues(currentUserQueues: Props?, queueId: String): String? {
-            if (currentUserQueues == null) return null
-            val parser = NinchatPropVisitor()
-            try {
-                currentUserQueues.accept(parser)
-                // audience has one or multiple channel
-                for (currentQueueId in parser.properties.keys) {
-                    val queueInfo = parser.properties[currentQueueId] as Props?
-                    val queuePosition = queueInfo!!.getInt("queue_position")
-                    if (queuePosition != 0L && currentQueueId == queueId) {
-                        val queueAttrs = queueInfo.getObject("queue_attrs")
-                        if (queueAttrs != null) {
-                            return queueAttrs.getString("name")
-                        }
-                    }
-                }
-            } catch (e: java.lang.Exception) {
-                return null
-            }
-            return null
-        }
-
-        @JvmStatic
-        fun parseChannelId(currentUserChannel: Props): String? {
-            val parser = NinchatPropVisitor()
-            try {
-                currentUserChannel.accept(parser)
-                // audience has one or multiple channel
-                for (channelId in parser.properties.keys) {
-                    return channelId
-                }
-            } catch (e: java.lang.Exception) {
-                return null
-            }
-            return null
-        }
-
-        @JvmStatic
-        fun hasUserChannel(currentUserChannel: Props): Boolean {
+        fun getQueueNameByQueueId(props: Props?, queueId: String): String? {
             val parser = NinchatPropVisitor()
             return try {
-                currentUserChannel.accept(parser)
+                props?.accept(parser)
+                parser.properties.filterKeys {
+                    it == queueId
+                }.filter {
+                    val queuePosition = (it as Props).getInt("queue_position")
+                    queuePosition > 0
+                }.map {
+                    (it as Props).getObject("queue_attrs")
+                }.map {
+                    (it as Props).getString("name")
+                }.firstOrNull()
+            } catch (e: java.lang.Exception) {
+                null
+            }
+        }
+
+        @JvmStatic
+        fun getChannelId(props: Props?): String? {
+            val parser = NinchatPropVisitor()
+            return try {
+                props?.accept(parser)
+                parser.properties.keys.firstOrNull()
+            } catch (e: java.lang.Exception) {
+                null
+            }
+        }
+
+        @JvmStatic
+        fun hasUserChannel(props: Props?): Boolean {
+            val parser = NinchatPropVisitor()
+            return try {
+                props?.accept(parser)
                 parser.properties.keys.size > 0
             } catch (e: java.lang.Exception) {
                 false
@@ -117,7 +109,7 @@ class PropsParser {
         @JvmStatic
         fun hasUserQueues(currentUserQueues: Props): Boolean {
             val parser = NinchatPropVisitor()
-            try {
+            return try {
                 currentUserQueues.accept(parser)
                 for (currentQueueId in parser.properties.keys) {
                     val info = parser.properties[currentQueueId] as Props?
@@ -130,10 +122,13 @@ class PropsParser {
                         // passed
                     }
                 }
+                parser.properties.values.any {
+                    val queuePosition = (it as Props).getInt("queue_position")
+                    queuePosition > 0L
+                }
             } catch (e: java.lang.Exception) {
-                return false
+                false
             }
-            return false
         }
 
 
