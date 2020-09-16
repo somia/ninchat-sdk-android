@@ -72,25 +72,4 @@ class PropsParserTest {
         Assert.assertNull(queueId)
     }
 
-    @Test
-    fun `get_queue_id_from_user_queue_position_zero`() {
-        val queueDetails = Props()
-        queueDetails.setInt("queue_position", 0L)
-        val userQueue = Props()
-        userQueue.setObject("123456", queueDetails)
-        val queueId = PropsParser.getQueueIdFromUserQueue(userQueue)
-        Assert.assertNull(queueId)
-    }
-
-    @Test
-    fun `get_queue_id_from_user_queue_with_non_zero_queue_position`() {
-        val queueDetails = Props()
-        queueDetails.setInt("queue_position", 1L)
-        queueDetails.setInt("message_ttl", 10)
-        queueDetails.setString("realm_id", "5lmphjc200m3g")
-        val userQueue = Props()
-        userQueue.setObject("123456", queueDetails)
-        val queueId = PropsParser.getQueueIdFromUserQueue(userQueue)
-        Assert.assertEquals(1L, queueId)
-    }
 }

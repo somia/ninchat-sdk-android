@@ -40,7 +40,6 @@ class PropsParser {
                     position > 0L
                 }.keys.firstOrNull()
             } catch (e: Exception) {
-                println("error: ${e.localizedMessage}")
                 null
             }
         }
@@ -107,21 +106,10 @@ class PropsParser {
         }
 
         @JvmStatic
-        fun hasUserQueues(currentUserQueues: Props): Boolean {
+        fun hasUserQueues(currentUserQueues: Props?): Boolean {
             val parser = NinchatPropVisitor()
             return try {
-                currentUserQueues.accept(parser)
-                for (currentQueueId in parser.properties.keys) {
-                    val info = parser.properties[currentQueueId] as Props?
-                    try {
-                        val queuePosition = info!!.getInt("queue_position")
-                        if (queuePosition != 0L) {
-                            return true
-                        }
-                    } catch (e: java.lang.Exception) {
-                        // passed
-                    }
-                }
+                currentUserQueues?.accept(parser)
                 parser.properties.values.any {
                     val queuePosition = (it as Props).getInt("queue_position")
                     queuePosition > 0L
