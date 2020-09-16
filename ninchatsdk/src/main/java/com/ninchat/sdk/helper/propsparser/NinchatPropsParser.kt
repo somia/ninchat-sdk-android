@@ -4,7 +4,7 @@ import com.ninchat.client.Props
 import com.ninchat.sdk.utils.propsvisitor.NinchatPropVisitor
 import java.lang.Exception
 
-class PropsParser {
+class NinchatPropsParser {
     companion object {
 
         /**

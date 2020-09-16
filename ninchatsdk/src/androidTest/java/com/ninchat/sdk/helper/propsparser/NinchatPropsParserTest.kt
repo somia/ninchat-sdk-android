@@ -7,18 +7,18 @@ import org.junit.runner.RunWith
 import org.junit.Assert
 
 @RunWith(AndroidJUnit4::class)
-class PropsParserTest {
+class NinchatPropsParserTest {
 
     @Test
     fun `get_queue_id_from_user_channel_with_null_props`() {
-        val queueId = PropsParser.getQueueIdFromUserChannels(null)
+        val queueId = NinchatPropsParser.getQueueIdFromUserChannels(null)
         Assert.assertNull(queueId)
     }
 
     @Test
     fun `get_queue_id_from_user_channel_with_no_channel`() {
         val userProps = Props()
-        val queueId = PropsParser.getQueueIdFromUserChannels(userProps)
+        val queueId = NinchatPropsParser.getQueueIdFromUserChannels(userProps)
         Assert.assertNull(queueId)
     }
 
@@ -27,7 +27,7 @@ class PropsParserTest {
         val currentChannel = Props()
         val userProps = Props()
         userProps.setObject("7ohmt2sn00hqg", currentChannel)
-        val queueId = PropsParser.getQueueIdFromUserChannels(userProps)
+        val queueId = NinchatPropsParser.getQueueIdFromUserChannels(userProps)
         Assert.assertNull(queueId)
     }
 
@@ -38,7 +38,7 @@ class PropsParserTest {
         currentChannel.setObject("channel_attrs", channelAttrs)
         val userProps = Props()
         userProps.setObject("7ohmt2sn00hqg", currentChannel)
-        val queueId = PropsParser.getQueueIdFromUserChannels(userProps)
+        val queueId = NinchatPropsParser.getQueueIdFromUserChannels(userProps)
         Assert.assertNull(queueId)
     }
 
@@ -51,14 +51,14 @@ class PropsParserTest {
         val userProps = Props()
         userProps.setObject("7ohmt2sn00hqg", currentChannel)
 
-        val queueId = PropsParser.getQueueIdFromUserChannels(userProps)
+        val queueId = NinchatPropsParser.getQueueIdFromUserChannels(userProps)
         Assert.assertEquals("123456", queueId)
     }
 
     @Test
     fun `get_queue_id_from_user_queue_with_no_queue`() {
         val userQueue = Props()
-        val queueId = PropsParser.getQueueIdFromUserQueue(userQueue)
+        val queueId = NinchatPropsParser.getQueueIdFromUserQueue(userQueue)
         Assert.assertNull(queueId)
     }
 
@@ -68,7 +68,7 @@ class PropsParserTest {
 
         val userQueue = Props()
         userQueue.setObject("123456", queueDetails)
-        val queueId = PropsParser.getQueueIdFromUserQueue(userQueue)
+        val queueId = NinchatPropsParser.getQueueIdFromUserQueue(userQueue)
         Assert.assertNull(queueId)
     }
     // todo ( pallab ) Instrumentation test failed for queue_position

@@ -68,7 +68,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.ninchat.sdk.helper.propsparser.PropsParser.*;
+import static com.ninchat.sdk.helper.propsparser.NinchatPropsParser.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.HAS_CHANNEL;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.IN_QUEUE;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.NEW_SESSION;
@@ -1712,12 +1712,6 @@ public final class NinchatSessionManager {
 
     public NinchatQuestionnaireHolder getNinchatQuestionnaireHolder() {
         return ninchatQuestionnaireHolder;
-    }
-
-    private RequestCallback requestCallback = currentActionId -> actionId = currentActionId;
-
-    public interface RequestCallback {
-        void onActionId(long actionId);
     }
 
     public boolean isResumedSession() {
