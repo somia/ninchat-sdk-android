@@ -4,6 +4,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Handler;
 import android.os.Looper;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
+
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
@@ -26,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ninchat.sdk.GlideApp;
+import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatChatActivity;
@@ -65,7 +68,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 userAvatar = user.getAvatar();
             }
             if (TextUtils.isEmpty(userAvatar)) {
-                userAvatar = NinchatSessionManager.getInstance().getDefaultAvatar(ninchatMessage.isRemoteMessage());
+                final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
+                userAvatar = ninchatMessage.isRemoteMessage() ?
+                        sessionManager.getNinchatSiteConfig().getAgentAvatar(sessionManager.getPreferredEnvironments()):
+                        sessionManager.getNinchatSiteConfig().getUserAvatar(sessionManager.getPreferredEnvironments());
             }
             if (!TextUtils.isEmpty(userAvatar)) {
                 GlideApp.with(itemView.getContext())
@@ -73,7 +79,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         .circleCrop()
                         .into(avatar);
             }
-            final boolean showAvatars = NinchatSessionManager.getInstance().showAvatars(ninchatMessage.isRemoteMessage());
+            final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
+            final boolean showAvatars = ninchatMessage.isRemoteMessage() ?
+                    ninchatSessionManager.getNinchatSiteConfig().showAgentAvatar(ninchatSessionManager.getPreferredEnvironments()) :
+                    ninchatSessionManager.getNinchatSiteConfig().showUserAvatar(ninchatSessionManager.getPreferredEnvironments());
             if (!showAvatars) {
                 avatar.setVisibility(View.GONE);
             } else if (hideAvatar) {

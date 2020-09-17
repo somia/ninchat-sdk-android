@@ -128,6 +128,9 @@ class NinchatSiteConfig {
     fun getAgentAvatar(preferredEnvironments: ArrayList<String>?): String? =
             getString("agentAvatar", preferredEnvironments)
 
+    fun getUserAvatar(preferredEnvironments: ArrayList<String>?): String? =
+            getString("userAvatar", preferredEnvironments)
+
     fun getConversationEndedText(preferredEnvironments: ArrayList<String>?): String =
             getString("Conversation ended", preferredEnvironments) ?: "Conversation ended"
 

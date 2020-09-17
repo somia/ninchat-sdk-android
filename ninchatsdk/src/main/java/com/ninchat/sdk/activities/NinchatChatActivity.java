@@ -209,8 +209,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     public void chatClosed() {
         onVideoHangUp(null);
+        if (sessionManager == null) sessionManager = NinchatSessionManager.getInstance();
+        final boolean showRatings = sessionManager.getNinchatSiteConfig().showRating(sessionManager.getPreferredEnvironments());
         // sessionManager.partChannel();
-        if (sessionManager.showRating()) {
+        if (showRatings) {
             startActivityForResult(NinchatReviewActivity.getLaunchIntent(NinchatChatActivity.this), NinchatReviewActivity.REQUEST_CODE);
         } else {
             quit(null);
@@ -249,7 +251,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                     final NinchatUser user = sessionManager.getMember(intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_SENDER));
                     String avatar = user.getAvatar();
                     if (TextUtils.isEmpty(avatar)) {
-                        avatar = sessionManager.getDefaultAvatar(true);
+                        avatar = sessionManager.getNinchatSiteConfig().getAgentAvatar(sessionManager.getPreferredEnvironments());
                     }
                     if (!TextUtils.isEmpty(avatar)) {
                         GlideApp.with(userImage.getContext())

@@ -536,10 +536,6 @@ public final class NinchatSessionManager {
         return currentUser.isGuest();
     }
 
-    public int getMemberCount() {
-        return members.size();
-    }
-
     public List<NinchatWebRTCServerInfo> getStunServers() {
         return stunServers;
     }
@@ -1352,15 +1348,6 @@ public final class NinchatSessionManager {
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(centeredText, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(centeredText);
     }
 
-    public Spanned getNoQueues() {
-        final String key = "noQueuesText";
-        try {
-            return toSpanned(getStringFromConfiguration(key));
-        } catch (final Exception e) {
-            return toSpanned(key);
-        }
-    }
-
     public String getTranslation(final String key) {
         if (configuration != null) {
             if (preferredEnvironments != null) {
@@ -1411,24 +1398,6 @@ public final class NinchatSessionManager {
 
     public String getSubmitButtonText() {
         return getTranslation("Submit");
-    }
-
-    public boolean showAvatars(final boolean agentAvatar) {
-        final String key = agentAvatar ? "agentAvatar" : "userAvatar";
-        try {
-            return getBooleanFromConfiguration(key);
-        } catch (final Exception e) {
-            return getDefaultAvatar(agentAvatar) != null;
-        }
-    }
-
-    public String getDefaultAvatar(final boolean agentAvatar) {
-        final String key = agentAvatar ? "agentAvatar" : "userAvatar";
-        try {
-            return getStringFromConfiguration(key);
-        } catch (final Exception e) {
-            return null;
-        }
     }
 
     private String replacePlaceholder(final String origin, final String replacement) {
@@ -1544,14 +1513,6 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
         }
         return toSpanned(queueMessage);
-    }
-
-    public boolean showRating() {
-        try {
-            return getBooleanFromConfiguration("audienceRating");
-        } catch (final Exception e) {
-            return false;
-        }
     }
 
     public Spanned getFeedbackTitle() {

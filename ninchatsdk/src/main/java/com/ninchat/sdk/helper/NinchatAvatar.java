@@ -1,7 +1,9 @@
 package com.ninchat.sdk.helper;
 
 import android.content.Context;
+
 import androidx.annotation.VisibleForTesting;
+
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,11 +22,15 @@ public class NinchatAvatar {
         final String userAvatarText = getUserAvatarText(user, ninchatMessage.isRemoteMessage());
         // set avatar
         setAvatar(mContext, avatar, userAvatarText);
-        final boolean invisible = NinchatSessionManager.getInstance().showAvatars(ninchatMessage.isRemoteMessage());
-        if (!invisible) {
+
+        final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
+        final boolean showAvatars = ninchatMessage.isRemoteMessage() ?
+                ninchatSessionManager.getNinchatSiteConfig().showAgentAvatar(ninchatSessionManager.getPreferredEnvironments()) :
+                ninchatSessionManager.getNinchatSiteConfig().showUserAvatar(ninchatSessionManager.getPreferredEnvironments());
+        if (showAvatars) {
             showAvatar(avatar);
         } else if (hideAvatar) {
-            hideAvatar(avatar, invisible);
+            hideAvatar(avatar, true);
         }
     }
 
@@ -44,7 +50,10 @@ public class NinchatAvatar {
         String avatarText = user != null ? user.getAvatar() : null;
 
         if (TextUtils.isEmpty(avatarText)) {
-            avatarText = NinchatSessionManager.getInstance().getDefaultAvatar(remoteMessage);
+            final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
+            avatarText = remoteMessage ?
+                    ninchatSessionManager.getNinchatSiteConfig().getAgentAvatar(ninchatSessionManager.getPreferredEnvironments()) :
+                    ninchatSessionManager.getNinchatSiteConfig().getUserAvatar(ninchatSessionManager.getPreferredEnvironments());
         }
 
         return avatarText;
