@@ -72,7 +72,7 @@ class NinchatSiteConfigTest {
             "inQueueText": " ",
             "noQueuesText": " ",
             "motd": " ",
-            "newUI": false,
+            "newUI": true,
             "sendButtonText": "Lähetä",
             "supportFiles": true,
             "supportVideo": true,
@@ -453,12 +453,12 @@ class NinchatSiteConfigTest {
     }
 
     @Test
-    fun `should_found_string_value_from_given_key_from_default_environment_if_provided_environment_null`() {
+    fun `should_return_null_object_where_the_value_is_null`() {
         val ninchatSiteConfig = NinchatSiteConfig()
         ninchatSiteConfig.setConfigString(siteConfigWithFiEnv)
 
         val value = ninchatSiteConfig.getString("sendButtonText", arrayListOf("default", "fi"))
-        Assert.assertEquals("Lähetä", value)
+        Assert.assertEquals(null, value)
     }
 
     @Test

@@ -37,10 +37,8 @@ class NinchatSiteConfig {
 
         var value: JSONArray? = null
         for (currentEnvironment in environments) {
-            value = try {
-                siteConfig?.optJSONObject(currentEnvironment)?.getJSONArray(key)!!
-            } catch (_: Exception) {
-                value
+            if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
+                value = siteConfig?.optJSONObject(currentEnvironment)?.optJSONArray(key)
             }
         }
         return value
@@ -52,10 +50,9 @@ class NinchatSiteConfig {
 
         var value = false
         for (currentEnvironment in environments) {
-            value = try {
-                siteConfig?.optJSONObject(currentEnvironment)?.getBoolean(key)!!
-            } catch (_: Exception) {
-                value
+            if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
+                value = siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, false)
+                        ?: false
             }
         }
         return value
@@ -67,11 +64,12 @@ class NinchatSiteConfig {
 
         var value: String? = null
         for (currentEnvironment in environments) {
-            value = try {
-                val temp = siteConfig?.optJSONObject(currentEnvironment)?.getString(key) ?: value
-                if ("null" == temp) value else temp
-            } catch (_: Exception) {
-                value
+            if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
+                value = siteConfig?.optJSONObject(currentEnvironment)?.optString(key)
+                // workaround value can be null which when parsing will be interpreted as "null" string in Java with quote
+                if ("null" == value) {
+                    value = null
+                }
             }
         }
         return value
