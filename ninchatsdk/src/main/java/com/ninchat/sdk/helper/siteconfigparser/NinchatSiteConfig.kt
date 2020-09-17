@@ -17,47 +17,64 @@ class NinchatSiteConfig {
         }
     }
 
+    internal fun sanitizePreferredEnvironments(preferredEnvironments: ArrayList<String>?): ArrayList<String> {
+        if (preferredEnvironments == null) {
+            return arrayListOf("default")
+        }
+        if (!preferredEnvironments.contains("default")) {
+            preferredEnvironments.add(0, "default")
+        }
+        return preferredEnvironments
+    }
+
     fun getDefault(): JSONObject? {
         return siteConfig?.optJSONObject("default")
     }
 
     fun getArray(key: String, preferredEnvironments: ArrayList<String>?): JSONArray? {
         if (siteConfig == null) return null
-        if (preferredEnvironments == null) getDefault()?.optJSONArray(key)
+        val environments = sanitizePreferredEnvironments(preferredEnvironments)
 
-        for (configuration in preferredEnvironments!!) {
-            val array = siteConfig?.optJSONObject(configuration)?.optJSONArray(key)
-            if (array != null) {
-                return array
+        var value: JSONArray? = null
+        for (currentEnvironment in environments) {
+            value = try {
+                siteConfig?.optJSONObject(currentEnvironment)?.getJSONArray(key)!!
+            } catch (_: Exception) {
+                value
             }
         }
-        return null
+        return value
     }
 
     fun getBoolean(key: String, preferredEnvironments: ArrayList<String>?): Boolean? {
         if (siteConfig == null) return false
-        if (preferredEnvironments == null) getDefault()?.optBoolean(key, false)
+        val environments = sanitizePreferredEnvironments(preferredEnvironments)
 
-        for (currentEnvironment in preferredEnvironments!!) {
-            val value = siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, false)
-            if (value != null) {
-                return value
+        var value = false
+        for (currentEnvironment in environments) {
+            value = try {
+                siteConfig?.optJSONObject(currentEnvironment)?.getBoolean(key)!!
+            } catch (_: Exception) {
+                value
             }
         }
-        return false
+        return value
     }
 
     fun getString(key: String, preferredEnvironments: ArrayList<String>?): String? {
         if (siteConfig == null) return null
-        if (preferredEnvironments == null) getDefault()?.optString(key, null)
+        val environments = sanitizePreferredEnvironments(preferredEnvironments)
 
-        for (currentEnvironment in preferredEnvironments!!) {
-            val value = siteConfig?.optJSONObject(currentEnvironment)?.optString(key, null)
-            if (value != null) {
-                return value
+        var value: String? = null
+        for (currentEnvironment in environments) {
+            value = try {
+                val temp = siteConfig?.optJSONObject(currentEnvironment)?.getString(key) ?: value
+                if ("null" == temp) value else temp
+            } catch (_: Exception) {
+                value
             }
         }
-        return null
+        return value
     }
 
     fun getAudienceQueues(preferredEnvironments: ArrayList<String>?): MutableList<String?> {
