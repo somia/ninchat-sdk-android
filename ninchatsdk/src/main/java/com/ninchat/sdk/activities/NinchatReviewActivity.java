@@ -19,6 +19,11 @@ import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
+import com.ninchat.sdk.networkdispatchers.NinchatSendRatings;
+import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.getBotAvatar;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.getBotName;
@@ -144,7 +149,21 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
 
     private void close(final int rating) {
         if (rating != NinchatSession.Analytics.Rating.NO_ANSWER) {
-            sessionManager.sendRating(rating);
+            try {
+                final JSONObject value = new JSONObject();
+                value.put("rating", rating);
+                final JSONObject data = new JSONObject();
+                data.put("data", value);
+                NinchatSendRatings.executeAsync(
+                        NinchatScopeHandler.getIOScope(),
+                        sessionManager.getSession(),
+                        sessionManager.getChannelId(),
+                        data.toString(2),
+                        aLong -> null
+                );
+            } catch (final JSONException e) {
+                // Ignore
+            }
         }
         setResult(RESULT_OK, getResultIntent(rating));
         finish();

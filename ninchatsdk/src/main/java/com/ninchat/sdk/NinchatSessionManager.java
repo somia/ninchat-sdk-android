@@ -168,7 +168,7 @@ public final class NinchatSessionManager {
         if (instance.isResumedSession()) {
             instance.audienceEnqueued(queueId);
             if (instance.hasChannel()) {
-                final String currentChannelId = getChannelId(instance.userChannels);
+                final String currentChannelId = getQueueIdFromUserChannels(instance.userChannels);
                 NinchatDescribeChannel.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         instance.session,
@@ -189,23 +189,6 @@ public final class NinchatSessionManager {
                 instance.session,
                 queueId,
                 instance.getAudienceMetadata(),
-                aLong -> null
-        );
-    }
-
-    public static void exitQueue() {
-        NinchatDeleteUser.executeAsync(
-                NinchatScopeHandler.getIOScope(),
-                getInstance().session,
-                aLong -> null
-        );
-    }
-
-    public void partChannel() {
-        NinchatPartChannel.executeAsync(
-                NinchatScopeHandler.getIOScope(),
-                session,
-                channelId,
                 aLong -> null
         );
     }
@@ -500,6 +483,14 @@ public final class NinchatSessionManager {
 
     public Session getSession() {
         return session;
+    }
+
+    public String getChannelId() {
+        return channelId;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     public NinchatSiteConfig getNinchatSiteConfig() {
@@ -1110,198 +1101,6 @@ public final class NinchatSessionManager {
         if (context != null) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.WEBRTC_MESSAGE)
                     .putExtra(Broadcast.WEBRTC_MESSAGE_TYPE, NinchatMessageTypes.WEBRTC_SERVERS_PARSED));
-        }
-    }
-
-    public void sendMessage(final String message) {
-        try {
-            final JSONObject data = new JSONObject();
-            data.put("text", message);
-            NinchatSendMessage.executeAsync(
-                    NinchatScopeHandler.getIOScope(),
-                    getSession(),
-                    channelId,
-                    NinchatMessageTypes.TEXT,
-                    data.toString(),
-                    aLong -> null
-            );
-        } catch (final JSONException e) {
-            sessionError(e);
-        }
-    }
-
-    public void sendUIAction(final JSONObject selected) {
-        try {
-            final JSONObject data = new JSONObject();
-            data.put("action", "click");
-            data.put("target", selected);
-            NinchatSendMessage.executeAsync(
-                    NinchatScopeHandler.getIOScope(),
-                    getSession(),
-                    channelId,
-                    NinchatMessageTypes.UI_ACTION,
-                    data.toString(),
-                    aLong -> null
-            );
-        } catch (final JSONException e) {
-            Log.e(TAG, "Error when sending multichoice answer!", e);
-        }
-    }
-
-    public void sendIsWritingUpdate(final boolean isWriting) {
-        NinchatUpdateMember.executeAsync(
-                NinchatScopeHandler.getIOScope(),
-                getSession(),
-                channelId,
-                userId,
-                isWriting,
-                aLong -> null
-        );
-    }
-
-    public void sendImage(final String name, final byte[] data) {
-        NinchatSendFile.executeAsync(
-                NinchatScopeHandler.getIOScope(),
-                getSession(),
-                channelId,
-                name,
-                data,
-                aLong -> null
-        );
-    }
-
-    public void sendWebRTCCall() {
-        NinchatSendMessage.executeAsync(
-                NinchatScopeHandler.getIOScope(),
-                getSession(),
-                channelId,
-                NinchatMessageTypes.CALL,
-                "{}",
-                aLong -> null
-        );
-    }
-
-    public void sendWebRTCCallAnswer(final boolean answer) {
-        try {
-            final JSONObject data = new JSONObject();
-            data.put("answer", answer);
-            NinchatSendMessage.executeAsync(
-                    NinchatScopeHandler.getIOScope(),
-                    getSession(),
-                    channelId,
-                    NinchatMessageTypes.PICK_UP,
-                    data.toString(),
-                    aLong -> null
-            );
-        } catch (final JSONException e) {
-            sessionError(e);
-        }
-    }
-
-    public void sendWebRTCBeginIce() {
-        NinchatBeginICE.executeAsync(
-                NinchatScopeHandler.getIOScope(),
-                session, aLong -> null);
-    }
-
-    public void sendWebRTCSDPReply(final SessionDescription sessionDescription) {
-        try {
-            final Map<SessionDescription.Type, String> typeMap = new HashMap<>();
-            typeMap.put(SessionDescription.Type.ANSWER, NinchatMessageTypes.ANSWER);
-            typeMap.put(SessionDescription.Type.OFFER, NinchatMessageTypes.OFFER);
-            final String messageType = typeMap.get(sessionDescription.type);
-            if (messageType == null) {
-                return;
-            }
-            final JSONObject data = new JSONObject();
-            final JSONObject sdp = new JSONObject();
-            sdp.put("type", sessionDescription.type.canonicalForm());
-            sdp.put("sdp", sessionDescription.description);
-            data.put("sdp", sdp);
-            NinchatSendMessage.executeAsync(
-                    NinchatScopeHandler.getIOScope(),
-                    getSession(),
-                    channelId,
-                    messageType,
-                    data.toString(),
-                    aLong -> null
-            );
-
-        } catch (final JSONException e) {
-            sessionError(e);
-        }
-    }
-
-    public void sendWebRTCIceCandidate(final IceCandidate iceCandidate) {
-        try {
-            final JSONObject data = new JSONObject();
-            final JSONObject candidate = new JSONObject();
-            candidate.put("sdpMLineIndex", iceCandidate.sdpMLineIndex);
-            candidate.put("sdpMid", iceCandidate.sdpMid);
-            candidate.put("candidate", iceCandidate.sdp);
-            candidate.put("id", iceCandidate.sdpMLineIndex);
-            candidate.put("label", iceCandidate.sdpMid);
-            data.put("candidate", candidate);
-            NinchatSendMessage.executeAsync(
-                    NinchatScopeHandler.getIOScope(),
-                    getSession(),
-                    channelId,
-                    NinchatMessageTypes.ICE_CANDIDATE,
-                    data.toString(),
-                    aLong -> null
-            );
-
-        } catch (final JSONException e) {
-            sessionError(e);
-        }
-    }
-
-    public void sendWebRTCHangUp() {
-        NinchatSendMessage.executeAsync(
-                NinchatScopeHandler.getIOScope(),
-                getSession(),
-                channelId,
-                NinchatMessageTypes.HANG_UP,
-                "{}",
-                aLong -> null
-        );
-
-    }
-
-    public void sendRating(final int rating) {
-        try {
-            final JSONObject value = new JSONObject();
-            value.put("rating", rating);
-            final JSONObject data = new JSONObject();
-            data.put("data", value);
-            NinchatSendRatings.executeAsync(
-                    NinchatScopeHandler.getIOScope(),
-                    getSession(),
-                    channelId,
-                    data.toString(2),
-                    aLong -> null
-            );
-        } catch (final JSONException e) {
-            // Ignore
-        }
-    }
-
-    public void sendPostAnswers(final JSONObject postAnswers) {
-        try {
-            final JSONObject value = new JSONObject();
-            value.put("post_answers", postAnswers);
-            final JSONObject data = new JSONObject();
-            data.put("data", value);
-            data.put("time", System.currentTimeMillis());
-            NinchatSendPostAudienceQuestionnaire.executeAsync(
-                    NinchatScopeHandler.getIOScope(),
-                    getSession(),
-                    channelId,
-                    data.toString(2),
-                    aLong -> null
-            );
-        } catch (final JSONException e) {
-            // Ignore
         }
     }
 

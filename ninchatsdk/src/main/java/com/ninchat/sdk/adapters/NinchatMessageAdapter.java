@@ -36,8 +36,12 @@ import com.ninchat.sdk.activities.NinchatMediaActivity;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatUser;
+import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
+import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
+import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
@@ -70,7 +74,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             if (TextUtils.isEmpty(userAvatar)) {
                 final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
                 userAvatar = ninchatMessage.isRemoteMessage() ?
-                        sessionManager.getNinchatSiteConfig().getAgentAvatar(sessionManager.getPreferredEnvironments()):
+                        sessionManager.getNinchatSiteConfig().getAgentAvatar(sessionManager.getPreferredEnvironments()) :
                         sessionManager.getNinchatSiteConfig().getUserAvatar(sessionManager.getPreferredEnvironments());
             }
             if (!TextUtils.isEmpty(userAvatar)) {
@@ -263,7 +267,17 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                     @Override
                     public void onClick(View v) {
                         try {
-                            NinchatSessionManager.getInstance().sendUIAction(data.getMultiChoiceData());
+                            final JSONObject payload = new JSONObject();
+                            payload.put("action", "click");
+                            payload.put("target", data.getMultiChoiceData());
+                            NinchatSendMessage.executeAsync(
+                                    NinchatScopeHandler.getIOScope(),
+                                    NinchatSessionManager.getInstance().getSession(),
+                                    NinchatSessionManager.getInstance().getChannelId(),
+                                    NinchatMessageTypes.UI_ACTION,
+                                    payload.toString(),
+                                    aLong -> null
+                            );
                         } catch (final JSONException e) {
                             Log.e(NinchatMessageAdapter.class.getSimpleName(), "Error when sending multichoice answer!", e);
                         }

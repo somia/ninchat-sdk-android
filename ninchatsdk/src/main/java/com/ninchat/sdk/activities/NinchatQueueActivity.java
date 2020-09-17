@@ -19,7 +19,9 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
 import com.ninchat.sdk.utils.misc.Misc;
+import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
@@ -163,7 +165,11 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
     }
 
     public void onClose(final View view) {
-        NinchatSessionManager.exitQueue();
+        NinchatDeleteUser.executeAsync(
+                NinchatScopeHandler.getIOScope(),
+                NinchatSessionManager.getInstance().getSession(),
+                aLong -> null
+        );
         setResult(RESULT_CANCELED, null);
         finish();
     }

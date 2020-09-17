@@ -42,9 +42,16 @@ import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.managers.OrientationManager;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
+import com.ninchat.sdk.networkdispatchers.NinchatPartChannel;
+import com.ninchat.sdk.networkdispatchers.NinchatSendFile;
+import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
+import com.ninchat.sdk.networkdispatchers.NinchatUpdateMember;
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 import com.ninchat.sdk.views.NinchatWebRTCView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.List;
@@ -82,7 +89,12 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (requestCode == NinchatReviewActivity.REQUEST_CODE) {
             // coming from ninchat review
             if (sessionManager != null && !sessionManager.getNinchatQuestionnaireHolder().hasPostAudienceQuestionnaire()) {
-                sessionManager.partChannel();
+                NinchatPartChannel.executeAsync(
+                        NinchatScopeHandler.getIOScope(),
+                        sessionManager.getSession(),
+                        sessionManager.getChannelId(),
+                        aLong -> null
+                );
                 // delete the user if current user is a guest
                 if (NinchatSessionManager.getInstance().isGuestMemeber()) {
                     NinchatDeleteUser.executeAsync(
@@ -102,7 +114,15 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 final byte[] buffer = new byte[size];
                 inputStream.read(buffer);
                 inputStream.close();
-                sessionManager.sendImage(fileName, buffer);
+                NinchatSendFile.executeAsync(
+                        NinchatScopeHandler.getIOScope(),
+                        sessionManager.getSession(),
+                        sessionManager.getChannelId(),
+                        fileName,
+                        buffer,
+                        aLong -> null
+                );
+
             } catch (final Exception e) {
                 sessionManager.sessionError(e);
             }
@@ -165,7 +185,12 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (NinchatSessionManager.Broadcast.AUDIENCE_ENQUEUED.equals(action)) {
-                sessionManager.partChannel();
+                NinchatPartChannel.executeAsync(
+                        NinchatScopeHandler.getIOScope(),
+                        sessionManager.getSession(),
+                        sessionManager.getChannelId(),
+                        aLong -> null
+                );
                 quit(intent);
             }
         }
@@ -225,7 +250,20 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     private void sendPickUpAnswer(final boolean answer) {
-        sessionManager.sendWebRTCCallAnswer(answer);
+        try {
+            final JSONObject data = new JSONObject();
+            data.put("answer", answer);
+            NinchatSendMessage.executeAsync(
+                    NinchatScopeHandler.getIOScope(),
+                    sessionManager.getSession(),
+                    sessionManager.getChannelId(),
+                    NinchatMessageTypes.PICK_UP,
+                    data.toString(),
+                    aLong -> null
+            );
+        } catch (final JSONException e) {
+            sessionManager.sessionError(e);
+        }
         messageAdapter.addMetaMessage(messageAdapter.getLastMessageId(true) + "answer",
                 answer ? sessionManager.getVideoCallAccepted() : sessionManager.getVideoCallRejected());
     }
@@ -391,7 +429,21 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (TextUtils.isEmpty(message)) {
             return;
         }
-        sessionManager.sendMessage(message);
+        try {
+            final JSONObject data = new JSONObject();
+            data.put("text", message);
+            NinchatSendMessage.executeAsync(
+                    NinchatScopeHandler.getIOScope(),
+                    sessionManager.getSession(),
+                    sessionManager.getChannelId(),
+                    NinchatMessageTypes.TEXT,
+                    data.toString(),
+                    aLong -> null
+            );
+        } catch (final JSONException e) {
+            sessionManager.sessionError(e);
+        }
+
         writingMessageSent = false;
         messageView.setText(null);
     }
@@ -410,10 +462,24 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         @Override
         public void afterTextChanged(Editable s) {
             if (s.length() != 0 && !writingMessageSent) {
-                sessionManager.sendIsWritingUpdate(true);
+                NinchatUpdateMember.executeAsync(
+                        NinchatScopeHandler.getIOScope(),
+                        sessionManager.getSession(),
+                        sessionManager.getChannelId(),
+                        sessionManager.getUserId(),
+                        true,
+                        aLong -> null
+                );
                 writingMessageSent = true;
             } else if (s.length() == 0) {
-                sessionManager.sendIsWritingUpdate(false);
+                NinchatUpdateMember.executeAsync(
+                        NinchatScopeHandler.getIOScope(),
+                        sessionManager.getSession(),
+                        sessionManager.getChannelId(),
+                        sessionManager.getUserId(),
+                        false,
+                        aLong -> null
+                );
                 writingMessageSent = false;
             }
         }

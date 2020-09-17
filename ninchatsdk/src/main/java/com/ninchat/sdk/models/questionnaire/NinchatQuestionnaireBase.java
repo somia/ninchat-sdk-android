@@ -21,7 +21,9 @@ import com.ninchat.sdk.events.OnNextQuestionnaire;
 import com.ninchat.sdk.events.OnPostAudienceQuestionnaire;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
+import com.ninchat.sdk.networkdispatchers.NinchatPartChannel;
 import com.ninchat.sdk.networkdispatchers.NinchatRegisterAudience;
+import com.ninchat.sdk.networkdispatchers.NinchatSendPostAudienceQuestionnaire;
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
 import org.greenrobot.eventbus.EventBus;
@@ -29,6 +31,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
@@ -134,7 +137,22 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
         JSONObject answers = updateQueueAndGetAnswers();
         pendingRequest = POST_ANSWERS;
         // a post audience questionnaire
-        NinchatSessionManager.getInstance().sendPostAnswers(answers);
+        try {
+            final JSONObject value = new JSONObject();
+            value.put("post_answers", answers);
+            final JSONObject data = new JSONObject();
+            data.put("data", value);
+            data.put("time", System.currentTimeMillis());
+            NinchatSendPostAudienceQuestionnaire.executeAsync(
+                    NinchatScopeHandler.getIOScope(),
+                    NinchatSessionManager.getInstance().getSession(),
+                    NinchatSessionManager.getInstance().getChannelId(),
+                    data.toString(2),
+                    aLong -> null
+            );
+        } catch (final JSONException e) {
+            // Ignore
+        }
     }
 
     public void dispose() {
@@ -250,7 +268,12 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
     public void onPostAudienceQuestion(OnPostAudienceQuestionnaire onPostAudienceQuestionnaire) {
         pendingRequest = NONE;
         if (NinchatSessionManager.getInstance() != null) {
-            NinchatSessionManager.getInstance().partChannel();
+            NinchatPartChannel.executeAsync(
+                    NinchatScopeHandler.getIOScope(),
+                    NinchatSessionManager.getInstance().getSession(),
+                    NinchatSessionManager.getInstance().getChannelId(),
+                    aLong -> null
+            );
             // delete the user if current user is a guest
             if (NinchatSessionManager.getInstance().isGuestMemeber()) {
                 NinchatDeleteUser.executeAsync(
