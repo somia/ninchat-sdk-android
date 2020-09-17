@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +20,7 @@ import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
+import com.ninchat.sdk.utils.misc.Misc;
 
 import static com.ninchat.sdk.activities.NinchatQuestionnaireActivity.OPEN_QUEUE;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
@@ -59,7 +62,10 @@ public final class NinchatActivity extends NinchatBaseActivity {
         if (ninchatQueueListAdapter.getItemCount() == 0) {
             findViewById(R.id.ninchat_activity_no_queues).setVisibility(View.VISIBLE);
             final TextView motd = findViewById(R.id.ninchat_activity_motd);
-            motd.setText(sessionManager.getNoQueues());
+            final String noQueueText = sessionManager
+                    .getNinchatSiteConfig()
+                    .getNoQueuesText(sessionManager.getPreferredEnvironments());
+            motd.setText(Misc.toSpanned(noQueueText));
             findViewById(R.id.ninchat_activity_close).setVisibility(View.VISIBLE);
         }
         ninchatQueueListAdapter.notifyDataSetChanged();
@@ -75,15 +81,31 @@ public final class NinchatActivity extends NinchatBaseActivity {
     };
 
     private void setTexts() {
+        if (sessionManager == null) {
+            sessionManager = NinchatSessionManager.getInstance();
+        }
+        final String welcomeMessage = sessionManager
+                .getNinchatSiteConfig()
+                .getWelcomeText(sessionManager.getPreferredEnvironments());
+
+        final String noQueueText = sessionManager
+                .getNinchatSiteConfig()
+                .getNoQueuesText(sessionManager.getPreferredEnvironments());
+
+
+        final String motDText = sessionManager
+                .getNinchatSiteConfig()
+                .getMOTDText(sessionManager.getPreferredEnvironments());
+
         final TextView topHeader = findViewById(R.id.ninchat_activity_header);
-        topHeader.setText(sessionManager.getWelcome());
+        topHeader.setText(Misc.toSpanned(welcomeMessage));
         final Button closeButton = findViewById(R.id.ninchat_activity_close);
         closeButton.setText(sessionManager.getCloseWindow());
         closeButton.setVisibility(View.VISIBLE);
         final TextView motd = findViewById(R.id.ninchat_activity_motd);
-        motd.setText(sessionManager.getMOTD());
+        motd.setText(Misc.toSpanned(motDText));
         final TextView noQueues = findViewById(R.id.ninchat_activity_no_queues);
-        noQueues.setText(sessionManager.getNoQueues());
+        noQueues.setText(Misc.toSpanned(noQueueText));
     }
 
     @Override

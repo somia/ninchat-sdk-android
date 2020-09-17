@@ -180,7 +180,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         final TextView title = dialog.findViewById(R.id.ninchat_close_chat_dialog_title);
         title.setText(sessionManager.getCloseChat());
         final TextView description = dialog.findViewById(R.id.ninchat_close_chat_dialog_description);
-        description.setText(sessionManager.getCloseChatDescription());
+        description.setText(sessionManager.getNinchatSiteConfig().getChatCloseConfirmationText(
+                sessionManager.getPreferredEnvironments()
+        ));
         final Button confirm = dialog.findViewById(R.id.ninchat_close_chat_dialog_confirm);
         confirm.setText(sessionManager.getCloseChat());
         confirm.setOnClickListener(new View.OnClickListener() {
@@ -449,7 +451,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         message.addTextChangedListener(textWatcher);
         final Button closeButton = findViewById(R.id.ninchat_chat_close);
         closeButton.setText(sessionManager.getCloseChat());
-        final String sendButtonText = sessionManager.getSendButtonText();
+        final String sendButtonText = sessionManager.getNinchatSiteConfig().getSendButtonText(
+                sessionManager.getPreferredEnvironments()
+        );
         final Button sendButton = findViewById(R.id.send_button);
         final RelativeLayout sendIcon = findViewById(R.id.send_button_icon);
         if (sendButtonText != null) {
@@ -458,10 +462,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             sendButton.setVisibility(View.GONE);
             sendIcon.setVisibility(View.VISIBLE);
         }
-        if (sessionManager.isAttachmentsEnabled()) {
+        if (sessionManager.getNinchatSiteConfig().isAttachmentsEnabled(sessionManager.getPreferredEnvironments())) {
             findViewById(R.id.attachment).setVisibility(View.VISIBLE);
         }
-        if (sessionManager.isVideoEnabled() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
+        if (sessionManager.getNinchatSiteConfig().isVideoEnabled(sessionManager.getPreferredEnvironments()) && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
             findViewById(R.id.video_call).setVisibility(View.VISIBLE);
         }
 

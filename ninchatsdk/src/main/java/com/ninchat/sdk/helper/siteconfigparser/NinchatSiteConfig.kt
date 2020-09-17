@@ -11,7 +11,7 @@ class NinchatSiteConfig {
     fun setConfigString(value: String?) {
         try {
             value?.let {
-                siteConfig = JSONObject(value)
+                siteConfig = JSONObject(it)
             }
         } catch (_: Exception) {
         }
@@ -79,12 +79,15 @@ class NinchatSiteConfig {
         val queues = mutableListOf<String?>()
         val array: JSONArray? = getArray("audienceQueues", preferredEnvironments)
         array?.let {
-            for (i in 0 until array.length()) {
-                queues.add(array.optString(i))
+            for (i in 0 until it.length()) {
+                queues.add(it.optString(i))
             }
         }
         return queues
     }
+
+    fun getAudienceAutoQueue(preferredEnvironments: ArrayList<String>?): String? =
+            getString("audienceAutoQueue", preferredEnvironments)
 
     fun getRealmId(preferredEnvironments: ArrayList<String>?): String? =
             getString("audienceRealmId", preferredEnvironments)
@@ -131,7 +134,7 @@ class NinchatSiteConfig {
     fun getChatCloseText(preferredEnvironments: ArrayList<String>?): String =
             getString("Close chat", preferredEnvironments) ?: "Close chat"
 
-    fun getChatCloseDescriptionText(preferredEnvironments: ArrayList<String>?): String =
+    fun getChatCloseConfirmationText(preferredEnvironments: ArrayList<String>?): String =
             getString("closeConfirmText", preferredEnvironments) ?: "closeConfirmText"
 
     fun getContinueChatText(preferredEnvironments: ArrayList<String>?): String =

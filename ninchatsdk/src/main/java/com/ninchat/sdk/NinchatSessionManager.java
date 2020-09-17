@@ -28,6 +28,7 @@ import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 import com.ninchat.sdk.events.OnAudienceRegistered;
 import com.ninchat.sdk.events.OnPostAudienceQuestionnaire;
+import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatOption;
@@ -63,6 +64,7 @@ import org.webrtc.SessionDescription;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -211,8 +213,9 @@ public final class NinchatSessionManager {
     protected static NinchatSessionManager instance;
     protected static final String TAG = NinchatSessionManager.class.getSimpleName();
     protected String configurationKey;
-    private String[] preferredEnvironments;
+    private ArrayList<String> preferredEnvironments;
     protected String siteSecret;
+    protected NinchatSiteConfig ninchatSiteConfig;
 
     protected NinchatSessionManager(final Context context,
                                     final String configurationKey,
@@ -223,7 +226,7 @@ public final class NinchatSessionManager {
                                     final NinchatSDKLogListener logListener) {
         this.contextWeakReference = new WeakReference<>(context);
         this.configurationKey = configurationKey;
-        this.preferredEnvironments = preferredEnvironments;
+        this.preferredEnvironments = new ArrayList<>(Arrays.asList(preferredEnvironments));
         this.eventListenerWeakReference = new WeakReference<>(eventListener);
         this.logListenerWeakReference = new WeakReference<>(logListener);
         this.configuration = null;
@@ -237,6 +240,7 @@ public final class NinchatSessionManager {
         this.sessionCredentials = sessionCredentials;
         this.resumedSession = NEW_SESSION;
         this.ninchatConfiguration = configurationManager;
+        ninchatSiteConfig = new NinchatSiteConfig();
     }
 
     protected WeakReference<Context> contextWeakReference;
@@ -294,6 +298,7 @@ public final class NinchatSessionManager {
             Log.v(TAG, "Got configuration: " + config);
             this.configuration = new JSONObject(config);
             this.ninchatQuestionnaireHolder = new NinchatQuestionnaireHolder(this);
+            this.ninchatSiteConfig.setConfigString(config);
             Log.i(TAG, "Configuration fetched successfully!");
         } catch (final JSONException e) {
             this.configuration = null;
@@ -353,9 +358,10 @@ public final class NinchatSessionManager {
                     userId = params.getString("user_id");
                     userChannels = params.getObject("user_channels");
                     userQueues = params.getObject("user_queues");
+                    final String audienceAutoQueue = ninchatSiteConfig.getAudienceAutoQueue(preferredEnvironments);
                     // if queue id is not given and site config has audienceAutoQueue
-                    if (TextUtils.isEmpty(queueId) && !TextUtils.isEmpty(parseQueueIdFromSiteConfig())) {
-                        queueId = parseQueueIdFromSiteConfig();
+                    if (TextUtils.isEmpty(queueId) && !TextUtils.isEmpty(audienceAutoQueue)) {
+                        queueId = audienceAutoQueue;
                     }
 
                     String userAuth = sessionCredentials != null ? sessionCredentials.getUserAuth() : params.getString("user_auth");
@@ -386,8 +392,8 @@ public final class NinchatSessionManager {
                     NinchatDescribeRealmQueues.executeAsync(
                             NinchatScopeHandler.getIOScope(),
                             session,
-                            getRealmId(),
-                            getAudienceQueues(),
+                            ninchatSiteConfig.getRealmId(preferredEnvironments),
+                            ninchatSiteConfig.getAudienceQueues(preferredEnvironments),
                             aLong -> null
                     );
                     if (listener != null) {
@@ -496,17 +502,12 @@ public final class NinchatSessionManager {
         return session;
     }
 
+    public NinchatSiteConfig getNinchatSiteConfig() {
+        return ninchatSiteConfig;
+    }
 
-
-
-    // If audienceAutoQueue is available
-    private String parseQueueIdFromSiteConfig() {
-        try {
-            final String queueId = getStringFromConfiguration("audienceAutoQueue");
-            return queueId;
-        } catch (JSONException e) {
-            return null;
-        }
+    public ArrayList<String> getPreferredEnvironments() {
+        return preferredEnvironments;
     }
 
     public NinchatQueueListAdapter getNinchatQueueListAdapter(final Activity activity) {
@@ -580,7 +581,7 @@ public final class NinchatSessionManager {
         if (ninchatQueueListAdapter != null) {
             ninchatQueueListAdapter.clear();
         }
-        final List<String> openQueues = getAudienceQueues();
+        final List<String> openQueues = ninchatSiteConfig.getAudienceQueues(preferredEnvironments);
         for (String currentQueueId : parser.properties.keySet()) {
             if (!openQueues.contains(currentQueueId)) {
                 continue;
@@ -1308,54 +1309,6 @@ public final class NinchatSessionManager {
         }
     }
 
-    public JSONArray getArrayFromConfiguration(final String key) {
-        JSONArray array = null;
-        if (configuration != null) {
-            if (preferredEnvironments != null) {
-                for (final String configuration : preferredEnvironments) {
-                    try {
-                        array = this.configuration.getJSONObject(configuration).getJSONArray(key);
-                    } catch (final Exception e) {
-                        // Ignore…
-                    }
-                    if (array != null) {
-                        return array;
-                    }
-                }
-            }
-            try {
-                return getDefault().getJSONArray(key);
-            } catch (final Exception e) {
-                // Ignore…
-            }
-        }
-        return array;
-    }
-
-    public boolean getBooleanFromConfiguration(final String key) throws JSONException {
-        Boolean value = null;
-        if (configuration != null) {
-            if (preferredEnvironments != null) {
-                for (final String configuration : preferredEnvironments) {
-                    try {
-                        value = this.configuration.getJSONObject(configuration).getBoolean(key);
-                    } catch (final Exception e) {
-                        // Ignore…
-                    }
-                    if (value != null) {
-                        return value;
-                    }
-                }
-            }
-            try {
-                return getDefault().getBoolean(key);
-            } catch (final Exception e) {
-                throw new JSONException("");
-            }
-        }
-        throw new JSONException("");
-    }
-
     public String getStringFromConfiguration(final String key) throws JSONException {
         String value = null;
         if (configuration != null) {
@@ -1388,27 +1341,6 @@ public final class NinchatSessionManager {
         return null;
     }
 
-    public List<String> getAudienceQueues() {
-        final List<String> queues = new ArrayList<>();
-        try {
-            final JSONArray array = getArrayFromConfiguration("audienceQueues");
-            for (int i = 0; i < array.length(); ++i) {
-                queues.add(array.getString(i));
-            }
-        } catch (final Exception e) {
-            // Ignore
-        }
-        return queues;
-    }
-
-    public String getRealmId() {
-        try {
-            return getStringFromConfiguration("audienceRealmId");
-        } catch (final Exception e) {
-            return null;
-        }
-    }
-
     private String center(final String text) {
         return (text == null || (text.contains("<center>") && text.contains("</center>"))) ?
                 text : ("<center>" + text + "</center>");
@@ -1418,16 +1350,6 @@ public final class NinchatSessionManager {
         final String centeredText = center(text) == null ? "" : center(text);
         return centeredText == null ? null :
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(centeredText, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(centeredText);
-    }
-
-    public Spanned getWelcome() {
-        final String key = "welcome";
-        String welcomeText = key;
-        try {
-            welcomeText = getStringFromConfiguration(key);
-        } catch (final Exception e) {
-        }
-        return toSpanned(welcomeText);
     }
 
     public Spanned getNoQueues() {
@@ -1459,15 +1381,6 @@ public final class NinchatSessionManager {
         return key;
     }
 
-    public boolean showNoThanksButton() {
-        final String key = "noThanksButton";
-        try {
-            return getBooleanFromConfiguration(key);
-        } catch (final Exception e) {
-            return true;
-        }
-    }
-
     public String getCloseWindow() {
         return getTranslation("Close window");
     }
@@ -1496,35 +1409,8 @@ public final class NinchatSessionManager {
         }
     }
 
-    public String getSendButtonText() {
-        final String key = "sendButtonText";
-        try {
-            return getStringFromConfiguration(key);
-        } catch (final Exception e) {
-            return null;
-        }
-    }
-
     public String getSubmitButtonText() {
         return getTranslation("Submit");
-    }
-
-    public boolean isAttachmentsEnabled() {
-        final String key = "supportFiles";
-        try {
-            return getBooleanFromConfiguration(key);
-        } catch (final Exception e) {
-            return false;
-        }
-    }
-
-    public boolean isVideoEnabled() {
-        final String key = "supportVideo";
-        try {
-            return getBooleanFromConfiguration(key);
-        } catch (final Exception e) {
-            return false;
-        }
     }
 
     public boolean showAvatars(final boolean agentAvatar) {
@@ -1568,15 +1454,6 @@ public final class NinchatSessionManager {
         return getTranslation("Close chat");
     }
 
-    public String getCloseChatDescription() {
-        final String key = "closeConfirmText";
-        try {
-            return getStringFromConfiguration(key);
-        } catch (final Exception e) {
-            return key;
-        }
-    }
-
     public String getContinueChat() {
         return getTranslation("Continue chat");
     }
@@ -1613,15 +1490,6 @@ public final class NinchatSessionManager {
         return center(getTranslation("Video chat declined"));
     }
 
-    public Spanned getMOTD() {
-        final String key = "motd";
-        String motd = key;
-        try {
-            motd = getStringFromConfiguration(key);
-        } catch (final Exception e) {
-        }
-        return toSpanned(motd);
-    }
 
     public String getQueueName(final String name) {
         return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
