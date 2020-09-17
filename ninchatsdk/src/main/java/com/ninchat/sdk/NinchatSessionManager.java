@@ -1305,31 +1305,6 @@ public final class NinchatSessionManager {
         }
     }
 
-    public String getStringFromConfiguration(final String key) throws JSONException {
-        String value = null;
-        if (configuration != null) {
-            if (preferredEnvironments != null) {
-                for (final String configuration : preferredEnvironments) {
-                    try {
-                        value = this.configuration.getJSONObject(configuration).getString(key);
-                    } catch (final Exception e) {
-                        // Ignore…
-                    }
-                    if (value != null) {
-                        return value;
-                    }
-                }
-            }
-            try {
-                return getDefault().getString(key);
-            } catch (final Exception e) {
-                throw new JSONException("");
-            }
-        }
-        throw new JSONException("");
-
-    }
-
     private JSONObject getDefault() throws JSONException {
         if (configuration != null) {
             return configuration.getJSONObject("default");
@@ -1376,21 +1351,14 @@ public final class NinchatSessionManager {
         if (this.ninchatConfiguration != null && this.ninchatConfiguration.getUserName() != null) {
             return this.ninchatConfiguration.getUserName();
         }
-        final String key = "userName";
-        try {
-            return getStringFromConfiguration(key);
-        } catch (final Exception e) {
-            return null;
-        }
+        return ninchatSiteConfig.getUserName(preferredEnvironments);
     }
 
     // Get username or agentname if it is set in configuration
     public String getName(boolean isAgent) {
-
         if (!isAgent) return getUserName();
-
         try {
-            return getStringFromConfiguration("agentName");
+            return ninchatSiteConfig.getAgentName(preferredEnvironments);
         } catch (final Exception e) {
             return null;
         }
@@ -1503,16 +1471,6 @@ public final class NinchatSessionManager {
             queueStatus = replacePlaceholder(queueStatus, String.valueOf(position));
         }
         return toSpanned(queueStatus);
-    }
-
-    public Spanned getQueueMessage() {
-        final String key = "inQueueText";
-        String queueMessage = null;
-        try {
-            queueMessage = getStringFromConfiguration(key);
-        } catch (final Exception e) {
-        }
-        return toSpanned(queueMessage);
     }
 
     public Spanned getFeedbackTitle() {

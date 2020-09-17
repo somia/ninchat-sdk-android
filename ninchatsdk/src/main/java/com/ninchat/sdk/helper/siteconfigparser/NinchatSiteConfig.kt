@@ -173,8 +173,8 @@ class NinchatSiteConfig {
     fun getMOTDText(preferredEnvironments: ArrayList<String>?): String =
             getString("motd", preferredEnvironments) ?: "motd"
 
-    fun getQueueMessageText(preferredEnvironments: ArrayList<String>?): String =
-            getString("inQueueText", preferredEnvironments) ?: "inQueueText"
+    fun getInQueueMessageText(preferredEnvironments: ArrayList<String>?): String? =
+            getString("inQueueText", preferredEnvironments)
 
 
     fun showRating(preferredEnvironments: ArrayList<String>?): Boolean =
@@ -199,4 +199,28 @@ class NinchatSiteConfig {
 
     fun getFeedbackSkipText(preferredEnvironments: ArrayList<String>?): String =
             getString("Skip", preferredEnvironments) ?: "Skip"
+
+    fun getQuestionnaireName(preferredEnvironments: ArrayList<String>?): String? =
+            getString("questionnaireName", preferredEnvironments)
+
+    fun getQuestionnaireAvatar(preferredEnvironments: ArrayList<String>?): String? =
+            getString("questionnaireAvatar", preferredEnvironments)
+
+    fun getAudienceRegisteredText(preferredEnvironments: ArrayList<String>?): String? =
+            getString("audienceRegisteredText", preferredEnvironments)
+
+    fun getAudienceRegisteredClosedText(preferredEnvironments: ArrayList<String>?): String? =
+            getString("audienceRegisteredClosedText", preferredEnvironments)
+
+    fun getPreAudienceQuestionnaire(preferredEnvironments: ArrayList<String>?): JSONArray? =
+            getArray("preAudienceQuestionnaire", preferredEnvironments)
+
+    fun getPostAudienceQuestionnaire(preferredEnvironments: ArrayList<String>?): JSONArray? =
+            getArray("postAudienceQuestionnaire", preferredEnvironments)
+
+    fun getPreAudienceQuestionnaireStyle(preferredEnvironments: ArrayList<String>?): String =
+            getString("preAudienceQuestionnaireStyle", preferredEnvironments)?: "form" // default style is form
+
+    fun getPostAudienceQuestionnaireStyle(preferredEnvironments: ArrayList<String>?): String =
+            getString("postAudienceQuestionnaireStyle", preferredEnvironments)?: "form" // default style is form
 }

@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.utils.misc.Misc;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
@@ -122,7 +125,10 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         final Button closeButton = findViewById(R.id.ninchat_queue_activity_close_button);
 
         if (message != null) {
-            message.setText(sessionManager.getQueueMessage());
+            final String inQueueText = sessionManager.
+                    getNinchatSiteConfig().
+                    getInQueueMessageText(sessionManager.getPreferredEnvironments());
+            message.setText(Misc.toSpanned(inQueueText));
         }
 
         if (closeButton != null) {
