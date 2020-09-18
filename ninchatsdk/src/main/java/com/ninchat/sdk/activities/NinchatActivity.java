@@ -64,7 +64,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
             final TextView motd = findViewById(R.id.ninchat_activity_motd);
             final String noQueueText = sessionManager
                     .getNinchatSiteConfig()
-                    .getNoQueuesText(sessionManager.getPreferredEnvironments());
+                    .getNoQueuesText();
             motd.setText(Misc.toSpanned(noQueueText));
             findViewById(R.id.ninchat_activity_close).setVisibility(View.VISIBLE);
         }
@@ -86,20 +86,20 @@ public final class NinchatActivity extends NinchatBaseActivity {
         }
         final String welcomeMessage = sessionManager
                 .getNinchatSiteConfig()
-                .getWelcomeText(sessionManager.getPreferredEnvironments());
+                .getWelcomeText();
 
         final String noQueueText = sessionManager
                 .getNinchatSiteConfig()
-                .getNoQueuesText(sessionManager.getPreferredEnvironments());
+                .getNoQueuesText();
 
 
         final String motDText = sessionManager
                 .getNinchatSiteConfig()
-                .getMOTDText(sessionManager.getPreferredEnvironments());
+                .getMOTDText();
 
         final String closeWindowText = sessionManager
                 .getNinchatSiteConfig()
-                .getCloseWindowText(sessionManager.getPreferredEnvironments());
+                .getCloseWindowText();
 
         final TextView topHeader = findViewById(R.id.ninchat_activity_header);
         topHeader.setText(Misc.toSpanned(welcomeMessage));

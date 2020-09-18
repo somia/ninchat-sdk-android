@@ -40,12 +40,12 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
                 button.setEnabled(false);
                 button.setAlpha(0.5f);
                 button.setText(NinchatSessionManager.getInstance().getNinchatSiteConfig().getQueueName(
-                        queue.getName(), queue.isClosed(), NinchatSessionManager.getInstance().getPreferredEnvironments()
+                        queue.getName(), queue.isClosed()
                 ));
             } else {
                 button.setAlpha(1f);
                 button.setText(NinchatSessionManager.getInstance().getNinchatSiteConfig().getQueueName(
-                        queue.getName(), false, NinchatSessionManager.getInstance().getPreferredEnvironments()
+                        queue.getName(), false
                 ));
                 button.setOnClickListener(v -> {
                     final Activity activity = activityWeakReference.get();

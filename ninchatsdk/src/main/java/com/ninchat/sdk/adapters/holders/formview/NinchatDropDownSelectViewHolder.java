@@ -114,17 +114,12 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(itemView.getContext(), R.layout.dropdown_item_text_view);
         JSONArray options = getOptions(questionnaireElement);
         dataAdapter.add(NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(
-                "Select",
-                NinchatSessionManager.getInstance().getPreferredEnvironments()
-        ));
+                "Select"));
         for (int i = 0; i < options.length(); i += 1) {
             JSONObject curOption = options.optJSONObject(i);
             String label = curOption.optString("label");
             dataAdapter.add(
-                    NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(
-                            label,
-                            NinchatSessionManager.getInstance().getPreferredEnvironments()
-                    ));
+                    NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(label));
         }
         return dataAdapter;
     }

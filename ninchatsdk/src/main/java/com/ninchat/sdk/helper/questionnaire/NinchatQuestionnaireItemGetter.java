@@ -399,50 +399,50 @@ public class NinchatQuestionnaireItemGetter {
     public static String getBotQuestionnaireNameFromConfig(@NotNull NinchatSessionManager ninchatSessionManager) {
         return ninchatSessionManager.
                 getNinchatSiteConfig().
-                getQuestionnaireName(ninchatSessionManager.getPreferredEnvironments());
+                getQuestionnaireName();
     }
 
     public static String getBotQuestionnaireAvatarFromConfig(@NotNull NinchatSessionManager ninchatSessionManager) {
         return ninchatSessionManager.
                 getNinchatSiteConfig().
-                getQuestionnaireAvatar(ninchatSessionManager.getPreferredEnvironments());
+                getQuestionnaireAvatar();
     }
 
     public static String getAudienceRegisteredTextFromConfig(@NotNull NinchatSessionManager ninchatSessionManager) {
         return ninchatSessionManager.
                 getNinchatSiteConfig().
-                getAudienceRegisteredText(ninchatSessionManager.getPreferredEnvironments());
+                getAudienceRegisteredText();
     }
 
     public static String getAudienceRegisteredClosedTextFromConfig(@NotNull NinchatSessionManager ninchatSessionManager) {
         return ninchatSessionManager.
                 getNinchatSiteConfig().
-                getAudienceRegisteredClosedText(ninchatSessionManager.getPreferredEnvironments());
+                getAudienceRegisteredClosedText();
     }
 
     public static JSONArray getPreAudienceQuestionnaire(@NotNull NinchatSessionManager ninchatSessionManager) {
         return ninchatSessionManager.
                 getNinchatSiteConfig().
-                getPreAudienceQuestionnaire(ninchatSessionManager.getPreferredEnvironments());
+                getPreAudienceQuestionnaire();
     }
 
     public static JSONArray getPostAudienceQuestionnaire(@NotNull NinchatSessionManager ninchatSessionManager) {
         return ninchatSessionManager.
                 getNinchatSiteConfig().
-                getPostAudienceQuestionnaire(ninchatSessionManager.getPreferredEnvironments());
+                getPostAudienceQuestionnaire();
     }
 
     public static boolean isConversationLikePreAudienceQuestionnaire(@NotNull NinchatSessionManager ninchatSessionManager) {
         String questionnaireStyle = ninchatSessionManager.
                 getNinchatSiteConfig().
-                getPreAudienceQuestionnaireStyle(ninchatSessionManager.getPreferredEnvironments());
+                getPreAudienceQuestionnaireStyle();
         return "conversation".equalsIgnoreCase(questionnaireStyle);
     }
 
     public static boolean isConversationLikePostAudienceQuestionnaire(@NotNull NinchatSessionManager ninchatSessionManager) {
         String questionnaireStyle = ninchatSessionManager.
                 getNinchatSiteConfig().
-                getPostAudienceQuestionnaireStyle(ninchatSessionManager.getPreferredEnvironments());
+                getPostAudienceQuestionnaireStyle();
         return "conversation".equalsIgnoreCase(questionnaireStyle);
     }
 }

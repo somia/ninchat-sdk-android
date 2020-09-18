@@ -97,28 +97,21 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
 
             final TextView title = botViewItem.findViewById(R.id.ninchat_review_title);
             title.setGravity(Gravity.START);
-            title.setText(sessionManager.getNinchatSiteConfig().getThankYouTextText(
-                    sessionManager.getPreferredEnvironments()));
+            title.setText(sessionManager.getNinchatSiteConfig().getThankYouTextText());
 
 
             final TextView description = botViewItem.findViewById(R.id.ninchat_review_description);
             description.setVisibility(View.VISIBLE);
             description.setGravity(Gravity.START);
-            description.setText(sessionManager.getNinchatSiteConfig().getFeedbackTitleText(
-                    sessionManager.getPreferredEnvironments()));
+            description.setText(sessionManager.getNinchatSiteConfig().getFeedbackTitleText());
             final TextView positive = botViewItem.findViewById(R.id.ninchat_review_positive);
-            positive.setText(sessionManager.getNinchatSiteConfig().getFeedbackPositiveText(
-                    sessionManager.getPreferredEnvironments()));
+            positive.setText(sessionManager.getNinchatSiteConfig().getFeedbackPositiveText());
             final TextView neutral = botViewItem.findViewById(R.id.ninchat_review_neutral);
-            neutral.setText(sessionManager.getNinchatSiteConfig().getFeedbackNeutralText(
-                    sessionManager.getPreferredEnvironments()));
+            neutral.setText(sessionManager.getNinchatSiteConfig().getFeedbackNeutralText());
             final TextView negative = botViewItem.findViewById(R.id.ninchat_review_negative);
-            negative.setText(sessionManager.getNinchatSiteConfig().getFeedbackNegativeText(
-                    sessionManager.getPreferredEnvironments()));
+            negative.setText(sessionManager.getNinchatSiteConfig().getFeedbackNegativeText());
             final TextView skip = findViewById(R.id.ninchat_review_skip);
-            skip.setText(sessionManager.getNinchatSiteConfig().getFeedbackSkipText(
-                    sessionManager.getPreferredEnvironments()
-            ));
+            skip.setText(sessionManager.getNinchatSiteConfig().getFeedbackSkipText());
         }, 1500);
     }
 
@@ -127,21 +120,15 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
         final View formViewItem = findViewById(R.id.review_rating_normal_view);
         formViewItem.setVisibility(View.VISIBLE);
         final TextView title = formViewItem.findViewById(R.id.ninchat_review_title);
-        title.setText(sessionManager.getNinchatSiteConfig().getFeedbackTitleText(
-                sessionManager.getPreferredEnvironments()));
+        title.setText(sessionManager.getNinchatSiteConfig().getFeedbackTitleText());
         final TextView positive = formViewItem.findViewById(R.id.ninchat_review_positive);
-        positive.setText(sessionManager.getNinchatSiteConfig().getFeedbackPositiveText(
-                sessionManager.getPreferredEnvironments()));
+        positive.setText(sessionManager.getNinchatSiteConfig().getFeedbackPositiveText());
         final TextView neutral = formViewItem.findViewById(R.id.ninchat_review_neutral);
-        neutral.setText(sessionManager.getNinchatSiteConfig().getFeedbackNeutralText(
-                sessionManager.getPreferredEnvironments()));
+        neutral.setText(sessionManager.getNinchatSiteConfig().getFeedbackNeutralText());
         final TextView negative = formViewItem.findViewById(R.id.ninchat_review_negative);
-        negative.setText(sessionManager.getNinchatSiteConfig().getFeedbackNegativeText(
-                sessionManager.getPreferredEnvironments()));
+        negative.setText(sessionManager.getNinchatSiteConfig().getFeedbackNegativeText());
         final TextView skip = findViewById(R.id.ninchat_review_skip);
-        skip.setText(sessionManager.getNinchatSiteConfig().getFeedbackSkipText(
-                sessionManager.getPreferredEnvironments()
-        ));
+        skip.setText(sessionManager.getNinchatSiteConfig().getFeedbackSkipText());
     }
 
     public final void onGoodClick(final View view) {

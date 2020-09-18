@@ -316,7 +316,7 @@ class NinchatSiteConfigTest {
     }
 
     @Test
-    fun `should_not_set_empty_site_config`() {
+    fun `should_be_able_to_set_empty_site_config`() {
         val ninchatSiteConfig = NinchatSiteConfig()
         ninchatSiteConfig.setConfigString(null)
         Assert.assertEquals(null, ninchatSiteConfig.siteConfig)
@@ -357,9 +357,9 @@ class NinchatSiteConfigTest {
     @Test
     fun `should_return_array_from_given_fi_environment`() {
         val ninchatSiteConfig = NinchatSiteConfig()
-        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv)
+        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv, arrayListOf("default", "fi"))
 
-        val audienceQueue = ninchatSiteConfig.getArray("audienceQueues", arrayListOf("default", "fi"))
+        val audienceQueue = ninchatSiteConfig.getArray("audienceQueues")
 
         Assert.assertEquals(JSONArray("""[
               "5lmpjrbl00m3g-audienceQ"
@@ -369,9 +369,9 @@ class NinchatSiteConfigTest {
     @Test
     fun `should_return_array_from_given_default_when_environment_not_found`() {
         val ninchatSiteConfig = NinchatSiteConfig()
-        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv)
+        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv, arrayListOf("noFoundFi"))
 
-        val audienceQueue = ninchatSiteConfig.getArray("audienceQueues", arrayListOf("noFoundFi"))
+        val audienceQueue = ninchatSiteConfig.getArray("audienceQueues")
 
         Assert.assertEquals(JSONArray("""[
               "5lmpjrbl00m3g"
@@ -381,9 +381,9 @@ class NinchatSiteConfigTest {
     @Test
     fun `should_return_array_from_given_default_when_environment_not_provided`() {
         val ninchatSiteConfig = NinchatSiteConfig()
-        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv)
+        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv, null)
 
-        val audienceQueue = ninchatSiteConfig.getArray("audienceQueues", null)
+        val audienceQueue = ninchatSiteConfig.getArray("audienceQueues")
         Assert.assertEquals(JSONArray("""[
               "5lmpjrbl00m3g"
             ]""".trimIndent()), audienceQueue)
@@ -392,81 +392,81 @@ class NinchatSiteConfigTest {
     @Test
     fun `should_return_null_if_provided_key_not_found_in_environments`() {
         val ninchatSiteConfig = NinchatSiteConfig()
-        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv)
+        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv, arrayListOf("default", "fi"))
 
-        val audienceQueue = ninchatSiteConfig.getArray("audienceQueuesNotFound", arrayListOf("default", "fi"))
+        val audienceQueue = ninchatSiteConfig.getArray("audienceQueuesNotFound")
         Assert.assertEquals(null, audienceQueue)
     }
 
     @Test
     fun `should_found_boolean_value_from_given_key_form_provided_environment`() {
         val ninchatSiteConfig = NinchatSiteConfig()
-        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv)
+        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv, arrayListOf("default", "fi"))
 
-        val audienceQueue = ninchatSiteConfig.getBoolean("agentAvatar", arrayListOf("default", "fi"))
+        val audienceQueue = ninchatSiteConfig.getBoolean("agentAvatar")
         Assert.assertEquals(false, audienceQueue)
     }
 
     @Test
     fun `should_found_value_from_default_environment_if_provided_environment_not_found`() {
         val ninchatSiteConfig = NinchatSiteConfig()
-        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv)
+        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv, arrayListOf("default", "fi"))
 
-        val audienceQueue = ninchatSiteConfig.getBoolean("audienceRating", arrayListOf("default", "fi"))
+        val audienceQueue = ninchatSiteConfig.getBoolean("audienceRating")
         Assert.assertEquals(true, audienceQueue)
     }
 
     @Test
     fun `should_found_value_from_given_key_from_default_environment_if_provided_environment_null`() {
         val ninchatSiteConfig = NinchatSiteConfig()
-        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv)
+        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv, arrayListOf("default", "fi"))
 
-        val newUI = ninchatSiteConfig.getBoolean("newUI", arrayListOf("default", "fi"))
+        val newUI = ninchatSiteConfig.getBoolean("newUI")
         Assert.assertEquals(false, newUI)
     }
 
     @Test
     fun `should_return_false_if_key_not_found`() {
         val ninchatSiteConfig = NinchatSiteConfig()
-        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv)
+        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv, arrayListOf("default", "fi"))
 
-        val newUI = ninchatSiteConfig.getBoolean("newUINoKey", arrayListOf("default", "fi"))
+        val newUI = ninchatSiteConfig.getBoolean("newUINoKey")
         Assert.assertEquals(false, newUI)
     }
 
     @Test
     fun `should_found_string_value_from_given_key_form_provided_environment`() {
         val ninchatSiteConfig = NinchatSiteConfig()
-        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv)
+        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv, arrayListOf("default", "fi"))
 
-        val value = ninchatSiteConfig.getString("welcome", arrayListOf("default", "fi"))
+        val value = ninchatSiteConfig.getString("welcome")
         Assert.assertEquals("welcome-fi", value)
     }
 
     @Test
     fun `should_found_string_value_from_default_environment_if_provided_environment_not_found`() {
         val ninchatSiteConfig = NinchatSiteConfig()
-        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv)
+        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv, arrayListOf("default", "fi"))
 
-        val value = ninchatSiteConfig.getString("userName", arrayListOf("default", "fi"))
+        val value = ninchatSiteConfig.getString("userName")
         Assert.assertEquals("Asiakas", value)
     }
 
     @Test
     fun `should_return_null_object_where_the_value_is_null`() {
         val ninchatSiteConfig = NinchatSiteConfig()
-        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv)
+        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv, arrayListOf("default", "fi"))
 
-        val value = ninchatSiteConfig.getString("sendButtonText", arrayListOf("default", "fi"))
+        val value = ninchatSiteConfig.getString("sendButtonText")
         Assert.assertEquals(null, value)
     }
 
     @Test
     fun `should_return_null_if_key_not_found`() {
         val ninchatSiteConfig = NinchatSiteConfig()
-        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv)
+        ninchatSiteConfig.setConfigString(siteConfigWithFiEnv, arrayListOf("default", "fi"))
 
-        val value = ninchatSiteConfig.getString("sendButtonText_NoKey", arrayListOf("default", "fi"))
+        val value = ninchatSiteConfig.getString("sendButtonText_NoKey")
         Assert.assertEquals(null, value)
     }
 }

@@ -210,7 +210,7 @@ public final class NinchatSessionManager {
                                     final NinchatSDKLogListener logListener) {
         this.contextWeakReference = new WeakReference<>(context);
         this.configurationKey = configurationKey;
-        this.preferredEnvironments = new ArrayList<>(Arrays.asList(preferredEnvironments));
+        this.preferredEnvironments = preferredEnvironments != null ? new ArrayList<>(Arrays.asList(preferredEnvironments)) : null;
         this.eventListenerWeakReference = new WeakReference<>(eventListener);
         this.logListenerWeakReference = new WeakReference<>(logListener);
         this.configuration = null;
@@ -282,7 +282,7 @@ public final class NinchatSessionManager {
             Log.v(TAG, "Got configuration: " + config);
             this.configuration = new JSONObject(config);
             this.ninchatQuestionnaireHolder = new NinchatQuestionnaireHolder(this);
-            this.ninchatSiteConfig.setConfigString(config);
+            this.ninchatSiteConfig.setConfigString(config, preferredEnvironments);
             Log.i(TAG, "Configuration fetched successfully!");
         } catch (final JSONException e) {
             this.configuration = null;
@@ -342,7 +342,7 @@ public final class NinchatSessionManager {
                     userId = params.getString("user_id");
                     userChannels = params.getObject("user_channels");
                     userQueues = params.getObject("user_queues");
-                    final String audienceAutoQueue = ninchatSiteConfig.getAudienceAutoQueue(preferredEnvironments);
+                    final String audienceAutoQueue = ninchatSiteConfig.getAudienceAutoQueue();
                     // if queue id is not given and site config has audienceAutoQueue
                     if (TextUtils.isEmpty(queueId) && !TextUtils.isEmpty(audienceAutoQueue)) {
                         queueId = audienceAutoQueue;
@@ -376,8 +376,8 @@ public final class NinchatSessionManager {
                     NinchatDescribeRealmQueues.executeAsync(
                             NinchatScopeHandler.getIOScope(),
                             session,
-                            ninchatSiteConfig.getRealmId(preferredEnvironments),
-                            ninchatSiteConfig.getAudienceQueues(preferredEnvironments),
+                            ninchatSiteConfig.getRealmId(),
+                            ninchatSiteConfig.getAudienceQueues(),
                             aLong -> null
                     );
                     if (listener != null) {
@@ -569,7 +569,7 @@ public final class NinchatSessionManager {
         if (ninchatQueueListAdapter != null) {
             ninchatQueueListAdapter.clear();
         }
-        final List<String> openQueues = ninchatSiteConfig.getAudienceQueues(preferredEnvironments);
+        final List<String> openQueues = ninchatSiteConfig.getAudienceQueues();
         for (String currentQueueId : parser.properties.keySet()) {
             if (!openQueues.contains(currentQueueId)) {
                 continue;
@@ -1110,14 +1110,14 @@ public final class NinchatSessionManager {
         if (this.ninchatConfiguration != null && this.ninchatConfiguration.getUserName() != null) {
             return this.ninchatConfiguration.getUserName();
         }
-        return ninchatSiteConfig.getUserName(preferredEnvironments);
+        return ninchatSiteConfig.getUserName();
     }
 
     // Get username or agentname if it is set in configuration
     public String getName(boolean isAgent) {
         if (!isAgent) return getUserName();
         try {
-            return ninchatSiteConfig.getAgentName(preferredEnvironments);
+            return ninchatSiteConfig.getAgentName();
         } catch (final Exception e) {
             return null;
         }
@@ -1131,7 +1131,7 @@ public final class NinchatSessionManager {
         }
         return Misc.center(
                 getNinchatSiteConfig().getChatStarted(
-                        name, getPreferredEnvironments()
+                        name
                 )
         );
     }
@@ -1156,7 +1156,7 @@ public final class NinchatSessionManager {
             return null;
         }
         final String queueStatus = ninchatSiteConfig.getQueueStatus(
-                name, position, getPreferredEnvironments()
+                name, position
         );
         return Misc.toSpanned(queueStatus);
     }

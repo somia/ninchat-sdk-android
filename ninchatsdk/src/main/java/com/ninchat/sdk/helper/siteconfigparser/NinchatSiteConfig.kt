@@ -1,6 +1,5 @@
 package com.ninchat.sdk.helper.siteconfigparser
 
-import com.ninchat.sdk.utils.misc.Misc
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -9,8 +8,10 @@ import org.json.JSONObject
  */
 class NinchatSiteConfig {
     var siteConfig: JSONObject? = null
-    fun setConfigString(value: String?) {
+    private var preferredEnvironments: ArrayList<String>? = null
+    fun setConfigString(value: String?, preferredEnvironments: ArrayList<String>? = null) {
         try {
+            this.preferredEnvironments = sanitizePreferredEnvironments(preferredEnvironments)
             value?.let {
                 siteConfig = JSONObject(it)
             }
@@ -18,80 +19,83 @@ class NinchatSiteConfig {
         }
     }
 
-    internal fun sanitizePreferredEnvironments(preferredEnvironments: ArrayList<String>?): ArrayList<String> {
-        if (preferredEnvironments == null) {
-            return arrayListOf("default")
+    internal fun sanitizePreferredEnvironments(preferredEnvironments: ArrayList<String>? = null): ArrayList<String> {
+        preferredEnvironments?.let {
+            if (!it.contains("default")) {
+                preferredEnvironments.add(0, "default")
+            }
         }
-        if (!preferredEnvironments.contains("default")) {
-            preferredEnvironments.add(0, "default")
-        }
-        return preferredEnvironments
+        return preferredEnvironments ?: arrayListOf("default")
     }
 
     fun getDefault(): JSONObject? {
         return siteConfig?.optJSONObject("default")
     }
 
-    fun getJsonObject(key: String, preferredEnvironments: ArrayList<String>?): JSONObject? {
-        if (siteConfig == null) return null
-        val environments = sanitizePreferredEnvironments(preferredEnvironments)
-
+    fun getJsonObject(key: String): JSONObject? {
         var value: JSONObject? = null
-        for (currentEnvironment in environments) {
-            if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
-                value = siteConfig?.optJSONObject(currentEnvironment)?.optJSONObject(key)
-            }
-        }
-        return value
-    }
-
-    fun getArray(key: String, preferredEnvironments: ArrayList<String>?): JSONArray? {
-        if (siteConfig == null) return null
-        val environments = sanitizePreferredEnvironments(preferredEnvironments)
-
-        var value: JSONArray? = null
-        for (currentEnvironment in environments) {
-            if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
-                value = siteConfig?.optJSONObject(currentEnvironment)?.optJSONArray(key)
-            }
-        }
-        return value
-    }
-
-    fun getBoolean(key: String, preferredEnvironments: ArrayList<String>?): Boolean? {
-        if (siteConfig == null) return false
-        val environments = sanitizePreferredEnvironments(preferredEnvironments)
-
-        var value = false
-        for (currentEnvironment in environments) {
-            if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
-                value = siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, false)
-                        ?: false
-            }
-        }
-        return value
-    }
-
-    fun getString(key: String, preferredEnvironments: ArrayList<String>?): String? {
-        if (siteConfig == null) return null
-        val environments = sanitizePreferredEnvironments(preferredEnvironments)
-
-        var value: String? = null
-        for (currentEnvironment in environments) {
-            if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
-                value = siteConfig?.optJSONObject(currentEnvironment)?.optString(key)
-                // workaround value can be null which when parsing will be interpreted as "null" string in Java with quote
-                if ("null" == value) {
-                    value = null
+        siteConfig?.let {
+            preferredEnvironments?.let {
+                for (currentEnvironment in it) {
+                    if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
+                        value = siteConfig?.optJSONObject(currentEnvironment)?.optJSONObject(key)
+                    }
                 }
             }
         }
         return value
     }
 
-    fun getAudienceQueues(preferredEnvironments: ArrayList<String>?): MutableList<String?> {
+    fun getArray(key: String): JSONArray? {
+        var value: JSONArray? = null
+        siteConfig?.let {
+            preferredEnvironments?.let {
+                for (currentEnvironment in it) {
+                    if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
+                        value = siteConfig?.optJSONObject(currentEnvironment)?.optJSONArray(key)
+                    }
+                }
+            }
+        }
+        return value
+    }
+
+    fun getBoolean(key: String): Boolean? {
+        var value = false
+        siteConfig?.let {
+            preferredEnvironments?.let {
+                for (currentEnvironment in it) {
+                    if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
+                        value = siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, false)
+                                ?: false
+                    }
+                }
+            }
+        }
+        return value
+    }
+
+    fun getString(key: String): String? {
+        var value: String? = null
+        siteConfig?.let {
+            preferredEnvironments?.let {
+                for (currentEnvironment in it) {
+                    if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
+                        value = siteConfig?.optJSONObject(currentEnvironment)?.optString(key)
+                        // workaround value can be null which when parsing will be interpreted as "null" string in Java with quote
+                        if ("null" == value) {
+                            value = null
+                        }
+                    }
+                }
+            }
+        }
+        return value
+    }
+
+    fun getAudienceQueues(): MutableList<String?> {
         val queues = mutableListOf<String?>()
-        val array: JSONArray? = getArray("audienceQueues", preferredEnvironments)
+        val array: JSONArray? = getArray("audienceQueues")
         array?.let {
             for (i in 0 until it.length()) {
                 queues.add(it.optString(i))
@@ -100,139 +104,139 @@ class NinchatSiteConfig {
         return queues
     }
 
-    fun getAudienceAutoQueue(preferredEnvironments: ArrayList<String>?): String? =
-            getString("audienceAutoQueue", preferredEnvironments)
+    fun getAudienceAutoQueue(): String? =
+            getString("audienceAutoQueue")
 
-    fun getRealmId(preferredEnvironments: ArrayList<String>?): String? =
-            getString("audienceRealmId", preferredEnvironments)
+    fun getRealmId(): String? =
+            getString("audienceRealmId")
 
-    fun getWelcomeText(preferredEnvironments: ArrayList<String>?): String =
-            getString("welcome", preferredEnvironments) ?: "welcome"
+    fun getWelcomeText(): String =
+            getString("welcome") ?: "welcome"
 
-    fun getNoQueuesText(preferredEnvironments: ArrayList<String>?): String =
-            getString("noQueuesText", preferredEnvironments) ?: "noQueuesText"
+    fun getNoQueuesText(): String =
+            getString("noQueuesText") ?: "noQueuesText"
 
-    fun getCloseWindowText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Close window", preferredEnvironments) ?: "Close window"
+    fun getCloseWindowText(): String =
+            getTranslation("Close window") ?: "Close window"
 
-    fun getUserName(preferredEnvironments: ArrayList<String>?): String? =
-            getString("userName", preferredEnvironments)
+    fun getUserName(): String? =
+            getString("userName")
 
-    fun getAgentName(preferredEnvironments: ArrayList<String>?): String? =
-            getString("agentName", preferredEnvironments)
+    fun getAgentName(): String? =
+            getString("agentName")
 
-    fun getSendButtonText(preferredEnvironments: ArrayList<String>?): String? =
-            getString("sendButtonText", preferredEnvironments)
+    fun getSendButtonText(): String? =
+            getString("sendButtonText")
 
-    fun getSubmitButtonText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Submit", preferredEnvironments) ?: "Submit"
+    fun getSubmitButtonText(): String =
+            getTranslation("Submit") ?: "Submit"
 
-    fun isAttachmentsEnabled(preferredEnvironments: ArrayList<String>?): Boolean =
-            getBoolean("supportFiles", preferredEnvironments) ?: false
+    fun isAttachmentsEnabled(): Boolean =
+            getBoolean("supportFiles") ?: false
 
-    fun isVideoEnabled(preferredEnvironments: ArrayList<String>?): Boolean =
-            getBoolean("supportVideo", preferredEnvironments) ?: false
+    fun isVideoEnabled(): Boolean =
+            getBoolean("supportVideo") ?: false
 
-    fun showUserAvatar(preferredEnvironments: ArrayList<String>?): Boolean =
-            getBoolean("userAvatar", preferredEnvironments) ?: false
+    fun showUserAvatar(): Boolean =
+            getBoolean("userAvatar") ?: false
 
-    fun showAgentAvatar(preferredEnvironments: ArrayList<String>?): Boolean =
-            getBoolean("agentAvatar", preferredEnvironments) ?: false
+    fun showAgentAvatar(): Boolean =
+            getBoolean("agentAvatar") ?: false
 
-    fun getAgentAvatar(preferredEnvironments: ArrayList<String>?): String? =
-            getString("agentAvatar", preferredEnvironments)
+    fun getAgentAvatar(): String? =
+            getString("agentAvatar")
 
-    fun getUserAvatar(preferredEnvironments: ArrayList<String>?): String? =
-            getString("userAvatar", preferredEnvironments)
+    fun getUserAvatar(): String? =
+            getString("userAvatar")
 
-    fun getConversationEndedText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Conversation ended", preferredEnvironments) ?: "Conversation ended"
+    fun getConversationEndedText(): String =
+            getTranslation("Conversation ended") ?: "Conversation ended"
 
-    fun getChatCloseText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Close chat", preferredEnvironments) ?: "Close chat"
+    fun getChatCloseText(): String =
+            getTranslation("Close chat") ?: "Close chat"
 
-    fun getChatCloseConfirmationText(preferredEnvironments: ArrayList<String>?): String =
-            getString("closeConfirmText", preferredEnvironments) ?: "closeConfirmText"
+    fun getChatCloseConfirmationText(): String =
+            getString("closeConfirmText") ?: "closeConfirmText"
 
-    fun getContinueChatText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Continue chat", preferredEnvironments) ?: "Continue chat"
+    fun getContinueChatText(): String =
+            getTranslation("Continue chat") ?: "Continue chat"
 
-    fun getEnterMessageText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Enter your message", preferredEnvironments) ?: "Enter your message"
+    fun getEnterMessageText(): String =
+            getTranslation("Enter your message") ?: "Enter your message"
 
-    fun getVideoChatTitleText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("You are invited to a video chat", preferredEnvironments)
+    fun getVideoChatTitleText(): String =
+            getTranslation("You are invited to a video chat")
                     ?: "You are invited to a video chat"
 
-    fun getVideoChatDescriptionText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("wants to video chat with you", preferredEnvironments)
+    fun getVideoChatDescriptionText(): String =
+            getTranslation("wants to video chat with you")
                     ?: "wants to video chat with you"
 
-    fun getVideoCallAcceptText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Accept", preferredEnvironments) ?: "Accept"
+    fun getVideoCallAcceptText(): String =
+            getTranslation("Accept") ?: "Accept"
 
-    fun getVideoCallDeclineText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Decline", preferredEnvironments) ?: "Decline"
+    fun getVideoCallDeclineText(): String =
+            getTranslation("Decline") ?: "Decline"
 
-    fun getVideoCallMetaMessageText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("You are invited to a video chat", preferredEnvironments)
+    fun getVideoCallMetaMessageText(): String =
+            getTranslation("You are invited to a video chat")
                     ?: "You are invited to a video chat"
 
-    fun getVideoCallAcceptedText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Video chat answered", preferredEnvironments) ?: "Video chat answered"
+    fun getVideoCallAcceptedText(): String =
+            getTranslation("Video chat answered") ?: "Video chat answered"
 
-    fun getVideoCallRejectedText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Video chat declined", preferredEnvironments) ?: "Video chat declined"
+    fun getVideoCallRejectedText(): String =
+            getTranslation("Video chat declined") ?: "Video chat declined"
 
-    fun getMOTDText(preferredEnvironments: ArrayList<String>?): String =
-            getString("motd", preferredEnvironments) ?: "motd"
+    fun getMOTDText(): String =
+            getString("motd") ?: "motd"
 
-    fun getInQueueMessageText(preferredEnvironments: ArrayList<String>?): String? =
-            getString("inQueueText", preferredEnvironments)
+    fun getInQueueMessageText(): String? =
+            getString("inQueueText")
 
 
-    fun showRating(preferredEnvironments: ArrayList<String>?): Boolean =
-            getBoolean("audienceRating", preferredEnvironments) ?: false
+    fun showRating(): Boolean =
+            getBoolean("audienceRating") ?: false
 
-    fun getFeedbackTitleText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("How was our customer service?", preferredEnvironments)
+    fun getFeedbackTitleText(): String =
+            getTranslation("How was our customer service?")
                     ?: "How was our customer service?"
 
-    fun getThankYouTextText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Thank you for the conversation!", preferredEnvironments)
+    fun getThankYouTextText(): String =
+            getTranslation("Thank you for the conversation!")
                     ?: "Thank you for the conversation!"
 
-    fun getFeedbackPositiveText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Good", preferredEnvironments) ?: "Good"
+    fun getFeedbackPositiveText(): String =
+            getTranslation("Good") ?: "Good"
 
-    fun getFeedbackNeutralText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Okay", preferredEnvironments) ?: "Okay"
+    fun getFeedbackNeutralText(): String =
+            getTranslation("Okay") ?: "Okay"
 
-    fun getFeedbackNegativeText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Poor", preferredEnvironments) ?: "Poor"
+    fun getFeedbackNegativeText(): String =
+            getTranslation("Poor") ?: "Poor"
 
-    fun getFeedbackSkipText(preferredEnvironments: ArrayList<String>?): String =
-            getTranslation("Skip", preferredEnvironments) ?: "Skip"
+    fun getFeedbackSkipText(): String =
+            getTranslation("Skip") ?: "Skip"
 
-    fun getQueueName(name: String, closed: Boolean = false, preferredEnvironments: ArrayList<String>?): String {
+    fun getQueueName(name: String, closed: Boolean = false): String {
         return if (closed) {
-            replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}} (closed)", preferredEnvironments), name);
+            replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}} (closed)"), name);
         } else {
-            replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}", preferredEnvironments), name);
+            replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
         }
     }
 
-    fun getChatStarted(name: String?, preferredEnvironments: ArrayList<String>?): String =
-            replacePlaceholder(getTranslation("Audience in queue {{queue}} accepted.", preferredEnvironments), name
+    fun getChatStarted(name: String?): String =
+            replacePlaceholder(getTranslation("Audience in queue {{queue}} accepted."), name
                     ?: "");
 
-    fun getQueueStatus(name: String?, position: Long = 0, preferredEnvironments: ArrayList<String>?): String {
+    fun getQueueStatus(name: String?, position: Long = 0): String {
         val key = if (position == 1L) {
             "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are next."
         } else {
             "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are at position {{audienceQueue.queue_position}}."
         }
-        var queueStatus = getTranslation(key, preferredEnvironments)
+        var queueStatus = getTranslation(key)
         if (queueStatus?.contains("audienceQueue.queue_attrs.name") == true)
             queueStatus = replacePlaceholder(queueStatus, name ?: "")
         if (queueStatus?.contains("audienceQueue.queue_position") == true)
@@ -242,40 +246,40 @@ class NinchatSiteConfig {
     }
 
 
-    fun getQuestionnaireName(preferredEnvironments: ArrayList<String>?): String? =
-            getString("questionnaireName", preferredEnvironments)
+    fun getQuestionnaireName(): String? =
+            getString("questionnaireName")
 
-    fun getQuestionnaireAvatar(preferredEnvironments: ArrayList<String>?): String? =
-            getString("questionnaireAvatar", preferredEnvironments)
+    fun getQuestionnaireAvatar(): String? =
+            getString("questionnaireAvatar")
 
-    fun getAudienceRegisteredText(preferredEnvironments: ArrayList<String>?): String? =
-            getString("audienceRegisteredText", preferredEnvironments)
+    fun getAudienceRegisteredText(): String? =
+            getString("audienceRegisteredText")
 
-    fun getAudienceRegisteredClosedText(preferredEnvironments: ArrayList<String>?): String? =
-            getString("audienceRegisteredClosedText", preferredEnvironments)
+    fun getAudienceRegisteredClosedText(): String? =
+            getString("audienceRegisteredClosedText")
 
-    fun getPreAudienceQuestionnaire(preferredEnvironments: ArrayList<String>?): JSONArray? =
-            getArray("preAudienceQuestionnaire", preferredEnvironments)
+    fun getPreAudienceQuestionnaire(): JSONArray? =
+            getArray("preAudienceQuestionnaire")
 
-    fun getPostAudienceQuestionnaire(preferredEnvironments: ArrayList<String>?): JSONArray? =
-            getArray("postAudienceQuestionnaire", preferredEnvironments)
+    fun getPostAudienceQuestionnaire(): JSONArray? =
+            getArray("postAudienceQuestionnaire")
 
-    fun getPreAudienceQuestionnaireStyle(preferredEnvironments: ArrayList<String>?): String =
-            getString("preAudienceQuestionnaireStyle", preferredEnvironments)
+    fun getPreAudienceQuestionnaireStyle(): String =
+            getString("preAudienceQuestionnaireStyle")
                     ?: "form" // default style is form
 
-    fun getPostAudienceQuestionnaireStyle(preferredEnvironments: ArrayList<String>?): String =
-            getString("postAudienceQuestionnaireStyle", preferredEnvironments)
+    fun getPostAudienceQuestionnaireStyle(): String =
+            getString("postAudienceQuestionnaireStyle")
                     ?: "form" // default style is form
 
 
     // todo (pallab) move to translator package
-    fun getTranslation(key: String?, preferredEnvironments: ArrayList<String>?): String? =
-            getJsonObject("translations", preferredEnvironments)?.optString(key)
+    fun getTranslation(key: String?): String? =
+            getJsonObject("translations")?.optString(key)
 
     // todo (pallab) move to translator or general util/helper package
     fun replacePlaceholder(origin: String?, replacement: String): String {
-        return origin?.replaceFirst("\\{\\{([^}]*?)}}".toRegex(), replacement) ?: replacement
+        return origin?.replaceFirst("\\{\\{([^}]*?)\\}\\}".toRegex(), replacement) ?: replacement
     }
 
 

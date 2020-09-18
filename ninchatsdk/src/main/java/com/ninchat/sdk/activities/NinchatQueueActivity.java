@@ -129,12 +129,12 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         if (message != null) {
             final String inQueueText = sessionManager.
                     getNinchatSiteConfig().
-                    getInQueueMessageText(sessionManager.getPreferredEnvironments());
+                    getInQueueMessageText();
             message.setText(Misc.toSpanned(inQueueText));
         }
 
         if (closeButton != null) {
-            final String closeText = sessionManager.getNinchatSiteConfig().getChatCloseText(sessionManager.getPreferredEnvironments());
+            final String closeText = sessionManager.getNinchatSiteConfig().getChatCloseText();
             closeButton.setText(closeText);
         }
 
