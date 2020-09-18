@@ -1,5 +1,6 @@
 package com.ninchat.sdk.helper.siteconfigparser
 
+import com.ninchat.sdk.utils.misc.Misc
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -29,6 +30,19 @@ class NinchatSiteConfig {
 
     fun getDefault(): JSONObject? {
         return siteConfig?.optJSONObject("default")
+    }
+
+    fun getJsonObject(key: String, preferredEnvironments: ArrayList<String>?): JSONObject? {
+        if (siteConfig == null) return null
+        val environments = sanitizePreferredEnvironments(preferredEnvironments)
+
+        var value: JSONObject? = null
+        for (currentEnvironment in environments) {
+            if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
+                value = siteConfig?.optJSONObject(currentEnvironment)?.optJSONObject(key)
+            }
+        }
+        return value
     }
 
     fun getArray(key: String, preferredEnvironments: ArrayList<String>?): JSONArray? {
@@ -99,7 +113,7 @@ class NinchatSiteConfig {
             getString("noQueuesText", preferredEnvironments) ?: "noQueuesText"
 
     fun getCloseWindowText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Close window", preferredEnvironments) ?: "Close window"
+            getTranslation("Close window", preferredEnvironments) ?: "Close window"
 
     fun getUserName(preferredEnvironments: ArrayList<String>?): String? =
             getString("userName", preferredEnvironments)
@@ -110,8 +124,8 @@ class NinchatSiteConfig {
     fun getSendButtonText(preferredEnvironments: ArrayList<String>?): String? =
             getString("sendButtonText", preferredEnvironments)
 
-    fun getSubmitButtonText(preferredEnvironments: ArrayList<String>?): String? =
-            getString("Submit", preferredEnvironments)
+    fun getSubmitButtonText(preferredEnvironments: ArrayList<String>?): String =
+            getTranslation("Submit", preferredEnvironments) ?: "Submit"
 
     fun isAttachmentsEnabled(preferredEnvironments: ArrayList<String>?): Boolean =
             getBoolean("supportFiles", preferredEnvironments) ?: false
@@ -132,43 +146,43 @@ class NinchatSiteConfig {
             getString("userAvatar", preferredEnvironments)
 
     fun getConversationEndedText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Conversation ended", preferredEnvironments) ?: "Conversation ended"
+            getTranslation("Conversation ended", preferredEnvironments) ?: "Conversation ended"
 
     fun getChatCloseText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Close chat", preferredEnvironments) ?: "Close chat"
+            getTranslation("Close chat", preferredEnvironments) ?: "Close chat"
 
     fun getChatCloseConfirmationText(preferredEnvironments: ArrayList<String>?): String =
             getString("closeConfirmText", preferredEnvironments) ?: "closeConfirmText"
 
     fun getContinueChatText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Continue chat", preferredEnvironments) ?: "Continue chat"
+            getTranslation("Continue chat", preferredEnvironments) ?: "Continue chat"
 
     fun getEnterMessageText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Enter your message", preferredEnvironments) ?: "Enter your message"
+            getTranslation("Enter your message", preferredEnvironments) ?: "Enter your message"
 
     fun getVideoChatTitleText(preferredEnvironments: ArrayList<String>?): String =
-            getString("You are invited to a video chat", preferredEnvironments)
+            getTranslation("You are invited to a video chat", preferredEnvironments)
                     ?: "You are invited to a video chat"
 
     fun getVideoChatDescriptionText(preferredEnvironments: ArrayList<String>?): String =
-            getString("wants to video chat with you", preferredEnvironments)
+            getTranslation("wants to video chat with you", preferredEnvironments)
                     ?: "wants to video chat with you"
 
     fun getVideoCallAcceptText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Accept", preferredEnvironments) ?: "Accept"
+            getTranslation("Accept", preferredEnvironments) ?: "Accept"
 
     fun getVideoCallDeclineText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Decline", preferredEnvironments) ?: "Decline"
+            getTranslation("Decline", preferredEnvironments) ?: "Decline"
 
     fun getVideoCallMetaMessageText(preferredEnvironments: ArrayList<String>?): String =
-            getString("You are invited to a video chat", preferredEnvironments)
+            getTranslation("You are invited to a video chat", preferredEnvironments)
                     ?: "You are invited to a video chat"
 
     fun getVideoCallAcceptedText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Video chat answered", preferredEnvironments) ?: "Video chat answered"
+            getTranslation("Video chat answered", preferredEnvironments) ?: "Video chat answered"
 
     fun getVideoCallRejectedText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Video chat declined", preferredEnvironments) ?: "Video chat declined"
+            getTranslation("Video chat declined", preferredEnvironments) ?: "Video chat declined"
 
     fun getMOTDText(preferredEnvironments: ArrayList<String>?): String =
             getString("motd", preferredEnvironments) ?: "motd"
@@ -181,24 +195,52 @@ class NinchatSiteConfig {
             getBoolean("audienceRating", preferredEnvironments) ?: false
 
     fun getFeedbackTitleText(preferredEnvironments: ArrayList<String>?): String =
-            getString("How was our customer service?", preferredEnvironments)
+            getTranslation("How was our customer service?", preferredEnvironments)
                     ?: "How was our customer service?"
 
     fun getThankYouTextText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Thank you for the conversation!", preferredEnvironments)
+            getTranslation("Thank you for the conversation!", preferredEnvironments)
                     ?: "Thank you for the conversation!"
 
     fun getFeedbackPositiveText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Good", preferredEnvironments) ?: "Good"
+            getTranslation("Good", preferredEnvironments) ?: "Good"
 
     fun getFeedbackNeutralText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Okay", preferredEnvironments) ?: "Okay"
+            getTranslation("Okay", preferredEnvironments) ?: "Okay"
 
     fun getFeedbackNegativeText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Poor", preferredEnvironments) ?: "Poor"
+            getTranslation("Poor", preferredEnvironments) ?: "Poor"
 
     fun getFeedbackSkipText(preferredEnvironments: ArrayList<String>?): String =
-            getString("Skip", preferredEnvironments) ?: "Skip"
+            getTranslation("Skip", preferredEnvironments) ?: "Skip"
+
+    fun getQueueName(name: String, closed: Boolean = false, preferredEnvironments: ArrayList<String>?): String {
+        return if (closed) {
+            replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}} (closed)", preferredEnvironments), name);
+        } else {
+            replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}", preferredEnvironments), name);
+        }
+    }
+
+    fun getChatStarted(name: String?, preferredEnvironments: ArrayList<String>?): String =
+            replacePlaceholder(getTranslation("Audience in queue {{queue}} accepted.", preferredEnvironments), name
+                    ?: "");
+
+    fun getQueueStatus(name: String?, position: Long = 0, preferredEnvironments: ArrayList<String>?): String {
+        val key = if (position == 1L) {
+            "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are next."
+        } else {
+            "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are at position {{audienceQueue.queue_position}}."
+        }
+        var queueStatus = getTranslation(key, preferredEnvironments)
+        if (queueStatus?.contains("audienceQueue.queue_attrs.name") == true)
+            queueStatus = replacePlaceholder(queueStatus, name ?: "")
+        if (queueStatus?.contains("audienceQueue.queue_position") == true)
+            queueStatus = replacePlaceholder(queueStatus, "$position")
+
+        return queueStatus ?: ""
+    }
+
 
     fun getQuestionnaireName(preferredEnvironments: ArrayList<String>?): String? =
             getString("questionnaireName", preferredEnvironments)
@@ -219,8 +261,20 @@ class NinchatSiteConfig {
             getArray("postAudienceQuestionnaire", preferredEnvironments)
 
     fun getPreAudienceQuestionnaireStyle(preferredEnvironments: ArrayList<String>?): String =
-            getString("preAudienceQuestionnaireStyle", preferredEnvironments)?: "form" // default style is form
+            getString("preAudienceQuestionnaireStyle", preferredEnvironments)
+                    ?: "form" // default style is form
 
     fun getPostAudienceQuestionnaireStyle(preferredEnvironments: ArrayList<String>?): String =
-            getString("postAudienceQuestionnaireStyle", preferredEnvironments)?: "form" // default style is form
+            getString("postAudienceQuestionnaireStyle", preferredEnvironments)
+                    ?: "form" // default style is form
+
+
+    fun getTranslation(key: String?, preferredEnvironments: ArrayList<String>?): String? =
+            getJsonObject("translations", preferredEnvironments)?.optString(key)
+
+    fun replacePlaceholder(origin: String?, replacement: String): String {
+        return origin?.replaceFirst("\\{\\{([^}]*?)}}".toRegex(), replacement) ?: replacement
+    }
+
+
 }

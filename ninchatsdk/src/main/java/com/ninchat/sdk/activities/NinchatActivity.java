@@ -97,10 +97,14 @@ public final class NinchatActivity extends NinchatBaseActivity {
                 .getNinchatSiteConfig()
                 .getMOTDText(sessionManager.getPreferredEnvironments());
 
+        final String closeWindowText = sessionManager
+                .getNinchatSiteConfig()
+                .getCloseWindowText(sessionManager.getPreferredEnvironments());
+
         final TextView topHeader = findViewById(R.id.ninchat_activity_header);
         topHeader.setText(Misc.toSpanned(welcomeMessage));
         final Button closeButton = findViewById(R.id.ninchat_activity_close);
-        closeButton.setText(sessionManager.getCloseWindow());
+        closeButton.setText(closeWindowText);
         closeButton.setVisibility(View.VISIBLE);
         final TextView motd = findViewById(R.id.ninchat_activity_motd);
         motd.setText(Misc.toSpanned(motDText));

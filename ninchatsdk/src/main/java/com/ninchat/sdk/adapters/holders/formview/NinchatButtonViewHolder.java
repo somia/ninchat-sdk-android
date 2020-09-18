@@ -1,9 +1,11 @@
 package com.ninchat.sdk.adapters.holders.formview;
 
 import android.os.Build;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -56,10 +58,18 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
             } else {
                 mPrevious.setVisibility(View.VISIBLE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    mPrevious.setTooltipText(NinchatSessionManager.getInstance().getTranslation(text));
+                    mPrevious.setTooltipText(
+                            NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(
+                                    text,
+                                    NinchatSessionManager.getInstance().getPreferredEnvironments()
+                            ));
                 }
 
-                mPrevious.setText(NinchatSessionManager.getInstance().getTranslation(text));
+                mPrevious.setText(
+                        NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(
+                                text,
+                                NinchatSessionManager.getInstance().getPreferredEnvironments()
+                        ));
                 mPrevious.setOnClickListener(v -> {
                     mPrevious.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_secondary_onclicked_button));
                     mayBeFireComplete(questionnaireElement, OnNextQuestionnaire.back);
@@ -78,9 +88,18 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
             } else {
                 mNext.setVisibility(View.VISIBLE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    mNext.setTooltipText(NinchatSessionManager.getInstance().getTranslation(text));
+                    mNext.setTooltipText(
+                            NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(
+                                    text,
+                                    NinchatSessionManager.getInstance().getPreferredEnvironments()
+                            ));
+
                 }
-                mNext.setText(NinchatSessionManager.getInstance().getTranslation(text));
+                mNext.setText(
+                        NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(
+                                text,
+                                NinchatSessionManager.getInstance().getPreferredEnvironments()
+                        ));
                 mNext.setOnClickListener(v -> {
                     mNext.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_primary_oncliked_button));
                     mayBeFireComplete(questionnaireElement, OnNextQuestionnaire.forward);

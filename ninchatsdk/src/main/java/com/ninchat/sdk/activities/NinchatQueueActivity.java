@@ -134,7 +134,8 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         }
 
         if (closeButton != null) {
-            closeButton.setText(sessionManager.getCloseChat());
+            final String closeText = sessionManager.getNinchatSiteConfig().getChatCloseText(sessionManager.getPreferredEnvironments());
+            closeButton.setText(closeText);
         }
 
         if (!sessionManager.hasChannel()) {

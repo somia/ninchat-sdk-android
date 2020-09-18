@@ -3,6 +3,7 @@ package com.ninchat.sdk.adapters.holders.formview;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -112,11 +113,18 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
     private ArrayAdapter<String> getRTDataAdapter(JSONObject questionnaireElement) {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(itemView.getContext(), R.layout.dropdown_item_text_view);
         JSONArray options = getOptions(questionnaireElement);
-        dataAdapter.add(NinchatSessionManager.getInstance().getTranslation("Select"));
+        dataAdapter.add(NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(
+                "Select",
+                NinchatSessionManager.getInstance().getPreferredEnvironments()
+        ));
         for (int i = 0; i < options.length(); i += 1) {
             JSONObject curOption = options.optJSONObject(i);
             String label = curOption.optString("label");
-            dataAdapter.add(NinchatSessionManager.getInstance().getTranslation(label));
+            dataAdapter.add(
+                    NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(
+                            label,
+                            NinchatSessionManager.getInstance().getPreferredEnvironments()
+                    ));
         }
         return dataAdapter;
     }

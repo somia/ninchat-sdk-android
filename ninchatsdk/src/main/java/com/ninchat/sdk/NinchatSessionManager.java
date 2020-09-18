@@ -52,6 +52,7 @@ import com.ninchat.sdk.networkdispatchers.NinchatSendPostAudienceQuestionnaire;
 import com.ninchat.sdk.networkdispatchers.NinchatSendRatings;
 import com.ninchat.sdk.networkdispatchers.NinchatUpdateMember;
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
+import com.ninchat.sdk.utils.misc.Misc;
 import com.ninchat.sdk.utils.propsvisitor.NinchatPropVisitor;
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
@@ -1104,47 +1105,6 @@ public final class NinchatSessionManager {
         }
     }
 
-    private JSONObject getDefault() throws JSONException {
-        if (configuration != null) {
-            return configuration.getJSONObject("default");
-        }
-        return null;
-    }
-
-    private String center(final String text) {
-        return (text == null || (text.contains("<center>") && text.contains("</center>"))) ?
-                text : ("<center>" + text + "</center>");
-    }
-
-    private Spanned toSpanned(final String text) {
-        final String centeredText = center(text) == null ? "" : center(text);
-        return centeredText == null ? null :
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(centeredText, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(centeredText);
-    }
-
-    public String getTranslation(final String key) {
-        if (configuration != null) {
-            if (preferredEnvironments != null) {
-                for (final String configuration : preferredEnvironments) {
-                    try {
-                        return this.configuration.getJSONObject(configuration).getJSONObject("translations").getString(key);
-                    } catch (final Exception e) {
-                        // Ignore…
-                    }
-                }
-            }
-            try {
-                return getDefault().getJSONObject("translations").getString(key);
-            } catch (final Exception e) {
-                // Ignore…
-            }
-        }
-        return key;
-    }
-
-    public String getCloseWindow() {
-        return getTranslation("Close window");
-    }
 
     public String getUserName() {
         if (this.ninchatConfiguration != null && this.ninchatConfiguration.getUserName() != null) {
@@ -1163,81 +1123,19 @@ public final class NinchatSessionManager {
         }
     }
 
-    public String getSubmitButtonText() {
-        return getTranslation("Submit");
-    }
-
-    private String replacePlaceholder(final String origin, final String replacement) {
-        return origin.replaceFirst("\\{\\{([^}]*?)\\}\\}", replacement);
-    }
-
     public String getChatStarted() {
-        final String key = "Audience in queue {{queue}} accepted.";
-        String chatStarted = getTranslation(key);
         final NinchatQueue queue = getQueue(this.queueId);
         String name = "";
         if (queue != null) {
             name = queue.getName();
         }
-        return center(replacePlaceholder(chatStarted, name));
+        return Misc.center(
+                getNinchatSiteConfig().getChatStarted(
+                        name, getPreferredEnvironments()
+                )
+        );
     }
 
-    public Spanned getChatEnded() {
-        return toSpanned(getTranslation("Conversation ended"));
-    }
-
-    public String getCloseChat() {
-        return getTranslation("Close chat");
-    }
-
-    public String getContinueChat() {
-        return getTranslation("Continue chat");
-    }
-
-    public String getEnterMessage() {
-        return getTranslation("Enter your message");
-    }
-
-    public String getVideoChatTitle() {
-        return getTranslation("You are invited to a video chat");
-    }
-
-    public String getVideoChatDescription() {
-        return getTranslation("wants to video chat with you");
-    }
-
-    public String getVideoCallAccept() {
-        return getTranslation("Accept");
-    }
-
-    public String getVideoCallDecline() {
-        return getTranslation("Decline");
-    }
-
-    public String getVideoCallMetaMessage() {
-        return center(getTranslation("You are invited to a video chat"));
-    }
-
-    public String getVideoCallAccepted() {
-        return center(getTranslation("Video chat answered"));
-    }
-
-    public String getVideoCallRejected() {
-        return center(getTranslation("Video chat declined"));
-    }
-
-
-    public String getQueueName(final String name) {
-        return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
-    }
-
-    public String getQueueName(final String name, boolean closed) {
-        if (closed) {
-            return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}} (closed)"), name);
-        }
-
-        return replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
-    }
 
     public Spanned getQueueStatus(final String queueId) {
         NinchatQueue selectedQueue = getQueue(queueId);
@@ -1253,47 +1151,14 @@ public final class NinchatSessionManager {
                 name = getQueueNameByQueueId(userQueues, queueId);
             }
         }
-
         // if there is no queue position
         if (position == -1) {
             return null;
         }
-
-        final String key = position == 1
-                ? "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are next."
-                : "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are at position {{audienceQueue.queue_position}}.";
-        String queueStatus = getTranslation(key);
-        if (queueStatus.contains("audienceQueue.queue_attrs.name")) {
-            queueStatus = replacePlaceholder(queueStatus, name);
-        }
-        if (queueStatus.contains("audienceQueue.queue_position")) {
-            queueStatus = replacePlaceholder(queueStatus, String.valueOf(position));
-        }
-        return toSpanned(queueStatus);
-    }
-
-    public Spanned getFeedbackTitle() {
-        return toSpanned(getTranslation("How was our customer service?"));
-    }
-
-    public Spanned getThankYouText() {
-        return toSpanned(getTranslation("Thank you for the conversation!"));
-    }
-
-    public String getFeedbackPositive() {
-        return getTranslation("Good");
-    }
-
-    public String getFeedbackNeutral() {
-        return getTranslation("Okay");
-    }
-
-    public String getFeedbackNegative() {
-        return getTranslation("Poor");
-    }
-
-    public String getFeedbackSkip() {
-        return getTranslation("Skip");
+        final String queueStatus = ninchatSiteConfig.getQueueStatus(
+                name, position, getPreferredEnvironments()
+        );
+        return Misc.toSpanned(queueStatus);
     }
 
     public NinchatQuestionnaireHolder getNinchatQuestionnaireHolder() {

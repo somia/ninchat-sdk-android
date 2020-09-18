@@ -38,6 +38,7 @@ import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
+import com.ninchat.sdk.utils.misc.Misc;
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
 import org.json.JSONException;
@@ -176,9 +177,13 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
                 final TextView end = itemView.findViewById(R.id.ninchat_chat_message_end_text);
-                end.setText(NinchatSessionManager.getInstance().getChatEnded());
+                end.setText(Misc.toSpanned(NinchatSessionManager.getInstance().getNinchatSiteConfig().getConversationEndedText(
+                        NinchatSessionManager.getInstance().getPreferredEnvironments()
+                )));
                 final Button closeButton = itemView.findViewById(R.id.ninchat_chat_message_close);
-                closeButton.setText(NinchatSessionManager.getInstance().getCloseChat());
+                final String closeText = NinchatSessionManager.getInstance().getNinchatSiteConfig().getChatCloseText(
+                        NinchatSessionManager.getInstance().getPreferredEnvironments());
+                closeButton.setText(closeText);
                 closeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -262,7 +267,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 }
                 options.setAdapter(new NinchatMultiChoiceAdapter(data, this, messageText == null));
                 final Button sendButton = itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice_send);
-                sendButton.setText(NinchatSessionManager.getInstance().getSubmitButtonText());
+                final String submitButtonText = NinchatSessionManager.getInstance().getNinchatSiteConfig().getSubmitButtonText(
+                        NinchatSessionManager.getInstance().getPreferredEnvironments()
+                );
+                sendButton.setText(submitButtonText);
                 sendButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

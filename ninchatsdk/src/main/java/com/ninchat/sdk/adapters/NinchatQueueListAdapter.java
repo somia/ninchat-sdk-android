@@ -3,8 +3,10 @@ package com.ninchat.sdk.adapters;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,14 +39,18 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
             if (queue.isClosed()) {
                 button.setEnabled(false);
                 button.setAlpha(0.5f);
-                button.setText(NinchatSessionManager.getInstance().getQueueName(queue.getName(), queue.isClosed()));
+                button.setText(NinchatSessionManager.getInstance().getNinchatSiteConfig().getQueueName(
+                        queue.getName(), queue.isClosed(), NinchatSessionManager.getInstance().getPreferredEnvironments()
+                ));
             } else {
                 button.setAlpha(1f);
-                button.setText(NinchatSessionManager.getInstance().getQueueName(queue.getName()));
+                button.setText(NinchatSessionManager.getInstance().getNinchatSiteConfig().getQueueName(
+                        queue.getName(), false, NinchatSessionManager.getInstance().getPreferredEnvironments()
+                ));
                 button.setOnClickListener(v -> {
                     final Activity activity = activityWeakReference.get();
                     if (activity == null) {
-                        return ;
+                        return;
                     }
                     final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
                     if (ninchatSessionManager.getNinchatQuestionnaireHolder().hasPreAudienceQuestionnaire() && !ninchatSessionManager.isResumedSession()) {

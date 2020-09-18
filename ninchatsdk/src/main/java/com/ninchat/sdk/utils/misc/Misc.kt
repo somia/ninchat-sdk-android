@@ -6,7 +6,8 @@ import android.text.Spanned
 
 class Misc {
     companion object {
-        private fun center(text: String?): String {
+        @JvmStatic
+        fun center(text: String?): String {
             return text?.let {
                 if (it.contains("<center>") && it.contains("</center>")) {
                     it
