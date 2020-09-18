@@ -128,8 +128,7 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
 
         if (message != null) {
             final String inQueueText = sessionManager.
-                    getNinchatSiteConfig().
-                    getInQueueMessageText();
+                    getNinchatSiteConfig().getInQueueMessageText();
             message.setText(Misc.toSpanned(inQueueText));
         }
 

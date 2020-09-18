@@ -169,7 +169,7 @@ public final class NinchatSessionManager {
         if (instance.isResumedSession()) {
             instance.audienceEnqueued(queueId);
             if (instance.hasChannel()) {
-                final String currentChannelId = getQueueIdFromUserChannels(instance.userChannels);
+                final String currentChannelId = getChannelIdFromUserChannel(instance.userChannels);
                 NinchatDescribeChannel.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         instance.session,
@@ -1155,9 +1155,7 @@ public final class NinchatSessionManager {
         if (position == -1) {
             return null;
         }
-        final String queueStatus = ninchatSiteConfig.getQueueStatus(
-                name, position
-        );
+        final String queueStatus = ninchatSiteConfig.getQueueStatus(name, position);
         return Misc.toSpanned(queueStatus);
     }
 

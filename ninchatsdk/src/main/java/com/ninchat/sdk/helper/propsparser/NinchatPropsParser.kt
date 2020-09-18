@@ -84,7 +84,7 @@ class NinchatPropsParser {
         }
 
         @JvmStatic
-        fun getChannelId(props: Props?): String? {
+        fun getChannelIdFromUserChannel(props: Props?): String? {
             val parser = NinchatPropVisitor()
             return try {
                 props?.accept(parser)

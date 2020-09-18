@@ -32,20 +32,6 @@ class NinchatSiteConfig {
         return siteConfig?.optJSONObject("default")
     }
 
-    fun getJsonObject(key: String): JSONObject? {
-        var value: JSONObject? = null
-        siteConfig?.let {
-            preferredEnvironments?.let {
-                for (currentEnvironment in it) {
-                    if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optJSONObject(key)
-                    }
-                }
-            }
-        }
-        return value
-    }
-
     fun getArray(key: String): JSONArray? {
         var value: JSONArray? = null
         siteConfig?.let {
@@ -237,9 +223,9 @@ class NinchatSiteConfig {
             "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are at position {{audienceQueue.queue_position}}."
         }
         var queueStatus = getTranslation(key)
-        if (queueStatus?.contains("audienceQueue.queue_attrs.name") == true)
+        if (queueStatus.contains("audienceQueue.queue_attrs.name"))
             queueStatus = replacePlaceholder(queueStatus, name ?: "")
-        if (queueStatus?.contains("audienceQueue.queue_position") == true)
+        if (queueStatus.contains("audienceQueue.queue_position"))
             queueStatus = replacePlaceholder(queueStatus, "$position")
 
         return queueStatus ?: ""
@@ -273,9 +259,23 @@ class NinchatSiteConfig {
                     ?: "form" // default style is form
 
 
+    internal fun getTranslation(translationKey: String = "translations", key: String): String? {
+        var value: String? = null
+        siteConfig?.let {
+            preferredEnvironments?.let {
+                for (currentEnvironment in it) {
+                    if (siteConfig?.optJSONObject(currentEnvironment)?.optJSONObject(translationKey)?.has(key) == true) {
+                        value = siteConfig?.optJSONObject(currentEnvironment)?.optJSONObject(translationKey)?.optString(key)
+                    }
+                }
+            }
+        }
+        return value
+    }
+
     // todo (pallab) move to translator package
-    fun getTranslation(key: String?): String? =
-            getJsonObject("translations")?.optString(key)
+    fun getTranslation(key: String = ""): String =
+            getTranslation("translations", key) ?: key
 
     // todo (pallab) move to translator or general util/helper package
     fun replacePlaceholder(origin: String?, replacement: String): String {

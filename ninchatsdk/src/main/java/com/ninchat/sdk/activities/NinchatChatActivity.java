@@ -210,22 +210,14 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         description.setText(sessionManager.getNinchatSiteConfig().getChatCloseConfirmationText());
         final Button confirm = dialog.findViewById(R.id.ninchat_close_chat_dialog_confirm);
         confirm.setText(closeText);
-        confirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chatClosed();
-                dialog.dismiss();
-            }
+        confirm.setOnClickListener(v -> {
+            chatClosed();
+            dialog.dismiss();
         });
         final Button decline = dialog.findViewById(R.id.ninchat_close_chat_dialog_decline);
         final String continueChatText = sessionManager.getNinchatSiteConfig().getContinueChatText();
         decline.setText(continueChatText);
-        decline.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
+        decline.setOnClickListener(v -> dialog.dismiss());
         hideKeyboard();
         if (chatClosed) {
             dialog.dismiss();
@@ -306,26 +298,19 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                     final Button accept = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_accept);
                     accept.setText(sessionManager.getNinchatSiteConfig().getVideoCallAcceptText(
                     ));
-                    accept.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
-                            if (hasVideoCallPermissions()) {
-                                sendPickUpAnswer(true);
-                            } else {
-                                requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE);
-                            }
+                    accept.setOnClickListener(v -> {
+                        dialog.dismiss();
+                        if (hasVideoCallPermissions()) {
+                            sendPickUpAnswer(true);
+                        } else {
+                            requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO}, CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE);
                         }
                     });
                     final Button decline = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_decline);
-                    decline.setText(sessionManager.getNinchatSiteConfig().getVideoCallDeclineText(
-                    ));
-                    decline.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            sendPickUpAnswer(false);
-                            dialog.dismiss();
-                        }
+                    decline.setText(sessionManager.getNinchatSiteConfig().getVideoCallDeclineText());
+                    decline.setOnClickListener(v -> {
+                        sendPickUpAnswer(false);
+                        dialog.dismiss();
                     });
                     hideKeyboard();
                     messageAdapter.addMetaMessage(intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_ID), sessionManager.getNinchatSiteConfig().getVideoCallMetaMessageText(
