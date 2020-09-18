@@ -75,6 +75,7 @@ import static com.ninchat.sdk.helper.propsparser.NinchatPropsParser.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.HAS_CHANNEL;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.IN_QUEUE;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.NEW_SESSION;
+import static com.ninchat.sdk.utils.misc.Misc.guessMimeTypeFromFileName;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 24/08/2018.
@@ -959,15 +960,6 @@ public final class NinchatSessionManager {
                 // Ignore
             }
         }
-    }
-
-    private String guessMimeTypeFromFileName(final String name) {
-        final String extension = name.replaceAll(".*\\.", "");
-        final String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
-        if (mimeType == null) {
-            return "application/octet-stream";
-        }
-        return mimeType;
     }
 
     private void fileFound(final Props params) {
