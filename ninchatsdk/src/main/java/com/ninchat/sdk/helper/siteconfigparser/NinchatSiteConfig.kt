@@ -269,9 +269,11 @@ class NinchatSiteConfig {
                     ?: "form" // default style is form
 
 
+    // todo (pallab) move to translator package
     fun getTranslation(key: String?, preferredEnvironments: ArrayList<String>?): String? =
             getJsonObject("translations", preferredEnvironments)?.optString(key)
 
+    // todo (pallab) move to translator or general util/helper package
     fun replacePlaceholder(origin: String?, replacement: String): String {
         return origin?.replaceFirst("\\{\\{([^}]*?)}}".toRegex(), replacement) ?: replacement
     }
