@@ -499,10 +499,6 @@ public final class NinchatSessionManager {
         return ninchatSiteConfig;
     }
 
-    public ArrayList<String> getPreferredEnvironments() {
-        return preferredEnvironments;
-    }
-
     public NinchatQueueListAdapter getNinchatQueueListAdapter(final Activity activity) {
         if (ninchatQueueListAdapter == null) {
             ninchatQueueListAdapter = new NinchatQueueListAdapter(activity, queues);
@@ -550,86 +546,16 @@ public final class NinchatSessionManager {
     }
 
     private void parseQueues(final Props params) {
-        Props remoteQueues;
-        try {
-            remoteQueues = params.getObject("realm_queues");
-        } catch (final Exception e) {
-            sessionError(e);
-            sendQueueParsingError();
-            return;
-        }
-        final NinchatPropVisitor parser = new NinchatPropVisitor();
-        try {
-            remoteQueues.accept(parser);
-        } catch (final Exception e) {
-            sessionError(e);
-            sendQueueParsingError();
-            return;
-        }
-        queues.clear();
         if (ninchatQueueListAdapter != null) {
             ninchatQueueListAdapter.clear();
         }
-        final List<String> openQueues = ninchatSiteConfig.getAudienceQueues();
-        for (String currentQueueId : parser.properties.keySet()) {
-            if (!openQueues.contains(currentQueueId)) {
-                continue;
-            }
-            Props info;
-            try {
-                info = (Props) parser.properties.get(currentQueueId);
-            } catch (final Exception e) {
-                sessionError(e);
-                sendQueueParsingError();
-                return;
-            }
-            long position;
-            try {
-                position = info.getInt("position");
-            } catch (final Exception e) {
-                sessionError(e);
-                sendQueueParsingError();
-                return;
-            }
-            try {
-                long queuePosition = info.getInt("queue_position");
-                if (queuePosition != 0) {
-                    resumedSession |= (1 << IN_QUEUE);
-                    queueId = currentQueueId;
-                    position = queuePosition;
-                }
-            } catch (final Exception e) {
-            }
-            Props queueAttributes;
-            try {
-                queueAttributes = info.getObject("queue_attrs");
-            } catch (final Exception e) {
-                sessionError(e);
-                sendQueueParsingError();
-                return;
-            }
-            String name;
-            try {
-                name = queueAttributes.getString("name");
-            } catch (final Exception e) {
-                sessionError(e);
-                sendQueueParsingError();
-                return;
-            }
-            boolean closed = false;
-            try {
-                closed = queueAttributes.getBool("closed");
-            } catch (final Exception e) {
-                // Ignore
-            }
-            final NinchatQueue ninchatQueue = new NinchatQueue(currentQueueId, name);
-            ninchatQueue.setPosition(position);
-            ninchatQueue.setClosed(closed);
-            queues.add(ninchatQueue);
+        queues = getOpenQueueList(params, ninchatSiteConfig.getAudienceQueues());
+        for (NinchatQueue currentQueue : queues) {
             if (ninchatQueueListAdapter != null) {
-                ninchatQueueListAdapter.addQueue(ninchatQueue);
+                ninchatQueueListAdapter.addQueue(currentQueue);
             }
         }
+        // todo(pallab) check and update missing in queue status if necessary
         final Context context = contextWeakReference.get();
         if (context != null && hasQueues()) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSession.Broadcast.QUEUES_UPDATED));

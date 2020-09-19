@@ -71,5 +71,24 @@ class NinchatPropsParserTest {
         val queueId = NinchatPropsParser.getQueueIdFromUserQueue(userQueue)
         Assert.assertNull(queueId)
     }
-    // todo ( pallab ) Instrumentation test failed for queue_position
+
+    @Test
+    fun `queue_position_should_be_-1_when_provided_queue_not_found`() {
+        val queueDetails = Props()
+        val userQueue = Props()
+        userQueue.setObject("123456", queueDetails)
+        val queueId = NinchatPropsParser.getQueuePositionByQueueId(userQueue, "wrongQueueId")
+        Assert.assertEquals(-1, queueId)
+    }
+
+    @Test
+    fun `queue_position_should_be_0_when_queue_position_not_provided_but_queue_id_found`() {
+        val queueDetails = Props()
+        val userQueue = Props()
+        userQueue.setObject("123456", queueDetails)
+        val queueId = NinchatPropsParser.getQueuePositionByQueueId(userQueue, "123456")
+        Assert.assertEquals(0, queueId)
+    }
+
+
 }

@@ -1,8 +1,8 @@
 package com.ninchat.sdk.helper.propsparser
 
 import com.ninchat.client.Props
+import com.ninchat.sdk.models.NinchatQueue
 import com.ninchat.sdk.utils.propsvisitor.NinchatPropVisitor
-import java.lang.Exception
 
 class NinchatPropsParser {
     companion object {
@@ -55,9 +55,11 @@ class NinchatPropsParser {
                 // audience has one or multiple channel
                 val queuePosition = parser.properties.filterKeys {
                     it == queueId
-                }.map { (it as Props).getInt("queue_position") }.firstOrNull()
+                }.map {
+                    (it.value as Props).getInt("queue_position")
+                }.firstOrNull()
                 return queuePosition ?: -1
-            } catch (e: java.lang.Exception) {
+            } catch (e: Exception) {
                 -1
             }
 
@@ -71,14 +73,14 @@ class NinchatPropsParser {
                 parser.properties.filterKeys {
                     it == queueId
                 }.filter {
-                    val queuePosition = (it as Props).getInt("queue_position")
+                    val queuePosition = (it.value as Props).getInt("queue_position")
                     queuePosition > 0
                 }.map {
-                    (it as Props).getObject("queue_attrs")
+                    (it.value as Props).getObject("queue_attrs")
                 }.map {
                     (it as Props).getString("name")
                 }.firstOrNull()
-            } catch (e: java.lang.Exception) {
+            } catch (e: Exception) {
                 null
             }
         }
@@ -89,7 +91,7 @@ class NinchatPropsParser {
             return try {
                 props?.accept(parser)
                 parser.properties.keys.firstOrNull()
-            } catch (e: java.lang.Exception) {
+            } catch (e: Exception) {
                 null
             }
         }
@@ -100,7 +102,7 @@ class NinchatPropsParser {
             return try {
                 props?.accept(parser)
                 parser.properties.keys.size > 0
-            } catch (e: java.lang.Exception) {
+            } catch (e: Exception) {
                 false
             }
         }
@@ -114,11 +116,37 @@ class NinchatPropsParser {
                     val queuePosition = (it as Props).getInt("queue_position")
                     queuePosition > 0L
                 }
-            } catch (e: java.lang.Exception) {
+            } catch (e: Exception) {
                 false
             }
         }
 
+        /**
+         * Get list of open queue from real queues found callback props
+         */
+        @JvmStatic
+        fun getOpenQueueList(props: Props?, audienceQueue: List<String>? = null): List<NinchatQueue> {
+            val parser = NinchatPropVisitor()
+            val realmQueues = try {
+                props?.getObject("realm_queues")
+            } catch (_: Exception) {
+                null
+            }
+            realmQueues?.accept(parser)
+            // only get list of queues that are open
+            return parser.properties.filterKeys {
+                audienceQueue?.contains(it) ?: false
+            }.mapValues {
+                val currentQueue = (it.value as Props)
+                val queuePosition = currentQueue.getInt("queue_position")
+                val queueName = currentQueue.getObject("queue_attrs")?.getString("name")
+                val queueClosed = currentQueue.getObject("queue_attrs")?.getBool("closed") ?: false
+                val ninchatQueue = NinchatQueue(it.key, queueName)
+                ninchatQueue.position = queuePosition
+                ninchatQueue.isClosed = queueClosed
+                ninchatQueue
+            }.map { it.value }
+        }
 
     }
 }
