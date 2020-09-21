@@ -116,6 +116,10 @@ public final class NinchatSessionManager {
     private String serverAddress = null;
     private long actionId = -1;
 
+    public Long getActionId() {
+        return actionId;
+    }
+
     public void setAppDetails(final String appDetails) {
         this.appDetails = appDetails;
     }
@@ -545,7 +549,7 @@ public final class NinchatSessionManager {
         }
     }
 
-    private void parseQueues(final Props params) {
+    public void parseQueues(final Props params) {
         if (ninchatQueueListAdapter != null) {
             ninchatQueueListAdapter.clear();
         }
@@ -616,7 +620,7 @@ public final class NinchatSessionManager {
         return queueId;
     }
 
-    private void queueUpdated(final Props params) {
+    public void queueUpdated(final Props params) {
         parseQueue(params);
         final Context context = contextWeakReference.get();
         if (context != null) {
@@ -625,7 +629,7 @@ public final class NinchatSessionManager {
         }
     }
 
-    private void audienceEnqueued(final Props params) {
+    public void audienceEnqueued(final Props params) {
         resumedSession = NEW_SESSION;
         final String queueId = parseQueue(params);
         final Context context = contextWeakReference.get();
@@ -643,7 +647,7 @@ public final class NinchatSessionManager {
         }
     }
 
-    private void channelJoined(final Props params) {
+    public void channelJoined(final Props params) {
         boolean isClosed = false;
 
         try {
@@ -741,7 +745,7 @@ public final class NinchatSessionManager {
         }
     }
 
-    private void channelUpdated(final Props params) {
+    public void channelUpdated(final Props params) {
         try {
             if (!params.getString("channel_id").equals(channelId)) {
                 return;
@@ -773,7 +777,7 @@ public final class NinchatSessionManager {
         }
     }
 
-    private void messageReceived(final Props params, final Payload payload) {
+    public void messageReceived(final Props params, final Payload payload) {
         if (channelId == null) {
             return;
         }
@@ -888,7 +892,7 @@ public final class NinchatSessionManager {
         }
     }
 
-    private void fileFound(final Props params) {
+    public void fileFound(final Props params) {
         String fileId;
         try {
             fileId = params.getString("file_id");
@@ -935,7 +939,7 @@ public final class NinchatSessionManager {
         messageAdapter.add(file.getMessageId(), new NinchatMessage(null, fileId, file.getSender(), file.getTimestamp(), file.isRemote()));
     }
 
-    private void memberUpdated(final Props params) {
+    public void memberUpdated(final Props params) {
         String sender;
         try {
             sender = params.getString("user_id");
@@ -967,7 +971,7 @@ public final class NinchatSessionManager {
         }
     }
 
-    private void iceBegun(final Props params) {
+    public void iceBegun(final Props params) {
         Objects stunServers;
         try {
             stunServers = params.getObjectArray("stun_servers");
