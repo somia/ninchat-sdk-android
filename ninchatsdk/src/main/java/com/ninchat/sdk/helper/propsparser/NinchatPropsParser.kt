@@ -125,7 +125,7 @@ class NinchatPropsParser {
          * Get list of open queue from real queues found callback props
          */
         @JvmStatic
-        fun getOpenQueueList(props: Props?, audienceQueue: List<String>? = null): List<NinchatQueue> {
+        fun getOpenQueueList(props: Props?, audienceQueue: Collection<String>? = null): List<NinchatQueue> {
             val parser = NinchatPropVisitor()
             val realmQueues = try {
                 props?.getObject("realm_queues")

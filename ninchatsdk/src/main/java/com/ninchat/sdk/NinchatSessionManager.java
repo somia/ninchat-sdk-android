@@ -6,18 +6,12 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Html;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.ninchat.client.CloseHandler;
-import com.ninchat.client.ConnStateHandler;
-import com.ninchat.client.LogHandler;
 import com.ninchat.client.Objects;
 import com.ninchat.client.Payload;
 import com.ninchat.client.Props;
@@ -26,7 +20,6 @@ import com.ninchat.client.Strings;
 import com.ninchat.sdk.activities.NinchatActivity;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
-import com.ninchat.sdk.events.OnAudienceRegistered;
 import com.ninchat.sdk.events.OnPostAudienceQuestionnaire;
 import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig;
 import com.ninchat.sdk.models.NinchatFile;
@@ -37,20 +30,12 @@ import com.ninchat.sdk.models.NinchatSessionCredentials;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
-import com.ninchat.sdk.networkdispatchers.NinchatBeginICE;
-import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeChannel;
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeFile;
-import com.ninchat.sdk.networkdispatchers.NinchatDescribeRealmQueues;
 import com.ninchat.sdk.networkdispatchers.NinchatFetchConfiguration;
 import com.ninchat.sdk.networkdispatchers.NinchatOpenSession;
-import com.ninchat.sdk.networkdispatchers.NinchatPartChannel;
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience;
-import com.ninchat.sdk.networkdispatchers.NinchatSendFile;
-import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
-import com.ninchat.sdk.networkdispatchers.NinchatSendPostAudienceQuestionnaire;
-import com.ninchat.sdk.networkdispatchers.NinchatSendRatings;
-import com.ninchat.sdk.networkdispatchers.NinchatUpdateMember;
+import com.ninchat.sdk.session.NinchatSessionHolder;
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
 import com.ninchat.sdk.utils.misc.Misc;
 import com.ninchat.sdk.utils.propsvisitor.NinchatPropVisitor;
@@ -60,8 +45,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.webrtc.IceCandidate;
-import org.webrtc.SessionDescription;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -206,6 +189,8 @@ public final class NinchatSessionManager {
     protected String siteSecret;
     protected NinchatSiteConfig ninchatSiteConfig;
 
+    private NinchatSessionHolder ninchatSessionHolder = new NinchatSessionHolder();
+
     protected NinchatSessionManager(final Context context,
                                     final String configurationKey,
                                     @Nullable NinchatSessionCredentials sessionCredentials,
@@ -313,7 +298,12 @@ public final class NinchatSessionManager {
                 getUserAgent(),
                 getServerAddress(),
                 currentSession -> {
-                    setSession(currentSession);
+                    session = currentSession;
+                    ninchatSessionHolder.onNewSession(currentSession, ninchatSiteConfig, eventListenerWeakReference.get());
+                    final Context mContent = contextWeakReference.get();
+                    if (mContent != null) {
+                        LocalBroadcastManager.getInstance(mContent).sendBroadcast(new Intent(NinchatSession.Broadcast.SESSION_CREATED));
+                    }
                     return null;
                 }
         );
@@ -332,159 +322,6 @@ public final class NinchatSessionManager {
                 }
             }
         });
-    }
-
-    public void setSession(final Session session) {
-        this.session = session;
-        final NinchatSDKEventListener listener = eventListenerWeakReference.get();
-
-        this.session.setOnSessionEvent(params -> {
-            try {
-                Log.v(TAG, "onSessionEvent: " + params.string());
-                final String event = params.getString("event");
-
-                if (event.equals("session_created")) {
-                    userId = params.getString("user_id");
-                    userChannels = params.getObject("user_channels");
-                    userQueues = params.getObject("user_queues");
-                    final String audienceAutoQueue = ninchatSiteConfig.getAudienceAutoQueue();
-                    // if queue id is not given and site config has audienceAutoQueue
-                    if (TextUtils.isEmpty(queueId) && !TextUtils.isEmpty(audienceAutoQueue)) {
-                        queueId = audienceAutoQueue;
-                    }
-
-                    String userAuth = sessionCredentials != null ? sessionCredentials.getUserAuth() : params.getString("user_auth");
-                    // a resumed session with use channels
-                    resumedSession |= (1 << (hasUserChannel(userChannels) ? HAS_CHANNEL : NEW_SESSION));
-                    // a resumed session with a queue in user queues
-                    resumedSession |= (1 << (hasUserQueues(userQueues) ? IN_QUEUE : NEW_SESSION));
-
-                    if (hasChannel()) {
-                        final String existingQueueId = getQueueIdFromUserChannels(userChannels);
-                        // if existing queue id is present update his queueId
-                        if (existingQueueId != null)
-                            queueId = existingQueueId;
-                    }
-
-                    if (isInQueue()) {
-                        final String existingQueueId = getQueueIdFromUserQueue(userQueues);
-                        // if existing queue id is present update his queueId
-                        if (existingQueueId != null)
-                            queueId = existingQueueId;
-                    }
-
-                    sessionCredentials = new NinchatSessionCredentials(
-                            params.getString("user_id"),
-                            userAuth,
-                            params.getString("session_id")
-                    );
-                    NinchatDescribeRealmQueues.executeAsync(
-                            NinchatScopeHandler.getIOScope(),
-                            session,
-                            ninchatSiteConfig.getRealmId(),
-                            ninchatSiteConfig.getAudienceQueues(),
-                            aLong -> null
-                    );
-                    if (listener != null) {
-                        // TODO: Close previous session, hasn't been added since it didn't work
-                        if (configuration != null && sessionCredentials != null) {
-                            listener.onSessionInitiated(sessionCredentials);
-                            sessionCredentials = null;
-                        } else if (configuration != null) {
-                            listener.onSessionInitiated(sessionCredentials);
-                        } else {
-                            resumedSession = NEW_SESSION;
-                            listener.onSessionInitFailed();
-                        }
-                    }
-                } else if (event.equals("user_deleted")) {
-                    // ignore
-                } else {
-                    resumedSession = NEW_SESSION;
-                    listener.onSessionInitFailed();
-                }
-            } catch (final Exception e) {
-                Log.e(TAG, "Failed to get the event from " + params.string(), e);
-                resumedSession = NEW_SESSION;
-                listener.onSessionInitFailed();
-            }
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    final NinchatSDKEventListener eventListener = eventListenerWeakReference.get();
-                    if (eventListener != null) {
-                        eventListener.onSessionEvent(params);
-                    }
-                }
-            });
-        });
-        this.session.setOnEvent((params, payload, lastReply) -> {
-            Log.v(TAG, "onEvent: " + params.string() + ", " + payload.string() + ", " + lastReply);
-            try {
-                final String event = params.getString("event");
-                final long currentActionId = params.getInt("action_id");
-                if (event.equals("realm_queues_found")) {
-                    NinchatSessionManager.getInstance().parseQueues(params);
-                } else if (event.equals("queue_found") || event.equals("queue_updated")) {
-                    NinchatSessionManager.getInstance().queueUpdated(params);
-                } else if (event.equals("audience_enqueued")) {
-                    NinchatSessionManager.getInstance().audienceEnqueued(params);
-                } else if (event.equals("channel_joined")) {
-                    NinchatSessionManager.getInstance().channelJoined(params);
-                } else if (event.equals("channel_found") && actionId == currentActionId) {
-                    NinchatSessionManager.getInstance().channelJoined(params);
-                } else if (event.equals("channel_found") || event.equals("channel_updated")) {
-                    NinchatSessionManager.getInstance().channelUpdated(params);
-                } else if (event.equals("message_received")) {
-                    NinchatSessionManager.getInstance().messageReceived(params, payload);
-                } else if (event.equals("ice_begun")) {
-                    NinchatSessionManager.getInstance().iceBegun(params);
-                } else if (event.equals("file_found")) {
-                    NinchatSessionManager.getInstance().fileFound(params);
-                } else if (event.equals("channel_member_updated") || event.equals("user_updated")) {
-                    NinchatSessionManager.getInstance().memberUpdated(params);
-                } else if (event.equals("audience_registered")) {
-                    // send event that audience is register, and we can not close the session
-                    EventBus.getDefault().post(new OnAudienceRegistered(false));
-                } else if (event.equals("error")) {
-                    EventBus.getDefault().post(new OnAudienceRegistered(true));
-                }
-            } catch (final Exception e) {
-                Log.e(TAG, "Failed to get the event from " + params.string(), e);
-            }
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    final NinchatSDKEventListener eventListener = eventListenerWeakReference.get();
-                    if (eventListener != null) {
-                        eventListener.onEvent(params, payload);
-                    }
-                }
-            });
-        });
-        this.session.setOnClose(new CloseHandler() {
-            @Override
-            public void onClose() {
-                Log.v(TAG, "onClose");
-            }
-        });
-        this.session.setOnConnState(new ConnStateHandler() {
-            @Override
-            public void onConnState(String state) {
-                Log.v(TAG, "onConnState: " + state);
-            }
-        });
-        this.session.setOnLog(new LogHandler() {
-            @Override
-            public void onLog(String msg) {
-                Log.v(TAG, "onLog: " + msg);
-            }
-        });
-        final Context context = contextWeakReference.get();
-        if (context != null) {
-            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSession.Broadcast.SESSION_CREATED));
-        }
-
     }
 
     public Session getSession() {
@@ -737,7 +574,6 @@ public final class NinchatSessionManager {
         if (messageId != null && !messageId.isEmpty()) {
             load.setString("message_id", messageId);
         }
-
         try {
             session.send(load, null);
         } catch (final Exception e) {
@@ -759,13 +595,13 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             return;
         }
-        boolean closed = false;
+        boolean closed;
         try {
             closed = channelAttributes.getBool("closed");
         } catch (final Exception e) {
             return;
         }
-        boolean suspended = false;
+        boolean suspended;
         try {
             suspended = channelAttributes.getBool("suspended");
         } catch (final Exception e) {
@@ -1095,10 +931,6 @@ public final class NinchatSessionManager {
 
     public boolean hasChannel() {
         return (resumedSession & (1 << HAS_CHANNEL)) != 0;
-    }
-
-    public void resetSession() {
-        resumedSession = NEW_SESSION;
     }
 
     public void close() {

@@ -79,8 +79,8 @@ class NinchatSiteConfig {
         return value
     }
 
-    fun getAudienceQueues(): MutableList<String?> {
-        val queues = mutableListOf<String?>()
+    fun getAudienceQueues(): Collection<String>? {
+        val queues = mutableListOf<String>()
         val array: JSONArray? = getArray("audienceQueues")
         array?.let {
             for (i in 0 until it.length()) {
