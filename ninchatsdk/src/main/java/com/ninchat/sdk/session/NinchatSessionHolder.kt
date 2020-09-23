@@ -10,6 +10,7 @@ import com.ninchat.sdk.NinchatSDKEventListener
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.events.OnAudienceRegistered
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
+import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig
 import com.ninchat.sdk.models.NinchatSessionCredentials
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeRealmQueues
@@ -19,32 +20,34 @@ import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 
-class NinchatSessionHolder() {
+class NinchatSessionHolder(ninchatState: NinchatState) {
+    private val ninchatState: NinchatState = ninchatState
+
     companion object {
         val TAG = "NinchatSessionHolder"
     }
 
     private fun handleSessionCreate(params: Props, ninchatSiteConfig: NinchatSiteConfig) {
-        NinchatState.userId = params.getString("user_id")
-        NinchatState.userChannels = params.getObject("user_channels")
-        NinchatState.userQueues = params.getObject("user_queues")
-        NinchatState.queueId = if (NinchatState.queueId == null && !ninchatSiteConfig.getAudienceAutoQueue().isNullOrBlank()) {
+        ninchatState.userId = params.getString("user_id")
+        ninchatState.userChannels = params.getObject("user_channels")
+        ninchatState.userQueues = params.getObject("user_queues")
+        ninchatState.queueId = if (ninchatState.queueId == null && !ninchatSiteConfig.getAudienceAutoQueue().isNullOrBlank()) {
             ninchatSiteConfig.getAudienceAutoQueue()
-        } else NinchatState.queueId
-        NinchatState.currentSessionState = NinchatState.currentSessionState or (Misc.NEW_SESSION shl 1)
-        if (NinchatPropsParser.hasUserChannel(NinchatState.userChannels)) {
-            NinchatState.currentSessionState = NinchatState.currentSessionState or (Misc.HAS_CHANNEL shl 1)
-            NinchatState.queueId = NinchatPropsParser.getQueueIdFromUserChannels(NinchatState.userChannels)
-                    ?: NinchatState.queueId
+        } else ninchatState.queueId
+        ninchatState.currentSessionState = ninchatState.currentSessionState or (Misc.NEW_SESSION shl 1)
+        if (NinchatPropsParser.hasUserChannel(ninchatState.userChannels)) {
+            ninchatState.currentSessionState = ninchatState.currentSessionState or (Misc.HAS_CHANNEL shl 1)
+            ninchatState.queueId = NinchatPropsParser.getQueueIdFromUserChannels(ninchatState.userChannels)
+                    ?: ninchatState.queueId
         }
-        if (NinchatPropsParser.hasUserQueues(NinchatState.userQueues)) {
-            NinchatState.currentSessionState = NinchatState.currentSessionState or (Misc.IN_QUEUE shl 1)
-            NinchatState.queueId = NinchatPropsParser.getQueueIdFromUserQueue(NinchatState.userQueues)
-                    ?: NinchatState.queueId
+        if (NinchatPropsParser.hasUserQueues(ninchatState.userQueues)) {
+            ninchatState.currentSessionState = ninchatState.currentSessionState or (Misc.IN_QUEUE shl 1)
+            ninchatState.queueId = NinchatPropsParser.getQueueIdFromUserQueue(ninchatState.userQueues)
+                    ?: ninchatState.queueId
         }
-        NinchatState.sessionCredentials = NinchatSessionCredentials(
+        ninchatState.sessionCredentials = NinchatSessionCredentials(
                 params.getString("user_id"),
-                NinchatState.sessionCredentials?.userAuth ?: params.getString("user_auth"),
+                ninchatState.sessionCredentials?.userAuth ?: params.getString("user_auth"),
                 params.getString("session_id")
         )
     }
@@ -59,7 +62,7 @@ class NinchatSessionHolder() {
             when (event) {
                 "session_created" -> {
                     handleSessionCreate(params, ninchatSiteConfig)
-                    listener?.onSessionInitiated(NinchatState.sessionCredentials)
+                    listener?.onSessionInitiated(ninchatState.sessionCredentials)
                     NinchatScopeHandler.getIOScope().launch {
                         NinchatDescribeRealmQueues.execute(
                                 currentSession = session,
@@ -89,7 +92,7 @@ class NinchatSessionHolder() {
                 "audience_enqueued" -> NinchatSessionManager.getInstance().audienceEnqueued(params)
                 "channel_joined" -> NinchatSessionManager.getInstance().channelJoined(params)
                 "channel_found" -> {
-                    if (NinchatSessionManager.getInstance().actionId == currentActionId) {
+                    if (ninchatState.actionId == currentActionId) {
                         NinchatSessionManager.getInstance().channelJoined(params)
                     } else {
                         NinchatSessionManager.getInstance().channelUpdated(params)
@@ -105,4 +108,17 @@ class NinchatSessionHolder() {
             }
         }
     }
+
+    fun isResumedSession(): Boolean {
+        return isInQueue() || hasChannel()
+    }
+
+    fun isInQueue(): Boolean {
+        return ninchatState.currentSessionState and (1 shl NinchatQuestionnaireTypeUtil.IN_QUEUE) != 0
+    }
+
+    fun hasChannel(): Boolean {
+        return ninchatState.currentSessionState and (1 shl NinchatQuestionnaireTypeUtil.HAS_CHANNEL) != 0
+    }
+
 }

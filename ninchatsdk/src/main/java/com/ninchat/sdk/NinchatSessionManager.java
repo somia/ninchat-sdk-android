@@ -21,7 +21,6 @@ import com.ninchat.sdk.activities.NinchatActivity;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
 import com.ninchat.sdk.events.OnPostAudienceQuestionnaire;
-import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatOption;
@@ -36,6 +35,7 @@ import com.ninchat.sdk.networkdispatchers.NinchatFetchConfiguration;
 import com.ninchat.sdk.networkdispatchers.NinchatOpenSession;
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience;
 import com.ninchat.sdk.session.NinchatSessionHolder;
+import com.ninchat.sdk.states.NinchatState;
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
 import com.ninchat.sdk.utils.misc.Misc;
 import com.ninchat.sdk.utils.propsvisitor.NinchatPropVisitor;
@@ -55,9 +55,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.ninchat.sdk.helper.propsparser.NinchatPropsParser.*;
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.HAS_CHANNEL;
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.IN_QUEUE;
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.NEW_SESSION;
 import static com.ninchat.sdk.utils.misc.Misc.guessMimeTypeFromFileName;
 
 /**
@@ -97,11 +94,7 @@ public final class NinchatSessionManager {
 
     private String appDetails = null;
     private String serverAddress = null;
-    private long actionId = -1;
 
-    public Long getActionId() {
-        return actionId;
-    }
 
     public void setAppDetails(final String appDetails) {
         this.appDetails = appDetails;
@@ -151,33 +144,33 @@ public final class NinchatSessionManager {
         return files.get(fileId);
     }
 
-    public static void joinQueue(final String queueId) {
-        instance.queueId = queueId;
+    public void joinQueue(final String queueId) {
+        ninchatState.queueId = queueId;
         // if there is already audience queue or user is in the queue in the user session
-        if (instance.isResumedSession()) {
-            instance.audienceEnqueued(queueId);
-            if (instance.hasChannel()) {
-                final String currentChannelId = getChannelIdFromUserChannel(instance.userChannels);
+        if (ninchatSessionHolder.isResumedSession()) {
+            audienceEnqueued(queueId);
+            if (ninchatSessionHolder.hasChannel()) {
+                final String currentChannelId = getChannelIdFromUserChannel(userChannels);
                 NinchatDescribeChannel.executeAsync(
                         NinchatScopeHandler.getIOScope(),
-                        instance.session,
+                        session,
                         currentChannelId,
                         actionId -> {
-                            instance.actionId = actionId;
+                            ninchatState.actionId = actionId;
                             return null;
                         }
                 );
                 return;
             }
-            if (instance.isInQueue()) {
+            if (ninchatSessionHolder.isInQueue()) {
                 return;
             }
         }
         NinchatRequestAudience.executeAsync(
                 NinchatScopeHandler.getIOScope(),
-                instance.session,
+                session,
                 queueId,
-                instance.getAudienceMetadata(),
+                getAudienceMetadata(),
                 aLong -> null
         );
     }
@@ -187,9 +180,10 @@ public final class NinchatSessionManager {
     protected String configurationKey;
     private ArrayList<String> preferredEnvironments;
     protected String siteSecret;
-    protected NinchatSiteConfig ninchatSiteConfig;
 
-    private NinchatSessionHolder ninchatSessionHolder = new NinchatSessionHolder();
+
+    private NinchatState ninchatState = new NinchatState();
+    private NinchatSessionHolder ninchatSessionHolder = new NinchatSessionHolder(ninchatState);
 
     protected NinchatSessionManager(final Context context,
                                     final String configurationKey,
@@ -212,9 +206,7 @@ public final class NinchatSessionManager {
         this.files = new HashMap<>();
         this.activityWeakReference = new WeakReference(null);
         this.sessionCredentials = sessionCredentials;
-        this.resumedSession = NEW_SESSION;
         this.ninchatConfiguration = configurationManager;
-        ninchatSiteConfig = new NinchatSiteConfig();
     }
 
     protected WeakReference<Context> contextWeakReference;
@@ -230,7 +222,6 @@ public final class NinchatSessionManager {
     protected List<NinchatQueue> queues;
     protected NinchatQueueListAdapter ninchatQueueListAdapter;
     protected String channelId;
-    protected String userId;
     protected Map<String, NinchatUser> members;
     protected NinchatMessageAdapter messageAdapter;
     protected List<NinchatWebRTCServerInfo> stunServers;
@@ -272,7 +263,7 @@ public final class NinchatSessionManager {
             Log.v(TAG, "Got configuration: " + config);
             this.configuration = new JSONObject(config);
             this.ninchatQuestionnaireHolder = new NinchatQuestionnaireHolder(this);
-            this.ninchatSiteConfig.setConfigString(config, preferredEnvironments);
+            ninchatState.getSiteConfig().setConfigString(config, preferredEnvironments);
             Log.i(TAG, "Configuration fetched successfully!");
         } catch (final JSONException e) {
             this.configuration = null;
@@ -299,7 +290,9 @@ public final class NinchatSessionManager {
                 getServerAddress(),
                 currentSession -> {
                     session = currentSession;
-                    ninchatSessionHolder.onNewSession(currentSession, ninchatSiteConfig, eventListenerWeakReference.get());
+                    ninchatSessionHolder.onNewSession(currentSession,
+                            ninchatState.getSiteConfig(),
+                            eventListenerWeakReference.get());
                     final Context mContent = contextWeakReference.get();
                     if (mContent != null) {
                         LocalBroadcastManager.getInstance(mContent).sendBroadcast(new Intent(NinchatSession.Broadcast.SESSION_CREATED));
@@ -332,14 +325,6 @@ public final class NinchatSessionManager {
         return channelId;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public NinchatSiteConfig getNinchatSiteConfig() {
-        return ninchatSiteConfig;
-    }
-
     public NinchatQueueListAdapter getNinchatQueueListAdapter(final Activity activity) {
         if (ninchatQueueListAdapter == null) {
             ninchatQueueListAdapter = new NinchatQueueListAdapter(activity, queues);
@@ -352,14 +337,14 @@ public final class NinchatSessionManager {
     }
 
     public NinchatUser getMember(final String userId) {
-        if (this.userId.equals(userId)) {
+        if (ninchatState.userId.equals(userId)) {
             return new NinchatUser(getUserName(), getUserName(), null, true);
         }
         return members.get(userId);
     }
 
     public boolean isGuestMemeber() {
-        final NinchatUser currentUser = members.get(userId);
+        final NinchatUser currentUser = members.get(ninchatState.userId);
         if (currentUser == null) {
             return false;
         }
@@ -390,7 +375,7 @@ public final class NinchatSessionManager {
         if (ninchatQueueListAdapter != null) {
             ninchatQueueListAdapter.clear();
         }
-        queues = getOpenQueueList(params, ninchatSiteConfig.getAudienceQueues());
+        queues = getOpenQueueList(params, ninchatState.getSiteConfig().getAudienceQueues());
         for (NinchatQueue currentQueue : queues) {
             if (ninchatQueueListAdapter != null) {
                 ninchatQueueListAdapter.addQueue(currentQueue);
@@ -636,7 +621,7 @@ public final class NinchatSessionManager {
             return;
         }
 
-        if (NinchatMessageTypes.webrtcMessage(messageType) && !sender.equals(userId)) {
+        if (NinchatMessageTypes.webrtcMessage(messageType) && !sender.equals(ninchatState.userId)) {
             final StringBuilder builder = new StringBuilder();
             for (int i = 0; i < payload.length(); ++i) {
                 builder.append(new String(payload.get(i)));
@@ -683,7 +668,7 @@ public final class NinchatSessionManager {
             }
         }
 
-        if (actionId == currentActionId) {
+        if (ninchatState.actionId == currentActionId) {
             EventBus.getDefault().post(new OnPostAudienceQuestionnaire());
         }
 
@@ -705,7 +690,7 @@ public final class NinchatSessionManager {
                     }
                     if (filetype != null) {
                         final String fileId = file.getString("file_id");
-                        final NinchatFile ninchatFile = new NinchatFile(messageId, fileId, filename, filesize, filetype, timestampMs, sender, !sender.equals(userId));
+                        final NinchatFile ninchatFile = new NinchatFile(messageId, fileId, filename, filesize, filetype, timestampMs, sender, !sender.equals(ninchatState.userId));
                         this.files.put(fileId, ninchatFile);
                         if (ninchatFile.getUrl() == null ||
                                 ninchatFile.getUrlExpiry() == null ||
@@ -720,7 +705,7 @@ public final class NinchatSessionManager {
                         }
                     }
                 } else {
-                    messageAdapter.add(messageId, new NinchatMessage(message.getString("text"), null, sender, timestampMs, !sender.equals(userId)));
+                    messageAdapter.add(messageId, new NinchatMessage(message.getString("text"), null, sender, timestampMs, !sender.equals(ninchatState.userId)));
                 }
             } catch (final JSONException e) {
                 // Ignore
@@ -782,7 +767,7 @@ public final class NinchatSessionManager {
         } catch (final Exception e) {
             return;
         }
-        if (sender.equals(userId)) {
+        if (sender.equals(ninchatState.userId)) {
             // Do not update myself
             return;
         }
@@ -868,14 +853,14 @@ public final class NinchatSessionManager {
         if (this.ninchatConfiguration != null && this.ninchatConfiguration.getUserName() != null) {
             return this.ninchatConfiguration.getUserName();
         }
-        return ninchatSiteConfig.getUserName();
+        return ninchatState.getSiteConfig().getUserName();
     }
 
     // Get username or agentname if it is set in configuration
     public String getName(boolean isAgent) {
         if (!isAgent) return getUserName();
         try {
-            return ninchatSiteConfig.getAgentName();
+            return ninchatState.getSiteConfig().getAgentName();
         } catch (final Exception e) {
             return null;
         }
@@ -888,10 +873,7 @@ public final class NinchatSessionManager {
             name = queue.getName();
         }
         return Misc.center(
-                getNinchatSiteConfig().getChatStarted(
-                        name
-                )
-        );
+                ninchatState.getSiteConfig().getChatStarted(name));
     }
 
 
@@ -902,7 +884,7 @@ public final class NinchatSessionManager {
         if (selectedQueue != null) {
             position = selectedQueue.getPosition();
             name = selectedQueue.getName();
-        } else if (isInQueue()) {
+        } else if (ninchatSessionHolder.isInQueue()) {
             final long queuePosition = getQueuePositionByQueueId(userQueues, queueId);
             if (queuePosition != -1) {
                 position = queuePosition;
@@ -913,24 +895,12 @@ public final class NinchatSessionManager {
         if (position == -1) {
             return null;
         }
-        final String queueStatus = ninchatSiteConfig.getQueueStatus(name, position);
+        final String queueStatus = ninchatState.getSiteConfig().getQueueStatus(name, position);
         return Misc.toSpanned(queueStatus);
     }
 
     public NinchatQuestionnaireHolder getNinchatQuestionnaireHolder() {
         return ninchatQuestionnaireHolder;
-    }
-
-    public boolean isResumedSession() {
-        return isInQueue() || hasChannel();
-    }
-
-    public boolean isInQueue() {
-        return (resumedSession & (1 << IN_QUEUE)) != 0;
-    }
-
-    public boolean hasChannel() {
-        return (resumedSession & (1 << HAS_CHANNEL)) != 0;
     }
 
     public void close() {

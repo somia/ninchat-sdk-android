@@ -5,8 +5,11 @@ import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig
 import com.ninchat.sdk.models.NinchatSessionCredentials
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder
 
-object NinchatState {
+class NinchatState {
+    @JvmField
     var userId: String? = null
+
+    @JvmField
     var queueId: String? = null
     var currentSessionState: Int = 0
 
@@ -17,10 +20,12 @@ object NinchatState {
 
     var openQueueList: List<String>? = null
 
-    var siteConfig: NinchatSiteConfig? = null
+    var siteConfig: NinchatSiteConfig = NinchatSiteConfig()
     var ninchatQuestionnaire: NinchatQuestionnaireHolder? = null
 
-    @JvmStatic
+    @JvmField
+    var actionId = -1L
+
     fun reset() {
         userId = null
         queueId = null
@@ -32,7 +37,8 @@ object NinchatState {
 
         openQueueList = null
 
-        siteConfig = null
+        siteConfig = NinchatSiteConfig()
         ninchatQuestionnaire = null
+        actionId = -1
     }
 }
