@@ -63,7 +63,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
             findViewById(R.id.ninchat_activity_no_queues).setVisibility(View.VISIBLE);
             final TextView motd = findViewById(R.id.ninchat_activity_motd);
             final String noQueueText = sessionManager
-                    .getNinchatSiteConfig()
+                    .ninchatState.getSiteConfig()
                     .getNoQueuesText();
             motd.setText(Misc.toSpanned(noQueueText));
             findViewById(R.id.ninchat_activity_close).setVisibility(View.VISIBLE);
@@ -85,20 +85,20 @@ public final class NinchatActivity extends NinchatBaseActivity {
             sessionManager = NinchatSessionManager.getInstance();
         }
         final String welcomeMessage = sessionManager
-                .getNinchatSiteConfig()
+                .ninchatState.getSiteConfig()
                 .getWelcomeText();
 
         final String noQueueText = sessionManager
-                .getNinchatSiteConfig()
+                .ninchatState.getSiteConfig()
                 .getNoQueuesText();
 
 
         final String motDText = sessionManager
-                .getNinchatSiteConfig()
+                .ninchatState.getSiteConfig()
                 .getMOTDText();
 
         final String closeWindowText = sessionManager
-                .getNinchatSiteConfig()
+                .ninchatState.getSiteConfig()
                 .getCloseWindowText();
 
         final TextView topHeader = findViewById(R.id.ninchat_activity_header);
@@ -136,7 +136,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
         }
         if (queueId != null) {
             final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
-            if (ninchatSessionManager.getNinchatQuestionnaireHolder().hasPreAudienceQuestionnaire() && !ninchatSessionManager.isResumedSession()) {
+            if (ninchatSessionManager.getNinchatQuestionnaireHolder().hasPreAudienceQuestionnaire() && !ninchatSessionManager.ninchatSessionHolder.isResumedSession()) {
                 openPreAudienceQuestionnairesActivity();
             } else {
                 openQueueActivity();

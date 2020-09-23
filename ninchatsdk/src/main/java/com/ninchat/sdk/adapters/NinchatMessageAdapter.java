@@ -75,8 +75,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             if (TextUtils.isEmpty(userAvatar)) {
                 final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
                 userAvatar = ninchatMessage.isRemoteMessage() ?
-                        sessionManager.getNinchatSiteConfig().getAgentAvatar() :
-                        sessionManager.getNinchatSiteConfig().getUserAvatar();
+                        sessionManager.ninchatState.getSiteConfig().getAgentAvatar() :
+                        sessionManager.ninchatState.getSiteConfig().getUserAvatar();
             }
             if (!TextUtils.isEmpty(userAvatar)) {
                 GlideApp.with(itemView.getContext())
@@ -84,10 +84,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         .circleCrop()
                         .into(avatar);
             }
-            final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
+            final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
             final boolean showAvatars = ninchatMessage.isRemoteMessage() ?
-                    ninchatSessionManager.getNinchatSiteConfig().showAgentAvatar() :
-                    ninchatSessionManager.getNinchatSiteConfig().showUserAvatar();
+                    sessionManager.ninchatState.getSiteConfig().showAgentAvatar() :
+                    sessionManager.ninchatState.getSiteConfig().showUserAvatar();
             if (!showAvatars) {
                 avatar.setVisibility(View.GONE);
             } else if (hideAvatar) {
@@ -177,9 +177,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
                 final TextView end = itemView.findViewById(R.id.ninchat_chat_message_end_text);
-                end.setText(Misc.toSpanned(NinchatSessionManager.getInstance().getNinchatSiteConfig().getConversationEndedText()));
+                end.setText(Misc.toSpanned(
+                        NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getConversationEndedText()));
                 final Button closeButton = itemView.findViewById(R.id.ninchat_chat_message_close);
-                final String closeText = NinchatSessionManager.getInstance().getNinchatSiteConfig().getChatCloseText();
+                final String closeText =
+                        NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getChatCloseText();
                 closeButton.setText(closeText);
                 closeButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -264,7 +266,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 }
                 options.setAdapter(new NinchatMultiChoiceAdapter(data, this, messageText == null));
                 final Button sendButton = itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice_send);
-                final String submitButtonText = NinchatSessionManager.getInstance().getNinchatSiteConfig().getSubmitButtonText();
+                final String submitButtonText =
+                        NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getSubmitButtonText();
                 sendButton.setText(submitButtonText);
                 sendButton.setOnClickListener(new View.OnClickListener() {
                     @Override

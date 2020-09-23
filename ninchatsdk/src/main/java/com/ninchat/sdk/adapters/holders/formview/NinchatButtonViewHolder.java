@@ -59,13 +59,11 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
                 mPrevious.setVisibility(View.VISIBLE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     mPrevious.setTooltipText(
-                            NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(
-                                    text));
+                            NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getTranslation(text));
                 }
 
                 mPrevious.setText(
-                        NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(
-                                text));
+                        NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getTranslation(text));
                 mPrevious.setOnClickListener(v -> {
                     mPrevious.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_secondary_onclicked_button));
                     mayBeFireComplete(questionnaireElement, OnNextQuestionnaire.back);
@@ -84,12 +82,9 @@ public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
             } else {
                 mNext.setVisibility(View.VISIBLE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    mNext.setTooltipText(
-                            NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(text));
-
+                    mNext.setTooltipText(NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getTranslation(text));
                 }
-                mNext.setText(
-                        NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(text));
+                mNext.setText(NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getTranslation(text));
                 mNext.setOnClickListener(v -> {
                     mNext.setBackground(ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_primary_oncliked_button));
                     mayBeFireComplete(questionnaireElement, OnNextQuestionnaire.forward);

@@ -47,7 +47,9 @@ import com.ninchat.sdk.networkdispatchers.NinchatSendFile;
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
 import com.ninchat.sdk.networkdispatchers.NinchatUpdateMember;
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
+import com.ninchat.sdk.utils.misc.Broadcast;
 import com.ninchat.sdk.utils.misc.Misc;
+import com.ninchat.sdk.utils.misc.Parameter;
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 import com.ninchat.sdk.views.NinchatWebRTCView;
 
@@ -173,7 +175,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (NinchatSessionManager.Broadcast.CHANNEL_CLOSED.equals(action)) {
+            if (Broadcast.CHANNEL_CLOSED.equals(action)) {
                 messageAdapter.close(NinchatChatActivity.this);
                 chatClosed = true;
                 hideKeyboard();
@@ -185,7 +187,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (NinchatSessionManager.Broadcast.AUDIENCE_ENQUEUED.equals(action)) {
+            if (Broadcast.AUDIENCE_ENQUEUED.equals(action)) {
                 NinchatPartChannel.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         sessionManager.getSession(),
@@ -204,10 +206,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 .create();
         dialog.show();
         final TextView title = dialog.findViewById(R.id.ninchat_close_chat_dialog_title);
-        final String closeText = sessionManager.getNinchatSiteConfig().getChatCloseText();
+        final String closeText = sessionManager.ninchatState.getSiteConfig().getChatCloseText();
         title.setText(closeText);
         final TextView description = dialog.findViewById(R.id.ninchat_close_chat_dialog_description);
-        description.setText(sessionManager.getNinchatSiteConfig().getChatCloseConfirmationText());
+        description.setText(sessionManager.ninchatState.getSiteConfig().getChatCloseConfirmationText());
         final Button confirm = dialog.findViewById(R.id.ninchat_close_chat_dialog_confirm);
         confirm.setText(closeText);
         confirm.setOnClickListener(v -> {
@@ -215,7 +217,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             dialog.dismiss();
         });
         final Button decline = dialog.findViewById(R.id.ninchat_close_chat_dialog_decline);
-        final String continueChatText = sessionManager.getNinchatSiteConfig().getContinueChatText();
+        final String continueChatText = sessionManager.ninchatState.getSiteConfig().getContinueChatText();
         decline.setText(continueChatText);
         decline.setOnClickListener(v -> dialog.dismiss());
         hideKeyboard();
@@ -228,7 +230,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     public void chatClosed() {
         onVideoHangUp(null);
         if (sessionManager == null) sessionManager = NinchatSessionManager.getInstance();
-        final boolean showRatings = sessionManager.getNinchatSiteConfig().showRating();
+        final boolean showRatings = sessionManager.ninchatState.getSiteConfig().showRating();
         // sessionManager.partChannel();
         if (showRatings) {
             startActivityForResult(NinchatReviewActivity.getLaunchIntent(NinchatChatActivity.this), NinchatReviewActivity.REQUEST_CODE);
@@ -257,8 +259,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         } catch (final JSONException e) {
             sessionManager.sessionError(e);
         }
-        final String metaMessage = answer? sessionManager.getNinchatSiteConfig().getVideoCallAcceptedText() :
-        sessionManager.getNinchatSiteConfig().getVideoCallRejectedText();
+        final String metaMessage = answer? sessionManager.ninchatState.getSiteConfig().getVideoCallAcceptedText() :
+                sessionManager.ninchatState.getSiteConfig().getVideoCallRejectedText();
         messageAdapter.addMetaMessage(messageAdapter.getLastMessageId(true) + "answer", Misc.center(metaMessage));
     }
 
@@ -269,8 +271,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (NinchatSessionManager.Broadcast.WEBRTC_MESSAGE.equals(action)) {
-                final String messageType = intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_TYPE);
+            if (Broadcast.WEBRTC_MESSAGE.equals(action)) {
+                final String messageType = intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_TYPE);
                 if (NinchatMessageTypes.CALL.equals(messageType)) {
                     final AlertDialog dialog = new AlertDialog.Builder(NinchatChatActivity.this, R.style.NinchatTheme_Dialog)
                             .setView(R.layout.dialog_video_call_consent)
@@ -278,12 +280,12 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                             .create();
                     dialog.show();
                     final TextView title = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_title);
-                    title.setText(sessionManager.getNinchatSiteConfig().getVideoChatTitleText());
+                    title.setText(sessionManager.ninchatState.getSiteConfig().getVideoChatTitleText());
                     final ImageView userImage = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_user_avatar);
-                    final NinchatUser user = sessionManager.getMember(intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_SENDER));
+                    final NinchatUser user = sessionManager.getMember(intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_SENDER));
                     String avatar = user.getAvatar();
                     if (TextUtils.isEmpty(avatar)) {
-                        avatar = sessionManager.getNinchatSiteConfig().getAgentAvatar();
+                        avatar = sessionManager.ninchatState.getSiteConfig().getAgentAvatar();
                     }
                     if (!TextUtils.isEmpty(avatar)) {
                         GlideApp.with(userImage.getContext())
@@ -294,9 +296,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                     final TextView userName = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_user_name);
                     userName.setText(user.getName());
                     final TextView description = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_description);
-                    description.setText(sessionManager.getNinchatSiteConfig().getVideoChatDescriptionText());
+                    description.setText(sessionManager.ninchatState.getSiteConfig().getVideoChatDescriptionText());
                     final Button accept = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_accept);
-                    accept.setText(sessionManager.getNinchatSiteConfig().getVideoCallAcceptText(
+                    accept.setText(sessionManager.ninchatState.getSiteConfig().getVideoCallAcceptText(
                     ));
                     accept.setOnClickListener(v -> {
                         dialog.dismiss();
@@ -307,15 +309,15 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                         }
                     });
                     final Button decline = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_decline);
-                    decline.setText(sessionManager.getNinchatSiteConfig().getVideoCallDeclineText());
+                    decline.setText(sessionManager.ninchatState.getSiteConfig().getVideoCallDeclineText());
                     decline.setOnClickListener(v -> {
                         sendPickUpAnswer(false);
                         dialog.dismiss();
                     });
                     hideKeyboard();
-                    messageAdapter.addMetaMessage(intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_ID), sessionManager.getNinchatSiteConfig().getVideoCallMetaMessageText(
+                    messageAdapter.addMetaMessage(intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_ID), sessionManager.ninchatState.getSiteConfig().getVideoCallMetaMessageText(
                     ));
-                } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE_CONTENT))) {
+                } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_CONTENT))) {
                     if (NinchatMessageTypes.HANG_UP.equals(messageType)) {
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
                     }
@@ -456,7 +458,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                         NinchatScopeHandler.getIOScope(),
                         sessionManager.getSession(),
                         sessionManager.getChannelId(),
-                        sessionManager.getUserId(),
+                        sessionManager.ninchatState.getUserId(),
                         true,
                         aLong -> null
                 );
@@ -466,7 +468,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                         NinchatScopeHandler.getIOScope(),
                         sessionManager.getSession(),
                         sessionManager.getChannelId(),
-                        sessionManager.getUserId(),
+                        sessionManager.ninchatState.getUserId(),
                         false,
                         aLong -> null
                 );
@@ -498,20 +500,20 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         videoContainer = findViewById(R.id.videoContainer);
         webRTCView = new NinchatWebRTCView(videoContainer);
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.registerReceiver(channelClosedReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_CLOSED));
-        localBroadcastManager.registerReceiver(transferReceiver, new IntentFilter(NinchatSessionManager.Broadcast.AUDIENCE_ENQUEUED));
-        localBroadcastManager.registerReceiver(webRTCMessageReceiver, new IntentFilter(NinchatSessionManager.Broadcast.WEBRTC_MESSAGE));
+        localBroadcastManager.registerReceiver(channelClosedReceiver, new IntentFilter(Broadcast.CHANNEL_CLOSED));
+        localBroadcastManager.registerReceiver(transferReceiver, new IntentFilter(Broadcast.AUDIENCE_ENQUEUED));
+        localBroadcastManager.registerReceiver(webRTCMessageReceiver, new IntentFilter(Broadcast.WEBRTC_MESSAGE));
         final RecyclerView messages = findViewById(R.id.message_list);
         messages.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         messages.setAdapter(messageAdapter);
         final EditText message = findViewById(R.id.message);
-        final String enterMessageText = sessionManager.getNinchatSiteConfig().getEnterMessageText();
+        final String enterMessageText = sessionManager.ninchatState.getSiteConfig().getEnterMessageText();
         message.setHint(enterMessageText);
         message.addTextChangedListener(textWatcher);
         final Button closeButton = findViewById(R.id.ninchat_chat_close);
-        final String closeText = sessionManager.getNinchatSiteConfig().getChatCloseText();
+        final String closeText = sessionManager.ninchatState.getSiteConfig().getChatCloseText();
         closeButton.setText(closeText);
-        final String sendButtonText = sessionManager.getNinchatSiteConfig().getSendButtonText(
+        final String sendButtonText = sessionManager.ninchatState.getSiteConfig().getSendButtonText(
         );
         final Button sendButton = findViewById(R.id.send_button);
         final RelativeLayout sendIcon = findViewById(R.id.send_button_icon);
@@ -521,14 +523,14 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             sendButton.setVisibility(View.GONE);
             sendIcon.setVisibility(View.VISIBLE);
         }
-        if (sessionManager.getNinchatSiteConfig().isAttachmentsEnabled()) {
+        if (sessionManager.ninchatState.getSiteConfig().isAttachmentsEnabled()) {
             findViewById(R.id.attachment).setVisibility(View.VISIBLE);
         }
-        if (sessionManager.getNinchatSiteConfig().isVideoEnabled() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
+        if (sessionManager.ninchatState.getSiteConfig().isVideoEnabled() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
             findViewById(R.id.video_call).setVisibility(View.VISIBLE);
         }
 
-        if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(NinchatSessionManager.Parameter.CHAT_IS_CLOSED)) {
+        if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Parameter.CHAT_IS_CLOSED)) {
             initializeClosedChat(messages);
         }
 
@@ -567,7 +569,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         }
 
         // Don't load first messages if chat is closed, we want to load the latest messages only
-        if (getIntent().getExtras() == null || !(getIntent().getExtras() != null && getIntent().getExtras().getBoolean(NinchatSessionManager.Parameter.CHAT_IS_CLOSED))) {
+        if (getIntent().getExtras() == null || !(getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Parameter.CHAT_IS_CLOSED))) {
 
             if (sessionManager != null) {
                 sessionManager.loadChannelHistory(messageAdapter.getLastMessageId(false));

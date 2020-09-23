@@ -104,7 +104,7 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                 String label = getLabel(currentItem);
                 String currentValue = getValue(currentItem);
                 updateRadioView(getOptionPosition(rootElement) == position);
-                mOption.setText(NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(label));
+                mOption.setText(NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getTranslation(label));
                 mOption.setOnClickListener(v -> onOptionClicked(currentItem, position));
             }
 

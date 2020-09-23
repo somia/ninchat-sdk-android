@@ -23,10 +23,10 @@ public class NinchatAvatar {
         // set avatar
         setAvatar(mContext, avatar, userAvatarText);
 
-        final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
+        final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         final boolean showAvatars = ninchatMessage.isRemoteMessage() ?
-                ninchatSessionManager.getNinchatSiteConfig().showAgentAvatar() :
-                ninchatSessionManager.getNinchatSiteConfig().showUserAvatar();
+                sessionManager.ninchatState.getSiteConfig().showAgentAvatar() :
+                sessionManager.ninchatState.getSiteConfig().showUserAvatar();
         if (showAvatars) {
             showAvatar(avatar);
         } else if (hideAvatar) {
@@ -50,10 +50,10 @@ public class NinchatAvatar {
         String avatarText = user != null ? user.getAvatar() : null;
 
         if (TextUtils.isEmpty(avatarText)) {
-            final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
+            final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
             avatarText = remoteMessage ?
-                    ninchatSessionManager.getNinchatSiteConfig().getAgentAvatar() :
-                    ninchatSessionManager.getNinchatSiteConfig().getUserAvatar();
+                    sessionManager.ninchatState.getSiteConfig().getAgentAvatar() :
+                    sessionManager.ninchatState.getSiteConfig().getUserAvatar();
         }
 
         return avatarText;

@@ -97,21 +97,21 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
 
             final TextView title = botViewItem.findViewById(R.id.ninchat_review_title);
             title.setGravity(Gravity.START);
-            title.setText(sessionManager.getNinchatSiteConfig().getThankYouTextText());
+            title.setText(sessionManager.ninchatState.getSiteConfig().getThankYouTextText());
 
 
             final TextView description = botViewItem.findViewById(R.id.ninchat_review_description);
             description.setVisibility(View.VISIBLE);
             description.setGravity(Gravity.START);
-            description.setText(sessionManager.getNinchatSiteConfig().getFeedbackTitleText());
+            description.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackTitleText());
             final TextView positive = botViewItem.findViewById(R.id.ninchat_review_positive);
-            positive.setText(sessionManager.getNinchatSiteConfig().getFeedbackPositiveText());
+            positive.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackPositiveText());
             final TextView neutral = botViewItem.findViewById(R.id.ninchat_review_neutral);
-            neutral.setText(sessionManager.getNinchatSiteConfig().getFeedbackNeutralText());
+            neutral.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackNeutralText());
             final TextView negative = botViewItem.findViewById(R.id.ninchat_review_negative);
-            negative.setText(sessionManager.getNinchatSiteConfig().getFeedbackNegativeText());
+            negative.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackNegativeText());
             final TextView skip = findViewById(R.id.ninchat_review_skip);
-            skip.setText(sessionManager.getNinchatSiteConfig().getFeedbackSkipText());
+            skip.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackSkipText());
         }, 1500);
     }
 
@@ -120,15 +120,15 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
         final View formViewItem = findViewById(R.id.review_rating_normal_view);
         formViewItem.setVisibility(View.VISIBLE);
         final TextView title = formViewItem.findViewById(R.id.ninchat_review_title);
-        title.setText(sessionManager.getNinchatSiteConfig().getFeedbackTitleText());
+        title.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackTitleText());
         final TextView positive = formViewItem.findViewById(R.id.ninchat_review_positive);
-        positive.setText(sessionManager.getNinchatSiteConfig().getFeedbackPositiveText());
+        positive.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackPositiveText());
         final TextView neutral = formViewItem.findViewById(R.id.ninchat_review_neutral);
-        neutral.setText(sessionManager.getNinchatSiteConfig().getFeedbackNeutralText());
+        neutral.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackNeutralText());
         final TextView negative = formViewItem.findViewById(R.id.ninchat_review_negative);
-        negative.setText(sessionManager.getNinchatSiteConfig().getFeedbackNegativeText());
+        negative.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackNegativeText());
         final TextView skip = findViewById(R.id.ninchat_review_skip);
-        skip.setText(sessionManager.getNinchatSiteConfig().getFeedbackSkipText());
+        skip.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackSkipText());
     }
 
     public final void onGoodClick(final View view) {

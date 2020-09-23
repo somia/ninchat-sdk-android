@@ -177,11 +177,11 @@ public final class NinchatSession {
      * the form "app-name/version" or "app-name/version (more; details)".
      */
     public void setAppDetails(final String appDetails) {
-        NinchatSessionManager.getInstance().setAppDetails(appDetails);
+        sessionManager.ninchatState.setAppDetails(appDetails);
     }
 
     public void setServerAddress(final String serverAddress) {
-        NinchatSessionManager.getInstance().setServerAddress(serverAddress);
+        sessionManager.ninchatState.setServerAddress(serverAddress);
     }
 
     public void setSiteSecret(final String siteSecret) {
@@ -189,7 +189,7 @@ public final class NinchatSession {
     }
 
     public void setAudienceMetadata(final Props audienceMetadata) {
-        sessionManager.setAudienceMetadata(audienceMetadata);
+        sessionManager.ninchatState.setAudienceMetadata(audienceMetadata);
     }
 
     public Session getSession() {

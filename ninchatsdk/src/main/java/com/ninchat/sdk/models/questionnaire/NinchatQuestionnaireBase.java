@@ -126,7 +126,7 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
                 NinchatScopeHandler.getIOScope(),
                 NinchatSessionManager.getInstance().getSession(),
                 queueId,
-                NinchatSessionManager.getInstance().getAudienceMetadata(),
+                NinchatSessionManager.getInstance().ninchatState.getAudienceMetadata(),
                 aLong -> null
         );
         // wait for register to complete. Should get event from session manager
@@ -230,10 +230,10 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
 
     private void setAudienceMetadata(JSONObject answers) {
         // no audience meta data is set
-        if (NinchatSessionManager.getInstance().getAudienceMetadata() == null) {
-            NinchatSessionManager.getInstance().setAudienceMetadata(new Props());
+        if (NinchatSessionManager.getInstance().ninchatState.getAudienceMetadata() == null) {
+            NinchatSessionManager.getInstance().ninchatState.setAudienceMetadata(new Props());
         }
-        NinchatSessionManager.getInstance().getAudienceMetadata().setObject("pre_answers", getPreAnswers(answers));
+        NinchatSessionManager.getInstance().ninchatState.getAudienceMetadata().setObject("pre_answers", getPreAnswers(answers));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

@@ -57,7 +57,7 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
         if (TextUtils.isEmpty(text)) {
             return;
         }
-        mCheckbox.setText( NinchatSessionManager.getInstance().getNinchatSiteConfig().getTranslation(text));
+        mCheckbox.setText( NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getTranslation(text));
     }
 
     private void setChecked(JSONObject item) {

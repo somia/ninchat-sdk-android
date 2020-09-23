@@ -20,7 +20,9 @@ import android.widget.TextView;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
+import com.ninchat.sdk.utils.misc.Broadcast;
 import com.ninchat.sdk.utils.misc.Misc;
+import com.ninchat.sdk.utils.misc.Parameter;
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
 /**
@@ -45,7 +47,7 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NinchatChatActivity.REQUEST_CODE) {
             // check data is null or not. Can through exception
-            final String queueId = data == null ? null : data.getStringExtra(NinchatSessionManager.Parameter.QUEUE_ID);
+            final String queueId = data == null ? null : data.getStringExtra(Parameter.QUEUE_ID);
             if (queueId == null) {
                 setResult(RESULT_OK, data);
                 finish();
@@ -60,11 +62,11 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (NinchatSessionManager.Broadcast.CHANNEL_JOINED.equals(action)) {
+            if (Broadcast.CHANNEL_JOINED.equals(action)) {
                 Intent i = new Intent(NinchatQueueActivity.this, NinchatChatActivity.class);
 
-                if (intent.getExtras() != null && intent.getExtras().getBoolean(NinchatSessionManager.Parameter.CHAT_IS_CLOSED)) {
-                    i.putExtra(NinchatSessionManager.Parameter.CHAT_IS_CLOSED, intent.getExtras().getBoolean(NinchatSessionManager.Parameter.CHAT_IS_CLOSED));
+                if (intent.getExtras() != null && intent.getExtras().getBoolean(Parameter.CHAT_IS_CLOSED)) {
+                    i.putExtra(Parameter.CHAT_IS_CLOSED, intent.getExtras().getBoolean(Parameter.CHAT_IS_CLOSED));
                 }
 
                 startActivityForResult(i, NinchatChatActivity.REQUEST_CODE);
@@ -76,7 +78,7 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (NinchatSessionManager.Broadcast.QUEUE_UPDATED.equals(action)) {
+            if (Broadcast.QUEUE_UPDATED.equals(action)) {
                 updateQueueStatus();
             }
         }
@@ -89,7 +91,7 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         final TextView message = findViewById(R.id.ninchat_queue_activity_queue_message);
         final Button closeButton = findViewById(R.id.ninchat_queue_activity_close_button);
 
-        if (sessionManager != null && sessionManager.hasChannel()) {
+        if (sessionManager != null && sessionManager.ninchatSessionHolder.hasChannel()) {
             queueStatus.setVisibility(View.INVISIBLE);
         } else {
             queueStatus.setVisibility(View.VISIBLE);
@@ -127,17 +129,17 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         final Button closeButton = findViewById(R.id.ninchat_queue_activity_close_button);
 
         if (message != null) {
-            final String inQueueText = sessionManager.
-                    getNinchatSiteConfig().getInQueueMessageText();
+            final String inQueueText = sessionManager.ninchatState.getSiteConfig()
+                    .getInQueueMessageText();
             message.setText(Misc.toSpanned(inQueueText));
         }
 
         if (closeButton != null) {
-            final String closeText = sessionManager.getNinchatSiteConfig().getChatCloseText();
+            final String closeText = sessionManager.ninchatState.getSiteConfig().getChatCloseText();
             closeButton.setText(closeText);
         }
 
-        if (!sessionManager.hasChannel()) {
+        if (!sessionManager.ninchatSessionHolder.hasChannel()) {
             if (message != null) {
                 message.setVisibility(View.VISIBLE);
             }
@@ -151,9 +153,9 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
                 closeButton.setVisibility(View.INVISIBLE);
         }
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
-        broadcastManager.registerReceiver(channelJoinedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.CHANNEL_JOINED));
-        broadcastManager.registerReceiver(channelUpdatedBroadcastReceiver, new IntentFilter(NinchatSessionManager.Broadcast.QUEUE_UPDATED));
-        NinchatSessionManager.joinQueue(queueId);
+        broadcastManager.registerReceiver(channelJoinedBroadcastReceiver, new IntentFilter(Broadcast.CHANNEL_JOINED));
+        broadcastManager.registerReceiver(channelUpdatedBroadcastReceiver, new IntentFilter(Broadcast.QUEUE_UPDATED));
+        NinchatSessionManager.getInstance().joinQueue(queueId);
     }
 
     @Override
