@@ -2,6 +2,7 @@ package com.ninchat.sdk
 
 import android.app.Activity
 import com.ninchat.sdk.NinchatSessionManager.init
+import com.ninchat.sdk.helper.sessionmanager.SessionManagerHelper
 import com.ninchat.sdk.models.NinchatFile
 import org.junit.Assert
 import org.junit.Before
@@ -19,44 +20,44 @@ class NinchatSessionManagerTest {
 
     @Test
     fun `should get empty app details`() {
-        Assert.assertNull(ninchatSessionManager.appDetails)
+        Assert.assertNull(ninchatSessionManager.ninchatState.appDetails)
     }
 
     @Test
     fun `should get app details`() {
         val appDetails = "app-details"
-        ninchatSessionManager.appDetails = appDetails
-        Assert.assertEquals(appDetails, ninchatSessionManager.appDetails)
+        ninchatSessionManager.ninchatState.appDetails = appDetails
+        Assert.assertEquals(appDetails, ninchatSessionManager.ninchatState.appDetails)
     }
 
     @Test
     fun `should get default user agent`() {
-        Assert.assertEquals(NinchatSessionManager.DEFAULT_USER_AGENT, ninchatSessionManager.userAgent)
+        Assert.assertEquals(NinchatSessionManager.getInstance().ninchatState.DEFAULT_USER_AGENT, ninchatSessionManager.ninchatState.userAgent())
     }
 
     @Test
     fun `should get user agent from app details`() {
-        val defaultUserAgent = NinchatSessionManager.DEFAULT_USER_AGENT
-        ninchatSessionManager.appDetails = "app-details"
-        Assert.assertEquals("$defaultUserAgent app-details", ninchatSessionManager.userAgent)
+        val defaultUserAgent = NinchatSessionManager.getInstance().ninchatState.DEFAULT_USER_AGENT
+        ninchatSessionManager.ninchatState.appDetails = "app-details"
+        Assert.assertEquals("$defaultUserAgent app-details", ninchatSessionManager.ninchatState.userAgent())
     }
 
     @Test
     fun `should get default server address`() {
         val defaultServerAddress = "api.ninchat.com"
-        Assert.assertEquals(defaultServerAddress, ninchatSessionManager.serverAddress)
+        Assert.assertEquals(defaultServerAddress, ninchatSessionManager.ninchatState.serverAddress)
     }
 
     @Test
     fun `should get expected server address`() {
         val serverAddress = "test-api.ninchat.com"
-        ninchatSessionManager.serverAddress = serverAddress
-        Assert.assertEquals(serverAddress, ninchatSessionManager.serverAddress)
+        ninchatSessionManager.ninchatState.serverAddress = serverAddress
+        Assert.assertEquals(serverAddress, ninchatSessionManager.ninchatState.serverAddress)
     }
 
     @Test
     fun `should return null audience metadata`() {
-        Assert.assertNull(ninchatSessionManager.audienceMetadata)
+        Assert.assertNull(ninchatSessionManager.ninchatState.audienceMetadata)
     }
 
     @Test
@@ -72,15 +73,15 @@ class NinchatSessionManagerTest {
 
     @Test
     fun `should not be able to find a file with given fileId from files map`() {
-        Assert.assertNull(ninchatSessionManager.getFile("testFileId"))
+        Assert.assertNull(ninchatSessionManager.ninchatState.getFile("testFileId"))
     }
 
     @Test
     fun `should not be able to find file with given fileId after setting it in the files map`() {
         val ninchatFile = mock(NinchatFile::class.java)
-        ninchatSessionManager.files["testFileId"] = ninchatFile
-        Assert.assertNotNull(ninchatSessionManager.getFile("testFileId"))
-        Assert.assertNull(ninchatSessionManager.getFile("testFileIdElse"))
+        ninchatSessionManager.ninchatState.files["testFileId"] = ninchatFile
+        Assert.assertNotNull(ninchatSessionManager.ninchatState.getFile("testFileId"))
+        Assert.assertNull(ninchatSessionManager.ninchatState.getFile("testFileIdElse"))
     }
 
     @Test

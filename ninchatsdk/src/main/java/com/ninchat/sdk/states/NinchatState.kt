@@ -9,7 +9,7 @@ import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder
 import com.ninchat.sdk.utils.misc.Misc
 
 class NinchatState {
-    private val DEFAULT_USER_AGENT = "ninchat-sdk-android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.MANUFACTURER} ${Build.MODEL})"
+    val DEFAULT_USER_AGENT = "ninchat-sdk-android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.MANUFACTURER} ${Build.MODEL})"
 
     var userId: String? = null
     var channelId: String? = null

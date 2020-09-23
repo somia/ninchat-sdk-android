@@ -198,9 +198,6 @@ public final class NinchatSessionManager {
         return ninchatQueueListAdapter;
     }
 
-    public boolean hasQueues() {
-        return ninchatState.getQueues().size() > 0;
-    }
 
     public NinchatUser getMember(final String userId) {
         if (ninchatState.getUserId() != null && ninchatState.getUserId().equals(userId)) {
