@@ -8,13 +8,14 @@ import android.text.Spanned
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.client.Objects
 import com.ninchat.client.Props
+import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.adapters.NinchatMessageAdapter
+import com.ninchat.sdk.activities.NinchatActivity
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getChannelIdFromUserChannel
+import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getOpenQueueList
 import com.ninchat.sdk.models.NinchatMessage
 import com.ninchat.sdk.models.NinchatQueue
-import com.ninchat.sdk.models.NinchatUser
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeChannel
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience
@@ -22,7 +23,6 @@ import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Misc.Companion.toSpanned
 import com.ninchat.sdk.utils.misc.Parameter
-import com.ninchat.sdk.utils.propsvisitor.NinchatPropVisitor
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler.getIOScope
 import kotlinx.coroutines.launch
 import java.util.*
@@ -257,6 +257,94 @@ class SessionManagerHelper {
                 }
             }
         }
+
+        @JvmStatic
+        fun parseQueues(params: Props?) {
+            val sessionManager = NinchatSessionManager.getInstance()
+            sessionManager?.let { currentSession ->
+                currentSession.messageAdapter?.clear()
+                getOpenQueueList(params, currentSession.ninchatState?.siteConfig?.getAudienceQueues()).map {
+                    currentSession.ninchatState?.queues?.add(it)
+                    currentSession.ninchatQueueListAdapter?.addQueue(it)
+                }
+                currentSession.contextWeakReference?.get()?.let { mContext ->
+                    if (currentSession.ninchatState?.queues?.size ?: 0 >= 0) {
+                        LocalBroadcastManager.getInstance(mContext).sendBroadcast(Intent(NinchatSession.Broadcast.QUEUES_UPDATED))
+                    }
+                }
+                currentSession.activityWeakReference?.get()?.let { mActivity ->
+                    mActivity.startActivityForResult(NinchatActivity.getLaunchIntent(mActivity, currentSession.ninchatState?.queueId), currentSession.ninchatState?.requestCode
+                            ?: 0)
+                }
+                currentSession.eventListenerWeakReference?.get()?.onSessionStarted()
+            }
+        }
+
+        @JvmStatic
+        fun memberUpdated(params: Props) {
+            val sessionManager = NinchatSessionManager.getInstance()
+            sessionManager?.let { ninchatSessionManager ->
+                val sender = try {
+                    params.getString("user_id")
+                } catch (e: Exception) {
+                    return
+                }
+                if (sender == ninchatSessionManager.ninchatState?.userId) {
+                    // Do not update myself
+                    return
+                }
+                val memberAttrs = try {
+                    params.getObject("member_attrs")
+                } catch (e: Exception) {
+                    null
+                }
+                val addWritingMessage = try {
+                    memberAttrs?.getBool("writing") ?: false
+                } catch (e: Exception) {
+                    false
+                }
+                if (addWritingMessage) {
+                    ninchatSessionManager.messageAdapter?.addWriting(sender)
+                } else {
+                    ninchatSessionManager.messageAdapter?.removeWritingMessage(sender)
+                }
+            }
+        }
+
+        @JvmStatic
+        fun channelUpdated(params: Props) {
+            val sessionManager = NinchatSessionManager.getInstance()
+            sessionManager?.let { ninchatSessionManager ->
+                try {
+                    if (params.getString("channel_id") != ninchatSessionManager.ninchatState?.channelId) {
+                        return
+                    }
+                } catch (e: java.lang.Exception) {
+                    return
+                }
+                val channelAttributes = try {
+                    params.getObject("channel_attrs")
+                } catch (e: java.lang.Exception) {
+                    return
+                }
+                val closed = try {
+                    channelAttributes.getBool("closed")
+                } catch (e: java.lang.Exception) {
+                    return
+                }
+                val suspended = try {
+                    channelAttributes.getBool("suspended")
+                } catch (e: java.lang.Exception) {
+                    return
+                }
+                ninchatSessionManager.contextWeakReference?.get()?.let { mContext ->
+                    if (closed || suspended) {
+                        LocalBroadcastManager.getInstance(mContext).sendBroadcast(Intent(Broadcast.CHANNEL_CLOSED))
+                    }
+                }
+            }
+        }
+
 
     }
 }

@@ -223,7 +223,7 @@ class NinchatSiteConfig {
         if (queueStatus.contains("audienceQueue.queue_position"))
             queueStatus = replacePlaceholder(queueStatus, "$position")
 
-        return queueStatus ?: ""
+        return queueStatus
     }
 
 

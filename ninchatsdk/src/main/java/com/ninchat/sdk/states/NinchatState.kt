@@ -4,10 +4,7 @@ import android.os.Build
 import com.ninchat.client.Props
 import com.ninchat.sdk.BuildConfig
 import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig
-import com.ninchat.sdk.models.NinchatFile
-import com.ninchat.sdk.models.NinchatSessionCredentials
-import com.ninchat.sdk.models.NinchatUser
-import com.ninchat.sdk.models.NinchatWebRTCServerInfo
+import com.ninchat.sdk.models.*
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder
 import com.ninchat.sdk.utils.misc.Misc
 
@@ -41,7 +38,11 @@ class NinchatState {
     var appDetails: String? = null
     var serverAddress: String = "api.ninchat.com"
         get() {
-            return field ?: "api.ninchat.com"
+            return if (field.isBlank()) {
+                "api.ninchat.com"
+            } else {
+                field
+            }
         }
 
     var actionId = -1L
@@ -81,6 +82,8 @@ class NinchatState {
         members.put(userId, ninchatUser)
     }
 
+    var queues = arrayListOf<NinchatQueue>()
+
     fun dispose() {
         userId = null
         channelId = null
@@ -101,5 +104,6 @@ class NinchatState {
         turnServers.clear()
         files.clear()
         members.clear()
+        queues.clear()
     }
 }

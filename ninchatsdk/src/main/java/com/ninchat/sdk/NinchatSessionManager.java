@@ -57,12 +57,11 @@ public final class NinchatSessionManager {
     protected static NinchatSessionManager instance;
     protected static final String TAG = NinchatSessionManager.class.getSimpleName();
     public WeakReference<Context> contextWeakReference;
-    protected WeakReference<NinchatSDKEventListener> eventListenerWeakReference;
-    protected WeakReference<NinchatSDKLogListener> logListenerWeakReference;
-    protected WeakReference<Activity> activityWeakReference;
+    public WeakReference<Activity> activityWeakReference;
+    public WeakReference<NinchatSDKEventListener> eventListenerWeakReference;
+    public WeakReference<NinchatSDKLogListener> logListenerWeakReference;
 
-    protected List<NinchatQueue> queues;
-    protected NinchatQueueListAdapter ninchatQueueListAdapter;
+    public NinchatQueueListAdapter ninchatQueueListAdapter;
     protected NinchatMessageAdapter messageAdapter;
 
     @Nullable
@@ -107,7 +106,6 @@ public final class NinchatSessionManager {
 
         ninchatState.setConfigurationKey(configurationKey);
         ninchatState.setPreferredEnvironments(preferredEnvironments);
-        this.queues = new ArrayList<>();
         this.messageAdapter = new NinchatMessageAdapter();
         this.ninchatQueueListAdapter = null;
         this.activityWeakReference = new WeakReference(null);
@@ -195,13 +193,13 @@ public final class NinchatSessionManager {
 
     public NinchatQueueListAdapter getNinchatQueueListAdapter(final Activity activity) {
         if (ninchatQueueListAdapter == null) {
-            ninchatQueueListAdapter = new NinchatQueueListAdapter(activity, queues);
+            ninchatQueueListAdapter = new NinchatQueueListAdapter(activity, ninchatState.getQueues());
         }
         return ninchatQueueListAdapter;
     }
 
     public boolean hasQueues() {
-        return queues.size() > 0;
+        return ninchatState.getQueues().size() > 0;
     }
 
     public NinchatUser getMember(final String userId) {
@@ -231,33 +229,10 @@ public final class NinchatSessionManager {
         }
     }
 
-    public void parseQueues(final Props params) {
-        if (ninchatQueueListAdapter != null) {
-            ninchatQueueListAdapter.clear();
-        }
-        queues = getOpenQueueList(params, ninchatState.getSiteConfig().getAudienceQueues());
-        for (NinchatQueue currentQueue : queues) {
-            if (ninchatQueueListAdapter != null) {
-                ninchatQueueListAdapter.addQueue(currentQueue);
-            }
-        }
-        // todo(pallab) check and update missing in queue status if necessary
-        final Context context = contextWeakReference.get();
-        if (context != null && hasQueues()) {
-            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(NinchatSession.Broadcast.QUEUES_UPDATED));
-        }
-        final Activity activity = activityWeakReference.get();
-        if (activity != null) {
-            activity.startActivityForResult(NinchatActivity.getLaunchIntent(activity, ninchatState.getQueueId()), ninchatState.getRequestCode());
-        }
-        final NinchatSDKEventListener listener = eventListenerWeakReference.get();
-        if (listener != null) {
-            listener.onSessionStarted();
-        }
-    }
+
 
     public NinchatQueue getQueue(final String queueId) {
-        for (NinchatQueue queue : queues) {
+        for (NinchatQueue queue : ninchatState.getQueues()) {
             if (queue.getId().equals(queueId)) {
                 return queue;
             }
@@ -305,38 +280,6 @@ public final class NinchatSessionManager {
             ninchatSessionHolder.getCurrentSession().send(load, null);
         } catch (final Exception e) {
             // Ignore
-        }
-    }
-
-    public void channelUpdated(final Props params) {
-        try {
-            if (!params.getString("channel_id").equals(ninchatState.getChannelId())) {
-                return;
-            }
-        } catch (final Exception e) {
-            return;
-        }
-        Props channelAttributes;
-        try {
-            channelAttributes = params.getObject("channel_attrs");
-        } catch (final Exception e) {
-            return;
-        }
-        boolean closed;
-        try {
-            closed = channelAttributes.getBool("closed");
-        } catch (final Exception e) {
-            return;
-        }
-        boolean suspended;
-        try {
-            suspended = channelAttributes.getBool("suspended");
-        } catch (final Exception e) {
-            return;
-        }
-        final Context context = contextWeakReference.get();
-        if (closed || suspended) {
-            LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.CHANNEL_CLOSED));
         }
     }
 
@@ -452,38 +395,6 @@ public final class NinchatSessionManager {
             } catch (final JSONException e) {
                 // Ignore
             }
-        }
-    }
-
-    public void memberUpdated(final Props params) {
-        String sender;
-        try {
-            sender = params.getString("user_id");
-        } catch (final Exception e) {
-            return;
-        }
-        if (sender.equals(ninchatState.getUserId())) {
-            // Do not update myself
-            return;
-        }
-        Props memberAttrs = null;
-        try {
-            memberAttrs = params.getObject("member_attrs");
-        } catch (final Exception e) {
-            // Ignore
-        }
-        boolean addWritingMessage = false;
-        try {
-            addWritingMessage = memberAttrs.getBool("writing");
-        } catch (final Exception e) {
-            // Ignore
-        }
-        // null check
-        if (messageAdapter == null) return;
-        if (addWritingMessage) {
-            messageAdapter.addWriting(sender);
-        } else {
-            messageAdapter.removeWritingMessage(sender);
         }
     }
 
