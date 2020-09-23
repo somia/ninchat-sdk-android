@@ -145,7 +145,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         NinchatSendMessage.executeAsync(
                 NinchatScopeHandler.getIOScope(),
                 NinchatSessionManager.getInstance().getSession(),
-                NinchatSessionManager.getInstance().getChannelId(),
+                NinchatSessionManager.getInstance().ninchatState.getChannelId(),
                 NinchatMessageTypes.CALL,
                 "{}",
                 aLong -> null
@@ -256,10 +256,10 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         try {
             initializeAudioManager();
             final List<PeerConnection.IceServer> servers = new ArrayList<>();
-            for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().getStunServers()) {
+            for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().ninchatState.getStunServers()) {
                 servers.add(PeerConnection.IceServer.builder(serverInfo.getUrl()).setUsername(serverInfo.getUsername()).setPassword(serverInfo.getCredential()).createIceServer());
             }
-            for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().getTurnServers()) {
+            for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().ninchatState.getTurnServers()) {
                 servers.add(PeerConnection.IceServer.builder(serverInfo.getUrl()).setUsername(serverInfo.getUsername()).setPassword(serverInfo.getCredential()).createIceServer());
             }
             final PeerConnection.RTCConfiguration configuration = new PeerConnection.RTCConfiguration(servers);
@@ -421,7 +421,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             NinchatSendMessage.executeAsync(
                     NinchatScopeHandler.getIOScope(),
                     NinchatSessionManager.getInstance().getSession(),
-                    NinchatSessionManager.getInstance().getChannelId(),
+                    NinchatSessionManager.getInstance().ninchatState.getChannelId(),
                     NinchatMessageTypes.ICE_CANDIDATE,
                     data.toString(),
                     aLong -> null
@@ -497,7 +497,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             NinchatSendMessage.executeAsync(
                     NinchatScopeHandler.getIOScope(),
                     NinchatSessionManager.getInstance().getSession(),
-                    NinchatSessionManager.getInstance().getChannelId(),
+                    NinchatSessionManager.getInstance().ninchatState.getChannelId(),
                     messageType,
                     data.toString(),
                     aLong -> null
@@ -550,7 +550,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                 NinchatSendMessage.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         NinchatSessionManager.getInstance().getSession(),
-                        NinchatSessionManager.getInstance().getChannelId(),
+                        NinchatSessionManager.getInstance().ninchatState.getChannelId(),
                         NinchatMessageTypes.HANG_UP,
                         "{}",
                         aLong -> null

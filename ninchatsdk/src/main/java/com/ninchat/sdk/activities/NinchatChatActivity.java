@@ -91,11 +91,13 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == NinchatReviewActivity.REQUEST_CODE) {
             // coming from ninchat review
-            if (sessionManager != null && !sessionManager.getNinchatQuestionnaireHolder().hasPostAudienceQuestionnaire()) {
+            if (sessionManager != null &&
+                    sessionManager.ninchatState.getNinchatQuestionnaire() != null &&
+                    !sessionManager.ninchatState.getNinchatQuestionnaire().hasPostAudienceQuestionnaire()) {
                 NinchatPartChannel.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         sessionManager.getSession(),
-                        sessionManager.getChannelId(),
+                        sessionManager.ninchatState.getChannelId(),
                         aLong -> null
                 );
                 // delete the user if current user is a guest
@@ -120,7 +122,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 NinchatSendFile.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         sessionManager.getSession(),
-                        sessionManager.getChannelId(),
+                        sessionManager.ninchatState.getChannelId(),
                         fileName,
                         buffer,
                         aLong -> null
@@ -191,7 +193,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 NinchatPartChannel.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         sessionManager.getSession(),
-                        sessionManager.getChannelId(),
+                        sessionManager.ninchatState.getChannelId(),
                         aLong -> null
                 );
                 quit(intent);
@@ -251,7 +253,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             NinchatSendMessage.executeAsync(
                     NinchatScopeHandler.getIOScope(),
                     sessionManager.getSession(),
-                    sessionManager.getChannelId(),
+                    sessionManager.ninchatState.getChannelId(),
                     NinchatMessageTypes.PICK_UP,
                     data.toString(),
                     aLong -> null
@@ -259,7 +261,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         } catch (final JSONException e) {
             sessionManager.sessionError(e);
         }
-        final String metaMessage = answer? sessionManager.ninchatState.getSiteConfig().getVideoCallAcceptedText() :
+        final String metaMessage = answer ? sessionManager.ninchatState.getSiteConfig().getVideoCallAcceptedText() :
                 sessionManager.ninchatState.getSiteConfig().getVideoCallRejectedText();
         messageAdapter.addMetaMessage(messageAdapter.getLastMessageId(true) + "answer", Misc.center(metaMessage));
     }
@@ -427,7 +429,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             NinchatSendMessage.executeAsync(
                     NinchatScopeHandler.getIOScope(),
                     sessionManager.getSession(),
-                    sessionManager.getChannelId(),
+                    sessionManager.ninchatState.getChannelId(),
                     NinchatMessageTypes.TEXT,
                     data.toString(),
                     aLong -> null
@@ -457,7 +459,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 NinchatUpdateMember.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         sessionManager.getSession(),
-                        sessionManager.getChannelId(),
+                        sessionManager.ninchatState.getChannelId(),
                         sessionManager.ninchatState.getUserId(),
                         true,
                         aLong -> null
@@ -467,7 +469,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 NinchatUpdateMember.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         sessionManager.getSession(),
-                        sessionManager.getChannelId(),
+                        sessionManager.ninchatState.getChannelId(),
                         sessionManager.ninchatState.getUserId(),
                         false,
                         aLong -> null

@@ -2,6 +2,7 @@ package com.ninchat.sdk.helper.propsparser
 
 import com.ninchat.client.Props
 import com.ninchat.sdk.models.NinchatQueue
+import com.ninchat.sdk.models.NinchatUser
 import com.ninchat.sdk.utils.propsvisitor.NinchatPropVisitor
 
 class NinchatPropsParser {
@@ -146,6 +147,26 @@ class NinchatPropsParser {
                 ninchatQueue.isClosed = queueClosed
                 ninchatQueue
             }.map { it.value }
+        }
+
+        @JvmStatic
+        fun getUsersFromChannel(props: Props?): List<Pair<String, NinchatUser>> {
+            val parser = NinchatPropVisitor()
+            val channelMembers = try {
+                props?.getObject("channel_members")
+            } catch (_: Exception) {
+                null
+            }
+            channelMembers?.accept(parser)
+            // only get list of queues that are open
+            return parser.properties.map {
+                val userAttr = (it.value as Props).getObject("user_attrs")
+                val displayName = userAttr?.getString("name")
+                val realName = userAttr?.getString("realname")
+                val avatar = userAttr?.getString("iconurl")
+                val guest = userAttr?.getBool("guest") ?: false
+                Pair(it.key, NinchatUser(displayName, realName, avatar, guest))
+            }
         }
 
     }

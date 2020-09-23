@@ -22,6 +22,7 @@ import org.greenrobot.eventbus.EventBus
 
 class NinchatSessionHolder(ninchatState: NinchatState) {
     private val ninchatState: NinchatState = ninchatState
+    var currentSession: Session? = null
 
     companion object {
         val TAG = "NinchatSessionHolder"
@@ -53,6 +54,7 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
     }
 
     fun onNewSession(session: Session, ninchatSiteConfig: NinchatSiteConfig, listener: NinchatSDKEventListener?) {
+        currentSession = session
         session.setOnClose { Log.v(TAG, "onClose") }
         session.setOnConnState { state -> Log.v(TAG, "onConnState: $state") }
         session.setOnLog { msg -> Log.v(TAG, "onLog: $msg") }
@@ -119,6 +121,10 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
 
     fun hasChannel(): Boolean {
         return ninchatState.currentSessionState and (1 shl NinchatQuestionnaireTypeUtil.HAS_CHANNEL) != 0
+    }
+
+    fun dispose() {
+        // todo ( pallab )
     }
 
 }

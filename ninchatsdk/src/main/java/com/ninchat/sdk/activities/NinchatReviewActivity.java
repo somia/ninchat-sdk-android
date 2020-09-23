@@ -157,7 +157,7 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
                 NinchatSendRatings.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         sessionManager.getSession(),
-                        sessionManager.getChannelId(),
+                        sessionManager.ninchatState.getChannelId(),
                         data.toString(2),
                         aLong -> null
                 );
@@ -173,14 +173,17 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
     private boolean isConversationLikeQuestionnaire() {
         NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaireHolder();
-        return questionnaires.conversationLikePostAudienceQuestionnaire();
+                .ninchatState.getNinchatQuestionnaire();
+        return questionnaires != null ? questionnaires.conversationLikePostAudienceQuestionnaire() : false;
     }
 
     private Pair<String, String> getBotDetails() {
         NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaireHolder();
+                .ninchatState.getNinchatQuestionnaire();
+        if (questionnaires == null) {
+            return Pair.create("", "");
+        }
         return Pair.create(questionnaires.getBotQuestionnaireName(), questionnaires.getBotQuestionnaireAvatar());
     }
 

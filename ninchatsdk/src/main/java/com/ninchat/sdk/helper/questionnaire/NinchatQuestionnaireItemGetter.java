@@ -245,18 +245,18 @@ public class NinchatQuestionnaireItemGetter {
     public static String getAudienceRegisteredText(int questionnaireType) {
         NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaireHolder();
+                .ninchatState.getNinchatQuestionnaire();
 
-        return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
+        return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE && questionnaires != null ?
                 questionnaires.getAudienceRegisteredText() : "";
     }
 
     public static String getAudienceRegisteredClosedText(int questionnaireType) {
         NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaireHolder();
+                .ninchatState.getNinchatQuestionnaire();
 
-        return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
+        return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE && questionnaires != null ?
                 questionnaires.getAudienceRegisteredClosedText() : "";
     }
 

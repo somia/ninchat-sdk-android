@@ -69,9 +69,11 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
         this.questionnaireType = questionnaireType;
         NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaireHolder();
-        mQuestionnaireList = questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
-                questionnaires.getNinchatPreAudienceQuestionnaire() : questionnaires.getNinchatPostAudienceQuestionnaire();
+                .ninchatState.getNinchatQuestionnaire();
+        if (questionnaires != null) {
+            mQuestionnaireList = questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
+                    questionnaires.getNinchatPreAudienceQuestionnaire() : questionnaires.getNinchatPostAudienceQuestionnaire();
+        }
     }
 
     public void setAdapter(Context mContext) {
@@ -146,7 +148,7 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
             NinchatSendPostAudienceQuestionnaire.executeAsync(
                     NinchatScopeHandler.getIOScope(),
                     NinchatSessionManager.getInstance().getSession(),
-                    NinchatSessionManager.getInstance().getChannelId(),
+                    NinchatSessionManager.getInstance().ninchatState.getChannelId(),
                     data.toString(2),
                     aLong -> null
             );
@@ -271,7 +273,7 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
             NinchatPartChannel.executeAsync(
                     NinchatScopeHandler.getIOScope(),
                     NinchatSessionManager.getInstance().getSession(),
-                    NinchatSessionManager.getInstance().getChannelId(),
+                    NinchatSessionManager.getInstance().ninchatState.getChannelId(),
                     aLong -> null
             );
             // delete the user if current user is a guest

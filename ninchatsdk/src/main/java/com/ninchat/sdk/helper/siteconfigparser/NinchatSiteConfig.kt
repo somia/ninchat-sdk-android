@@ -103,7 +103,7 @@ class NinchatSiteConfig {
             getString("noQueuesText") ?: "noQueuesText"
 
     fun getCloseWindowText(): String =
-            getTranslation("Close window") ?: "Close window"
+            getTranslation("Close window")
 
     fun getUserName(): String? =
             getString("userName")
@@ -115,7 +115,7 @@ class NinchatSiteConfig {
             getString("sendButtonText")
 
     fun getSubmitButtonText(): String =
-            getTranslation("Submit") ?: "Submit"
+            getTranslation("Submit")
 
     fun isAttachmentsEnabled(): Boolean =
             getBoolean("supportFiles") ?: false
@@ -136,43 +136,40 @@ class NinchatSiteConfig {
             getString("userAvatar")
 
     fun getConversationEndedText(): String =
-            getTranslation("Conversation ended") ?: "Conversation ended"
+            getTranslation("Conversation ended")
 
     fun getChatCloseText(): String =
-            getTranslation("Close chat") ?: "Close chat"
+            getTranslation("Close chat")
 
     fun getChatCloseConfirmationText(): String =
             getString("closeConfirmText") ?: "closeConfirmText"
 
     fun getContinueChatText(): String =
-            getTranslation("Continue chat") ?: "Continue chat"
+            getTranslation("Continue chat")
 
     fun getEnterMessageText(): String =
-            getTranslation("Enter your message") ?: "Enter your message"
+            getTranslation("Enter your message")
 
     fun getVideoChatTitleText(): String =
             getTranslation("You are invited to a video chat")
-                    ?: "You are invited to a video chat"
 
     fun getVideoChatDescriptionText(): String =
             getTranslation("wants to video chat with you")
-                    ?: "wants to video chat with you"
 
     fun getVideoCallAcceptText(): String =
-            getTranslation("Accept") ?: "Accept"
+            getTranslation("Accept")
 
     fun getVideoCallDeclineText(): String =
-            getTranslation("Decline") ?: "Decline"
+            getTranslation("Decline")
 
     fun getVideoCallMetaMessageText(): String =
             getTranslation("You are invited to a video chat")
-                    ?: "You are invited to a video chat"
 
     fun getVideoCallAcceptedText(): String =
-            getTranslation("Video chat answered") ?: "Video chat answered"
+            getTranslation("Video chat answered")
 
     fun getVideoCallRejectedText(): String =
-            getTranslation("Video chat declined") ?: "Video chat declined"
+            getTranslation("Video chat declined")
 
     fun getMOTDText(): String =
             getString("motd") ?: "motd"
@@ -186,23 +183,21 @@ class NinchatSiteConfig {
 
     fun getFeedbackTitleText(): String =
             getTranslation("How was our customer service?")
-                    ?: "How was our customer service?"
 
     fun getThankYouTextText(): String =
             getTranslation("Thank you for the conversation!")
-                    ?: "Thank you for the conversation!"
 
     fun getFeedbackPositiveText(): String =
-            getTranslation("Good") ?: "Good"
+            getTranslation("Good")
 
     fun getFeedbackNeutralText(): String =
-            getTranslation("Okay") ?: "Okay"
+            getTranslation("Okay")
 
     fun getFeedbackNegativeText(): String =
-            getTranslation("Poor") ?: "Poor"
+            getTranslation("Poor")
 
     fun getFeedbackSkipText(): String =
-            getTranslation("Skip") ?: "Skip"
+            getTranslation("Skip")
 
     fun getQueueName(name: String, closed: Boolean = false): String {
         return if (closed) {

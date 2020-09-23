@@ -48,7 +48,7 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
                                 NinchatSendMessage.executeAsync(
                                         NinchatScopeHandler.getIOScope(),
                                         NinchatSessionManager.getInstance().getSession(),
-                                        NinchatSessionManager.getInstance().getChannelId(),
+                                        NinchatSessionManager.getInstance().ninchatState.getChannelId(),
                                         NinchatMessageTypes.UI_ACTION,
                                         payload.toString(),
                                         aLong -> null

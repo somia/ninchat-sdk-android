@@ -110,7 +110,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             final TextView message = itemView.findViewById(messageView);
             message.setVisibility(View.GONE);
             final Spanned messageContent = ninchatMessage.getMessage();
-            final NinchatFile file = NinchatSessionManager.getInstance().getFile(ninchatMessage.getFileId());
+            final NinchatFile file = NinchatSessionManager.getInstance().ninchatState.getFile(ninchatMessage.getFileId());
             final ImageView image = itemView.findViewById(imageId);
             image.setVisibility(View.GONE);
             final View playIcon = itemView.findViewById(playIconId);
@@ -279,7 +279,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                             NinchatSendMessage.executeAsync(
                                     NinchatScopeHandler.getIOScope(),
                                     NinchatSessionManager.getInstance().getSession(),
-                                    NinchatSessionManager.getInstance().getChannelId(),
+                                    NinchatSessionManager.getInstance().ninchatState.getChannelId(),
                                     NinchatMessageTypes.UI_ACTION,
                                     payload.toString(),
                                     aLong -> null

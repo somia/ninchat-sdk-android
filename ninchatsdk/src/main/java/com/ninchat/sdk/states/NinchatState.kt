@@ -4,15 +4,18 @@ import android.os.Build
 import com.ninchat.client.Props
 import com.ninchat.sdk.BuildConfig
 import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig
+import com.ninchat.sdk.models.NinchatFile
 import com.ninchat.sdk.models.NinchatSessionCredentials
+import com.ninchat.sdk.models.NinchatUser
+import com.ninchat.sdk.models.NinchatWebRTCServerInfo
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder
 import com.ninchat.sdk.utils.misc.Misc
-import kotlin.collections.ArrayList
 
 class NinchatState {
     private val DEFAULT_USER_AGENT = "ninchat-sdk-android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.MANUFACTURER} ${Build.MODEL})"
 
     var userId: String? = null
+    var channelId: String? = null
     var siteSecret: String? = null
     var requestCode: Int = 0
     var queueId: String? = null
@@ -47,8 +50,40 @@ class NinchatState {
         return if (appDetails.isNullOrEmpty()) DEFAULT_USER_AGENT else "$DEFAULT_USER_AGENT $appDetails"
     }
 
-    fun reset() {
+    var stunServers = arrayListOf<NinchatWebRTCServerInfo>()
+    var turnServers = arrayListOf<NinchatWebRTCServerInfo>()
+    fun addStunServer(webRTCServerInfo: NinchatWebRTCServerInfo) {
+        stunServers.add(webRTCServerInfo)
+    }
+
+    fun addTurnServer(webRTCServerInfo: NinchatWebRTCServerInfo) {
+        turnServers.add(webRTCServerInfo)
+    }
+
+    var files = hashMapOf<String, NinchatFile>()
+    fun getFile(fileId: String?): NinchatFile? {
+        return files[fileId]
+    }
+
+    fun addFile(fileId: String, ninchatFile: NinchatFile?) {
+        ninchatFile?.let {
+            files.put(fileId, ninchatFile);
+        }
+    }
+
+
+    var members = hashMapOf<String, NinchatUser>()
+    fun getMember(userId: String?): NinchatUser? {
+        return members[userId]
+    }
+
+    fun addMember(userId: String, ninchatUser: NinchatUser) {
+        members.put(userId, ninchatUser)
+    }
+
+    fun dispose() {
         userId = null
+        channelId = null
         queueId = null
         currentSessionState = Misc.NEW_SESSION
         userChannels = null
@@ -62,5 +97,9 @@ class NinchatState {
         configurationKey = null
         actionId = -1
         appDetails = null
+        stunServers.clear()
+        turnServers.clear()
+        files.clear()
+        members.clear()
     }
 }
