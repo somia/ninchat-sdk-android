@@ -9,6 +9,7 @@ import com.ninchat.client.Session
 import com.ninchat.sdk.NinchatSDKEventListener
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.events.OnAudienceRegistered
+import com.ninchat.sdk.helper.message.NinchatMessageService
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import com.ninchat.sdk.helper.sessionmanager.SessionManagerHelper
@@ -102,7 +103,7 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
                     }
                 }
                 "channel_updated" -> SessionManagerHelper.channelUpdated(params)
-                "message_received" -> NinchatSessionManager.getInstance().messageReceived(params, payload)
+                "message_received" -> NinchatMessageService.handleIncomingMessage(params, payload)
                 "ice_begun" -> NinchatSessionManager.getInstance().iceBegun(params)
                 "file_found" -> SessionManagerHelper.fileFound(params)
                 "channel_member_updated", "user_updated" -> SessionManagerHelper.memberUpdated(params)

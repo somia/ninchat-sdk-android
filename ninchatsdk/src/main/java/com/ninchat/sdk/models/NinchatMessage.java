@@ -6,10 +6,13 @@ import android.text.Spanned;
 
 import com.ninchat.sdk.NinchatSessionManager;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,7 +44,7 @@ public final class NinchatMessage {
         this(type, type == Type.WRITING ? null : data, null, type == Type.WRITING ? data : null, timestamp, true);
     }
 
-    public NinchatMessage(final Type type, final String sender, final String label, final JSONObject data, final List<NinchatOption> options, long timestamp) {
+    public NinchatMessage(final Type type, final String sender, final String label, final JSONObject data, final ArrayList<NinchatOption> options, long timestamp) {
         this(type, label, null, sender, timestamp, true);
         this.data = data;
         this.options = options;
