@@ -317,8 +317,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                         dialog.dismiss();
                     });
                     hideKeyboard();
-                    messageAdapter.addMetaMessage(intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_ID), sessionManager.ninchatState.getSiteConfig().getVideoCallMetaMessageText(
-                    ));
+                    messageAdapter.addMetaMessage(intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_ID), sessionManager.ninchatState.getSiteConfig().getVideoCallMetaMessageText());
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_CONTENT))) {
                     if (NinchatMessageTypes.HANG_UP.equals(messageType)) {
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);

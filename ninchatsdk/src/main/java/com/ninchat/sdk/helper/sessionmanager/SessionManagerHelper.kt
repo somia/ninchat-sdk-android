@@ -1,6 +1,5 @@
 package com.ninchat.sdk.helper.sessionmanager
 
-import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
@@ -29,14 +28,21 @@ import java.util.*
 
 class SessionManagerHelper {
     companion object {
-        private val getServers = fun(serverList: Objects?): ArrayList<NinchatWebRTCServerInfo>? {
+        private val getServers = fun(serverList: Objects?, isTurn: Boolean): ArrayList<NinchatWebRTCServerInfo>? {
             return serverList?.let {
                 val retval = arrayListOf<NinchatWebRTCServerInfo>()
                 for (i in 0 until it.length()) {
                     val stunServerProps = it[i]
                     val urls = stunServerProps.getStringArray("urls")
                     for (j in 0 until urls.length()) {
-                        retval.add(NinchatWebRTCServerInfo(urls[j]))
+                        if (isTurn) {
+                            val username: String = stunServerProps.getString("username")
+                            val credential: String = stunServerProps.getString("credential")
+                            retval.add(NinchatWebRTCServerInfo(urls.get(j), username, credential));
+                        } else {
+                            retval.add(NinchatWebRTCServerInfo(urls[j]))
+                        }
+
                     }
                 }
                 return retval
@@ -114,7 +120,7 @@ class SessionManagerHelper {
                     return
                 }
                 try {
-                    currentSession.ninchatState?.stunServers = getServers(stunServers)
+                    currentSession.ninchatState?.stunServers = getServers(stunServers, false)
                             ?: arrayListOf()
                 } catch (e: Exception) {
                     currentSession.sessionError(e)
@@ -122,7 +128,7 @@ class SessionManagerHelper {
                 }
 
                 try {
-                    currentSession.ninchatState?.turnServers = getServers(turnServers)
+                    currentSession.ninchatState?.turnServers = getServers(turnServers, true)
                             ?: arrayListOf()
                 } catch (e: Exception) {
                     currentSession.sessionError(e)
