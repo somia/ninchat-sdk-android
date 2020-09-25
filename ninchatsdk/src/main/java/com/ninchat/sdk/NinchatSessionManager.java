@@ -14,7 +14,7 @@ import com.ninchat.client.Props;
 import com.ninchat.client.Session;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
-import com.ninchat.sdk.helper.sessionmanager.SessionManagerHelper;
+import com.ninchat.sdk.helper.sessionmanager.NinchatSessionManagerHelper;
 import com.ninchat.sdk.models.NinchatQueue;
 import com.ninchat.sdk.models.NinchatSessionCredentials;
 import com.ninchat.sdk.models.NinchatUser;
@@ -219,7 +219,7 @@ public final class NinchatSessionManager {
     }
 
     public void queueUpdated(final Props params) {
-        SessionManagerHelper.parseQueue(params);
+        NinchatSessionManagerHelper.parseQueue(params);
         final Context context = contextWeakReference.get();
         if (context != null) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.QUEUE_UPDATED));
@@ -229,7 +229,7 @@ public final class NinchatSessionManager {
 
     public void audienceEnqueued(final Props params) {
         ninchatState.setCurrentSessionState(Misc.NEW_SESSION);
-        final String queueId = SessionManagerHelper.parseQueue(params);
+        final String queueId = NinchatSessionManagerHelper.parseQueue(params);
         final Context context = contextWeakReference.get();
         if (context != null) {
             LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(Broadcast.AUDIENCE_ENQUEUED).putExtra(Parameter.QUEUE_ID, queueId));
@@ -279,7 +279,7 @@ public final class NinchatSessionManager {
     }
 
     public void iceBegun(Props props) {
-        SessionManagerHelper.iceBegun(props);
+        NinchatSessionManagerHelper.iceBegun(props);
     }
 
     public String getChatStarted() {

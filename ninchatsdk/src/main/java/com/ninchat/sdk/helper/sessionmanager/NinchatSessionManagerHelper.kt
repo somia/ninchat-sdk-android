@@ -26,9 +26,9 @@ import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler.getIOScope
 import kotlinx.coroutines.launch
 import java.util.*
 
-class SessionManagerHelper {
+class NinchatSessionManagerHelper {
     companion object {
-        private val getServers = fun(serverList: Objects?, isTurn: Boolean): ArrayList<NinchatWebRTCServerInfo>? {
+        internal val getServers = fun(serverList: Objects?, isTurn: Boolean): ArrayList<NinchatWebRTCServerInfo>? {
             return serverList?.let {
                 val retval = arrayListOf<NinchatWebRTCServerInfo>()
                 for (i in 0 until it.length()) {

@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.helper.sessionmanager.SessionManagerHelper;
+import com.ninchat.sdk.helper.sessionmanager.NinchatSessionManagerHelper;
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
 import com.ninchat.sdk.utils.misc.Broadcast;
 import com.ninchat.sdk.utils.misc.Misc;
@@ -98,7 +98,7 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
             queueStatus.setVisibility(View.VISIBLE);
             message.setVisibility(View.VISIBLE);
             closeButton.setVisibility(View.VISIBLE);
-            queueStatus.setText(SessionManagerHelper.getQueueStatus(queueId));
+            queueStatus.setText(NinchatSessionManagerHelper.getQueueStatus(queueId));
         }
 
     }
@@ -156,7 +156,7 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         final LocalBroadcastManager broadcastManager = LocalBroadcastManager.getInstance(this);
         broadcastManager.registerReceiver(channelJoinedBroadcastReceiver, new IntentFilter(Broadcast.CHANNEL_JOINED));
         broadcastManager.registerReceiver(channelUpdatedBroadcastReceiver, new IntentFilter(Broadcast.QUEUE_UPDATED));
-        SessionManagerHelper.mayBeJoinQueue(queueId);
+        NinchatSessionManagerHelper.mayBeJoinQueue(queueId);
     }
 
     @Override

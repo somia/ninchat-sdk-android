@@ -12,7 +12,7 @@ import com.ninchat.sdk.events.OnAudienceRegistered
 import com.ninchat.sdk.helper.message.NinchatMessageService
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
-import com.ninchat.sdk.helper.sessionmanager.SessionManagerHelper
+import com.ninchat.sdk.helper.sessionmanager.NinchatSessionManagerHelper
 import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig
 import com.ninchat.sdk.models.NinchatSessionCredentials
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeRealmQueues
@@ -91,22 +91,22 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
             val event = params.getString("event")
             val currentActionId = params.getInt("action_id")
             when (event) {
-                "realm_queues_found" -> SessionManagerHelper.parseQueues(params)
+                "realm_queues_found" -> NinchatSessionManagerHelper.parseQueues(params)
                 "queue_found", "queue_updated" -> NinchatSessionManager.getInstance().queueUpdated(params)
                 "audience_enqueued" -> NinchatSessionManager.getInstance().audienceEnqueued(params)
-                "channel_joined" -> SessionManagerHelper.channelJoined(params)
+                "channel_joined" -> NinchatSessionManagerHelper.channelJoined(params)
                 "channel_found" -> {
                     if (ninchatState.actionId == currentActionId) {
-                        SessionManagerHelper.channelJoined(params)
+                        NinchatSessionManagerHelper.channelJoined(params)
                     } else {
-                        SessionManagerHelper.channelUpdated(params)
+                        NinchatSessionManagerHelper.channelUpdated(params)
                     }
                 }
-                "channel_updated" -> SessionManagerHelper.channelUpdated(params)
+                "channel_updated" -> NinchatSessionManagerHelper.channelUpdated(params)
                 "message_received" -> NinchatMessageService.handleIncomingMessage(params, payload)
                 "ice_begun" -> NinchatSessionManager.getInstance().iceBegun(params)
-                "file_found" -> SessionManagerHelper.fileFound(params)
-                "channel_member_updated", "user_updated" -> SessionManagerHelper.memberUpdated(params)
+                "file_found" -> NinchatSessionManagerHelper.fileFound(params)
+                "channel_member_updated", "user_updated" -> NinchatSessionManagerHelper.memberUpdated(params)
                 "audience_registered" -> EventBus.getDefault().post(OnAudienceRegistered(false))
                 "error" -> EventBus.getDefault().post(OnAudienceRegistered(true))
             }
