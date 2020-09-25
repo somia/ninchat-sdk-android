@@ -112,21 +112,4 @@ class NinchatSessionManagerHelperTest {
             }
         }
     }
-
-    @Test
-    fun `join_a_new_queue`()= runBlocking{
-        repeat(1) {
-            val currentSession = createSession().receive()
-        }
-    }
-
-    @Test
-    fun `join_queue_from_in_queue`(){
-
-    }
-
-    @Test
-    fun `join_queue_from_user_channel_already_in_chat`(){
-
-    }
 }
