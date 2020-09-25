@@ -163,7 +163,6 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     public boolean handleWebRTCMessage(final String messageType, final String payload) {
-        Log.e(TAG, messageType + " " + payload + " " +( peerConnection != null ? peerConnection.iceGatheringState(): "pc-null"));
         if (NinchatMessageTypes.OFFER.equals(messageType)) {
             try {
                 offer = new JSONObject(payload);
