@@ -1,4 +1,4 @@
-package com.ninchat.sdk.session
+package com.ninchat.sdk.helper.session
 
 import android.os.Handler
 import android.os.Looper

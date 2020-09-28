@@ -92,8 +92,12 @@ class NinchatSessionManagerHelper {
             val sessionManager = NinchatSessionManager.getInstance()
             return sessionManager?.let { currentSession ->
                 val selectedQueue: NinchatQueue? = currentSession.getQueue(queueId)
-                val position = selectedQueue?.position ?: -1L
+                val position = selectedQueue?.position
+                        ?: NinchatPropsParser.getQueuePositionByQueueId(props = sessionManager.ninchatState.userQueues, queueId = queueId
+                                ?: "")
                 val name = selectedQueue?.name
+                        ?: NinchatPropsParser.getQueueNameByQueueId(props = sessionManager.ninchatState.userQueues, queueId = queueId
+                                ?: "")
                 // if there is no queue position
                 if (position == -1L) {
                     return null
@@ -169,6 +173,10 @@ class NinchatSessionManagerHelper {
                     queueAttributes.getBool("closed")
                 } catch (e: Exception) {
                     false
+                }
+                if (currentSession.getQueue(queueId) == null) {
+                    val queueName = queueAttributes?.getString("name")
+                    currentSession.ninchatState.addQueue(NinchatQueue(queueId, queueName))
                 }
                 val currentQueue = currentSession.getQueue(queueId)
                 currentQueue?.let {
@@ -271,7 +279,7 @@ class NinchatSessionManagerHelper {
                 currentSession.ninchatState?.queues?.clear()
                 currentSession.messageAdapter?.clear()
                 getOpenQueueList(params, currentSession.ninchatState?.siteConfig?.getAudienceQueues()).map {
-                    currentSession.ninchatState?.queues?.add(it)
+                    currentSession.ninchatState?.addQueue(it)
                     currentSession.ninchatQueueListAdapter?.addQueue(it)
                 }
                 currentSession.contextWeakReference?.get()?.let { mContext ->
@@ -282,7 +290,8 @@ class NinchatSessionManagerHelper {
                 currentSession.activityWeakReference?.get()?.let { mActivity ->
                     mActivity.startActivityForResult(
                             NinchatActivity.getLaunchIntent(mActivity,
-                                    currentSession.ninchatState?.queueId), currentSession.ninchatState?.requestCode ?: 0)
+                                    currentSession.ninchatState?.queueId), currentSession.ninchatState?.requestCode
+                            ?: 0)
                 }
                 currentSession.eventListenerWeakReference?.get()?.onSessionStarted()
             }

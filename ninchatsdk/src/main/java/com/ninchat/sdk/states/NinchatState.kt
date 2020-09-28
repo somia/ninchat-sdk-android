@@ -83,6 +83,9 @@ class NinchatState {
     }
 
     var queues = arrayListOf<NinchatQueue>()
+    fun addQueue(ninchatQueue: NinchatQueue) {
+          queues.add(ninchatQueue)
+    }
 
     fun dispose() {
         userId = null

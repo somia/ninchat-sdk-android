@@ -21,7 +21,7 @@ import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
 import com.ninchat.sdk.networkdispatchers.NinchatFetchConfiguration;
 import com.ninchat.sdk.networkdispatchers.NinchatOpenSession;
-import com.ninchat.sdk.session.NinchatSessionHolder;
+import com.ninchat.sdk.helper.session.NinchatSessionHolder;
 import com.ninchat.sdk.states.NinchatState;
 import com.ninchat.sdk.utils.misc.Broadcast;
 import com.ninchat.sdk.utils.misc.Misc;
@@ -213,6 +213,7 @@ public final class NinchatSessionManager {
                 return queue;
             }
         }
+        // queue not found from queue list
         return null;
     }
 
@@ -286,8 +287,7 @@ public final class NinchatSessionManager {
         if (queue != null) {
             name = queue.getName();
         }
-        return Misc.center(
-                ninchatState.getSiteConfig().getChatStarted(name));
+        return Misc.center(ninchatState.getSiteConfig().getChatStarted(name));
     }
 
     public void close() {
