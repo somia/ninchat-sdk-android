@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.helper.sessionmanager.NinchatSessionManagerHelper;
+import com.ninchat.sdk.helper.session.NinchatSessionManagerHelper;
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
 import com.ninchat.sdk.utils.misc.Broadcast;
 import com.ninchat.sdk.utils.misc.Misc;

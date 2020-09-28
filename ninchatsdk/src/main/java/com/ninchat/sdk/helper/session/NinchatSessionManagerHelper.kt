@@ -1,4 +1,4 @@
-package com.ninchat.sdk.helper.sessionmanager
+package com.ninchat.sdk.helper.session
 
 import android.content.Intent
 import android.os.Handler

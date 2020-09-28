@@ -14,7 +14,7 @@ import com.ninchat.client.Props;
 import com.ninchat.client.Session;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
-import com.ninchat.sdk.helper.sessionmanager.NinchatSessionManagerHelper;
+import com.ninchat.sdk.helper.session.NinchatSessionManagerHelper;
 import com.ninchat.sdk.models.NinchatQueue;
 import com.ninchat.sdk.models.NinchatSessionCredentials;
 import com.ninchat.sdk.models.NinchatUser;

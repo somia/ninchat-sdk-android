@@ -12,7 +12,6 @@ import com.ninchat.sdk.events.OnAudienceRegistered
 import com.ninchat.sdk.helper.message.NinchatMessageService
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
-import com.ninchat.sdk.helper.sessionmanager.NinchatSessionManagerHelper
 import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig
 import com.ninchat.sdk.models.NinchatSessionCredentials
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeRealmQueues

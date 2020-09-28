@@ -1,4 +1,4 @@
-package com.ninchat.sdk.helper.sessionmanager
+package com.ninchat.sdk.helper.session
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
