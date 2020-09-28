@@ -177,7 +177,6 @@ class NinchatSiteConfig {
     fun getInQueueMessageText(): String? =
             getString("inQueueText")
 
-
     fun showRating(): Boolean =
             getBoolean("audienceRating") ?: false
 

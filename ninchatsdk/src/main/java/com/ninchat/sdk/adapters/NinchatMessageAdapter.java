@@ -176,8 +176,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_user).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_padding).setVisibility(View.GONE);
                 final TextView end = itemView.findViewById(R.id.ninchat_chat_message_end_text);
-                end.setText(Misc.toSpanned(
-                        NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getConversationEndedText()));
+                end.setText(Misc.toRichText(
+                        NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getConversationEndedText(), end));
                 final Button closeButton = itemView.findViewById(R.id.ninchat_chat_message_close);
                 final String closeText =
                         NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getChatCloseText();

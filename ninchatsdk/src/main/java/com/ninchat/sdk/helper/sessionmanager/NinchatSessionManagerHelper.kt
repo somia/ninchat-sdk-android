@@ -3,7 +3,6 @@ package com.ninchat.sdk.helper.sessionmanager
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
-import android.text.Spanned
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.client.Objects
 import com.ninchat.client.Props
@@ -20,7 +19,6 @@ import com.ninchat.sdk.networkdispatchers.NinchatDescribeChannel
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Broadcast
-import com.ninchat.sdk.utils.misc.Misc.Companion.toSpanned
 import com.ninchat.sdk.utils.misc.Parameter
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler.getIOScope
 import kotlinx.coroutines.launch
@@ -88,7 +86,7 @@ class NinchatSessionManagerHelper {
         }
 
         @JvmStatic
-        fun getQueueStatus(queueId: String?): Spanned? {
+        fun getQueueStatus(queueId: String?): String? {
             val sessionManager = NinchatSessionManager.getInstance()
             return sessionManager?.let { currentSession ->
                 val selectedQueue: NinchatQueue? = currentSession.getQueue(queueId)
@@ -103,7 +101,7 @@ class NinchatSessionManagerHelper {
                     return null
                 }
                 val queueStatus: String? = currentSession.ninchatState?.siteConfig?.getQueueStatus(name, position)
-                toSpanned(queueStatus)
+                queueStatus
             }
         }
 

@@ -62,10 +62,10 @@ public final class NinchatActivity extends NinchatBaseActivity {
         if (ninchatQueueListAdapter.getItemCount() == 0) {
             findViewById(R.id.ninchat_activity_no_queues).setVisibility(View.VISIBLE);
             final TextView motd = findViewById(R.id.ninchat_activity_motd);
-            final String noQueueText = sessionManager
+            final String motDText = sessionManager
                     .ninchatState.getSiteConfig()
-                    .getNoQueuesText();
-            motd.setText(Misc.toSpanned(noQueueText));
+                    .getMOTDText();
+            motd.setText(Misc.toRichText(motDText, motd));
             findViewById(R.id.ninchat_activity_close).setVisibility(View.VISIBLE);
         }
         ninchatQueueListAdapter.notifyDataSetChanged();
@@ -102,14 +102,14 @@ public final class NinchatActivity extends NinchatBaseActivity {
                 .getCloseWindowText();
 
         final TextView topHeader = findViewById(R.id.ninchat_activity_header);
-        topHeader.setText(Misc.toSpanned(welcomeMessage));
+        topHeader.setText(Misc.toRichText(welcomeMessage, topHeader));
         final Button closeButton = findViewById(R.id.ninchat_activity_close);
         closeButton.setText(closeWindowText);
         closeButton.setVisibility(View.VISIBLE);
         final TextView motd = findViewById(R.id.ninchat_activity_motd);
-        motd.setText(Misc.toSpanned(motDText));
+        motd.setText(Misc.toRichText(motDText, motd));
         final TextView noQueues = findViewById(R.id.ninchat_activity_no_queues);
-        noQueues.setText(Misc.toSpanned(noQueueText));
+        noQueues.setText(Misc.toRichText(noQueueText, noQueues));
     }
 
     @Override

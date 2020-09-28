@@ -22,6 +22,7 @@ import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
 import com.ninchat.sdk.networkdispatchers.NinchatSendRatings;
+import com.ninchat.sdk.utils.misc.Misc;
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
 import org.json.JSONException;
@@ -97,13 +98,13 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
 
             final TextView title = botViewItem.findViewById(R.id.ninchat_review_title);
             title.setGravity(Gravity.START);
-            title.setText(sessionManager.ninchatState.getSiteConfig().getThankYouTextText());
+            title.setText(Misc.toRichText(sessionManager.ninchatState.getSiteConfig().getThankYouTextText(), title));
 
 
             final TextView description = botViewItem.findViewById(R.id.ninchat_review_description);
             description.setVisibility(View.VISIBLE);
             description.setGravity(Gravity.START);
-            description.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackTitleText());
+            description.setText( Misc.toRichText(sessionManager.ninchatState.getSiteConfig().getFeedbackTitleText(), description));
             final TextView positive = botViewItem.findViewById(R.id.ninchat_review_positive);
             positive.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackPositiveText());
             final TextView neutral = botViewItem.findViewById(R.id.ninchat_review_neutral);
@@ -120,7 +121,8 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
         final View formViewItem = findViewById(R.id.review_rating_normal_view);
         formViewItem.setVisibility(View.VISIBLE);
         final TextView title = formViewItem.findViewById(R.id.ninchat_review_title);
-        title.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackTitleText());
+        title.setText(Misc.toRichText(sessionManager.ninchatState.getSiteConfig().getThankYouTextText(), title));
+
         final TextView positive = formViewItem.findViewById(R.id.ninchat_review_positive);
         positive.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackPositiveText());
         final TextView neutral = formViewItem.findViewById(R.id.ninchat_review_neutral);

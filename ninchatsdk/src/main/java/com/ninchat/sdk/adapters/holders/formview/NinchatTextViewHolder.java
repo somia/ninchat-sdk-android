@@ -40,7 +40,8 @@ public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
         mTextView.setAutoLinkMask(0);
         mTextView.setMovementMethod(LinkMovementMethod.getInstance());
         // there might be some images images
-        mTextView.setText(Html.fromHtml(labelText, new NinchatImageGetter(mTextView, true, null), null));
+        mTextView.setText(Html.fromHtml(labelText, new NinchatImageGetter(mTextView, true, null),
+                null));
         if (!isUpdate)
             setAnimation(itemView, position, position != 0);
     }

@@ -4,7 +4,9 @@ import android.os.Build
 import android.text.Html
 import android.text.Spanned
 import android.webkit.MimeTypeMap
+import android.widget.TextView
 import com.ninchat.sdk.BuildConfig
+import com.ninchat.sdk.helper.NinchatImageGetter
 
 class Misc {
     companion object {
@@ -25,9 +27,13 @@ class Misc {
         }
 
         @JvmStatic
-        fun toSpanned(text: String?): Spanned {
+        fun toRichText(text: String?, mTextView: TextView?): Spanned {
             val centeredText = center(text)
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) Html.fromHtml(centeredText, Html.FROM_HTML_MODE_LEGACY) else Html.fromHtml(centeredText)
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Html.fromHtml(centeredText, NinchatImageGetter(mTextView, true, null), null)
+            } else {
+                Html.fromHtml(centeredText)
+            }
         }
 
         @JvmStatic

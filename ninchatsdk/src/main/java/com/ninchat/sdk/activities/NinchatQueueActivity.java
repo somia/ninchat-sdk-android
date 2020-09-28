@@ -98,7 +98,7 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
             queueStatus.setVisibility(View.VISIBLE);
             message.setVisibility(View.VISIBLE);
             closeButton.setVisibility(View.VISIBLE);
-            queueStatus.setText(NinchatSessionManagerHelper.getQueueStatus(queueId));
+            queueStatus.setText(Misc.toRichText(NinchatSessionManagerHelper.getQueueStatus(queueId), queueStatus));
         }
 
     }
@@ -132,7 +132,7 @@ public final class NinchatQueueActivity extends NinchatBaseActivity {
         if (message != null) {
             final String inQueueText = sessionManager.ninchatState.getSiteConfig()
                     .getInQueueMessageText();
-            message.setText(Misc.toSpanned(inQueueText));
+            message.setText(Misc.toRichText(inQueueText, message));
         }
 
         if (closeButton != null) {
