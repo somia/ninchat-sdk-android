@@ -631,7 +631,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     private void hangUp() {
         if (sessionManager != null && webRTCView != null) {
             webRTCView.hangUp();
-            webRTCView = new NinchatWebRTCView(videoContainer);
         }
     }
 

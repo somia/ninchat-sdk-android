@@ -101,19 +101,20 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     private PeerConnectionFactory peerConnectionFactory;
 
     public NinchatWebRTCView(final View view) {
-        init(view);
+        videoContainer = view;
+        PeerConnectionFactory.initialize(PeerConnectionFactory.InitializationOptions.builder(view.getContext().getApplicationContext()).createInitializationOptions());
     }
 
-    private void init(View view) {
-        videoContainer = view;
+    public void init() {
+        if (videoContainer == null) return;
         eglBase = EglBase.create();
-        remoteVideo = view.findViewById(R.id.video);
-        localVideo = view.findViewById(R.id.pip_video);
-        PeerConnectionFactory.initialize(PeerConnectionFactory.InitializationOptions.builder(view.getContext().getApplicationContext()).createInitializationOptions());
+        remoteVideo = videoContainer.findViewById(R.id.video);
+        localVideo = videoContainer.findViewById(R.id.pip_video);
         peerConnectionFactory = PeerConnectionFactory.builder()
                 .setVideoDecoderFactory(new DefaultVideoDecoderFactory(eglBase.getEglBaseContext()))
                 .setVideoEncoderFactory(new DefaultVideoEncoderFactory(eglBase.getEglBaseContext(), false, false))
                 .createPeerConnectionFactory();
+
         remoteSinks = new ArrayList<>();
         localVideo.init(eglBase.getEglBaseContext(), null);
         localVideo.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FILL);
@@ -235,9 +236,6 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                 @Override
                 public void run() {
                     hangUp(false);
-
-                    // Reinitialize for possible new connection
-                    init(videoContainer);
                 }
             });
             return true;
@@ -254,6 +252,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     protected void startWithSDP(final JSONObject sdp) {
         try {
+            init();
             initializeAudioManager();
             final List<PeerConnection.IceServer> servers = new ArrayList<>();
             for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().ninchatState.getStunServers()) {
@@ -266,7 +265,6 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             configuration.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN;
             peerConnection = peerConnectionFactory.createPeerConnection(configuration, this);
             getLocalMediaStream();
-            //peerConnection.addTrack(getLocalMediaStream());
             if (offer != null) {
                 peerConnection.setRemoteDescription(this, new SessionDescription(SessionDescription.Type.OFFER, sdp.getString("sdp")));
             } else {
