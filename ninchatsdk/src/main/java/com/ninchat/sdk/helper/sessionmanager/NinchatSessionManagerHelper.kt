@@ -233,7 +233,7 @@ class NinchatSessionManagerHelper {
         fun channelJoined(params: Props) {
             val sessionManager = NinchatSessionManager.getInstance()
             sessionManager?.let { currentSession ->
-                var isClosed = try {
+                val isClosed = try {
                     val channelAttrs = params.getObject("channel_attrs")
                     channelAttrs.getBool("closed")
                 } catch (e: Exception) {

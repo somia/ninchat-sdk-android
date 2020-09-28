@@ -68,7 +68,7 @@ class NinchatState {
 
     fun addFile(fileId: String, ninchatFile: NinchatFile?) {
         ninchatFile?.let {
-            files.put(fileId, ninchatFile);
+            files[fileId] = ninchatFile;
         }
     }
 
@@ -79,7 +79,7 @@ class NinchatState {
     }
 
     fun addMember(userId: String, ninchatUser: NinchatUser) {
-        members.put(userId, ninchatUser)
+        members[userId] = ninchatUser
     }
 
     var queues = arrayListOf<NinchatQueue>()

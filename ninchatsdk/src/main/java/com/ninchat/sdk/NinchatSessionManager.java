@@ -46,8 +46,6 @@ public final class NinchatSessionManager {
     protected NinchatMessageAdapter messageAdapter;
 
     @Nullable
-    private NinchatSessionCredentials sessionCredentials;
-    @Nullable
     private NinchatConfiguration ninchatConfiguration;
 
 
@@ -87,10 +85,10 @@ public final class NinchatSessionManager {
 
         ninchatState.setConfigurationKey(configurationKey);
         ninchatState.setPreferredEnvironments(preferredEnvironments);
+        ninchatState.setSessionCredentials(sessionCredentials);
         this.messageAdapter = new NinchatMessageAdapter();
         this.ninchatQueueListAdapter = null;
         this.activityWeakReference = new WeakReference(null);
-        this.sessionCredentials = sessionCredentials;
         this.ninchatConfiguration = configurationManager;
     }
 
@@ -128,9 +126,9 @@ public final class NinchatSessionManager {
         }
         String userAuth = null;
         String userId = null;
-        if (sessionCredentials != null) {
-            userId = sessionCredentials.getUserId();
-            userAuth = sessionCredentials.getUserAuth();
+        if (ninchatState.getSessionCredentials() != null) {
+            userId = ninchatState.getSessionCredentials().getUserId();
+            userAuth = ninchatState.getSessionCredentials().getUserAuth();
         }
         NinchatOpenSession.executeAsync(
                 NinchatScopeHandler.getIOScope(),

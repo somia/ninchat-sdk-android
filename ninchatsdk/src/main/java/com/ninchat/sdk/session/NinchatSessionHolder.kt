@@ -37,14 +37,14 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
         ninchatState.queueId = if (ninchatState.queueId == null && !ninchatSiteConfig.getAudienceAutoQueue().isNullOrBlank()) {
             ninchatSiteConfig.getAudienceAutoQueue()
         } else ninchatState.queueId
-        ninchatState.currentSessionState = ninchatState.currentSessionState or (Misc.NEW_SESSION shl 1)
+        ninchatState.currentSessionState = ninchatState.currentSessionState or (1 shl Misc.NEW_SESSION)
         if (NinchatPropsParser.hasUserChannel(ninchatState.userChannels)) {
-            ninchatState.currentSessionState = ninchatState.currentSessionState or (Misc.HAS_CHANNEL shl 1)
+            ninchatState.currentSessionState = ninchatState.currentSessionState or (1 shl Misc.HAS_CHANNEL)
             ninchatState.queueId = NinchatPropsParser.getQueueIdFromUserChannels(ninchatState.userChannels)
                     ?: ninchatState.queueId
         }
         if (NinchatPropsParser.hasUserQueues(ninchatState.userQueues)) {
-            ninchatState.currentSessionState = ninchatState.currentSessionState or (Misc.IN_QUEUE shl 1)
+            ninchatState.currentSessionState = ninchatState.currentSessionState or (1 shl Misc.IN_QUEUE)
             ninchatState.queueId = NinchatPropsParser.getQueueIdFromUserQueue(ninchatState.userQueues)
                     ?: ninchatState.queueId
         }
@@ -118,11 +118,11 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
     }
 
     fun isInQueue(): Boolean {
-        return ninchatState.currentSessionState and (1 shl NinchatQuestionnaireTypeUtil.IN_QUEUE) != 0
+        return (ninchatState.currentSessionState and (1 shl NinchatQuestionnaireTypeUtil.IN_QUEUE)) != 0
     }
 
     fun hasChannel(): Boolean {
-        return ninchatState.currentSessionState and (1 shl NinchatQuestionnaireTypeUtil.HAS_CHANNEL) != 0
+        return (ninchatState.currentSessionState and (1 shl NinchatQuestionnaireTypeUtil.HAS_CHANNEL)) != 0
     }
 
     fun dispose() {
