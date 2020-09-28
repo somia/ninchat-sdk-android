@@ -268,19 +268,21 @@ class NinchatSessionManagerHelper {
         fun parseQueues(params: Props?) {
             val sessionManager = NinchatSessionManager.getInstance()
             sessionManager?.let { currentSession ->
+                currentSession.ninchatState?.queues?.clear()
                 currentSession.messageAdapter?.clear()
                 getOpenQueueList(params, currentSession.ninchatState?.siteConfig?.getAudienceQueues()).map {
                     currentSession.ninchatState?.queues?.add(it)
                     currentSession.ninchatQueueListAdapter?.addQueue(it)
                 }
                 currentSession.contextWeakReference?.get()?.let { mContext ->
-                    if (currentSession.ninchatState?.queues?.size ?: 0 >= 0) {
+                    if (currentSession.ninchatState?.queues?.size ?: 0 > 0) {
                         LocalBroadcastManager.getInstance(mContext).sendBroadcast(Intent(NinchatSession.Broadcast.QUEUES_UPDATED))
                     }
                 }
                 currentSession.activityWeakReference?.get()?.let { mActivity ->
-                    mActivity.startActivityForResult(NinchatActivity.getLaunchIntent(mActivity, currentSession.ninchatState?.queueId), currentSession.ninchatState?.requestCode
-                            ?: 0)
+                    mActivity.startActivityForResult(
+                            NinchatActivity.getLaunchIntent(mActivity,
+                                    currentSession.ninchatState?.queueId), currentSession.ninchatState?.requestCode ?: 0)
                 }
                 currentSession.eventListenerWeakReference?.get()?.onSessionStarted()
             }
