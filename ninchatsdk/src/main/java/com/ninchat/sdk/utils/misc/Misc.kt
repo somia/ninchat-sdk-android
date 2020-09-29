@@ -3,6 +3,7 @@ package com.ninchat.sdk.utils.misc
 import android.os.Build
 import android.text.Html
 import android.text.Spanned
+import android.text.method.LinkMovementMethod
 import android.webkit.MimeTypeMap
 import android.widget.TextView
 import com.ninchat.sdk.BuildConfig
@@ -29,8 +30,10 @@ class Misc {
         @JvmStatic
         fun toRichText(text: String?, mTextView: TextView?): Spanned {
             val centeredText = center(text)
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Html.fromHtml(centeredText, NinchatImageGetter(mTextView, true, null), null)
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && mTextView != null) {
+                mTextView.autoLinkMask = 0
+                mTextView.movementMethod = LinkMovementMethod.getInstance()
+                Html.fromHtml(centeredText, NinchatImageGetter(container = mTextView), null)
             } else {
                 Html.fromHtml(centeredText)
             }

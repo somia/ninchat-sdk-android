@@ -3,13 +3,10 @@ package com.ninchat.sdk.adapters.holders.formview;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
-
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.helper.NinchatImageGetter;
+import com.ninchat.sdk.utils.misc.Misc;
 
 import org.json.JSONObject;
 
@@ -37,11 +34,9 @@ public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
                     ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background)
             );
         }
-        mTextView.setAutoLinkMask(0);
-        mTextView.setMovementMethod(LinkMovementMethod.getInstance());
+
         // there might be some images images
-        mTextView.setText(Html.fromHtml(labelText, new NinchatImageGetter(mTextView, true, null),
-                null));
+        mTextView.setText(Misc.toRichText(labelText, mTextView));
         if (!isUpdate)
             setAnimation(itemView, position, position != 0);
     }
