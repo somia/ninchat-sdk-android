@@ -72,7 +72,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     private boolean historyLoaded = false;
     private int rootViewHeight = 0;
 
-    private NinchatMessageAdapter messageAdapter = sessionManager != null ? sessionManager.getMessageAdapter() : new NinchatMessageAdapter();
+    private NinchatMessageAdapter messageAdapter = NinchatSessionManager.getInstance() != null ? NinchatSessionManager.getInstance().getMessageAdapter() : new NinchatMessageAdapter();
 
     @Override
     protected int getLayoutRes() {
@@ -89,6 +89,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         if (requestCode == NinchatReviewActivity.REQUEST_CODE) {
             // coming from ninchat review
             if (sessionManager != null &&
@@ -190,6 +191,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (Broadcast.AUDIENCE_ENQUEUED.equals(action)) {
+                NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
                 NinchatPartChannel.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         sessionManager.getSession(),
@@ -202,6 +204,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     };
 
     public void onCloseChat(final View view) {
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         final AlertDialog dialog = new AlertDialog.Builder(this, R.style.NinchatTheme_Dialog)
                 .setView(R.layout.dialog_close_chat)
                 .setCancelable(true)
@@ -231,7 +234,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     public void chatClosed() {
         onVideoHangUp(null);
-        if (sessionManager == null) sessionManager = NinchatSessionManager.getInstance();
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         final boolean showRatings = sessionManager.ninchatState.getSiteConfig().showRating();
         // sessionManager.partChannel();
         if (showRatings) {
@@ -247,6 +250,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     private void sendPickUpAnswer(final boolean answer) {
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         try {
             final JSONObject data = new JSONObject();
             data.put("answer", answer);
@@ -272,6 +276,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     protected BroadcastReceiver webRTCMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
             final String action = intent.getAction();
             if (Broadcast.WEBRTC_MESSAGE.equals(action)) {
                 final String messageType = intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_TYPE);
@@ -422,6 +427,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         if (TextUtils.isEmpty(message)) {
             return;
         }
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         try {
             final JSONObject data = new JSONObject();
             data.put("text", message);
@@ -454,6 +460,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
+            NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
             if (s.length() != 0 && !writingMessageSent) {
                 NinchatUpdateMember.executeAsync(
                         NinchatScopeHandler.getIOScope(),
@@ -481,11 +488,11 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getResources().getBoolean(R.bool.ninchat_chat_background_not_tiled)) {
             findViewById(R.id.ninchat_chat_root).setBackgroundResource(R.drawable.ninchat_chat_background);
         }
 
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         // If the app is killed in the background sessionManager is not initialized the SDK must
         // be exited and the NinchatSession needs to be initialzed again
         if (sessionManager == null) {
@@ -553,6 +560,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
             // Initialize closed chat with recent messages only
             if (!historyLoaded) {
+                NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
                 sessionManager.loadChannelHistory(null);
                 historyLoaded = true;
             }
@@ -564,7 +572,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         super.onResume();
         // Refresh the message list, just in case
         messageAdapter.notifyDataSetChanged();
-
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         if (webRTCView != null && sessionManager != null) {
             webRTCView.onResume();
         }
@@ -581,7 +589,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         if (webRTCView != null && sessionManager != null) {
             webRTCView.onPause();
         }
@@ -629,6 +637,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     // Reinitialize webRTC on hangup for possible new connection
     private void hangUp() {
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         if (sessionManager != null && webRTCView != null) {
             webRTCView.hangUp();
         }

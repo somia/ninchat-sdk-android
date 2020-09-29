@@ -53,9 +53,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
     };
 
     private void setQueueAdapter() {
-        if (sessionManager == null) {
-            sessionManager = NinchatSessionManager.getInstance();
-        }
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         final RecyclerView queueList = (RecyclerView) findViewById(R.id.ninchat_activity_queue_list);
         final NinchatQueueListAdapter ninchatQueueListAdapter = sessionManager.getNinchatQueueListAdapter(NinchatActivity.this);
         queueList.setAdapter(ninchatQueueListAdapter);
@@ -81,9 +79,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
     };
 
     private void setTexts() {
-        if (sessionManager == null) {
-            sessionManager = NinchatSessionManager.getInstance();
-        }
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         final String welcomeMessage = sessionManager
                 .ninchatState.getSiteConfig()
                 .getWelcomeText();
@@ -116,7 +112,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Intent intent = getIntent();
-
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         // If the app is killed in the background sessionManager is not initialized the SDK must
         // be exited and the NinchatSession needs to be initialzed again
         if (sessionManager == null) {
@@ -196,6 +192,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
                         ninchatSessionManager.ninchatState.getNinchatQuestionnaire().hasPostAudienceQuestionnaire()) {
                     openPostAudienceQuestionnairesActivity();
                 } else {
+                    NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
                     sessionManager.close();
                     setResult(resultCode, data);
                     finish();

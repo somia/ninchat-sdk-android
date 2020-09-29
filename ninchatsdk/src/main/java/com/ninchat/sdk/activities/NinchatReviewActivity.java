@@ -87,6 +87,7 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
         AnimationDrawable animationDrawable = (AnimationDrawable) mImageView.getBackground();
         animationDrawable.start();
         new Handler().postDelayed(() -> {
+            NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
             animationDrawable.stop();
             botViewItem.findViewById(R.id.ninchat_chat_message_bot_writing_review_root).setVisibility(View.GONE);
             botViewItem.findViewById(R.id.ninchat_bot_rating_text_root_view).setVisibility(View.VISIBLE);
@@ -117,6 +118,7 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
     }
 
     private void handleFormView() {
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         findViewById(R.id.review_rating_bot_view).setVisibility(View.GONE);
         final View formViewItem = findViewById(R.id.review_rating_normal_view);
         formViewItem.setVisibility(View.VISIBLE);
@@ -152,6 +154,7 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
     private void close(final int rating) {
         if (rating != NinchatSession.Analytics.Rating.NO_ANSWER) {
             try {
+                NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
                 final JSONObject value = new JSONObject();
                 value.put("rating", rating);
                 final JSONObject data = new JSONObject();

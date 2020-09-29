@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.ninchat.sdk.GlideApp;
+import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.NinchatFile;
 
@@ -69,6 +70,7 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
     }
 
     private void downloadFile() {
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         final NinchatFile file = sessionManager.ninchatState.getFile(fileId);
         final Uri uri = Uri.parse(file.getUrl());
         final DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -87,6 +89,7 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
     private BroadcastReceiver fileDownloadedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
             final String action = intent.getAction();
             if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
                 findViewById(R.id.ninchat_media_download).setVisibility(sessionManager.ninchatState.getFile(fileId).isDownloaded() ? View.GONE : View.VISIBLE);
@@ -98,6 +101,7 @@ public final class NinchatMediaActivity extends NinchatBaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fileId = getIntent().getStringExtra(FILE_ID);
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         final NinchatFile file = sessionManager.ninchatState.getFile(fileId);
         findViewById(R.id.ninchat_media_download).setVisibility(file.isDownloaded() ? View.GONE : View.VISIBLE);
         if (file.isVideo()) {

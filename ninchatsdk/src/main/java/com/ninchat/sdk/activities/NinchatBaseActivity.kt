@@ -12,10 +12,10 @@ import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import com.ninchat.sdk.R
 
-abstract class NinchatBaseActivity2 : Activity() {
+abstract class NinchatBaseActivity : Activity() {
     @get:LayoutRes
     protected abstract val layoutRes: Int
-    private fun allowBackButton(): Boolean {
+    protected open fun allowBackButton(): Boolean {
         return false
     }
 
@@ -53,6 +53,7 @@ abstract class NinchatBaseActivity2 : Activity() {
     }
 
     companion object {
+        @JvmField
         protected val STORAGE_PERMISSION_REQUEST_CODE = "ExternalStorage".hashCode() and 0xffff
     }
 }
