@@ -23,6 +23,7 @@ import com.ninchat.sdk.utils.misc.Parameter
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.coroutines.launch
 
+// todo (pallab) write instrumentation test and replace base activity with base activity2
 class NinchatQueueActivity : NinchatBaseActivity2() {
     private var queueId: String? = null
     override val layoutRes: Int
