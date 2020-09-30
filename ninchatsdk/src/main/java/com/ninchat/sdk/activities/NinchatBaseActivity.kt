@@ -11,10 +11,12 @@ import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
 import com.ninchat.sdk.R
+import org.jetbrains.annotations.TestOnly
 
 abstract class NinchatBaseActivity : Activity() {
     @get:LayoutRes
     protected abstract val layoutRes: Int
+
     protected open fun allowBackButton(): Boolean {
         return false
     }
