@@ -25,7 +25,8 @@ import kotlinx.coroutines.launch
 
 // todo (pallab) write instrumentation test
 class NinchatQueueActivity : NinchatBaseActivity() {
-    private var queueId: String? = null
+    var queueId: String? = null
+
     override val layoutRes: Int
         get() = R.layout.activity_ninchat_queue
 
