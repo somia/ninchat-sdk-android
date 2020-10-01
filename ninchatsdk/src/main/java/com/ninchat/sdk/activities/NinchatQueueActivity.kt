@@ -23,7 +23,6 @@ import com.ninchat.sdk.utils.misc.Parameter
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.coroutines.launch
 
-// todo (pallab) write instrumentation test
 class NinchatQueueActivity : NinchatBaseActivity() {
     var queueId: String? = null
 

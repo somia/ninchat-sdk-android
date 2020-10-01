@@ -105,7 +105,7 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
             final TextView description = botViewItem.findViewById(R.id.ninchat_review_description);
             description.setVisibility(View.VISIBLE);
             description.setGravity(Gravity.START);
-            description.setText( Misc.toRichText(sessionManager.ninchatState.getSiteConfig().getFeedbackTitleText(), description));
+            description.setText(Misc.toRichText(sessionManager.ninchatState.getSiteConfig().getFeedbackTitleText(), description));
             final TextView positive = botViewItem.findViewById(R.id.ninchat_review_positive);
             positive.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackPositiveText());
             final TextView neutral = botViewItem.findViewById(R.id.ninchat_review_neutral);
@@ -176,16 +176,17 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
 
     // check if post audience questionnaire is conversation like questionnaire
     private boolean isConversationLikeQuestionnaire() {
-        NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
-                .getInstance()
-                .ninchatState.getNinchatQuestionnaire();
-        return questionnaires != null ? questionnaires.conversationLikePostAudienceQuestionnaire() : false;
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
+        if (sessionManager == null || sessionManager.ninchatState == null) return false;
+        NinchatQuestionnaireHolder questionnaires = sessionManager.ninchatState.getNinchatQuestionnaire();
+        return questionnaires != null && questionnaires.conversationLikePostAudienceQuestionnaire();
     }
 
     private Pair<String, String> getBotDetails() {
-        NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
-                .getInstance()
-                .ninchatState.getNinchatQuestionnaire();
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
+        if (sessionManager == null || sessionManager.ninchatState == null)
+            return Pair.create("", "");
+        NinchatQuestionnaireHolder questionnaires = sessionManager.ninchatState.getNinchatQuestionnaire();
         if (questionnaires == null) {
             return Pair.create("", "");
         }
