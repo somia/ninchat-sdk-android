@@ -30,7 +30,7 @@ class Misc {
         @JvmStatic
         fun toRichText(text: String?, mTextView: TextView?): Spanned {
             val centeredText = center(text)
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && mTextView != null) {
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && mTextView != null) {
                 mTextView.autoLinkMask = 0
                 mTextView.movementMethod = LinkMovementMethod.getInstance()
                 Html.fromHtml(centeredText, NinchatImageGetter(container = mTextView), null)
