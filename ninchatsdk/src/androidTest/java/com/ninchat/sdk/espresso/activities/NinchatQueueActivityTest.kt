@@ -2,6 +2,8 @@ package com.ninchat.sdk.espresso.activities
 
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.Espresso
+import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
@@ -10,28 +12,20 @@ import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.activities.NinchatQueueActivity
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import org.junit.Assert
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.After
 
-@RunWith(AndroidJUnit4::class)
 @LargeTest
+@RunWith(AndroidJUnit4::class)
 class NinchatQueueActivityTest {
     val appContext = InstrumentationRegistry.getInstrumentation().targetContext
     val configurationKey = appContext.getString(com.ninchat.sdk.R.string.ninchat_configuration_key)
 
-    lateinit var scenario: ActivityScenario<NinchatQueueActivity>
-
-    @After
-    fun cleanup() {
-        scenario.close()
-    }
-
-
     @Test
     fun `back_should_not_finish_activity`() {
         NinchatSession.Builder(appContext, configurationKey).create()
-        scenario = ActivityScenario.launch(NinchatQueueActivity::class.java)
+        val scenario = ActivityScenario.launch(NinchatQueueActivity::class.java)
         scenario.onActivity {
             it.onBackPressed()
         }
