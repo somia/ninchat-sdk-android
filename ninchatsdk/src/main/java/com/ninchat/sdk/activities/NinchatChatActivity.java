@@ -571,15 +571,15 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     protected void onResume() {
         super.onResume();
         // Refresh the message list, just in case
-        messageAdapter.notifyDataSetChanged();
         NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
+        messageAdapter = sessionManager != null ? sessionManager.getMessageAdapter() : new NinchatMessageAdapter();
+        messageAdapter.notifyDataSetChanged();
         if (webRTCView != null && sessionManager != null) {
             webRTCView.onResume();
         }
 
         // Don't load first messages if chat is closed, we want to load the latest messages only
         if (getIntent().getExtras() == null || !(getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Parameter.CHAT_IS_CLOSED))) {
-
             if (sessionManager != null) {
                 sessionManager.loadChannelHistory(messageAdapter.getLastMessageId(false));
             }
