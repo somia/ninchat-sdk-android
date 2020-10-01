@@ -47,7 +47,7 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
         ArrayAdapter<String> dataAdapter = getRTDataAdapter(questionnaireElement);
         if (isFormLikeQuestionnaire) {
             itemView.setBackground(
-                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
+                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_questionnaire_background));
         }
         mSpinner.setAdapter(dataAdapter);
         mSpinner.setSelection(previouslySelected);
