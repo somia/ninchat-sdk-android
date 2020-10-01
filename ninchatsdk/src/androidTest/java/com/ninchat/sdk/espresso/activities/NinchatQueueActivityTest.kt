@@ -6,10 +6,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.ninchat.sdk.NinchatSession
+import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.activities.NinchatQueueActivity
+import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.junit.After
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -17,15 +20,22 @@ class NinchatQueueActivityTest {
     val appContext = InstrumentationRegistry.getInstrumentation().targetContext
     val configurationKey = appContext.getString(com.ninchat.sdk.R.string.ninchat_configuration_key)
 
+    lateinit var scenario: ActivityScenario<NinchatQueueActivity>
+
+    @After
+    fun cleanup() {
+        scenario.close()
+    }
+
+
     @Test
     fun `back_should_not_finish_activity`() {
         NinchatSession.Builder(appContext, configurationKey).create()
-        val activityScenario = ActivityScenario.launch(NinchatQueueActivity::class.java)
-        activityScenario.onActivity {
+        scenario = ActivityScenario.launch(NinchatQueueActivity::class.java)
+        scenario.onActivity {
             it.onBackPressed()
         }
-        Assert.assertEquals(Lifecycle.State.CREATED, activityScenario.state)
-        activityScenario.close()
+        Assert.assertEquals(Lifecycle.State.CREATED, scenario.state)
     }
 
     @Test
@@ -81,7 +91,15 @@ class NinchatQueueActivityTest {
 
     @Test
     fun `update_queue_status_with_channel`() {
-
+        NinchatSession.Builder(appContext, configurationKey).create()
+        NinchatSessionManager.getInstance().ninchatState.currentSessionState = 1 shl NinchatQuestionnaireTypeUtil.HAS_CHANNEL
+        val expectedQueueId = "test-queue"
+        val intent = NinchatQueueActivity.getLaunchIntent(appContext, expectedQueueId)
+        val activityScenario = ActivityScenario.launch<NinchatQueueActivity>(intent)
+        /*onView(withId(R.id.ninchat_queue_activity_queue_status)).check(
+                matches(withText("some text"))
+        )*/
+        activityScenario.close()
     }
 
 }

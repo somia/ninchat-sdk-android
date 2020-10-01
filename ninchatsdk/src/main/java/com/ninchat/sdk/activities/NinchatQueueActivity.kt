@@ -41,7 +41,7 @@ class NinchatQueueActivity : NinchatBaseActivity() {
             return
         }
         // update the queue id
-        intent?.getStringExtra(NinchatQueueActivity.QUEUE_ID)?.let {
+        intent?.getStringExtra(QUEUE_ID)?.let {
             queueId = it
         }
         // show rorate animation
