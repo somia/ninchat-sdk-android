@@ -106,6 +106,7 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
             description.setVisibility(View.VISIBLE);
             description.setGravity(Gravity.START);
             description.setText(Misc.toRichText(sessionManager.ninchatState.getSiteConfig().getFeedbackTitleText(), description));
+
             final TextView positive = botViewItem.findViewById(R.id.ninchat_review_positive);
             positive.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackPositiveText());
             final TextView neutral = botViewItem.findViewById(R.id.ninchat_review_neutral);
@@ -122,8 +123,13 @@ public final class NinchatReviewActivity extends NinchatBaseActivity {
         findViewById(R.id.review_rating_bot_view).setVisibility(View.GONE);
         final View formViewItem = findViewById(R.id.review_rating_normal_view);
         formViewItem.setVisibility(View.VISIBLE);
+
         final TextView title = formViewItem.findViewById(R.id.ninchat_review_title);
         title.setText(Misc.toRichText(sessionManager.ninchatState.getSiteConfig().getThankYouTextText(), title));
+
+        final TextView description = formViewItem.findViewById(R.id.ninchat_review_description);
+        description.setVisibility(View.VISIBLE);
+        description.setText(Misc.toRichText(sessionManager.ninchatState.getSiteConfig().getFeedbackTitleText(), description));
 
         final TextView positive = formViewItem.findViewById(R.id.ninchat_review_positive);
         positive.setText(sessionManager.ninchatState.getSiteConfig().getFeedbackPositiveText());

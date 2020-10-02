@@ -150,7 +150,10 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
                     NinchatSessionManager.getInstance().getSession(),
                     NinchatSessionManager.getInstance().ninchatState.getChannelId(),
                     data.toString(2),
-                    aLong -> null
+                    aLong -> {
+                        NinchatSessionManager.getInstance().ninchatState.setActionId(aLong);
+                        return null;
+                    }
             );
         } catch (final JSONException e) {
             // Ignore
@@ -235,7 +238,10 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
         if (NinchatSessionManager.getInstance().ninchatState.getAudienceMetadata() == null) {
             NinchatSessionManager.getInstance().ninchatState.setAudienceMetadata(new Props());
         }
-        NinchatSessionManager.getInstance().ninchatState.getAudienceMetadata().setObject("pre_answers", getPreAnswers(answers));
+        // escape setting answers if they are empty
+        if (answers != null) {
+            NinchatSessionManager.getInstance().ninchatState.getAudienceMetadata().setObject("pre_answers", getPreAnswers(answers));
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
