@@ -2,11 +2,9 @@ package com.ninchat.sdk.models.questionnaire;
 
 import android.content.Context;
 import android.os.Handler;
-
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.text.TextUtils;
 import android.view.View;
 
