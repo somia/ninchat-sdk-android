@@ -46,6 +46,8 @@ import com.ninchat.sdk.networkdispatchers.NinchatPartChannel;
 import com.ninchat.sdk.networkdispatchers.NinchatSendFile;
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
 import com.ninchat.sdk.networkdispatchers.NinchatUpdateMember;
+import com.ninchat.sdk.review.model.NinchatReviewModel;
+import com.ninchat.sdk.review.presenter.NinchatReviewPresenter;
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
 import com.ninchat.sdk.utils.misc.Broadcast;
 import com.ninchat.sdk.utils.misc.Misc;
@@ -90,7 +92,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
-        if (requestCode == NinchatReviewActivity.REQUEST_CODE) {
+        if (requestCode == NinchatReviewModel.REQUEST_CODE) {
             // coming from ninchat review
             if (sessionManager != null &&
                     sessionManager.ninchatState.getNinchatQuestionnaire() != null &&
@@ -238,7 +240,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
         final boolean showRatings = sessionManager.ninchatState.getSiteConfig().showRating();
         // sessionManager.partChannel();
         if (showRatings) {
-            startActivityForResult(NinchatReviewActivity.getLaunchIntent(NinchatChatActivity.this), NinchatReviewActivity.REQUEST_CODE);
+            startActivityForResult(NinchatReviewPresenter.getLaunchIntent(NinchatChatActivity.this), NinchatReviewModel.REQUEST_CODE);
         } else {
             quit(null);
         }

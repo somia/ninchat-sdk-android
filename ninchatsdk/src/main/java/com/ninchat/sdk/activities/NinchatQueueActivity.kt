@@ -43,7 +43,7 @@ class NinchatQueueActivity : NinchatBaseActivity() {
         intent?.getStringExtra(QUEUE_ID)?.let {
             queueId = it
         }
-        // show rorate animation
+        // show rotate animation
         findViewById<View>(R.id.ninchat_queue_activity_progress)?.run {
             animation = RotateAnimation(0f, 359f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f).apply {
                 interpolator = LinearInterpolator()
