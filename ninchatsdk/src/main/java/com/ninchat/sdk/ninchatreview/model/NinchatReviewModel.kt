@@ -1,4 +1,4 @@
-package com.ninchat.sdk.review.model
+package com.ninchat.sdk.ninchatreview.model
 
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager

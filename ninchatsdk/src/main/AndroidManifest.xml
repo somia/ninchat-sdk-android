@@ -28,7 +28,7 @@
             android:theme="@style/NinchatTheme"
             android:configChanges="orientation|screenSize"/>
         <activity
-            android:name=".review.view.NinchatReviewActivity"
+            android:name=".ninchatreview.view.NinchatReviewActivity"
             android:theme="@style/NinchatTheme" />
         <activity
             android:name=".activities.NinchatMediaActivity"

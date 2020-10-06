@@ -1,4 +1,4 @@
-package com.ninchat.sdk.review.presenter
+package com.ninchat.sdk.ninchatreview.presenter
 
 import android.content.Context
 import android.content.Intent
@@ -12,8 +12,8 @@ import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.networkdispatchers.NinchatSendRatings
-import com.ninchat.sdk.review.model.NinchatReviewModel
-import com.ninchat.sdk.review.view.NinchatReviewActivity
+import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel
+import com.ninchat.sdk.ninchatreview.view.NinchatReviewActivity
 import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.android.synthetic.main.activity_ninchat_review.view.*

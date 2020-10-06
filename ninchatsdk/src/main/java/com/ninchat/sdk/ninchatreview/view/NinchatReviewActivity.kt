@@ -1,4 +1,4 @@
-package com.ninchat.sdk.review.view
+package com.ninchat.sdk.ninchatreview.view
 
 import android.app.Activity
 import android.os.Bundle
@@ -6,8 +6,8 @@ import android.view.View
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
-import com.ninchat.sdk.review.model.NinchatReviewModel
-import com.ninchat.sdk.review.presenter.NinchatReviewPresenter
+import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel
+import com.ninchat.sdk.ninchatreview.presenter.NinchatReviewPresenter
 import kotlinx.android.synthetic.main.activity_ninchat_review.*
 
 // todo (pallab) convert to mvvm from current mvp in future iteration

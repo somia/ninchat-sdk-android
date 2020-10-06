@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:id="@+id/ninchat_review_activity"
     android:background="@color/ninchat_color_background_bottom"
-    tools:context=".review.view.NinchatReviewActivity">
+    tools:context=".ninchatreview.view.NinchatReviewActivity">
 
 
     <include
