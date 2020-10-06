@@ -1,10 +1,19 @@
 package com.ninchat.sdk.espresso.ninchatqueue.model
 
+import androidx.lifecycle.Lifecycle
+import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.R
+import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
+import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
+import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity
 import org.junit.Assert
 import org.junit.Test
 
@@ -19,6 +28,7 @@ class NinchatQueueModelTest {
             "questionnaireName": "Botti",
             "questionnaireAvatar": "http://testquestion.avatar.img",
             "postAudienceQuestionnaireStyle": "conversation",
+            "inQueueText": "in queue text test",
             "translations": {
               "Join audience queue {{audienceQueue.queue_attrs.name}}": "Aloita chat",
               "Join audience queue {{audienceQueue.queue_attrs.name}} (closed)": " ",
@@ -61,6 +71,7 @@ class NinchatQueueModelTest {
 
     @Test
     fun `should_update_queue_id`() {
+        Thread.sleep(2000)
         val expectedQueueId = "12345"
         val ninchatQueueModel = NinchatQueueModel()
         ninchatQueueModel.queueId = expectedQueueId
@@ -69,10 +80,84 @@ class NinchatQueueModelTest {
 
     @Test
     fun `should_be_able_to_parse_queue_related_text_from_site_config`() {
+        Thread.sleep(2000)
         NinchatSession.Builder(appContext, configurationKey).create()
         NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
         NinchatSessionManager.getInstance().ninchatState.ninchatQuestionnaire = NinchatQuestionnaireHolder(NinchatSessionManager.getInstance())
 
-        
+        val ninchatQueueModel = NinchatQueueModel()
+        Assert.assertEquals("in queue text test", ninchatQueueModel.getInQueueMessageText())
+        Assert.assertEquals("Sulje keskustelu", ninchatQueueModel.getChatCloseText())
+    }
+
+    @Test
+    fun `back_should_not_finish_activity`() {
+        NinchatSession.Builder(appContext, configurationKey).create()
+        val scenario = ActivityScenario.launch(NinchatQueueActivity::class.java)
+        scenario.onActivity {
+            it.onBackPressed()
+        }
+        Assert.assertEquals(Lifecycle.State.CREATED, scenario.state)
+    }
+
+    @Test
+    fun `get_intent_with_queue_id`() {
+        val expectedQueueId = "123456"
+        val intent = NinchatQueuePresenter.getLaunchIntentWithQueueId(appContext, expectedQueueId)
+        val queueId = intent.getStringExtra(NinchatQueueModel.QUEUE_ID)
+        Assert.assertEquals(expectedQueueId, queueId)
+    }
+
+    @Test
+    fun `create_activity_without_ninchat_session`() {
+        val activityScenario = ActivityScenario.launch(NinchatQueueActivity::class.java)
+        Assert.assertEquals(Lifecycle.State.DESTROYED, activityScenario.state)
+    }
+
+    @Test
+    fun `create_activity_with_ninchat_session`() {
+        NinchatSession.Builder(appContext, configurationKey).create()
+        val activityScenario = ActivityScenario.launch(NinchatQueueActivity::class.java)
+        Assert.assertEquals(Lifecycle.State.CREATED, activityScenario.state)
+        activityScenario.close()
+    }
+
+    @Test
+    fun `activity_result_without_queue_id`() {
+        NinchatSession.Builder(appContext, configurationKey).create()
+        val activityScenario = ActivityScenario.launch(NinchatQueueActivity::class.java)
+        activityScenario.onActivity {
+            Assert.assertNull(it.queueId)
+        }
+        activityScenario.close()
+    }
+
+    @Test
+    fun `activity_result_with_queue_id`() {
+        NinchatSession.Builder(appContext, configurationKey).create()
+        val expectedQueueId = "test-queue"
+        val intent = NinchatQueuePresenter.getLaunchIntentWithQueueId(appContext, expectedQueueId)
+
+        val activityScenario = ActivityScenario.launch<NinchatQueueActivity>(intent)
+        activityScenario.onActivity {
+            Assert.assertEquals(expectedQueueId, it.queueId)
+        }
+        activityScenario.close()
+    }
+
+
+    @Test
+    fun `update_queue_status_without_channel`() {
+
+    }
+
+    @Test
+    fun `update_queue_status_with_channel`() {
+        NinchatSession.Builder(appContext, configurationKey).create()
+        NinchatSessionManager.getInstance().ninchatState.currentSessionState = 1 shl NinchatQuestionnaireTypeUtil.HAS_CHANNEL
+        val expectedQueueId = "test-queue"
+        val intent = NinchatQueuePresenter.getLaunchIntentWithQueueId(appContext, expectedQueueId)
+        val activityScenario = ActivityScenario.launch<NinchatQueueActivity>(intent)
+        activityScenario.close()
     }
 }
