@@ -21,7 +21,7 @@
             android:name=".activities.NinchatActivity"
             android:theme="@style/NinchatTheme" />
         <activity
-            android:name=".activities.NinchatQueueActivity"
+            android:name=".ninchatqueue.view.NinchatQueueActivity"
             android:theme="@style/NinchatTheme" />
         <activity
             android:name=".activities.NinchatChatActivity"

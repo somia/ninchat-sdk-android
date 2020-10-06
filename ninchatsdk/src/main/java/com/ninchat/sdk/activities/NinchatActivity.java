@@ -20,6 +20,9 @@ import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
+import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel;
+import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter;
+import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity;
 import com.ninchat.sdk.utils.misc.Misc;
 
 import static com.ninchat.sdk.activities.NinchatQuestionnaireActivity.OPEN_QUEUE;
@@ -167,7 +170,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
     }
 
     private void openQueueActivity() {
-        startActivityForResult(NinchatQueueActivity.getLaunchIntent(this, queueId), NinchatQueueActivity.REQUEST_CODE);
+        startActivityForResult(NinchatQueuePresenter.getLaunchIntentWithQueueId(this, queueId), NinchatQueueModel.REQUEST_CODE);
     }
 
     private void openPreAudienceQuestionnairesActivity() {
@@ -184,7 +187,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NinchatQueueActivity.REQUEST_CODE) {
+        if (requestCode == NinchatQueueModel.REQUEST_CODE) {
             if (resultCode == RESULT_OK || queueId != null) {
                 final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
                 if (resultCode == RESULT_OK &&

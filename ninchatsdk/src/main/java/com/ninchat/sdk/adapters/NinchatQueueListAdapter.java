@@ -15,7 +15,9 @@ import android.widget.Button;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatQuestionnaireActivity;
-import com.ninchat.sdk.activities.NinchatQueueActivity;
+import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel;
+import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter;
+import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity;
 import com.ninchat.sdk.models.NinchatQueue;
 
 import java.lang.ref.WeakReference;
@@ -62,8 +64,8 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
                     }
                     // after click a particular queue we should check if there are pre-audience questionnaires
                     activity.startActivityForResult(
-                            NinchatQueueActivity.getLaunchIntent(activity, queue.getId()),
-                            NinchatQueueActivity.REQUEST_CODE);
+                            NinchatQueuePresenter.getLaunchIntentWithQueueId(activity, queue.getId()),
+                            NinchatQueueModel.REQUEST_CODE);
                 });
             }
         }

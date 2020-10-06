@@ -66,7 +66,7 @@ import java.util.List;
  */
 public final class NinchatChatActivity extends NinchatBaseActivity {
 
-    static int REQUEST_CODE = NinchatChatActivity.class.hashCode() & 0xffff;
+    public static int REQUEST_CODE = NinchatChatActivity.class.hashCode() & 0xffff;
 
     protected static final int CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE = "WebRTCVideoAudio".hashCode() & 0xffff;
     protected static final int PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() & 0xffff;
