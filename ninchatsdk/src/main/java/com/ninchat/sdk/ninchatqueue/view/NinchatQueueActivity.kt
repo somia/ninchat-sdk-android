@@ -72,7 +72,7 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
     }
 
     fun onClose(view: View) {
-        ninchatQueuePresenter.closeView()
+        ninchatQueuePresenter.mayBeDeleteUser()
         setResult(RESULT_CANCELED, null)
         finish()
     }

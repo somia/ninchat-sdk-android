@@ -69,6 +69,8 @@ class NinchatQueuePresenter(
     }
 
     fun mayBeJoinQueue() {
+        // if there is no queue id. then don't try to join the queue
+        if (ninchatQueueModel.queueId.isNullOrEmpty()) return
         NinchatSessionManagerHelper.mayBeJoinQueue(ninchatQueueModel.queueId ?: "")
     }
 
@@ -89,7 +91,7 @@ class NinchatQueuePresenter(
     }
 
 
-    fun closeView() {
+    fun mayBeDeleteUser() {
         NinchatSessionManager.getInstance().let { ninchatSessionManager ->
             NinchatScopeHandler.getIOScope().launch {
                 NinchatDeleteUser.execute(
