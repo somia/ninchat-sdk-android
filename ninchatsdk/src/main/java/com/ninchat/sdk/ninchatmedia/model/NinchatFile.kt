@@ -26,8 +26,8 @@ data class NinchatFile(val messageId: String?, val id: String, val name: String?
     }
 
     // TODO: Should we support gigabytes and terabytes too?
-    private val fileSize: String
-        private get() {
+    val fileSize: String
+        get() {
             if (size / 1024 == 0) {
                 return size.toString() + "B"
             }
