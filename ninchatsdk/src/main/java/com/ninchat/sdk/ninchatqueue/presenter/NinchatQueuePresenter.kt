@@ -30,7 +30,7 @@ interface INinchatQueuePresenter {
 
 class NinchatQueuePresenter(
         val ninchatQueueModel: NinchatQueueModel,
-        val callback: INinchatQueuePresenter,
+        val callback: INinchatQueuePresenter?,
         val mContext: Context,
 ) {
 
@@ -105,7 +105,7 @@ class NinchatQueuePresenter(
         override fun onReceive(context: Context, intent: Intent?) {
             if (intent?.action == Broadcast.CHANNEL_JOINED) {
                 val chatClose = intent.extras?.getBoolean(Parameter.CHAT_IS_CLOSED) ?: false
-                callback.onChannelJoined(chatClose)
+                callback?.onChannelJoined(chatClose)
             }
         }
     }
@@ -113,7 +113,7 @@ class NinchatQueuePresenter(
     private val channelUpdatedBroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             if (intent.action == Broadcast.QUEUE_UPDATED) {
-                callback.onQueueUpdate()
+                callback?.onQueueUpdate()
             }
         }
     }

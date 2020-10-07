@@ -1,18 +1,13 @@
 package com.ninchat.sdk.espresso.ninchatqueue.presenter
 
-import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
-import com.ninchat.sdk.NinchatSession
-import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
+import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
 import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
+import com.ninchat.sdk.utils.misc.Parameter
 import org.junit.After
 import org.junit.Assert
 import org.junit.Test
@@ -37,7 +32,8 @@ class NinchatQueuePresenterTest {
 
     @Test
     fun `should_return_empty_session`() {
-
+        val queuePresenter = NinchatQueuePresenter(NinchatQueueModel(), null, appContext)
+        Assert.assertEquals(false, queuePresenter.hasSession())
     }
 
     @Test
@@ -52,12 +48,20 @@ class NinchatQueuePresenterTest {
 
     @Test
     fun `update_queue_id_with_queue_id`() {
+        val intent = NinchatQueuePresenter.getLaunchIntentWithQueueId(appContext, "12345").run {
+            putExtra("isDebug", true)
+        }
 
+        val queuePresenter = NinchatQueuePresenter(NinchatQueueModel(), null, appContext)
+        queuePresenter.updateQueueId(intent)
+        Assert.assertEquals("12345", queuePresenter.ninchatQueueModel.queueId)
     }
 
     @Test
     fun `update_queue_id_with_out_queue_id`() {
-
+        val queuePresenter = NinchatQueuePresenter(NinchatQueueModel(), null, appContext)
+        queuePresenter.updateQueueId(null)
+        Assert.assertNull(queuePresenter.ninchatQueueModel.queueId)
     }
 
     @Test
@@ -75,10 +79,20 @@ class NinchatQueuePresenterTest {
 
     @Test
     fun `get_intent_for_chat_activity`() {
+        val intent = NinchatQueuePresenter.getLaunchIntentForChatActivity(
+                appContext,
+                false
+        )
+        Assert.assertEquals(false, intent.getBooleanExtra(Parameter.CHAT_IS_CLOSED, false))
     }
 
     @Test
     fun `get_intent_with_queue_id`() {
+        val intent = NinchatQueuePresenter.getLaunchIntentWithQueueId(
+                appContext,
+                "1234"
+        )
+        Assert.assertEquals("1234", intent.getStringExtra(NinchatQueueModel.QUEUE_ID))
     }
 
 }
