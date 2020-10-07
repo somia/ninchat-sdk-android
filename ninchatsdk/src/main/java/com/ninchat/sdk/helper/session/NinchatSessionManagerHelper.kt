@@ -224,9 +224,9 @@ class NinchatSessionManagerHelper {
                 val file = currentSession.ninchatState?.getFile(fileId)
                 file?.url = url
                 file?.urlExpiry = Date(urlExpiry)
-                file?.setAspectRatio(aspectRatio)
-                file?.setWidth(width)
-                file?.setHeight(height)
+                file?.aspectRatio = aspectRatio
+                file?.fileWidth = width
+                file?.fileHeight = height
                 file?.isDownloadableFile = width == -1L || height == -1L
                 file?.let { currentFile ->
                     currentSession.messageAdapter?.add(currentFile.messageId,

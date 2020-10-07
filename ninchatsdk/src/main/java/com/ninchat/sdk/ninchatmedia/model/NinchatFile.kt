@@ -8,38 +8,21 @@ import java.util.*
 data class NinchatFile(val messageId: String?, val id: String, val name: String?, private val size: Int, private val type: String, val timestamp: Long, val sender: String?, val isRemote: Boolean) {
     var url: String? = null
     var urlExpiry: Date? = null
-    private var aspectRatio = 0f
-    private var width: Long = 0
-    private var height: Long = 0
+    var aspectRatio = 0f
+    var fileWidth: Long = 0
+    var fileHeight: Long = 0
     var isDownloadableFile = false
     var isDownloaded = false
-        private set
-
-    fun setAspectRatio(aspectRatio: Float) {
-        this.aspectRatio = aspectRatio
-    }
-
-    fun setWidth(width: Long) {
-        this.width = width
-    }
-
-    fun setHeight(height: Long) {
-        this.height = height
-    }
-
-    fun setDownloaded() {
-        isDownloaded = true
-    }
 
     val isVideo: Boolean
         get() = type.startsWith("video/")
 
     fun getWidth(): Int {
-        return width.toInt()
+        return fileWidth.toInt()
     }
 
     fun getHeight(): Int {
-        return height.toInt()
+        return fileHeight.toInt()
     }
 
     // TODO: Should we support gigabytes and terabytes too?

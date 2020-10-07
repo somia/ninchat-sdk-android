@@ -84,10 +84,10 @@ class NinchatFileTest {
         )
         val width = 320L
         val height = 280L
-        ninchatFile.setWidth(width)
-        ninchatFile.setHeight(height)
-        Assert.assertEquals(Math.toIntExact(width), ninchatFile.width)
-        Assert.assertEquals(Math.toIntExact(height), ninchatFile.height)
+        ninchatFile.fileWidth = width
+        ninchatFile.fileHeight = height
+        Assert.assertEquals(width, ninchatFile.fileWidth)
+        Assert.assertEquals(height, ninchatFile.fileHeight)
     }
 
     @Test
@@ -103,7 +103,7 @@ class NinchatFileTest {
                 isRemote
         )
         Assert.assertEquals(false, ninchatFile.isDownloaded)
-        ninchatFile.setDownloaded()
+        ninchatFile.isDownloaded = true
         Assert.assertEquals(true, ninchatFile.isDownloaded)
     }
 
@@ -120,7 +120,7 @@ class NinchatFileTest {
                 isRemote
         )
         Assert.assertEquals(false, ninchatFile.isDownloadableFile)
-        ninchatFile.setDownloadableFile(true)
+        ninchatFile.isDownloadableFile = true
         Assert.assertEquals(true, ninchatFile.isDownloadableFile)
     }
 }
