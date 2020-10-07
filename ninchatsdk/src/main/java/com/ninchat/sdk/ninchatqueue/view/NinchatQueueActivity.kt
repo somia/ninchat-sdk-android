@@ -22,7 +22,7 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
     private val ninchatQueuePresenter = NinchatQueuePresenter(
             ninchatQueueModel = NinchatQueueModel(),
             callback = this,
-            mContext = applicationContext)
+            mContext = this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +66,7 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
         }
     }
 
-    fun onClose() {
+    fun onClose(view: View) {
         ninchatQueuePresenter.closeView()
         setResult(RESULT_CANCELED, null)
         finish()

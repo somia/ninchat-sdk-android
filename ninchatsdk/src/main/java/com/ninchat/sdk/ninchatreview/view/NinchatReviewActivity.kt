@@ -37,25 +37,25 @@ class NinchatReviewActivity : NinchatBaseActivity() {
         }
     }
 
-    fun onGoodClick() {
+    fun onGoodClick(view: View) {
         ninchatReviewPresenter.maybeSendRating(NinchatSession.Analytics.Rating.GOOD)
         setResult(Activity.RESULT_OK, ninchatReviewPresenter.getResultIntent())
         finish()
     }
 
-    fun onFairClick() {
+    fun onFairClick(view: View) {
         ninchatReviewPresenter.maybeSendRating(NinchatSession.Analytics.Rating.FAIR)
         setResult(Activity.RESULT_OK, ninchatReviewPresenter.getResultIntent())
         finish()
     }
 
-    fun onPoorClick() {
+    fun onPoorClick(view: View) {
         ninchatReviewPresenter.maybeSendRating(NinchatSession.Analytics.Rating.POOR)
         setResult(Activity.RESULT_OK, ninchatReviewPresenter.getResultIntent())
         finish()
     }
 
-    fun onSkipClick() {
+    fun onSkipClick(view: View) {
         ninchatReviewPresenter.maybeSendRating(NinchatSession.Analytics.Rating.NO_ANSWER)
         setResult(Activity.RESULT_OK, ninchatReviewPresenter.getResultIntent())
         finish()
