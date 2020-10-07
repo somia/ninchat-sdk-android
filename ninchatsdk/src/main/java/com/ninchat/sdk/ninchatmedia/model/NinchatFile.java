@@ -1,4 +1,4 @@
-package com.ninchat.sdk.models;
+package com.ninchat.sdk.ninchatmedia.model;
 
 import android.os.Build;
 import android.text.Html;

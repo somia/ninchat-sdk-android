@@ -2,7 +2,7 @@ package com.ninchat.sdk
 
 import android.app.Activity
 import com.ninchat.sdk.NinchatSessionManager.init
-import com.ninchat.sdk.models.NinchatFile
+import com.ninchat.sdk.ninchatmedia.model.NinchatFile
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

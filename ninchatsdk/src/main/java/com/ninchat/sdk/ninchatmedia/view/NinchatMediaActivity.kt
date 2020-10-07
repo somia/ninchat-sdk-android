@@ -1,139 +1,84 @@
-package com.ninchat.sdk.ninchatmedia.view;
+package com.ninchat.sdk.ninchatmedia.view
 
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.MediaController;
-import android.widget.TextView;
-import android.widget.VideoView;
+import android.app.DownloadManager
+import android.os.Bundle
+import android.view.View
+import com.bumptech.glide.Glide
+import com.ninchat.sdk.R
+import com.ninchat.sdk.activities.NinchatBaseActivity
+import com.ninchat.sdk.ninchatmedia.model.NinchatMediaModel
+import com.ninchat.sdk.ninchatmedia.presenter.INinchatMediaPresenter
+import com.ninchat.sdk.ninchatmedia.presenter.NinchatMediaPresenter
+import kotlinx.android.synthetic.main.activity_ninchat_media.*
 
-import com.bumptech.glide.Glide;
-import com.ninchat.sdk.NinchatSessionManager;
-import com.ninchat.sdk.R;
-import com.ninchat.sdk.activities.NinchatBaseActivity;
-import com.ninchat.sdk.models.NinchatFile;
+class NinchatMediaActivity : NinchatBaseActivity(), INinchatMediaPresenter {
+    override val layoutRes: Int
+        get() = R.layout.activity_ninchat_media
 
-public final class NinchatMediaActivity extends NinchatBaseActivity {
-
-    protected static final String FILE_ID = "fileId";
-
-    public static Intent getLaunchIntent(final Context context, final String fileId) {
-        return new Intent(context, NinchatMediaActivity.class).putExtra(FILE_ID, fileId);
+    override fun allowBackButton(): Boolean {
+        return true
     }
 
-    @Override
-    protected int getLayoutRes() {
-        return R.layout.activity_ninchat_media;
+    // ninchat media presenter
+    private val ninchatMediaPresenter = NinchatMediaPresenter(
+            ninchatMediaModel = NinchatMediaModel(),
+            callback = this,
+            mContext = this
+    )
+
+    fun onToggleTopBar(view: View?) {
+        ninchatMediaPresenter.toggleMediaTopBar(ninchat_media_top)
     }
 
-    @Override
-    protected boolean allowBackButton() {
-        return true;
+    fun onClose(view: View?) {
+        finish()
     }
 
-    public void onToggleTopBar(final View view) {
-        final View top = findViewById(R.id.ninchat_media_top);
-        top.setVisibility(top.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
-    }
-
-    public void onClose(final View view) {
-        finish();
-    }
-
-    public void onDownloadFile(final View view) {
+    fun onDownloadFile(view: View?) {
         if (hasFileAccessPermissions()) {
-            downloadFile();
+            ninchatMediaPresenter
+                    .downloadFile(ninchat_media_download, getSystemService(DOWNLOAD_SERVICE) as DownloadManager)
         } else {
-            requestFileAccessPermissions();
+            requestFileAccessPermissions()
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
             if (hasFileAccessPermissions()) {
-                downloadFile();
+                ninchatMediaPresenter
+                        .downloadFile(ninchat_media_download, getSystemService(DOWNLOAD_SERVICE) as DownloadManager)
             } else {
-                showError(R.id.ninchat_media_error, R.string.ninchat_chat_error_no_file_permissions);
+                showError(R.id.ninchat_media_error, R.string.ninchat_chat_error_no_file_permissions)
             }
         }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private void downloadFile() {
-        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
-        final NinchatFile file = sessionManager.ninchatState.getFile(fileId);
-        final Uri uri = Uri.parse(file.getUrl());
-        final DownloadManager.Request request = new DownloadManager.Request(uri);
-        request.setTitle(file.getName());
-        request.setDescription(file.getUrl());
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES, file.getName());
-        request.allowScanningByMediaScanner();
-        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        final DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-        downloadManager.enqueue(request);
-        findViewById(R.id.ninchat_media_download).setVisibility(View.GONE);
-    }
-
-    private String fileId;
-
-    private BroadcastReceiver fileDownloadedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
-            final String action = intent.getAction();
-            if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-                findViewById(R.id.ninchat_media_download).setVisibility(sessionManager.ninchatState.getFile(fileId).isDownloaded() ? View.GONE : View.VISIBLE);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        ninchatMediaPresenter.updateFileId(intent = intent)
+        ninchatMediaPresenter.ninchatMediaModel.getFile()?.let { ninchatFile ->
+            if (ninchatFile.isVideo) {
+                ninchat_media_download.visibility = View.GONE
+                ninchatMediaPresenter.playVideo(ninchat_media_video, ninchatFile.url)
+            } else {
+                Glide.with(this)
+                        .load(ninchatFile.url)
+                        .into(ninchat_media_image)
             }
+            ninchat_media_name.text = ninchatFile.name
+            ninchat_media_download.visibility = if (ninchatFile.isDownloaded) View.GONE else View.VISIBLE
         }
-    };
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        fileId = getIntent().getStringExtra(FILE_ID);
-        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
-        final NinchatFile file = sessionManager.ninchatState.getFile(fileId);
-        findViewById(R.id.ninchat_media_download).setVisibility(file.isDownloaded() ? View.GONE : View.VISIBLE);
-        if (file.isVideo()) {
-            findViewById(R.id.ninchat_media_image).setVisibility(View.GONE);
-            final VideoView video = findViewById(R.id.ninchat_media_video);
-            MediaController mediaController = new MediaController(this);
-            mediaController.setAnchorView(video);
-            mediaController.setMediaPlayer(video);
-            video.setVisibility(View.VISIBLE);
-            video.setMediaController(mediaController);
-            video.setVideoPath(file.getUrl());
-            video.start();
-        } else {
-            final ImageView image = findViewById(R.id.ninchat_media_image);
-            Glide.with(this)
-                    .load(file.getUrl())
-                    .into(image);
-        }
-        if (file.isDownloaded()) {
-            findViewById(R.id.ninchat_media_download).setVisibility(View.GONE);
-        }
-        final TextView name = findViewById(R.id.ninchat_media_name);
-        name.setText(file.getName());
-        final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.registerReceiver(fileDownloadedReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        ninchatMediaPresenter.subscribeBroadcaster()
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.unregisterReceiver(fileDownloadedReceiver);
+    override fun onDestroy() {
+        ninchatMediaPresenter.unSubscribeBroadcaster()
+        super.onDestroy()
+    }
+
+    override fun onDownloadComplete() {
+        ninchat_media_download.visibility = if (ninchatMediaPresenter.ninchatMediaModel.isDownloaded()) View.GONE else View.VISIBLE
     }
 }

@@ -30,8 +30,9 @@ import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatChatActivity;
+import com.ninchat.sdk.ninchatmedia.presenter.NinchatMediaPresenter;
 import com.ninchat.sdk.ninchatmedia.view.NinchatMediaActivity;
-import com.ninchat.sdk.models.NinchatFile;
+import com.ninchat.sdk.ninchatmedia.model.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
@@ -142,7 +143,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        v.getContext().startActivity(NinchatMediaActivity.getLaunchIntent(v.getContext(), ninchatMessage.getFileId()));
+                        v.getContext().startActivity(NinchatMediaPresenter.getLaunchIntent(v.getContext(), ninchatMessage.getFileId()));
                     }
                 });
             }

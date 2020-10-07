@@ -1,8 +1,7 @@
-package com.ninchat.sdk.models
+package com.ninchat.sdk.ninchatmedia.model
 
 import org.junit.Assert
 import org.junit.Test
-import org.mockito.Mockito.mock
 import java.util.*
 
 class NinchatFileTest {

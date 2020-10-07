@@ -55,7 +55,6 @@ abstract class NinchatBaseActivity : Activity() {
     }
 
     companion object {
-        @JvmField
-        protected val STORAGE_PERMISSION_REQUEST_CODE = "ExternalStorage".hashCode() and 0xffff
+        val STORAGE_PERMISSION_REQUEST_CODE = "ExternalStorage".hashCode() and 0xffff
     }
 }

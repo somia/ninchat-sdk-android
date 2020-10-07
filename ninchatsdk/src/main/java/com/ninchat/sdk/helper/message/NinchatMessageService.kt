@@ -6,7 +6,7 @@ import com.ninchat.client.Payload
 import com.ninchat.client.Props
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.events.OnPostAudienceQuestionnaire
-import com.ninchat.sdk.models.NinchatFile
+import com.ninchat.sdk.ninchatmedia.model.NinchatFile
 import com.ninchat.sdk.models.NinchatMessage
 import com.ninchat.sdk.models.NinchatMessage.Type.MULTICHOICE
 import com.ninchat.sdk.models.NinchatOption
