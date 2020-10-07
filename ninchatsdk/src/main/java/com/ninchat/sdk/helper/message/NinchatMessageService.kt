@@ -112,7 +112,7 @@ class NinchatMessageService {
                                     val fileId = currentFile.optString("file_id")
                                     val ninchatFile = NinchatFile(messageId, fileId, filename, filesize, filetype, timestampMs, sender, sender != ninchatSessionManager.ninchatState?.userId)
                                     ninchatSessionManager.ninchatState?.addFile(fileId, ninchatFile)
-                                    if (ninchatFile.url == null || ninchatFile.urlExpiry == null || ninchatFile.urlExpiry.before(Date())) {
+                                    if (ninchatFile.url == null || ninchatFile.urlExpiry == null || ninchatFile.urlExpiry?.before(Date()) == true) {
                                         getIOScope().launch {
                                             NinchatDescribeFile.execute(
                                                     currentSession = ninchatSessionManager.session,

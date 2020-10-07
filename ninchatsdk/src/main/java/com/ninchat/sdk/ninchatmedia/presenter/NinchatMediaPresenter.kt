@@ -12,11 +12,9 @@ import android.os.Environment
 import android.view.View
 import android.widget.MediaController
 import android.widget.VideoView
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.ninchatmedia.model.NinchatMediaModel
 import com.ninchat.sdk.ninchatmedia.view.NinchatMediaActivity
-import kotlinx.android.synthetic.main.activity_ninchat_media.*
 
 
 interface INinchatMediaPresenter {
@@ -55,7 +53,7 @@ class NinchatMediaPresenter(
         view.visibility = View.GONE
     }
 
-    fun playVideo(view: VideoView, url: String) {
+    fun playVideo(view: VideoView, url: String?) {
         val mediaController = MediaController(mContext)
         mediaController.setAnchorView(view)
         mediaController.setMediaPlayer(view)

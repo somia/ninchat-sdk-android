@@ -1,136 +1,64 @@
-package com.ninchat.sdk.ninchatmedia.model;
+package com.ninchat.sdk.ninchatmedia.model
 
-import android.os.Build;
-import android.text.Html;
-import android.text.Spanned;
+import android.os.Build
+import android.text.Html
+import android.text.Spanned
+import java.util.*
 
-import java.util.Date;
+data class NinchatFile(val messageId: String?, val id: String, val name: String?, private val size: Int, private val type: String, val timestamp: Long, val sender: String?, val isRemote: Boolean) {
+    var url: String? = null
+    var urlExpiry: Date? = null
+    private var aspectRatio = 0f
+    private var width: Long = 0
+    private var height: Long = 0
+    var isDownloadableFile = false
+    var isDownloaded = false
+        private set
 
-public final class NinchatFile {
-
-    private String messageId;
-    private String fileId;
-    private String name;
-    private int size;
-    private String type;
-    private long timestamp;
-    private String sender;
-    private boolean isRemote;
-    private String url;
-    private Date urlExpiry;
-    private float aspectRatio;
-    private long width;
-    private long height;
-    private boolean isDownloadableFile;
-
-    private boolean isDownloaded = false;
-
-    public NinchatFile(final String messageId, final String fileId, final String name, int size, final String type, final long timestamp, final String sender, final boolean isRemote) {
-        this.messageId = messageId;
-        this.fileId = fileId;
-        this.name = name;
-        this.size = size;
-        this.type = type;
-        this.timestamp = timestamp;
-        this.sender = sender;
-        this.isRemote = isRemote;
+    fun setAspectRatio(aspectRatio: Float) {
+        this.aspectRatio = aspectRatio
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    fun setWidth(width: Long) {
+        this.width = width
     }
 
-    public void setUrlExpiry(Date urlExpiry) {
-        this.urlExpiry = urlExpiry;
+    fun setHeight(height: Long) {
+        this.height = height
     }
 
-    public void setAspectRatio(float aspectRatio) {
-        this.aspectRatio = aspectRatio;
+    fun setDownloaded() {
+        isDownloaded = true
     }
 
-    public void setWidth(long width) {
-        this.width = width;
+    val isVideo: Boolean
+        get() = type.startsWith("video/")
+
+    fun getWidth(): Int {
+        return width.toInt()
     }
 
-    public void setHeight(long height) {
-        this.height = height;
+    fun getHeight(): Int {
+        return height.toInt()
     }
 
-    public void setDownloaded() {
-        isDownloaded = true;
-    }
-
-    public boolean isVideo() {
-        return type.startsWith("video/");
-    }
-
-    public boolean isDownloadableFile() {
-        return this.isDownloadableFile;
-    }
-
-    public void setDownloadableFile(boolean downloadableFile) {
-        isDownloadableFile = downloadableFile;
-    }
-
-    public boolean isDownloaded() {
-        return isDownloaded;
-    }
-
-    public String getMessageId() {
-        return messageId;
-    }
-
-    public String getId() {
-        return fileId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public String getSender() {
-        return sender;
-    }
-
-    public boolean isRemote() {
-        return isRemote;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public int getWidth() {
-        return (int) width;
-    }
-
-    public int getHeight() {
-        return (int) height;
-    }
-
-    private String getFileSize() {
-        if (size / 1024 == 0) {
-            return size + "B";
+    // TODO: Should we support gigabytes and terabytes too?
+    private val fileSize: String
+        private get() {
+            if (size / 1024 == 0) {
+                return size.toString() + "B"
+            }
+            val kiloBytes = size / 1024
+            if (kiloBytes / 1024 == 0) {
+                return kiloBytes.toString() + "kB"
+            }
+            val megaBytes = kiloBytes / 1024
+            // TODO: Should we support gigabytes and terabytes too?
+            return megaBytes.toString() + "MB"
         }
-        int kiloBytes = size / 1024;
-        if (kiloBytes / 1024 == 0) {
-            return kiloBytes + "kB";
+    val fileLink: Spanned
+        get() {
+            val link = "<a href='$url'>$name</a> ($fileSize)"
+            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) Html.fromHtml(link, Html.FROM_HTML_MODE_LEGACY) else Html.fromHtml(link)
         }
-        int megaBytes = kiloBytes / 1024;
-        // TODO: Should we support gigabytes and terabytes too?
-        return megaBytes + "MB";
-    }
-
-    public Spanned getFileLink() {
-        final String link = "<a href='" + url + "'>" + name + "</a> (" + getFileSize() + ")";
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(link, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(link);
-    }
-
-    public Date getUrlExpiry() {
-        return urlExpiry;
-    }
 }
