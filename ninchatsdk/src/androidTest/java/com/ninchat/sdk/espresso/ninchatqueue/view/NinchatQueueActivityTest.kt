@@ -1,13 +1,9 @@
 package com.ninchat.sdk.espresso.ninchatqueue.view
 
-import android.content.res.Resources
-import android.view.View
-import android.widget.TextView
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -20,8 +16,6 @@ import com.ninchat.sdk.models.NinchatQueue
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
 import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity
 import org.hamcrest.CoreMatchers.not
-import org.hamcrest.Description
-import org.hamcrest.Matcher
 import org.junit.After
 import org.junit.Assert
 import org.junit.Test
