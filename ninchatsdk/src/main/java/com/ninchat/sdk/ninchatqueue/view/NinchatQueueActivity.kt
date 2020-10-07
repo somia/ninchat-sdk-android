@@ -36,8 +36,13 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
         }
         //1: update the queue id
         ninchatQueuePresenter.updateQueueId(intent = intent)
+
         //2: show queue animation
-        ninchatQueuePresenter.showQueueAnimation(ninchat_queue_activity_progress)
+        // do not show animation during testing
+        // https://stackoverflow.com/questions/29550508/espresso-freezing-on-view-with-looping-animation
+        if (intent?.getBooleanExtra("isDebug", false) == false) {
+            ninchatQueuePresenter.showQueueAnimation(ninchat_queue_activity_progress)
+        }
         //3: update queue view
         ninchatQueuePresenter.updateQueueView(ninchat_queue_activity)
         //4: subscriber broadcaster

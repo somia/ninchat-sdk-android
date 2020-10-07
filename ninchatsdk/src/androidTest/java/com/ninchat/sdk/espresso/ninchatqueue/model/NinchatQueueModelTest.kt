@@ -91,16 +91,6 @@ class NinchatQueueModelTest {
     }
 
     @Test
-    fun `back_should_not_finish_activity`() {
-        NinchatSession.Builder(appContext, configurationKey).create()
-        val scenario = ActivityScenario.launch(NinchatQueueActivity::class.java)
-        scenario.onActivity {
-            it.onBackPressed()
-        }
-        Assert.assertEquals(Lifecycle.State.CREATED, scenario.state)
-    }
-
-    @Test
     fun `get_intent_with_queue_id`() {
         val expectedQueueId = "123456"
         val intent = NinchatQueuePresenter.getLaunchIntentWithQueueId(appContext, expectedQueueId)
