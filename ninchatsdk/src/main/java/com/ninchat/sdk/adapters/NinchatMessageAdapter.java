@@ -30,7 +30,7 @@ import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatChatActivity;
-import com.ninchat.sdk.activities.NinchatMediaActivity;
+import com.ninchat.sdk.ninchatmedia.view.NinchatMediaActivity;
 import com.ninchat.sdk.models.NinchatFile;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatUser;

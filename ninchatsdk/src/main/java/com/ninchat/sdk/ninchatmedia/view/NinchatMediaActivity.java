@@ -1,4 +1,4 @@
-package com.ninchat.sdk.activities;
+package com.ninchat.sdk.ninchatmedia.view;
 
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -20,6 +20,7 @@ import android.widget.VideoView;
 import com.bumptech.glide.Glide;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.activities.NinchatBaseActivity;
 import com.ninchat.sdk.models.NinchatFile;
 
 public final class NinchatMediaActivity extends NinchatBaseActivity {
