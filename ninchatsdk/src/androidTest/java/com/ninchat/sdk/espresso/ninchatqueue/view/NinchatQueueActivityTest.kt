@@ -146,12 +146,37 @@ class NinchatQueueActivityTest {
         val intent = NinchatQueuePresenter.getLaunchIntentWithQueueId(appContext, queueId = currentQueue.id).run {
             putExtra("isDebug", true)
         }
+
         // attach queue information
         NinchatSessionManager.getInstance().ninchatState.queues = arrayListOf(currentQueue)
         NinchatSessionManager.getInstance().ninchatState.currentSessionState = (1 shl NinchatQuestionnaireTypeUtil.HAS_CHANNEL)
         NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
 
         activityScenario = ActivityScenario.launch(intent)
+        onView(withId(R.id.ninchat_queue_activity_queue_status)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.ninchat_queue_activity_queue_message)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.ninchat_queue_activity_close_button)).check(matches(not(isDisplayed())))
+    }
+
+    @Test
+    fun `recreate_activity_should_not_crash`() {
+        NinchatSession.Builder(appContext, configurationKey).create()
+        val currentQueue = NinchatQueue("1234", "test-queue").also {
+            it.position = 1
+            it.isClosed = false
+        }
+        val intent = NinchatQueuePresenter.getLaunchIntentWithQueueId(appContext, queueId = currentQueue.id).run {
+            putExtra("isDebug", true)
+        }
+
+        // attach queue information
+        NinchatSessionManager.getInstance().ninchatState.queues = arrayListOf(currentQueue)
+        NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
+
+        activityScenario = ActivityScenario.launch(intent)
+
+        activityScenario.recreate()
+
         onView(withId(R.id.ninchat_queue_activity_queue_status)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ninchat_queue_activity_queue_message)).check(matches(not(isDisplayed())))
         onView(withId(R.id.ninchat_queue_activity_close_button)).check(matches(not(isDisplayed())))
