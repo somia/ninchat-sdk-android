@@ -6,14 +6,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.ninchat.sdk.NinchatSession
-import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
 import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity
 import org.junit.After
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 
 
 @RunWith(AndroidJUnit4::class)
@@ -40,13 +39,12 @@ class NinchatQueueActivityTest {
     }
 
     @Test
-    fun `create_activity_with_ninchat_session_and_initialize_components`() {
+    fun `create_activity_with_ninchat_session`() {
         NinchatSession.Builder(appContext, configurationKey).create()
         val intent = NinchatQueuePresenter.getLaunchIntentWithQueueId(appContext, "12345").run {
             putExtra("isDebug", true)
         }
         activityScenario = ActivityScenario.launch(intent)
-        // check other function calls has happened
         Assert.assertNotEquals(Lifecycle.State.DESTROYED, activityScenario.state)
     }
 
@@ -63,19 +61,4 @@ class NinchatQueueActivityTest {
         Assert.assertNotEquals(Lifecycle.State.DESTROYED, activityScenario.state)
     }
 
-
-    @Test
-    fun `should_call_unsubscribeBroadcaster_on_destroy`() {
-
-    }
-
-    @Test
-    fun `on_activity_result_without_queue_id`() {
-
-    }
-
-    @Test
-    fun `on_activity_result_with_queue_id`() {
-
-    }
 }
