@@ -17,7 +17,6 @@ import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatQuestionnaireActivity;
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel;
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter;
-import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity;
 import com.ninchat.sdk.models.NinchatQueue;
 
 import java.lang.ref.WeakReference;
