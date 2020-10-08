@@ -44,7 +44,7 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
         this.rootElement = questionnaireElement;
         if (isFormLikeQuestionnaire) {
             itemView.setBackground(
-                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
+                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_questionnaire_background));
         }
         String labelText = getLabel(this.rootElement);
         JSONArray optionList = getOptions(this.rootElement);
@@ -104,7 +104,7 @@ public class NinchatRadioBtnViewHolder extends RecyclerView.ViewHolder {
                 String label = getLabel(currentItem);
                 String currentValue = getValue(currentItem);
                 updateRadioView(getOptionPosition(rootElement) == position);
-                mOption.setText(NinchatSessionManager.getInstance().getTranslation(label));
+                mOption.setText(NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getTranslation(label));
                 mOption.setOnClickListener(v -> onOptionClicked(currentItem, position));
             }
 

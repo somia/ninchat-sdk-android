@@ -45,7 +45,7 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
         setChecked(questionnaireElement);
         if (isFormLikeQuestionnaire) {
             itemView.setBackground(
-                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
+                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_questionnaire_background));
         }
         updateUI(questionnaireElement);
         if (!isUpdate)
@@ -57,7 +57,7 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
         if (TextUtils.isEmpty(text)) {
             return;
         }
-        mCheckbox.setText(NinchatSessionManager.getInstance().getTranslation(text));
+        mCheckbox.setText( NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getTranslation(text));
     }
 
     private void setChecked(JSONObject item) {

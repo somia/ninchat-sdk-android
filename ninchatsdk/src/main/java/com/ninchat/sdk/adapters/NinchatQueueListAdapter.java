@@ -3,8 +3,10 @@ package com.ninchat.sdk.adapters;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Looper;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +15,8 @@ import android.widget.Button;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatQuestionnaireActivity;
-import com.ninchat.sdk.activities.NinchatQueueActivity;
+import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel;
+import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter;
 import com.ninchat.sdk.models.NinchatQueue;
 
 import java.lang.ref.WeakReference;
@@ -32,22 +35,27 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
 
         void bind(final NinchatQueue queue) {
             final Button button = itemView.findViewById(R.id.queue_name);
-
             // If queue is closed, disable button and set alpha for look & feel
             if (queue.isClosed()) {
                 button.setEnabled(false);
                 button.setAlpha(0.5f);
-                button.setText(NinchatSessionManager.getInstance().getQueueName(queue.getName(), queue.isClosed()));
+                button.setText(NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getQueueName(
+                        queue.getName(), queue.isClosed()
+                ));
             } else {
                 button.setAlpha(1f);
-                button.setText(NinchatSessionManager.getInstance().getQueueName(queue.getName()));
+                button.setText(NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getQueueName(
+                        queue.getName(), false
+                ));
                 button.setOnClickListener(v -> {
                     final Activity activity = activityWeakReference.get();
                     if (activity == null) {
-                        return ;
+                        return;
                     }
                     final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
-                    if (ninchatSessionManager.getNinchatQuestionnaireHolder().hasPreAudienceQuestionnaire() && !ninchatSessionManager.isResumedSession()) {
+                    if (ninchatSessionManager.ninchatState.getNinchatQuestionnaire() != null &&
+                            ninchatSessionManager.ninchatState.getNinchatQuestionnaire().hasPreAudienceQuestionnaire() &&
+                            !ninchatSessionManager.ninchatSessionHolder.isResumedSession()) {
                         activity.startActivityForResult(
                                 NinchatQuestionnaireActivity.getLaunchIntent(activity, queue.getId(), PRE_AUDIENCE_QUESTIONNAIRE),
                                 NinchatQuestionnaireActivity.REQUEST_CODE);
@@ -55,8 +63,8 @@ public final class NinchatQueueListAdapter extends RecyclerView.Adapter<NinchatQ
                     }
                     // after click a particular queue we should check if there are pre-audience questionnaires
                     activity.startActivityForResult(
-                            NinchatQueueActivity.getLaunchIntent(activity, queue.getId()),
-                            NinchatQueueActivity.REQUEST_CODE);
+                            NinchatQueuePresenter.getLaunchIntentWithQueueId(activity, queue.getId()),
+                            NinchatQueueModel.REQUEST_CODE);
                 });
             }
         }

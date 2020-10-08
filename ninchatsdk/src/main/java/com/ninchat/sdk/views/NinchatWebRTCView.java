@@ -10,10 +10,15 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 
+import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.managers.webrtc.NinchatAudioManager;
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo;
+import com.ninchat.sdk.networkdispatchers.NinchatBeginICE;
+import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
+import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
+import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +51,9 @@ import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObserver {
@@ -94,19 +101,20 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     private PeerConnectionFactory peerConnectionFactory;
 
     public NinchatWebRTCView(final View view) {
-        init(view);
+        videoContainer = view;
+        PeerConnectionFactory.initialize(PeerConnectionFactory.InitializationOptions.builder(view.getContext().getApplicationContext()).createInitializationOptions());
     }
 
-    private void init(View view) {
-        videoContainer = view;
+    public void init() {
+        if (videoContainer == null) return;
         eglBase = EglBase.create();
-        remoteVideo = view.findViewById(R.id.video);
-        localVideo = view.findViewById(R.id.pip_video);
-        PeerConnectionFactory.initialize(PeerConnectionFactory.InitializationOptions.builder(view.getContext().getApplicationContext()).createInitializationOptions());
+        remoteVideo = videoContainer.findViewById(R.id.video);
+        localVideo = videoContainer.findViewById(R.id.pip_video);
         peerConnectionFactory = PeerConnectionFactory.builder()
                 .setVideoDecoderFactory(new DefaultVideoDecoderFactory(eglBase.getEglBaseContext()))
                 .setVideoEncoderFactory(new DefaultVideoEncoderFactory(eglBase.getEglBaseContext(), false, false))
                 .createPeerConnectionFactory();
+
         remoteSinks = new ArrayList<>();
         localVideo.init(eglBase.getEglBaseContext(), null);
         localVideo.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FILL);
@@ -135,7 +143,14 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     public void call() {
         videoContainer.setVisibility(View.VISIBLE);
         animateSpinner();
-        NinchatSessionManager.getInstance().sendWebRTCCall();
+        NinchatSendMessage.executeAsync(
+                NinchatScopeHandler.getIOScope(),
+                NinchatSessionManager.getInstance().getSession(),
+                NinchatSessionManager.getInstance().ninchatState.getChannelId(),
+                NinchatMessageTypes.CALL,
+                "{}",
+                aLong -> null
+        );
     }
 
     private void removeSpinner() {
@@ -149,7 +164,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     public boolean handleWebRTCMessage(final String messageType, final String payload) {
-        if (NinchatSessionManager.MessageTypes.OFFER.equals(messageType)) {
+        if (NinchatMessageTypes.OFFER.equals(messageType)) {
             try {
                 offer = new JSONObject(payload);
                 videoContainer.setVisibility(View.VISIBLE);
@@ -158,13 +173,17 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                 NinchatSessionManager.getInstance().sessionError(e);
                 return false;
             }
-            NinchatSessionManager.getInstance().sendWebRTCBeginIce();
-        } else if (NinchatSessionManager.MessageTypes.PICK_UP.equals(messageType)) {
+            NinchatBeginICE.executeAsync(
+                    NinchatScopeHandler.getIOScope(),
+                    NinchatSessionManager.getInstance().getSession(), aLong -> null);
+        } else if (NinchatMessageTypes.PICK_UP.equals(messageType)) {
             try {
                 removeSpinner();
                 final JSONObject answer = new JSONObject(payload);
                 if (answer.getBoolean("answer")) {
-                    NinchatSessionManager.getInstance().sendWebRTCBeginIce();
+                    NinchatBeginICE.executeAsync(
+                            NinchatScopeHandler.getIOScope(),
+                            NinchatSessionManager.getInstance().getSession(), aLong -> null);
                 } else {
                     videoContainer.setVisibility(View.GONE);
                     return true;
@@ -173,13 +192,13 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                 videoContainer.setVisibility(View.GONE);
                 return true;
             }
-        } else if (NinchatSessionManager.MessageTypes.WEBRTC_SERVERS_PARSED.equals(messageType)) {
+        } else if (NinchatMessageTypes.WEBRTC_SERVERS_PARSED.equals(messageType)) {
             try {
                 startWithSDP(offer != null ? offer.getJSONObject("sdp") : null);
             } catch (final JSONException e) {
                 NinchatSessionManager.getInstance().sessionError(e);
             }
-        } else if (NinchatSessionManager.MessageTypes.ANSWER.equals(messageType) && peerConnection != null) {
+        } else if (NinchatMessageTypes.ANSWER.equals(messageType) && peerConnection != null) {
             try {
                 answer = new JSONObject(payload);
                 if (peerConnection.getRemoteDescription() == null) {
@@ -188,7 +207,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             } catch (final JSONException e) {
                 NinchatSessionManager.getInstance().sessionError(e);
             }
-        } else if (NinchatSessionManager.MessageTypes.ICE_CANDIDATE.equals(messageType) && peerConnection != null && peerConnection.iceGatheringState() == PeerConnection.IceGatheringState.GATHERING) {
+        } else if (NinchatMessageTypes.ICE_CANDIDATE.equals(messageType) && peerConnection != null && peerConnection.iceGatheringState() == PeerConnection.IceGatheringState.GATHERING) {
             JSONObject candidate;
             try {
                 candidate = new JSONObject(payload).getJSONObject("candidate");
@@ -212,14 +231,11 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             } catch (final JSONException e) {
                 NinchatSessionManager.getInstance().sessionError(e);
             }
-        } else if (NinchatSessionManager.MessageTypes.HANG_UP.equals(messageType)) {
+        } else if (NinchatMessageTypes.HANG_UP.equals(messageType)) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     hangUp(false);
-
-                    // Reinitialize for possible new connection
-                    init(videoContainer);
                 }
             });
             return true;
@@ -236,19 +252,19 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     protected void startWithSDP(final JSONObject sdp) {
         try {
+            init();
             initializeAudioManager();
             final List<PeerConnection.IceServer> servers = new ArrayList<>();
-            for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().getStunServers()) {
+            for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().ninchatState.getStunServers()) {
                 servers.add(PeerConnection.IceServer.builder(serverInfo.getUrl()).setUsername(serverInfo.getUsername()).setPassword(serverInfo.getCredential()).createIceServer());
             }
-            for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().getTurnServers()) {
+            for (NinchatWebRTCServerInfo serverInfo : NinchatSessionManager.getInstance().ninchatState.getTurnServers()) {
                 servers.add(PeerConnection.IceServer.builder(serverInfo.getUrl()).setUsername(serverInfo.getUsername()).setPassword(serverInfo.getCredential()).createIceServer());
             }
             final PeerConnection.RTCConfiguration configuration = new PeerConnection.RTCConfiguration(servers);
             configuration.sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN;
             peerConnection = peerConnectionFactory.createPeerConnection(configuration, this);
             getLocalMediaStream();
-            //peerConnection.addTrack(getLocalMediaStream());
             if (offer != null) {
                 peerConnection.setRemoteDescription(this, new SessionDescription(SessionDescription.Type.OFFER, sdp.getString("sdp")));
             } else {
@@ -391,7 +407,27 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     @Override
     public void onIceCandidate(IceCandidate iceCandidate) {
-        NinchatSessionManager.getInstance().sendWebRTCIceCandidate(iceCandidate);
+        try {
+            final JSONObject data = new JSONObject();
+            final JSONObject candidate = new JSONObject();
+            candidate.put("sdpMLineIndex", iceCandidate.sdpMLineIndex);
+            candidate.put("sdpMid", iceCandidate.sdpMid);
+            candidate.put("candidate", iceCandidate.sdp);
+            candidate.put("id", iceCandidate.sdpMLineIndex);
+            candidate.put("label", iceCandidate.sdpMid);
+            data.put("candidate", candidate);
+            NinchatSendMessage.executeAsync(
+                    NinchatScopeHandler.getIOScope(),
+                    NinchatSessionManager.getInstance().getSession(),
+                    NinchatSessionManager.getInstance().ninchatState.getChannelId(),
+                    NinchatMessageTypes.ICE_CANDIDATE,
+                    data.toString(),
+                    aLong -> null
+            );
+
+        } catch (final JSONException e) {
+            NinchatSessionManager.getInstance().sessionError(e);
+        }
     }
 
     @Override
@@ -443,7 +479,32 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         if (peerConnection.getLocalDescription() == null) {
             peerConnection.setLocalDescription(this, sessionDescription);
         }
-        NinchatSessionManager.getInstance().sendWebRTCSDPReply(sessionDescription);
+        try {
+            final Map<SessionDescription.Type, String> typeMap = new HashMap<>();
+            typeMap.put(SessionDescription.Type.ANSWER, NinchatMessageTypes.ANSWER);
+            typeMap.put(SessionDescription.Type.OFFER, NinchatMessageTypes.OFFER);
+            final String messageType = typeMap.get(sessionDescription.type);
+            if (messageType == null) {
+                return;
+            }
+            final JSONObject data = new JSONObject();
+            final JSONObject sdp = new JSONObject();
+            sdp.put("type", sessionDescription.type.canonicalForm());
+            sdp.put("sdp", sessionDescription.description);
+            data.put("sdp", sdp);
+            NinchatSendMessage.executeAsync(
+                    NinchatScopeHandler.getIOScope(),
+                    NinchatSessionManager.getInstance().getSession(),
+                    NinchatSessionManager.getInstance().ninchatState.getChannelId(),
+                    messageType,
+                    data.toString(),
+                    aLong -> null
+            );
+
+        } catch (final JSONException e) {
+            NinchatSessionManager.getInstance().sessionError(e);
+        }
+
     }
 
     @Override
@@ -484,7 +545,15 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             peerConnection.dispose();
             peerConnection = null;
             if (sendMessage) {
-                NinchatSessionManager.getInstance().sendWebRTCHangUp();
+                NinchatSendMessage.executeAsync(
+                        NinchatScopeHandler.getIOScope(),
+                        NinchatSessionManager.getInstance().getSession(),
+                        NinchatSessionManager.getInstance().ninchatState.getChannelId(),
+                        NinchatMessageTypes.HANG_UP,
+                        "{}",
+                        aLong -> null
+                );
+
             }
         }
         if (audioSource != null) {

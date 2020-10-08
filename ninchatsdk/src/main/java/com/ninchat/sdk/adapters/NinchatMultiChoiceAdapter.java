@@ -2,6 +2,8 @@ package com.ninchat.sdk.adapters;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +13,12 @@ import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.NinchatMessage;
 import com.ninchat.sdk.models.NinchatOption;
+import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
+import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
+import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -33,7 +41,21 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
                     if (sendAction) {
                         try {
                             option.toggle();
-                            NinchatSessionManager.getInstance().sendUIAction(option.toJSON());
+                            try {
+                                final JSONObject payload = new JSONObject();
+                                payload.put("action", "click");
+                                payload.put("target", option.toJSON());
+                                NinchatSendMessage.executeAsync(
+                                        NinchatScopeHandler.getIOScope(),
+                                        NinchatSessionManager.getInstance().getSession(),
+                                        NinchatSessionManager.getInstance().ninchatState.getChannelId(),
+                                        NinchatMessageTypes.UI_ACTION,
+                                        payload.toString(),
+                                        aLong -> null
+                                );
+                            } catch (final JSONException e) {
+                                Log.e(NinchatMessageAdapter.class.getSimpleName(), "Error when sending multichoice answer!", e);
+                            }
                             option.toggle();
                         } catch (final Exception e) {
                             // Ignore

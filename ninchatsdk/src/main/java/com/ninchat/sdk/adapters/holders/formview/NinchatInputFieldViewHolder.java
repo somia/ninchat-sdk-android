@@ -67,7 +67,7 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
         setText(questionnaireElement);
         if (isFormLikeQuestionnaire) {
             itemView.setBackground(
-                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
+                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_questionnaire_background));
         }
         updateUI(questionnaireElement, false);
         if (!isUpdate)

@@ -3,10 +3,12 @@ package com.ninchat.sdk.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.View;
 
 import com.ninchat.sdk.NinchatSessionManager;
@@ -108,15 +110,21 @@ public class NinchatQuestionnaireActivity extends NinchatBaseActivity {
     private boolean getFormOrConvLikeQuestionnaireType() {
         NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaireHolder();
-        return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
-                questionnaires.conversationLikePreAudienceQuestionnaire() : questionnaires.conversationLikePostAudienceQuestionnaire();
+                .ninchatState.getNinchatQuestionnaire();
+        if (questionnaires != null) {
+            return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
+                    questionnaires.conversationLikePreAudienceQuestionnaire() : questionnaires.conversationLikePostAudienceQuestionnaire();
+        }
+        return false;
     }
 
     private Pair<String, String> getBotDetails() {
         NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaireHolder();
+                .ninchatState.getNinchatQuestionnaire();
+        if (questionnaires == null) {
+            return Pair.create(null, null);
+        }
         return Pair.create(questionnaires.getBotQuestionnaireName(), questionnaires.getBotQuestionnaireAvatar());
     }
 

@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +20,10 @@ import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
+import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel;
+import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter;
+import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity;
+import com.ninchat.sdk.utils.misc.Misc;
 
 import static com.ninchat.sdk.activities.NinchatQuestionnaireActivity.OPEN_QUEUE;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.*;
@@ -50,16 +56,17 @@ public final class NinchatActivity extends NinchatBaseActivity {
     };
 
     private void setQueueAdapter() {
-        if (sessionManager == null) {
-            sessionManager = NinchatSessionManager.getInstance();
-        }
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         final RecyclerView queueList = (RecyclerView) findViewById(R.id.ninchat_activity_queue_list);
         final NinchatQueueListAdapter ninchatQueueListAdapter = sessionManager.getNinchatQueueListAdapter(NinchatActivity.this);
         queueList.setAdapter(ninchatQueueListAdapter);
         if (ninchatQueueListAdapter.getItemCount() == 0) {
             findViewById(R.id.ninchat_activity_no_queues).setVisibility(View.VISIBLE);
             final TextView motd = findViewById(R.id.ninchat_activity_motd);
-            motd.setText(sessionManager.getNoQueues());
+            final String motDText = sessionManager
+                    .ninchatState.getSiteConfig()
+                    .getMOTDText();
+            motd.setText(Misc.toRichText(motDText, motd));
             findViewById(R.id.ninchat_activity_close).setVisibility(View.VISIBLE);
         }
         ninchatQueueListAdapter.notifyDataSetChanged();
@@ -75,22 +82,40 @@ public final class NinchatActivity extends NinchatBaseActivity {
     };
 
     private void setTexts() {
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
+        final String welcomeMessage = sessionManager
+                .ninchatState.getSiteConfig()
+                .getWelcomeText();
+
+        final String noQueueText = sessionManager
+                .ninchatState.getSiteConfig()
+                .getNoQueuesText();
+
+
+        final String motDText = sessionManager
+                .ninchatState.getSiteConfig()
+                .getMOTDText();
+
+        final String closeWindowText = sessionManager
+                .ninchatState.getSiteConfig()
+                .getCloseWindowText();
+
         final TextView topHeader = findViewById(R.id.ninchat_activity_header);
-        topHeader.setText(sessionManager.getWelcome());
+        topHeader.setText(Misc.toRichText(welcomeMessage, topHeader));
         final Button closeButton = findViewById(R.id.ninchat_activity_close);
-        closeButton.setText(sessionManager.getCloseWindow());
+        closeButton.setText(closeWindowText);
         closeButton.setVisibility(View.VISIBLE);
         final TextView motd = findViewById(R.id.ninchat_activity_motd);
-        motd.setText(sessionManager.getMOTD());
+        motd.setText(Misc.toRichText(motDText, motd));
         final TextView noQueues = findViewById(R.id.ninchat_activity_no_queues);
-        noQueues.setText(sessionManager.getNoQueues());
+        noQueues.setText(Misc.toRichText(noQueueText, noQueues));
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final Intent intent = getIntent();
-
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         // If the app is killed in the background sessionManager is not initialized the SDK must
         // be exited and the NinchatSession needs to be initialzed again
         if (sessionManager == null) {
@@ -110,7 +135,9 @@ public final class NinchatActivity extends NinchatBaseActivity {
         }
         if (queueId != null) {
             final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
-            if (ninchatSessionManager.getNinchatQuestionnaireHolder().hasPreAudienceQuestionnaire() && !ninchatSessionManager.isResumedSession()) {
+            if (ninchatSessionManager.ninchatState.getNinchatQuestionnaire() != null &&
+                    ninchatSessionManager.ninchatState.getNinchatQuestionnaire().hasPreAudienceQuestionnaire() &&
+                    !ninchatSessionManager.ninchatSessionHolder.isResumedSession()) {
                 openPreAudienceQuestionnairesActivity();
             } else {
                 openQueueActivity();
@@ -143,7 +170,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
     }
 
     private void openQueueActivity() {
-        startActivityForResult(NinchatQueueActivity.getLaunchIntent(this, queueId), NinchatQueueActivity.REQUEST_CODE);
+        startActivityForResult(NinchatQueuePresenter.getLaunchIntentWithQueueId(this, queueId), NinchatQueueModel.REQUEST_CODE);
     }
 
     private void openPreAudienceQuestionnairesActivity() {
@@ -160,12 +187,15 @@ public final class NinchatActivity extends NinchatBaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == NinchatQueueActivity.REQUEST_CODE) {
+        if (requestCode == NinchatQueueModel.REQUEST_CODE) {
             if (resultCode == RESULT_OK || queueId != null) {
                 final NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
-                if (resultCode == RESULT_OK && ninchatSessionManager.getNinchatQuestionnaireHolder().hasPostAudienceQuestionnaire()) {
+                if (resultCode == RESULT_OK &&
+                        ninchatSessionManager.ninchatState.getNinchatQuestionnaire() != null &&
+                        ninchatSessionManager.ninchatState.getNinchatQuestionnaire().hasPostAudienceQuestionnaire()) {
                     openPostAudienceQuestionnairesActivity();
                 } else {
+                    NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
                     sessionManager.close();
                     setResult(resultCode, data);
                     finish();

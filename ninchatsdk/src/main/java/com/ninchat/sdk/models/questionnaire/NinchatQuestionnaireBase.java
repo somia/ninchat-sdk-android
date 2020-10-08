@@ -19,14 +19,17 @@ import com.ninchat.sdk.events.OnNextQuestionnaire;
 import com.ninchat.sdk.events.OnPostAudienceQuestionnaire;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
+import com.ninchat.sdk.networkdispatchers.NinchatPartChannel;
 import com.ninchat.sdk.networkdispatchers.NinchatRegisterAudience;
-import com.ninchat.sdk.threadutils.ScopeHandler;
+import com.ninchat.sdk.networkdispatchers.NinchatSendPostAudienceQuestionnaire;
+import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
@@ -64,9 +67,11 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
         this.questionnaireType = questionnaireType;
         NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaireHolder();
-        mQuestionnaireList = questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
-                questionnaires.getNinchatPreAudienceQuestionnaire() : questionnaires.getNinchatPostAudienceQuestionnaire();
+                .ninchatState.getNinchatQuestionnaire();
+        if (questionnaires != null) {
+            mQuestionnaireList = questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
+                    questionnaires.getNinchatPreAudienceQuestionnaire() : questionnaires.getNinchatPostAudienceQuestionnaire();
+        }
     }
 
     public void setAdapter(Context mContext) {
@@ -118,10 +123,10 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
         pendingRequest = AUDIENCE_REGISTER;
         // a register
         NinchatRegisterAudience.executeAsync(
-                ScopeHandler.getIOScope(),
+                NinchatScopeHandler.getIOScope(),
                 NinchatSessionManager.getInstance().getSession(),
                 queueId,
-                NinchatSessionManager.getInstance().getAudienceMetadata(),
+                NinchatSessionManager.getInstance().ninchatState.getAudienceMetadata(),
                 aLong -> null
         );
         // wait for register to complete. Should get event from session manager
@@ -132,7 +137,25 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
         JSONObject answers = updateQueueAndGetAnswers();
         pendingRequest = POST_ANSWERS;
         // a post audience questionnaire
-        NinchatSessionManager.getInstance().sendPostAnswers(answers);
+        try {
+            final JSONObject value = new JSONObject();
+            value.put("post_answers", answers);
+            final JSONObject data = new JSONObject();
+            data.put("data", value);
+            data.put("time", System.currentTimeMillis());
+            NinchatSendPostAudienceQuestionnaire.executeAsync(
+                    NinchatScopeHandler.getIOScope(),
+                    NinchatSessionManager.getInstance().getSession(),
+                    NinchatSessionManager.getInstance().ninchatState.getChannelId(),
+                    data.toString(2),
+                    aLong -> {
+                        NinchatSessionManager.getInstance().ninchatState.setActionId(aLong);
+                        return null;
+                    }
+            );
+        } catch (final JSONException e) {
+            // Ignore
+        }
     }
 
     public void dispose() {
@@ -210,10 +233,13 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
 
     private void setAudienceMetadata(JSONObject answers) {
         // no audience meta data is set
-        if (NinchatSessionManager.getInstance().getAudienceMetadata() == null) {
-            NinchatSessionManager.getInstance().setAudienceMetadata(new Props());
+        if (NinchatSessionManager.getInstance().ninchatState.getAudienceMetadata() == null) {
+            NinchatSessionManager.getInstance().ninchatState.setAudienceMetadata(new Props());
         }
-        NinchatSessionManager.getInstance().getAudienceMetadata().setObject("pre_answers", getPreAnswers(answers));
+        // escape setting answers if they are empty
+        if (answers != null) {
+            NinchatSessionManager.getInstance().ninchatState.getAudienceMetadata().setObject("pre_answers", getPreAnswers(answers));
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -248,11 +274,16 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
     public void onPostAudienceQuestion(OnPostAudienceQuestionnaire onPostAudienceQuestionnaire) {
         pendingRequest = NONE;
         if (NinchatSessionManager.getInstance() != null) {
-            NinchatSessionManager.getInstance().partChannel();
+            NinchatPartChannel.executeAsync(
+                    NinchatScopeHandler.getIOScope(),
+                    NinchatSessionManager.getInstance().getSession(),
+                    NinchatSessionManager.getInstance().ninchatState.getChannelId(),
+                    aLong -> null
+            );
             // delete the user if current user is a guest
             if (NinchatSessionManager.getInstance().isGuestMemeber()) {
                 NinchatDeleteUser.executeAsync(
-                        ScopeHandler.getIOScope(),
+                        NinchatScopeHandler.getIOScope(),
                         NinchatSessionManager.getInstance().getSession(),
                         aLong -> null
                 );
