@@ -60,7 +60,6 @@ class NinchatMediaActivity : NinchatBaseActivity(), INinchatMediaPresenter {
         ninchatMediaPresenter.updateFileId(intent = intent)
         ninchatMediaPresenter.ninchatMediaModel.getFile()?.let { ninchatFile ->
             if (ninchatFile.isVideo) {
-                ninchat_media_download.visibility = View.GONE
                 ninchatMediaPresenter.playVideo(ninchat_media_video, ninchatFile.url)
             } else {
                 Glide.with(this)
@@ -68,7 +67,7 @@ class NinchatMediaActivity : NinchatBaseActivity(), INinchatMediaPresenter {
                         .into(ninchat_media_image)
             }
             ninchat_media_name.text = ninchatFile.name
-            ninchat_media_download.visibility = if (ninchatFile.isDownloaded) View.GONE else View.VISIBLE
+            ninchat_media_download.visibility = if (ninchatFile.isDownloaded || ninchatFile.isVideo) View.GONE else View.VISIBLE
         }
         ninchatMediaPresenter.subscribeBroadcaster()
     }
@@ -81,4 +80,7 @@ class NinchatMediaActivity : NinchatBaseActivity(), INinchatMediaPresenter {
     override fun onDownloadComplete() {
         ninchat_media_download.visibility = if (ninchatMediaPresenter.ninchatMediaModel.isDownloaded()) View.GONE else View.VISIBLE
     }
+
+    // helper class for test
+    internal fun getMediaPresenter() = ninchatMediaPresenter
 }

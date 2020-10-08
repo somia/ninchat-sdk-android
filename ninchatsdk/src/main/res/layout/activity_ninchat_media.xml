@@ -68,6 +68,7 @@
                 android:layout_height="wrap_content"
                 android:padding="@dimen/ninchat_media_activity_top_bar_button_padding"
                 android:layout_marginEnd="@dimen/ninchat_media_activity_top_bar_button_end_margin"
+                android:id="@+id/close_media_button"
                 android:onClick="onClose">
 
                 <ImageView
