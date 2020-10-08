@@ -39,7 +39,8 @@ import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.managers.OrientationManager;
 import com.ninchat.sdk.models.NinchatUser;
-import com.ninchat.sdk.tasks.NinchatDeleteUserTask;
+import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
+import com.ninchat.sdk.threadutils.ScopeHandler;
 import com.ninchat.sdk.views.NinchatWebRTCView;
 
 import java.io.InputStream;
@@ -81,7 +82,11 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
                 sessionManager.partChannel();
                 // delete the user if current user is a guest
                 if (NinchatSessionManager.getInstance().isGuestMemeber()) {
-                    NinchatSessionManager.exitQueue();
+                    NinchatDeleteUser.executeAsync(
+                            ScopeHandler.getIOScope(),
+                            sessionManager.getSession(),
+                            aLong -> null
+                    );
                 }
             }
             quit(data);
