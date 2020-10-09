@@ -6,7 +6,7 @@ import com.ninchat.sdk.activities.NinchatQuestionnaireActivity
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
-import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter.Companion.getLaunchIntentWithQueueId
+import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
 
 class NinchatQueueListPresenter(queueList: List<NinchatQueue>) {
     private val queueList = arrayListOf<NinchatQueue>()
@@ -47,7 +47,7 @@ class NinchatQueueListPresenter(queueList: List<NinchatQueue>) {
 
     fun openQueueActivity(activity: Activity?, queueId: String) {
         activity?.startActivityForResult(
-                getLaunchIntentWithQueueId(activity, queueId),
+                NinchatQueuePresenter.getLaunchIntentWithQueueId(activity, queueId),
                 NinchatQueueModel.REQUEST_CODE)
     }
 
