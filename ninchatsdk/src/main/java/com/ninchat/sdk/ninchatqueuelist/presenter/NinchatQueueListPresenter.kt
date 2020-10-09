@@ -20,11 +20,11 @@ class NinchatQueueListPresenter(queueList: List<NinchatQueue>) {
     }
 
     fun isClosedQueue(at: Int): Boolean {
-        return queueList[at].isClosed
+        return queueList.getOrNull(at)?.isClosed ?: false
     }
 
     fun getQueueId(at: Int): String {
-        return queueList[at].id
+        return queueList.getOrNull(at)?.id ?: ""
     }
 
     fun getQueueName(at: Int): String {
