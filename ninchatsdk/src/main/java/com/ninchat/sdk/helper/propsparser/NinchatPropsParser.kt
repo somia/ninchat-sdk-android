@@ -1,7 +1,7 @@
 package com.ninchat.sdk.helper.propsparser
 
 import com.ninchat.client.Props
-import com.ninchat.sdk.models.NinchatQueue
+import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.models.NinchatUser
 import com.ninchat.sdk.utils.propsvisitor.NinchatPropVisitor
 

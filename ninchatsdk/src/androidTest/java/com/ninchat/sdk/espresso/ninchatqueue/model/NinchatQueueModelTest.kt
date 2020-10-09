@@ -3,7 +3,7 @@ package com.ninchat.sdk.espresso.ninchatqueue.model
 import androidx.test.platform.app.InstrumentationRegistry
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.models.NinchatQueue
+import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import org.junit.Assert

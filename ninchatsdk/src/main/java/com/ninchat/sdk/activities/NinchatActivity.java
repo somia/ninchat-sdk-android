@@ -19,10 +19,9 @@ import android.widget.TextView;
 import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
+import com.ninchat.sdk.ninchatqueuelist.view.NinchatQueueListAdapter;
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel;
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter;
-import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity;
 import com.ninchat.sdk.utils.misc.Misc;
 
 import static com.ninchat.sdk.activities.NinchatQuestionnaireActivity.OPEN_QUEUE;

@@ -12,7 +12,7 @@ import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
-import com.ninchat.sdk.models.NinchatQueue
+import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
 import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity
 import org.hamcrest.CoreMatchers.not

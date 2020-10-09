@@ -13,7 +13,7 @@ import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getChannelIdFromUserChannel
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getOpenQueueList
 import com.ninchat.sdk.models.NinchatMessage
-import com.ninchat.sdk.models.NinchatQueue
+import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeChannel
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience
