@@ -49,16 +49,6 @@ class NinchatActivityPresenter(
         return NinchatSessionManager.getInstance() != null
     }
 
-    fun shouldOpenQueueActivity(intent: Intent?, resultCode: Int, requestCode: Int): Boolean {
-        return intent?.let {
-            val openQueue = it.getBooleanExtra(NinchatQuestionnaireActivity.OPEN_QUEUE, false)
-            val newQueueId = it.getStringExtra(NinchatActivityModel.QUEUE_ID)
-            return requestCode == NinchatQuestionnaireActivity.REQUEST_CODE &&
-                    resultCode == RESULT_OK &&
-                    openQueue &&
-                    !newQueueId.isNullOrEmpty()
-        } ?: false
-    }
 
     fun shouldOpenPreAudienceQuestionnaireActivity(): Boolean {
         return NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
@@ -67,23 +57,10 @@ class NinchatActivityPresenter(
         } ?: false
     }
 
-    fun shouldOpenPostAudienceQuestionnaireActivity(resultCode: Int, requestCode: Int, queueId: String?): Boolean {
+    fun shouldOpenPostAudienceQuestionnaireActivity(): Boolean {
         return NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
-            return requestCode == NinchatQueueModel.REQUEST_CODE &&
-                    (resultCode == RESULT_OK || !queueId.isNullOrEmpty()) &&
-                    ninchatSessionManager.ninchatState?.ninchatQuestionnaire?.hasPostAudienceQuestionnaire() ?: false
+            return ninchatSessionManager.ninchatState?.ninchatQuestionnaire?.hasPostAudienceQuestionnaire() ?: false
         } ?: false
-    }
-
-    fun shouldCloseSession(resultCode: Int, requestCode: Int, queueId: String?): Boolean {
-        return requestCode == NinchatQueueModel.REQUEST_CODE &&
-                (resultCode == RESULT_OK || !queueId.isNullOrEmpty())
-    }
-
-    fun shouldFinished(resultCode: Int, requestCode: Int): Boolean {
-        return resultCode == RESULT_CANCELED &&
-                (requestCode == NinchatQueueModel.REQUEST_CODE ||
-                        requestCode == NinchatQuestionnaireActivity.REQUEST_CODE)
     }
 
     fun updateActivityView(
@@ -153,7 +130,7 @@ class NinchatActivityPresenter(
     fun openQuestionnaireActivity(activity: Activity?, queueId: String?) {
         activity?.startActivityForResult(
                 NinchatQuestionnaireActivity.getLaunchIntent(activity, queueId,
-                        NinchatQuestionnaireTypeUtil.PRE_AUDIENCE_QUESTIONNAIRE),
+                        NinchatQuestionnaireTypeUtil.POST_AUDIENCE_QUESTIONNAIRE),
                 NinchatQuestionnaireActivity.REQUEST_CODE)
     }
 

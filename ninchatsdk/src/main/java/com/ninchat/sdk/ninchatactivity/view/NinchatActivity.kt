@@ -81,35 +81,36 @@ class NinchatActivity : NinchatBaseActivity(), INinchatActivityPresenter {
         finish()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when {
-            ninchatActivityPresenter.shouldOpenPostAudienceQuestionnaireActivity(
-                    requestCode = requestCode,
-                    resultCode = resultCode,
-                    queueId = ninchatActivityPresenter.ninchatActivityModel.queueId) ->
-                ninchatActivityPresenter.openQuestionnaireActivity(this, ninchatActivityPresenter.ninchatActivityModel.queueId)
+            requestCode == NinchatQueueModel.REQUEST_CODE ->
+                if (resultCode == RESULT_OK || !ninchatActivityPresenter.ninchatActivityModel.queueId.isNullOrEmpty()) {
+                    if (resultCode == RESULT_OK && ninchatActivityPresenter.shouldOpenPostAudienceQuestionnaireActivity()) {
+                        ninchatActivityPresenter.openQuestionnaireActivity(this, ninchatActivityPresenter.ninchatActivityModel.queueId)
+                    } else {
+                        NinchatSessionManager.getInstance()?.close()
+                        setResult(resultCode, data)
+                        finish()
+                    }
+                } else if (resultCode == RESULT_CANCELED) {
+                    finish()
+                }
 
-            ninchatActivityPresenter.shouldCloseSession(
-                    resultCode = resultCode,
-                    requestCode = requestCode,
-                    queueId = ninchatActivityPresenter.ninchatActivityModel.queueId) -> {
-                NinchatSessionManager.getInstance()?.close()
-                setResult(resultCode, data)
-                finish()
-            }
-
-            ninchatActivityPresenter.shouldOpenQueueActivity(
-                    intent = data,
-                    requestCode = requestCode,
-                    resultCode = resultCode) -> {
-                ninchatActivityPresenter.updateQueueId(intent = data)
-                ninchatActivityPresenter.openQueueActivity(this, queueId = ninchatActivityPresenter.ninchatActivityModel.queueId)
-            }
-
-            ninchatActivityPresenter.shouldFinished(
-                    resultCode = resultCode,
-                    requestCode = requestCode) ->
-                finish()
+            requestCode == NinchatQuestionnaireActivity.REQUEST_CODE ->
+                if (resultCode == RESULT_OK) {
+                    setResult(resultCode, data);
+                    val openQueue = data?.getBooleanExtra(NinchatQuestionnaireActivity.OPEN_QUEUE, false)
+                            ?: false
+                    val newQueueId = data?.getStringExtra(NinchatActivityModel.QUEUE_ID)
+                    if (openQueue && !newQueueId.isNullOrEmpty()) {
+                        ninchatActivityPresenter.updateQueueId(intent = data)
+                        ninchatActivityPresenter.openQueueActivity(this, queueId = ninchatActivityPresenter.ninchatActivityModel.queueId)
+                    } else {
+                        finish()
+                    }
+                } else if (resultCode == RESULT_CANCELED) {
+                    finish()
+                }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

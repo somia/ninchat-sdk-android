@@ -17,6 +17,7 @@ import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeChannel
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience
+import com.ninchat.sdk.ninchatactivity.presenter.NinchatActivityPresenter
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Parameter
@@ -287,7 +288,7 @@ class NinchatSessionManagerHelper {
                 }
                 currentSession.activityWeakReference?.get()?.let { mActivity ->
                     mActivity.startActivityForResult(
-                            NinchatActivity.getLaunchIntent(mActivity,
+                            NinchatActivityPresenter.getLaunchIntent(mActivity,
                                     currentSession.ninchatState?.queueId), currentSession.ninchatState?.requestCode
                             ?: 0)
                 }
