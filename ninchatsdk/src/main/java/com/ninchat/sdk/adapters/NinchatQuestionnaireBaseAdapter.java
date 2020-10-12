@@ -1,8 +1,8 @@
 package com.ninchat.sdk.adapters;
 
 import androidx.annotation.NonNull;
-import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.ViewGroup;
 
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
@@ -10,13 +10,15 @@ import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import kotlin.Pair;
+
 public abstract class NinchatQuestionnaireBaseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private String TAG = NinchatQuestionnaireBaseAdapter.class.getSimpleName();
     protected NinchatQuestionnaire questionnaire;
     protected boolean isFormLikeQuestionnaire;
-    protected Pair<String,String> botDetails;
+    protected Pair<String, String> botDetails;
 
-    public NinchatQuestionnaireBaseAdapter(NinchatQuestionnaire ninchatQuestionnaire, Pair<String,String> botDetails, boolean isFormLikeQuestionnaire) {
+    public NinchatQuestionnaireBaseAdapter(NinchatQuestionnaire ninchatQuestionnaire, Pair<String, String> botDetails, boolean isFormLikeQuestionnaire) {
         this.questionnaire = ninchatQuestionnaire;
         this.botDetails = botDetails;
         this.isFormLikeQuestionnaire = isFormLikeQuestionnaire;

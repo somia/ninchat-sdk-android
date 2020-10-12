@@ -4,7 +4,6 @@ package com.ninchat.sdk.adapters.holders.conversationview;
 import android.graphics.drawable.AnimationDrawable;
 
 import androidx.annotation.NonNull;
-import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
@@ -26,6 +25,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+
+import kotlin.Pair;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.getFirstErrorIndex;

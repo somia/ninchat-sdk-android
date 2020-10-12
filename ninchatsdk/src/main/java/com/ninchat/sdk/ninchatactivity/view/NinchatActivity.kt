@@ -3,15 +3,16 @@ package com.ninchat.sdk.ninchatactivity.view
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.text.TextUtils
 import android.view.View
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
-import com.ninchat.sdk.activities.NinchatQuestionnaireActivity
+import com.ninchat.sdk.ninchatquestionnaire.view.NinchatQuestionnaireActivity
 import com.ninchat.sdk.ninchatactivity.model.NinchatActivityModel
 import com.ninchat.sdk.ninchatactivity.presenter.INinchatActivityPresenter
 import com.ninchat.sdk.ninchatactivity.presenter.NinchatActivityPresenter
+import com.ninchat.sdk.ninchatquestionnaire.model.NinchatQuestionnaireModel
+import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import kotlinx.android.synthetic.main.activity_ninchat.*
 
@@ -96,10 +97,10 @@ class NinchatActivity : NinchatBaseActivity(), INinchatActivityPresenter {
                     finish()
                 }
 
-            requestCode == NinchatQuestionnaireActivity.REQUEST_CODE ->
+            requestCode == NinchatQuestionnairePresenter.REQUEST_CODE ->
                 if (resultCode == RESULT_OK) {
                     setResult(resultCode, data);
-                    val openQueue = data?.getBooleanExtra(NinchatQuestionnaireActivity.OPEN_QUEUE, false)
+                    val openQueue = data?.getBooleanExtra(NinchatQuestionnaireModel.OPEN_QUEUE, false)
                             ?: false
                     val newQueueId = data?.getStringExtra(NinchatActivityModel.QUEUE_ID)
                     if (openQueue && !newQueueId.isNullOrEmpty()) {
