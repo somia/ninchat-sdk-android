@@ -27,6 +27,9 @@ class NinchatQuestionnairePresenter(
         EventBus.getDefault().register(this)
     }
 
+    var ninchatConversationQuestionnaire: NinchatConversationQuestionnaire? = null
+    var ninchatFormQuestionnaire: NinchatFormQuestionnaire? = null
+
     fun updateQueueId(intent: Intent?) {
         // update queue id
         intent?.getStringExtra(NinchatQuestionnaireModel.QUEUE_ID)?.let {
@@ -45,26 +48,26 @@ class NinchatQuestionnairePresenter(
     }
 
     fun renderConversationLikeQuestionnaire(recyclerView: RecyclerView, context: Context, layoutManager: LinearLayoutManager) {
-        ninchatQuestionnaireModel.ninchatConversationQuestionnaire = NinchatConversationQuestionnaire(
+        ninchatConversationQuestionnaire = NinchatConversationQuestionnaire(
                 ninchatQuestionnaireModel.queueId,
                 ninchatQuestionnaireModel.questionnaireType,
                 Pair(ninchatQuestionnaireModel.getBotName(), ninchatQuestionnaireModel.getBotAvatar()),
                 recyclerView,
                 layoutManager
         )
-        ninchatQuestionnaireModel.ninchatConversationQuestionnaire?.setAdapter(context)
+        ninchatConversationQuestionnaire?.setAdapter(context)
     }
 
     fun renderFormLikeQuestionnaire(recyclerView: RecyclerView, context: Context) {
-        ninchatQuestionnaireModel.ninchatFormQuestionnaire = NinchatFormQuestionnaire(ninchatQuestionnaireModel.queueId,
+        ninchatFormQuestionnaire = NinchatFormQuestionnaire(ninchatQuestionnaireModel.queueId,
                 ninchatQuestionnaireModel.questionnaireType,
                 recyclerView)
-        ninchatQuestionnaireModel.ninchatFormQuestionnaire?.setAdapter(context)
+        ninchatFormQuestionnaire?.setAdapter(context)
     }
 
     fun dispose() {
-        ninchatQuestionnaireModel.ninchatConversationQuestionnaire?.dispose()
-        ninchatQuestionnaireModel.ninchatFormQuestionnaire?.dispose()
+        ninchatConversationQuestionnaire?.dispose()
+        ninchatFormQuestionnaire?.dispose()
         EventBus.getDefault().unregister(this)
     }
 
