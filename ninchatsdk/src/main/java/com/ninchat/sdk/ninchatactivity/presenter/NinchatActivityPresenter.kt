@@ -1,0 +1,170 @@
+package com.ninchat.sdk.ninchatactivity.presenter
+
+import android.app.Activity
+import android.app.Activity.RESULT_CANCELED
+import android.app.Activity.RESULT_OK
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.view.View
+import android.widget.Button
+import android.widget.TextView
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.RecyclerView
+import com.ninchat.sdk.NinchatSession
+import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.activities.NinchatQuestionnaireActivity
+import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
+import com.ninchat.sdk.ninchatactivity.model.NinchatActivityModel
+import com.ninchat.sdk.ninchatactivity.view.NinchatActivity
+import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
+import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
+import com.ninchat.sdk.utils.misc.Misc.Companion.toRichText
+
+
+interface INinchatActivityPresenter {
+    fun onQueueUpdate()
+    fun onConfigurationFetched()
+}
+
+class NinchatActivityPresenter(
+        val ninchatActivityModel: NinchatActivityModel,
+        val iNinchatActivityPresenter: INinchatActivityPresenter,
+        val mContext: Context,
+) {
+
+    fun updateQueueId(intent: Intent?) {
+        // update queue id
+        intent?.getStringExtra(NinchatActivityModel.QUEUE_ID)?.let {
+            ninchatActivityModel.queueId = it
+        }
+    }
+
+    fun hasQueue(): Boolean {
+        return !ninchatActivityModel.queueId.isNullOrEmpty()
+    }
+
+    fun hasSession(): Boolean {
+        return NinchatSessionManager.getInstance() != null
+    }
+
+    fun shouldOpenQueueActivity(intent: Intent?, resultCode: Int, requestCode: Int): Boolean {
+        return intent?.let {
+            val openQueue = it.getBooleanExtra(NinchatQuestionnaireActivity.OPEN_QUEUE, false)
+            val newQueueId = it.getStringExtra(NinchatActivityModel.QUEUE_ID)
+            return requestCode == NinchatQuestionnaireActivity.REQUEST_CODE &&
+                    resultCode == RESULT_OK &&
+                    openQueue &&
+                    !newQueueId.isNullOrEmpty()
+        } ?: false
+    }
+
+    fun shouldOpenPreAudienceQuestionnaireActivity(): Boolean {
+        return NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
+            return !ninchatSessionManager.ninchatSessionHolder.isResumedSession() &&
+                    ninchatSessionManager.ninchatState?.ninchatQuestionnaire?.hasPreAudienceQuestionnaire() ?: false
+        } ?: false
+    }
+
+    fun shouldOpenPostAudienceQuestionnaireActivity(resultCode: Int, requestCode: Int, queueId: String?): Boolean {
+        return NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
+            return requestCode == NinchatQueueModel.REQUEST_CODE &&
+                    (resultCode == RESULT_OK || !queueId.isNullOrEmpty()) &&
+                    ninchatSessionManager.ninchatState?.ninchatQuestionnaire?.hasPostAudienceQuestionnaire() ?: false
+        } ?: false
+    }
+
+    fun shouldCloseSession(resultCode: Int, requestCode: Int, queueId: String?): Boolean {
+        return requestCode == NinchatQueueModel.REQUEST_CODE &&
+                (resultCode == RESULT_OK || !queueId.isNullOrEmpty())
+    }
+
+    fun shouldFinished(resultCode: Int, requestCode: Int): Boolean {
+        return resultCode == RESULT_CANCELED &&
+                (requestCode == NinchatQueueModel.REQUEST_CODE ||
+                        requestCode == NinchatQuestionnaireActivity.REQUEST_CODE)
+    }
+
+    fun updateActivityView(
+            topHeader: TextView,
+            closeButton: Button,
+            motD: TextView,
+            noQueue: TextView,
+    ) {
+        topHeader.text = toRichText(ninchatActivityModel.getWelcomeMessage(), topHeader)
+        closeButton.text = ninchatActivityModel.getCloseWindowText()
+        closeButton.visibility = View.VISIBLE
+        motD.text = toRichText(ninchatActivityModel.getMotD(), motD)
+        noQueue.text = toRichText(ninchatActivityModel.getNoQueueText(), noQueue)
+    }
+
+    fun setQueueAdapter(
+            recyclerView: RecyclerView,
+            mActivity: NinchatActivity,
+            closeButton: Button,
+            motD: TextView,
+            noQueue: TextView,
+    ) {
+        val ninchatQueueListAdapter = NinchatSessionManager.getInstance()?.getNinchatQueueListAdapter(mActivity)
+        recyclerView.adapter = ninchatQueueListAdapter
+        if (ninchatQueueListAdapter?.itemCount == 0) {
+            noQueue.visibility = View.VISIBLE
+            motD.text = toRichText(ninchatActivityModel.getMotD(), motD)
+            closeButton.visibility = View.VISIBLE
+        }
+        ninchatQueueListAdapter?.notifyDataSetChanged()
+    }
+
+    fun subscribeBroadcaster() {
+        LocalBroadcastManager.getInstance(mContext).run {
+            registerReceiver(queuesUpdatedReceiver, IntentFilter(NinchatSession.Broadcast.QUEUES_UPDATED));
+            registerReceiver(configurationFetchedReceiver, IntentFilter(NinchatSession.Broadcast.CONFIGURATION_FETCHED));
+        }
+    }
+
+    fun unSubscribeBroadcaster() {
+        LocalBroadcastManager.getInstance(mContext).run {
+            unregisterReceiver(queuesUpdatedReceiver)
+            unregisterReceiver(configurationFetchedReceiver)
+        }
+    }
+
+
+    var queuesUpdatedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val action = intent.action
+            if (NinchatSession.Broadcast.QUEUES_UPDATED == action) {
+                // setQueueAdapter()
+                iNinchatActivityPresenter.onQueueUpdate()
+            }
+        }
+    }
+
+    var configurationFetchedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (NinchatSession.Broadcast.CONFIGURATION_FETCHED == intent.action) {
+                // setTexts()
+                iNinchatActivityPresenter.onConfigurationFetched()
+            }
+        }
+    }
+
+    fun openQuestionnaireActivity(activity: Activity?, queueId: String?) {
+        activity?.startActivityForResult(
+                NinchatQuestionnaireActivity.getLaunchIntent(activity, queueId,
+                        NinchatQuestionnaireTypeUtil.PRE_AUDIENCE_QUESTIONNAIRE),
+                NinchatQuestionnaireActivity.REQUEST_CODE)
+    }
+
+    fun openQueueActivity(mActivity: NinchatActivity?, queueId: String?) {
+        mActivity?.startActivityForResult(NinchatQueuePresenter.getLaunchIntentWithQueueId(mActivity, queueId), NinchatQueueModel.REQUEST_CODE)
+    }
+
+    companion object {
+        fun getLaunchIntent(context: Context?, queueId: String?): Intent? {
+            return Intent(context, NinchatActivity::class.java)
+                    .putExtra(NinchatActivityModel.QUEUE_ID, queueId)
+        }
+    }
+}
