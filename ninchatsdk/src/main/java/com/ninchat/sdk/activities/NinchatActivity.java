@@ -54,7 +54,7 @@ public final class NinchatActivity extends NinchatBaseActivity {
         }
     };
 
-    private void setQueueAdapter() {
+    public void setQueueAdapter() {
         NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         final RecyclerView queueList = (RecyclerView) findViewById(R.id.ninchat_activity_queue_list);
         final NinchatQueueListAdapter ninchatQueueListAdapter = sessionManager.getNinchatQueueListAdapter(NinchatActivity.this);
