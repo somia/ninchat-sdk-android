@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/ninchat_color_background_bottom"
-    tools:context=".activities.NinchatActivity">
+    tools:context=".ninchatactivity.view.NinchatActivity">
 
     <LinearLayout
         android:orientation="vertical"

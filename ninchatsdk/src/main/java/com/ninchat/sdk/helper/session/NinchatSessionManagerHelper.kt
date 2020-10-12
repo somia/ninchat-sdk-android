@@ -8,7 +8,7 @@ import com.ninchat.client.Objects
 import com.ninchat.client.Props
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.activities.NinchatActivity
+import com.ninchat.sdk.ninchatactivity.view.NinchatActivity
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getChannelIdFromUserChannel
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getOpenQueueList

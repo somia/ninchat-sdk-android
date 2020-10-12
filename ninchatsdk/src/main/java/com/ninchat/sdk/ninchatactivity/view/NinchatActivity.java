@@ -1,4 +1,4 @@
-package com.ninchat.sdk.activities;
+package com.ninchat.sdk.ninchatactivity.view;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -19,6 +19,8 @@ import android.widget.TextView;
 import com.ninchat.sdk.NinchatSession;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.activities.NinchatBaseActivity;
+import com.ninchat.sdk.activities.NinchatQuestionnaireActivity;
 import com.ninchat.sdk.ninchatqueuelist.view.NinchatQueueListAdapter;
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel;
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter;

@@ -28,9 +28,9 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.
 public class NinchatQuestionnaireActivity extends NinchatBaseActivity {
     private String TAG = NinchatQuestionnaireActivity.class.getSimpleName();
     public static int REQUEST_CODE = NinchatQuestionnaireActivity.class.hashCode() & 0xffff;
-    protected static String QUEUE_ID = "queueId";
-    protected static String QUESTIONNAIRE_TYPE = "questionType";
-    protected static String OPEN_QUEUE = "openQueue";
+    public static String QUEUE_ID = "queueId";
+    public static String QUESTIONNAIRE_TYPE = "questionType";
+    public static String OPEN_QUEUE = "openQueue";
 
     private NinchatConversationQuestionnaire ninchatConversationQuestionnaire;
     private NinchatFormQuestionnaire ninchatFormQuestionnaire;
