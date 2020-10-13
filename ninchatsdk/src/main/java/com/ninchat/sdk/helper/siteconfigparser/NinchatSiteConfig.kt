@@ -48,17 +48,19 @@ class NinchatSiteConfig {
 
     fun getBoolean(key: String): Boolean? {
         var value = false
+        var found = false;
         siteConfig?.let {
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
                     if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, false)
+                        found = true
+                        value = siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, true)
                                 ?: false
                     }
                 }
             }
         }
-        return value
+        return if (found) value else null
     }
 
     fun getString(key: String): String? {
@@ -67,9 +69,9 @@ class NinchatSiteConfig {
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
                     if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optString(key)
+                        value = siteConfig?.optJSONObject(currentEnvironment)?.optString(key, "null")
                         // workaround value can be null which when parsing will be interpreted as "null" string in Java with quote
-                        if ("null" == value) {
+                        if ("null" == value || "false" == value) {
                             value = null
                         }
                     }
@@ -269,7 +271,7 @@ class NinchatSiteConfig {
 
     // todo (pallab) move to translator package
     fun getTranslation(key: String = ""): String =
-            getTranslation("translations", key) ?: key
+            getTranslation("translations", key) ?: ""
 
     // todo (pallab) move to translator or general util/helper package
     fun replacePlaceholder(origin: String?, replacement: String): String {
