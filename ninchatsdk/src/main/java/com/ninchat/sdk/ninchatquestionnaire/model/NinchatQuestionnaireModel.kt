@@ -1,8 +1,6 @@
 package com.ninchat.sdk.ninchatquestionnaire.model
 
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.models.questionnaire.conversation.NinchatConversationQuestionnaire
-import com.ninchat.sdk.models.questionnaire.form.NinchatFormQuestionnaire
 
 class NinchatQuestionnaireModel {
     var queueId: String? = null
