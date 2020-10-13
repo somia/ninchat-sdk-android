@@ -6,11 +6,11 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.text.Html.ImageGetter
 import android.widget.TextView
-import com.bumptech.glide.Glide
 import com.bumptech.glide.request.Request
 import com.bumptech.glide.request.target.SizeReadyCallback
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
+import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
 import java.lang.ref.WeakReference
 
 class NinchatImageGetter(
@@ -27,17 +27,14 @@ class NinchatImageGetter(
         // Load Image to the Drawable
         mContainer.get()?.apply {
             post {
-                Glide.with(context)
-                        .asBitmap()
-                        .load(path)
-                        .into(drawable)
+                GlideWrapper.loadImageAsBitmap(context, path, drawable)
             }
         }
 
         return drawable
     }
 
-    private inner class BitmapDrawablePlaceholder : BitmapDrawable(mContainer.get()?.resources, Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)), Target<Bitmap> {
+    inner class BitmapDrawablePlaceholder : BitmapDrawable(mContainer.get()?.resources, Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)), Target<Bitmap> {
         private var drawable: Drawable? = null
             set(value) {
                 field = value

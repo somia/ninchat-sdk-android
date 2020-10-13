@@ -7,10 +7,10 @@ import android.os.Handler
 import android.view.Gravity
 import android.view.View
 import androidx.core.content.ContextCompat
-import com.bumptech.glide.Glide
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
+import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
 import com.ninchat.sdk.networkdispatchers.NinchatSendRatings
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel
 import com.ninchat.sdk.ninchatreview.view.NinchatReviewActivity
@@ -76,10 +76,7 @@ class NinchatReviewPresenter(
         view.ninchat_chat_message_bot_avatar.setImageResource(R.drawable.ninchat_chat_avatar_left)
         if (!ninchatReviewModel.getBotAvatar().isNullOrEmpty()) {
             try {
-                Glide.with(view.context)
-                        .load(ninchatReviewModel.getBotAvatar())
-                        .circleCrop()
-                        .into(view.ninchat_chat_message_bot_avatar);
+                GlideWrapper.loadImageAsCircle(view.context, ninchatReviewModel.getBotAvatar(), view.ninchat_chat_message_bot_avatar)
             } catch (err: Exception) {
                 // pass
             }

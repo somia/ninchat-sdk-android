@@ -10,6 +10,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
+import com.ninchat.sdk.ninchatactivity.presenter.NinchatActivityPresenter
 import com.ninchat.sdk.ninchatactivity.view.NinchatActivity
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import org.hamcrest.Description
@@ -56,7 +57,7 @@ class NinchatOpenListAdapter {
     @Test
     fun queue_list_adapter_with_empty_queue_list() {
         NinchatSession.Builder(appContext, configurationKey).create()
-        val intent = NinchatActivity.getLaunchIntent(appContext, null).run {
+        val intent = NinchatActivityPresenter.getLaunchIntent(appContext, null)?.run {
             putExtra("isDebug", true)
         }
         val q1 = NinchatQueue("1234", "test-queue-1").also {

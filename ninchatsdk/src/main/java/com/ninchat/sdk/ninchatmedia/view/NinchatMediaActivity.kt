@@ -3,9 +3,9 @@ package com.ninchat.sdk.ninchatmedia.view
 import android.app.DownloadManager
 import android.os.Bundle
 import android.view.View
-import com.bumptech.glide.Glide
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
+import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
 import com.ninchat.sdk.ninchatmedia.model.NinchatMediaModel
 import com.ninchat.sdk.ninchatmedia.presenter.INinchatMediaPresenter
 import com.ninchat.sdk.ninchatmedia.presenter.NinchatMediaPresenter
@@ -62,9 +62,7 @@ class NinchatMediaActivity : NinchatBaseActivity(), INinchatMediaPresenter {
             if (ninchatFile.isVideo) {
                 ninchatMediaPresenter.playVideo(ninchat_media_video, ninchatFile.url)
             } else {
-                Glide.with(this)
-                        .load(ninchatFile.url)
-                        .into(ninchat_media_image)
+                GlideWrapper.loadImage(this, ninchatFile.url, ninchat_media_image)
             }
             ninchat_media_name.text = ninchatFile.name
             ninchat_media_download.visibility = if (ninchatFile.isDownloaded || ninchatFile.isVideo) View.GONE else View.VISIBLE
