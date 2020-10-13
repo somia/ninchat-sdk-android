@@ -1,27 +1,16 @@
 package com.ninchat.sdk.ninchatquestionnaire.view
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.core.util.Pair
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
-import com.ninchat.sdk.events.OnCompleteQuestionnaire
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
-import com.ninchat.sdk.models.questionnaire.conversation.NinchatConversationQuestionnaire
-import com.ninchat.sdk.models.questionnaire.form.NinchatFormQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.presenter.INinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatQuestionnairePresenter
 import kotlinx.android.synthetic.main.activity_ninchat_questionnaire.*
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnairePresenter {
     lateinit var mRecyclerView: RecyclerView
@@ -70,7 +59,7 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
     }
 
     override fun onCompleteQuestionnaire(currentIntent: Intent) {
-        setResult(Activity.RESULT_OK, currentIntent)
+        setResult(RESULT_OK, currentIntent)
         finish()
     }
 }

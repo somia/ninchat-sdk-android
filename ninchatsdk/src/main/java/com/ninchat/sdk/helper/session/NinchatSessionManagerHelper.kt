@@ -16,12 +16,15 @@ import com.ninchat.sdk.models.NinchatMessage
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeChannel
+import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience
 import com.ninchat.sdk.ninchatactivity.presenter.NinchatActivityPresenter
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Parameter
+import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler.getIOScope
+import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -293,6 +296,12 @@ class NinchatSessionManagerHelper {
                             ?: 0)
                 }
                 currentSession.eventListenerWeakReference?.get()?.onSessionStarted()
+                NinchatScopeHandler.getIOScope().launch {
+                    NinchatDescribeQueue.execute(
+                            currentSession = currentSession.session,
+                            queueId = currentSession.ninchatState?.queueId
+                    )
+                }
             }
         }
 

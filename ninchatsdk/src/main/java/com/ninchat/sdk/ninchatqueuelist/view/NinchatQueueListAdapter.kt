@@ -64,7 +64,7 @@ class NinchatQueueListAdapter(
 
     val onQueueSelected = fun(queueId: String) {
         if (ninchatQueueList.requireOpenQuestionnaireActivity()) {
-            ninchatQueueList.openQuestionnaireQctivity(activity, queueId)
+            ninchatQueueList.openQuestionnaireActivity(activity, queueId)
             return
         }
         ninchatQueueList.openQueueActivity(activity, queueId)

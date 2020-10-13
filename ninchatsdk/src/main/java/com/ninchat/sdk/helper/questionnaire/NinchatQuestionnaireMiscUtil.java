@@ -95,6 +95,7 @@ public class NinchatQuestionnaireMiscUtil {
     }
 
     public static boolean isClosedQueue(String queueId) {
+        if (NinchatSessionManager.getInstance() == null) return true;
         return (NinchatSessionManager.getInstance().getQueue(queueId) == null || NinchatSessionManager.getInstance().getQueue(queueId).isClosed());
     }
 

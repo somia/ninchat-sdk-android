@@ -52,7 +52,7 @@ class NinchatQueueListPresenter(queueList: List<NinchatQueue>) {
                 NinchatQueueModel.REQUEST_CODE)
     }
 
-    fun openQuestionnaireQctivity(activity: Activity?, queueId: String) {
+    fun openQuestionnaireActivity(activity: Activity?, queueId: String) {
         activity?.startActivityForResult(
                 NinchatQuestionnairePresenter.getLaunchIntent(activity, queueId,
                         NinchatQuestionnaireTypeUtil.PRE_AUDIENCE_QUESTIONNAIRE),

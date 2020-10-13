@@ -56,7 +56,7 @@ class NinchatActivity : NinchatBaseActivity(), INinchatActivityPresenter {
         if (ninchatActivityPresenter.hasQueue()) {
             // try to open questionnaire or queue activity
             if (ninchatActivityPresenter.shouldOpenPreAudienceQuestionnaireActivity()) {
-                ninchatActivityPresenter.openQuestionnaireActivity(this, queueId = ninchatActivityPresenter.ninchatActivityModel.queueId)
+                ninchatActivityPresenter.openPreAudienceQuestionnaireActivity(this, queueId = ninchatActivityPresenter.ninchatActivityModel.queueId)
             } else {
                 ninchatActivityPresenter.openQueueActivity(this, queueId = ninchatActivityPresenter.ninchatActivityModel.queueId)
             }
@@ -87,7 +87,7 @@ class NinchatActivity : NinchatBaseActivity(), INinchatActivityPresenter {
             requestCode == NinchatQueueModel.REQUEST_CODE ->
                 if (resultCode == RESULT_OK || !ninchatActivityPresenter.ninchatActivityModel.queueId.isNullOrEmpty()) {
                     if (resultCode == RESULT_OK && ninchatActivityPresenter.shouldOpenPostAudienceQuestionnaireActivity()) {
-                        ninchatActivityPresenter.openQuestionnaireActivity(this, ninchatActivityPresenter.ninchatActivityModel.queueId)
+                        ninchatActivityPresenter.openPostAudienceQuestionnaireActivity(this, ninchatActivityPresenter.ninchatActivityModel.queueId)
                     } else {
                         NinchatSessionManager.getInstance()?.close()
                         setResult(resultCode, data)

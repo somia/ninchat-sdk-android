@@ -126,10 +126,17 @@ class NinchatActivityPresenter(
         }
     }
 
-    fun openQuestionnaireActivity(activity: Activity?, queueId: String?) {
+    fun openPostAudienceQuestionnaireActivity(activity: Activity?, queueId: String?) {
         activity?.startActivityForResult(
                 NinchatQuestionnairePresenter.getLaunchIntent(activity, queueId,
                         NinchatQuestionnaireTypeUtil.POST_AUDIENCE_QUESTIONNAIRE),
+                NinchatQuestionnairePresenter.REQUEST_CODE)
+    }
+
+    fun openPreAudienceQuestionnaireActivity(activity: Activity?, queueId: String?) {
+        activity?.startActivityForResult(
+                NinchatQuestionnairePresenter.getLaunchIntent(activity, queueId,
+                        NinchatQuestionnaireTypeUtil.PRE_AUDIENCE_QUESTIONNAIRE),
                 NinchatQuestionnairePresenter.REQUEST_CODE)
     }
 

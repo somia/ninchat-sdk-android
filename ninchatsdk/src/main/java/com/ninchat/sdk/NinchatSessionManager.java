@@ -206,7 +206,6 @@ public final class NinchatSessionManager {
     }
 
 
-
     public NinchatQueue getQueue(final String queueId) {
         for (NinchatQueue queue : ninchatState.getQueues()) {
             if (queue.getId().equals(queueId)) {
@@ -254,7 +253,8 @@ public final class NinchatSessionManager {
             load.setString("message_id", messageId);
         }
         try {
-            ninchatSessionHolder.getCurrentSession().send(load, null);
+            if (ninchatSessionHolder.getCurrentSession() != null)
+                ninchatSessionHolder.getCurrentSession().send(load, null);
         } catch (final Exception e) {
             // Ignore
         }
