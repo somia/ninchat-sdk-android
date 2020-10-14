@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/ninchat_control_button_root"
@@ -12,7 +13,7 @@
         android:layout_width="@dimen/ninchat_chat_control_follow_button_width"
         android:layout_height="@dimen/ninchat_button_height"
         android:src="@drawable/ninchat_icon_back"
-        android:tint="@color/ninchat_color_button_secondary_text" />
+        app:tint="@color/ninchat_color_button_secondary_text" />
 
     <TextView
         android:id="@+id/ninchat_button_previous"
@@ -39,7 +40,7 @@
         android:layout_width="@dimen/ninchat_chat_control_follow_button_width"
         android:layout_height="@dimen/ninchat_button_height"
         android:src="@drawable/ninchat_icon_next"
-        android:tint="@color/ninchat_color_button_primary_text" />
+        app:tint="@color/ninchat_color_button_primary_text" />
 
     <TextView
         android:id="@+id/ninchat_button_next"
