@@ -102,7 +102,7 @@ class NinchatSiteConfig {
             getString("welcome") ?: "welcome"
 
     fun getNoQueuesText(): String =
-            getString("noQueuesText") ?: "noQueuesText"
+            getString("noQueuesText") ?: ""
 
     fun getCloseWindowText(): String =
             getTranslation("Close window")
@@ -144,7 +144,7 @@ class NinchatSiteConfig {
             getTranslation("Close chat")
 
     fun getChatCloseConfirmationText(): String =
-            getString("closeConfirmText") ?: "closeConfirmText"
+            getString("closeConfirmText") ?: ""
 
     fun getContinueChatText(): String =
             getTranslation("Continue chat")
@@ -174,7 +174,7 @@ class NinchatSiteConfig {
             getTranslation("Video chat declined")
 
     fun getMOTDText(): String =
-            getString("motd") ?: "motd"
+            getString("motd") ?: ""
 
     fun getInQueueMessageText(): String? =
             getString("inQueueText")
@@ -218,7 +218,7 @@ class NinchatSiteConfig {
         } else {
             "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are at position {{audienceQueue.queue_position}}."
         }
-        var queueStatus = getTranslation(key)
+        var queueStatus = getTranslation(key) ?: key
         if (queueStatus.contains("audienceQueue.queue_attrs.name"))
             queueStatus = replacePlaceholder(queueStatus, name ?: "")
         if (queueStatus.contains("audienceQueue.queue_position"))
@@ -271,7 +271,7 @@ class NinchatSiteConfig {
 
     // todo (pallab) move to translator package
     fun getTranslation(key: String = ""): String =
-            getTranslation("translations", key) ?: ""
+            getTranslation("translations", key) ?: key
 
     // todo (pallab) move to translator or general util/helper package
     fun replacePlaceholder(origin: String?, replacement: String): String {
