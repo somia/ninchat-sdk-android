@@ -4,34 +4,25 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
-import com.ninchat.sdk.ninchatquestionnaire.model.NinchatButtonViewModel
 import com.ninchat.sdk.ninchatquestionnaire.presenter.INinchatButtonViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatButtonViewPresenter
 import kotlinx.android.synthetic.main.control_buttons.view.*
+import org.json.JSONObject
 
 class NinchatButtonViewHolder(
         itemView: View,
-        ninchatButtonViewModel: NinchatButtonViewModel,
+        jsonObject: JSONObject?,
 ) : RecyclerView.ViewHolder(itemView), INinchatButtonViewPresenter {
-    val ninchatButtonViewPresenter = NinchatButtonViewPresenter(
-            ninchatButtonViewModel = ninchatButtonViewModel,
-            iPresenter = this
-    )
+    private val ninchatButtonViewPresenter: NinchatButtonViewPresenter = NinchatButtonViewPresenter(
+            jsonObject = jsonObject,
+            iPresenter = this)
 
-    init {
+    fun update() {
         ninchatButtonViewPresenter.renderCurrentView()
-        attachUserActionHancler()
+        attachUserActionHandler()
     }
 
-    fun update(ninchatButtonViewModel: NinchatButtonViewModel) {
-        ninchatButtonViewPresenter.run {
-            updateViewModel(_ninchatButtonViewModel = ninchatButtonViewModel)
-            renderCurrentView()
-        }
-        attachUserActionHancler()
-    }
-
-    private fun attachUserActionHancler() {
+    private fun attachUserActionHandler() {
         // update background of the button
         // update background of the button
         itemView.run {
@@ -42,16 +33,16 @@ class NinchatButtonViewHolder(
                 ninchatButtonViewPresenter.onBackButtonClicked()
             }
             ninchat_image_button_next?.setOnClickListener {
-                ninchatButtonViewPresenter.onBackButtonClicked()
+                ninchatButtonViewPresenter.onNextButtonClicked()
             }
             ninchat_button_next?.setOnClickListener {
-                ninchatButtonViewPresenter.onBackButtonClicked()
+                ninchatButtonViewPresenter.onNextButtonClicked()
             }
         }
     }
 
-    override fun onBackButtonUpdated(visible: Boolean, text: String?, imageButton: Boolean, enabled: Boolean) {
-        val background = if (enabled) R.drawable.ninchat_chat_primary_oncliked_button else R.drawable.ninchat_chat_secondary_button
+    override fun onBackButtonUpdated(visible: Boolean, text: String?, imageButton: Boolean, clicked: Boolean) {
+        val background = if (clicked) R.drawable.ninchat_chat_primary_oncliked_button else R.drawable.ninchat_chat_secondary_button
         itemView.run {
             if (imageButton) {
                 ninchat_image_button_previous.background = ContextCompat.getDrawable(itemView.context, background)
@@ -64,8 +55,8 @@ class NinchatButtonViewHolder(
         }
     }
 
-    override fun onNextNextUpdated(visible: Boolean, text: String?, imageButton: Boolean, enabled: Boolean) {
-        val background = if (enabled) R.drawable.ninchat_chat_primary_oncliked_button else R.drawable.ninchat_chat_secondary_button
+    override fun onNextNextUpdated(visible: Boolean, text: String?, imageButton: Boolean, clicked: Boolean) {
+        val background = if (clicked) R.drawable.ninchat_chat_primary_oncliked_button else R.drawable.ninchat_chat_secondary_button
         itemView.run {
             if (imageButton) {
                 ninchat_image_button_next?.background = ContextCompat.getDrawable(itemView.context, background)
