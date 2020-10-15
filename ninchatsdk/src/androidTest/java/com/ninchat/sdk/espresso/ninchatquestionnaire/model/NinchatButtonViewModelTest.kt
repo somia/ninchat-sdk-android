@@ -84,7 +84,7 @@ class NinchatButtonViewModelTest {
             "back": "Back",
             "next": "Next",
             "fireEvent": true,
-            "thankYouText": true
+            "type": "thankYouText"
         }""".trimIndent()
 
         val ninchatButtonViewModel = NinchatButtonViewModel().parse(jsonObject = JSONObject(json1))

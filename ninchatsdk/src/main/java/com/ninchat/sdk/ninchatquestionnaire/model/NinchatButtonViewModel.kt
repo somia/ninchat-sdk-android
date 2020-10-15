@@ -28,7 +28,7 @@ data class NinchatButtonViewModel(
         val showBackImageButton = hasPreviousButton && (previousButtonLabel == "true" || previousButtonLabel.isEmpty())
         val showNextImageButton = hasNextButton && (nextButtonLabel == "true" || nextButtonLabel.isEmpty())
         val fireEvent = jsonObject?.optBoolean("fireEvent", false) ?: false
-        val isThankYouText = jsonObject?.optBoolean("thankYouText", false) ?: false
+        val isThankYouText = jsonObject?.optString("type", "") == "thankYouText"
 
 
         this.showPreviousImageButton = showBackImageButton

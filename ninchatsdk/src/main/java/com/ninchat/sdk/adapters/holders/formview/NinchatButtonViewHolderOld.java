@@ -22,18 +22,18 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.setAnimation;
 
 
-public class NinchatButtonViewHolder extends RecyclerView.ViewHolder {
-    private String TAG = NinchatButtonViewHolder.class.getSimpleName();
+public class NinchatButtonViewHolderOld extends RecyclerView.ViewHolder {
+    private String TAG = NinchatButtonViewHolderOld.class.getSimpleName();
 
     private TextView mPrevious;
     private TextView mNext;
     private ImageView mPreviousImage;
     private ImageView mNextImage;
 
-    public NinchatButtonViewHolder(@NonNull View itemView,
-                                   JSONObject questionnaireElement,
-                                   boolean isFormLikeQuestionnaire,
-                                   int position) {
+    public NinchatButtonViewHolderOld(@NonNull View itemView,
+                                      JSONObject questionnaireElement,
+                                      boolean isFormLikeQuestionnaire,
+                                      int position) {
         super(itemView);
         mPrevious = itemView.findViewById(R.id.ninchat_button_previous);
         mNext = itemView.findViewById(R.id.ninchat_button_next);

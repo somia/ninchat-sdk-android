@@ -10,7 +10,11 @@ class NinchatButtonViewPresenter(
         jsonObject: JSONObject?,
         val iPresenter: INinchatButtonViewPresenter,
 ) : INinchatButtonViewHolder {
-    private val ninchatButtonViewModel: NinchatButtonViewModel = NinchatButtonViewModel().parse(jsonObject = jsonObject)
+    private var ninchatButtonViewModel: NinchatButtonViewModel = NinchatButtonViewModel().parse(jsonObject = jsonObject)
+
+    fun updateModel(jsonObject: JSONObject?) {
+        ninchatButtonViewModel = NinchatButtonViewModel().parse(jsonObject = jsonObject)
+    }
 
     fun renderCurrentView() {
         handleBackButton(visibleImageButton = ninchatButtonViewModel.showPreviousImageButton,
