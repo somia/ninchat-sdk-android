@@ -1,7 +1,9 @@
 package com.ninchat.sdk.ninchatquestionnaire.presenter
 
+import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.model.NinchatButtonViewModel
 import com.ninchat.sdk.ninchatquestionnaire.view.INinchatButtonViewHolder
+import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
 class NinchatButtonViewPresenter(
@@ -24,24 +26,28 @@ class NinchatButtonViewPresenter(
     }
 
     override fun onBackButtonClicked() {
-        // may be sent event that back is clicked
         ninchatButtonViewModel.previousButtonClicked = !ninchatButtonViewModel.previousButtonClicked
 
         handleBackButton(visibleImageButton = ninchatButtonViewModel.showPreviousImageButton,
                 visibleTextButton = ninchatButtonViewModel.showPreviousTextButton,
                 text = ninchatButtonViewModel.previousButtonLabel,
                 clicked = ninchatButtonViewModel.previousButtonClicked)
+
+        // may be sent event that back is clicked
+        mayBeFireEvent(isBack = true)
     }
 
 
     override fun onNextButtonClicked() {
         ninchatButtonViewModel.nextButtonClicked = !ninchatButtonViewModel.nextButtonClicked
 
-        // may be sent event that next is clicked
         handleNextButton(visibleImageButton = ninchatButtonViewModel.showNextImageButton,
                 visibleTextButton = ninchatButtonViewModel.showNextTextButton,
                 text = ninchatButtonViewModel.nextButtonLabel,
                 clicked = ninchatButtonViewModel.nextButtonClicked)
+
+        // may be sent event that next is clicked
+        mayBeFireEvent(isBack = false)
     }
 
     private fun handleBackButton(visibleImageButton: Boolean = false, visibleTextButton: Boolean = false, text: String?, clicked: Boolean = false) {
@@ -58,6 +64,16 @@ class NinchatButtonViewPresenter(
             onNextNextUpdated(visible = visibleImageButton, text = text, imageButton = true, clicked = clicked)
             onNextNextUpdated(visible = visibleTextButton, text = text, imageButton = false, clicked = clicked)
         }
+    }
+
+    private fun mayBeFireEvent(isBack: Boolean) {
+        if (!ninchatButtonViewModel.fireEvent) return
+
+        if (ninchatButtonViewModel.isThankYouText) {
+            EventBus.getDefault().post(OnNextQuestionnaire(OnNextQuestionnaire.thankYou))
+            return
+        }
+        EventBus.getDefault().post(OnNextQuestionnaire(if (isBack) OnNextQuestionnaire.back else OnNextQuestionnaire.forward))
     }
 }
 
