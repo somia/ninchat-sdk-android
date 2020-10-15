@@ -1,11 +1,23 @@
 package com.ninchat.sdk.ninchatquestionnaire.model
 
 data class NinchatButtonViewModel(
-        val showPreviousImageButton: Boolean = false,
-        val showPreviousTextButton: Boolean = false,
-        val showNextImageButton: Boolean = false,
-        val showNextTextButton: Boolean = false,
+        var showPreviousImageButton: Boolean = false,
+        var showPreviousTextButton: Boolean = false,
+        var showNextImageButton: Boolean = false,
+        var showNextTextButton: Boolean = false,
 
-        val nextButtonLabel: String = "",
-        val previousButtonLabel: String = "",
-)
+        var previousButtonLabel: String = "",
+        var nextButtonLabel: String = "",
+
+        var backButtonEnabled: Boolean = false,
+        var nextButtonEnabled: Boolean = false
+) {
+    private val defaultBackButtonLabel: String = "Back"
+    private val defaultNextButtonLabel: String = "Next"
+
+    init {
+        previousButtonLabel = if (previousButtonLabel.isNullOrEmpty()) defaultBackButtonLabel else previousButtonLabel
+        nextButtonLabel = if (nextButtonLabel.isNullOrEmpty()) defaultNextButtonLabel else nextButtonLabel
+    }
+
+}

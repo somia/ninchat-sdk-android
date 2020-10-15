@@ -1,56 +1,65 @@
 package com.ninchat.sdk.ninchatquestionnaire.presenter
 
-import android.view.View
 import com.ninchat.sdk.ninchatquestionnaire.model.NinchatButtonViewModel
-import kotlinx.android.synthetic.main.control_buttons.view.*
+import com.ninchat.sdk.ninchatquestionnaire.view.INinchatButtonViewHolder
 import org.json.JSONObject
 
 class NinchatButtonViewPresenter(
         var ninchatButtonViewModel: NinchatButtonViewModel,
-) {
+        val iPresenter: INinchatButtonViewPresenter,
+) : INinchatButtonViewHolder {
 
     fun updateViewModel(_ninchatButtonViewModel: NinchatButtonViewModel) {
         ninchatButtonViewModel = _ninchatButtonViewModel.copy()
     }
 
-    fun initiateView(itemView: View) {
-        // initially all view should be invisible
-        listOf(
-                itemView.ninchat_image_button_previous,
-                itemView.ninchat_button_previous,
-                itemView.ninchat_image_button_next,
-                itemView.ninchat_button_next).forEach { it.visibility == View.GONE }
+    fun renderCurrentView() {
+        handleBackButton(visibleImageButton = ninchatButtonViewModel.showPreviousImageButton,
+                visibleTextButton = ninchatButtonViewModel.showPreviousTextButton,
+                text = ninchatButtonViewModel.previousButtonLabel,
+                enabled = ninchatButtonViewModel.backButtonEnabled)
+
+        handleNextButton(visibleImageButton = ninchatButtonViewModel.showNextImageButton,
+                visibleTextButton = ninchatButtonViewModel.showNextTextButton,
+                text = ninchatButtonViewModel.nextButtonLabel,
+                enabled = ninchatButtonViewModel.nextButtonEnabled)
+
     }
 
-    fun renderCurrentView(itemView: View) {
-        // handle previous button view
-        when {
-            ninchatButtonViewModel.showPreviousImageButton -> {
-                itemView.ninchat_image_button_previous.visibility = View.VISIBLE
-                itemView.ninchat_image_button_previous.setOnClickListener {
-                }
-            }
-            ninchatButtonViewModel.showPreviousTextButton -> {
-                itemView.ninchat_button_previous.visibility = View.VISIBLE
-                itemView.ninchat_button_previous.text = ninchatButtonViewModel.previousButtonLabel
-                itemView.ninchat_button_previous.setOnClickListener {
-                }
-            }
-        }
+    override fun onBackButtonClicked() {
+        // may be sent event that back is clicked
+        ninchatButtonViewModel.backButtonEnabled = !ninchatButtonViewModel.backButtonEnabled
 
-        // handle next button view
-        when {
-            ninchatButtonViewModel.showNextImageButton -> {
-                itemView.ninchat_image_button_next.visibility = View.VISIBLE
-                itemView.ninchat_image_button_next.setOnClickListener {
-                }
-            }
-            ninchatButtonViewModel.showNextTextButton -> {
-                itemView.ninchat_button_next.visibility = View.VISIBLE
-                itemView.ninchat_button_next.text = ninchatButtonViewModel.nextButtonLabel
-                itemView.ninchat_button_next.setOnClickListener {
-                }
-            }
+        handleBackButton(visibleImageButton = ninchatButtonViewModel.showPreviousImageButton,
+                visibleTextButton = ninchatButtonViewModel.showPreviousTextButton,
+                text = ninchatButtonViewModel.previousButtonLabel,
+                enabled = ninchatButtonViewModel.backButtonEnabled)
+    }
+
+
+    override fun onNextButtonClicked() {
+        ninchatButtonViewModel.nextButtonEnabled = !ninchatButtonViewModel.nextButtonEnabled
+
+        // may be sent event that next is clicked
+        handleNextButton(visibleImageButton = ninchatButtonViewModel.showNextImageButton,
+                visibleTextButton = ninchatButtonViewModel.showNextTextButton,
+                text = ninchatButtonViewModel.nextButtonLabel,
+                enabled = ninchatButtonViewModel.nextButtonEnabled)
+    }
+
+    private fun handleBackButton(visibleImageButton: Boolean = false, visibleTextButton: Boolean = false, text: String?, enabled: Boolean = false) {
+        iPresenter.run {
+            // prepare and post process data for back view
+            onBackButtonUpdated(visible = visibleImageButton, text = text, imageButton = true, enabled = enabled)
+            onBackButtonUpdated(visible = visibleTextButton, text = text, imageButton = false, enabled = enabled)
+        }
+    }
+
+    private fun handleNextButton(visibleImageButton: Boolean = false, visibleTextButton: Boolean = false, text: String?, enabled: Boolean = false) {
+        iPresenter.run {
+            // prepare and post process data for back view
+            onNextNextUpdated(visible = visibleImageButton, text = text, imageButton = true, enabled = enabled)
+            onNextNextUpdated(visible = visibleTextButton, text = text, imageButton = false, enabled = enabled)
         }
     }
 
@@ -59,4 +68,9 @@ class NinchatButtonViewPresenter(
             return NinchatButtonViewModel()
         }
     }
+}
+
+interface INinchatButtonViewPresenter {
+    fun onBackButtonUpdated(visible: Boolean = false, text: String?, imageButton: Boolean = true, enabled: Boolean = false)
+    fun onNextNextUpdated(visible: Boolean = false, text: String?, imageButton: Boolean = true, enabled: Boolean = false)
 }
