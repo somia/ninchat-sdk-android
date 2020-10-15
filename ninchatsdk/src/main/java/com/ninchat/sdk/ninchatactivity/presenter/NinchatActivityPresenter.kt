@@ -12,7 +12,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.ninchatquestionnaire.view.NinchatQuestionnaireActivity
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import com.ninchat.sdk.ninchatactivity.model.NinchatActivityModel
 import com.ninchat.sdk.ninchatactivity.view.NinchatActivity

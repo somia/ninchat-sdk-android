@@ -32,9 +32,11 @@ data class NinchatButtonViewModel(
 
 
         this.showPreviousImageButton = showBackImageButton
-        this.showPreviousTextButton = hasPreviousButton && !showBackImageButton
         this.showNextImageButton = showNextImageButton
-        this.showNextTextButton = showNextImageButton && !showNextImageButton
+
+        this.showPreviousTextButton = hasPreviousButton && !showBackImageButton
+        this.showNextTextButton = hasNextButton && !showNextImageButton
+
         this.previousButtonLabel = previousButtonLabel
         this.nextButtonLabel = nextButtonLabel
         this.fireEvent = fireEvent
@@ -55,6 +57,5 @@ data class NinchatButtonViewModel(
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getTranslation(it)
                     ?: nextButtonLabel
         } ?: nextButtonLabel
-
     }
 }
