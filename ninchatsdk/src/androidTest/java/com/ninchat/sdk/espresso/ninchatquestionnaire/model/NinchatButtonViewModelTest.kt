@@ -1,4 +1,5 @@
-package com.ninchat.sdk.espresso.ninchatquestionnaire
+package com.ninchat.sdk.espresso.ninchatquestionnaire.model
+
 
 import androidx.test.platform.app.InstrumentationRegistry
 import com.ninchat.sdk.NinchatSession
