@@ -1,0 +1,53 @@
+package com.ninchat.sdk.ninchatquestionnaire.presenter
+
+import com.ninchat.sdk.events.OnNextQuestionnaire
+import com.ninchat.sdk.ninchatquestionnaire.model.NinchatCheckboxViewModel
+import org.greenrobot.eventbus.EventBus
+import org.json.JSONObject
+
+class NinchatCheckboxViewPresenter(
+        jsonObject: JSONObject?,
+        isFormLikeQuestionnaire: Boolean = true,
+        val iPresent: INinchatCheckboxViewPresenter,
+) {
+    private var ninchatCheckboxViewModel = NinchatCheckboxViewModel(
+            isFormLikeQuestionnaire = isFormLikeQuestionnaire
+    ).parse(jsonObject = jsonObject)
+
+    fun updateModel(jsonObject: JSONObject?, isFormLikeQuestionnaire: Boolean = true) {
+        ninchatCheckboxViewModel = NinchatCheckboxViewModel(isFormLikeQuestionnaire = isFormLikeQuestionnaire).parse(jsonObject = jsonObject)
+    }
+
+    fun renderCurrentView() {
+        if (ninchatCheckboxViewModel.isFormLikeQuestionnaire) {
+            // render form like
+            iPresent.onUpdateFromView(
+                    label = ninchatCheckboxViewModel.label,
+                    isChecked = ninchatCheckboxViewModel.isChecked
+            )
+            return
+        }
+        // render conversation like
+        iPresent.onUpdateConversationView(
+                label = ninchatCheckboxViewModel.label,
+                isChecked = ninchatCheckboxViewModel.isChecked
+        )
+    }
+
+    fun handleCheckBoxToggled(isChecked: Boolean) {
+        ninchatCheckboxViewModel.isChecked = isChecked
+        renderCurrentView()
+        if (!isChecked) return
+        mayBeFireEvent()
+    }
+
+    private fun mayBeFireEvent() {
+        if (!ninchatCheckboxViewModel.fireEvent) return
+        EventBus.getDefault().post(OnNextQuestionnaire(OnNextQuestionnaire.other))
+    }
+}
+
+interface INinchatCheckboxViewPresenter {
+    fun onUpdateFromView(label: String?, isChecked: Boolean)
+    fun onUpdateConversationView(label: String?, isChecked: Boolean)
+}

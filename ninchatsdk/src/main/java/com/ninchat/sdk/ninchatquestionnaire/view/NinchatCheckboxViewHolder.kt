@@ -1,0 +1,55 @@
+package com.ninchat.sdk.ninchatquestionnaire.view
+
+import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
+import com.ninchat.sdk.R
+import com.ninchat.sdk.ninchatquestionnaire.presenter.INinchatCheckboxViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatCheckboxViewPresenter
+import kotlinx.android.synthetic.main.checkbox_simple.view.*
+import org.json.JSONObject
+
+class NinchatCheckboxViewHolder(
+        itemView: View,
+        jsonObject: JSONObject?,
+        isFormLikeQuestionnaire: Boolean = true,
+) : RecyclerView.ViewHolder(itemView), INinchatCheckboxViewPresenter {
+
+    private val ninchatCheckboxViewPresenter = NinchatCheckboxViewPresenter(
+            jsonObject = jsonObject,
+            isFormLikeQuestionnaire = isFormLikeQuestionnaire,
+            iPresent = this
+    )
+
+    fun update(jsonObject: JSONObject?, isFormLikeQuestionnaire: Boolean = true) {
+        ninchatCheckboxViewPresenter.renderCurrentView()
+        attachUserActionHandler()
+    }
+
+    private fun attachUserActionHandler() {
+        itemView.run {
+            ninchat_checkbox.setOnCheckedChangeListener { _, isChecked ->
+                ninchatCheckboxViewPresenter.handleCheckBoxToggled(isChecked)
+            }
+        }
+    }
+
+
+    override fun onUpdateFromView(label: String?, isChecked: Boolean) {
+        val background = R.drawable.ninchat_chat_questionnaire_background
+        itemView.background = ContextCompat.getDrawable(itemView.context, background)
+        renderCommonView(label = label, isChecked = isChecked)
+    }
+
+    override fun onUpdateConversationView(label: String?, isChecked: Boolean) {
+        renderCommonView(label = label, isChecked = isChecked)
+    }
+
+    private fun renderCommonView(label: String?, isChecked: Boolean) {
+        val color = R.color.ninchat_color_checkbox_selected
+        itemView.ninchat_checkbox.text = label
+        itemView.ninchat_checkbox.isChecked = isChecked
+        itemView.ninchat_checkbox.setTextColor(ContextCompat.getColor(itemView.context, color));
+    }
+
+}
