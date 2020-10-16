@@ -24,7 +24,6 @@ class NinchatButtonViewHolder(
 
     private fun attachUserActionHandler() {
         // update background of the button
-        // update background of the button
         itemView.run {
             ninchat_image_button_previous?.setOnClickListener {
                 ninchatButtonViewPresenter.onBackButtonClicked()
