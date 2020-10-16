@@ -13,12 +13,12 @@ import org.json.JSONObject;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.setAnimation;
 
-public class NinchatTextViewHolder extends RecyclerView.ViewHolder {
+public class NinchatTextViewHolderOld extends RecyclerView.ViewHolder {
     private TextView mTextView;
 
-    public NinchatTextViewHolder(@NonNull View itemView,
-                                 JSONObject questionnaireElement,
-                                 boolean isFormLikeQuestionnaire, int position) {
+    public NinchatTextViewHolderOld(@NonNull View itemView,
+                                    JSONObject questionnaireElement,
+                                    boolean isFormLikeQuestionnaire, int position) {
         super(itemView);
         mTextView = itemView.findViewById(R.id.text_view_content);
         bind(questionnaireElement, isFormLikeQuestionnaire, position, false);

@@ -2,6 +2,7 @@ package com.ninchat.sdk.adapters;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -10,9 +11,9 @@ import com.ninchat.sdk.adapters.holders.formview.NinchatCheckboxViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatDropDownSelectViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatInputFieldViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatRadioBtnViewHolder;
-import com.ninchat.sdk.adapters.holders.formview.NinchatTextViewHolder;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 import com.ninchat.sdk.ninchatquestionnaire.view.NinchatButtonViewHolder;
+import com.ninchat.sdk.ninchatquestionnaire.view.NinchatTextViewHolder;
 
 import org.json.JSONObject;
 
@@ -34,7 +35,7 @@ public class NinchatFormQuestionnaireAdapter extends NinchatQuestionnaireBaseAda
             case TEXT:
                 return new NinchatTextViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.text_view, parent, false),
-                        currentItem, isFormLikeQuestionnaire, position);
+                        currentItem, isFormLikeQuestionnaire);
             case INPUT:
                 return new NinchatInputFieldViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.text_field_with_label, parent, false),
@@ -69,7 +70,7 @@ public class NinchatFormQuestionnaireAdapter extends NinchatQuestionnaireBaseAda
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         JSONObject currentItem = questionnaire.getItem(position);
         if (viewHolder instanceof NinchatTextViewHolder) {
-            ((NinchatTextViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position, true);
+            ((NinchatTextViewHolder) viewHolder).update(currentItem, isFormLikeQuestionnaire);
         } else if (viewHolder instanceof NinchatInputFieldViewHolder) {
             ((NinchatInputFieldViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position, true);
         } else if (viewHolder instanceof NinchatDropDownSelectViewHolder) {
