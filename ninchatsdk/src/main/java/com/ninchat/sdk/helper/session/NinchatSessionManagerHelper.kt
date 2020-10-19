@@ -8,19 +8,23 @@ import com.ninchat.client.Objects
 import com.ninchat.client.Props
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.activities.NinchatActivity
+import com.ninchat.sdk.ninchatactivity.view.NinchatActivity
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getChannelIdFromUserChannel
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getOpenQueueList
 import com.ninchat.sdk.models.NinchatMessage
-import com.ninchat.sdk.models.NinchatQueue
+import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeChannel
+import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience
+import com.ninchat.sdk.ninchatactivity.presenter.NinchatActivityPresenter
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Parameter
+import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler.getIOScope
+import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -287,11 +291,17 @@ class NinchatSessionManagerHelper {
                 }
                 currentSession.activityWeakReference?.get()?.let { mActivity ->
                     mActivity.startActivityForResult(
-                            NinchatActivity.getLaunchIntent(mActivity,
+                            NinchatActivityPresenter.getLaunchIntent(mActivity,
                                     currentSession.ninchatState?.queueId), currentSession.ninchatState?.requestCode
                             ?: 0)
                 }
                 currentSession.eventListenerWeakReference?.get()?.onSessionStarted()
+                NinchatScopeHandler.getIOScope().launch {
+                    NinchatDescribeQueue.execute(
+                            currentSession = currentSession.session,
+                            queueId = currentSession.ninchatState?.queueId
+                    )
+                }
             }
         }
 

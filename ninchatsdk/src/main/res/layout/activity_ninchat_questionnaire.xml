@@ -7,7 +7,7 @@
     android:fadeScrollbars="false"
     android:background="@drawable/ninchat_chat_background_tiled"
     android:theme="@style/NinchatTheme.Questionnaire"
-    tools:context=".activities.NinchatQuestionnaireActivity">
+    tools:context=".ninchatquestionnaire.view.NinchatQuestionnaireActivity">
 
 
     <androidx.recyclerview.widget.RecyclerView

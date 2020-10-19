@@ -48,17 +48,19 @@ class NinchatSiteConfig {
 
     fun getBoolean(key: String): Boolean? {
         var value = false
+        var found = false;
         siteConfig?.let {
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
                     if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, false)
+                        found = true
+                        value = siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, true)
                                 ?: false
                     }
                 }
             }
         }
-        return value
+        return if (found) value else null
     }
 
     fun getString(key: String): String? {
@@ -67,9 +69,9 @@ class NinchatSiteConfig {
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
                     if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optString(key)
+                        value = siteConfig?.optJSONObject(currentEnvironment)?.optString(key, "null")
                         // workaround value can be null which when parsing will be interpreted as "null" string in Java with quote
-                        if ("null" == value) {
+                        if ("null" == value || "false" == value) {
                             value = null
                         }
                     }
@@ -100,7 +102,7 @@ class NinchatSiteConfig {
             getString("welcome") ?: "welcome"
 
     fun getNoQueuesText(): String =
-            getString("noQueuesText") ?: "noQueuesText"
+            getString("noQueuesText") ?: ""
 
     fun getCloseWindowText(): String =
             getTranslation("Close window")
@@ -142,7 +144,7 @@ class NinchatSiteConfig {
             getTranslation("Close chat")
 
     fun getChatCloseConfirmationText(): String =
-            getString("closeConfirmText") ?: "closeConfirmText"
+            getString("closeConfirmText") ?: ""
 
     fun getContinueChatText(): String =
             getTranslation("Continue chat")
@@ -172,7 +174,7 @@ class NinchatSiteConfig {
             getTranslation("Video chat declined")
 
     fun getMOTDText(): String =
-            getString("motd") ?: "motd"
+            getString("motd") ?: ""
 
     fun getInQueueMessageText(): String? =
             getString("inQueueText")
@@ -216,7 +218,7 @@ class NinchatSiteConfig {
         } else {
             "Joined audience queue {{audienceQueue.queue_attrs.name}}, you are at position {{audienceQueue.queue_position}}."
         }
-        var queueStatus = getTranslation(key)
+        var queueStatus = getTranslation(key) ?: key
         if (queueStatus.contains("audienceQueue.queue_attrs.name"))
             queueStatus = replacePlaceholder(queueStatus, name ?: "")
         if (queueStatus.contains("audienceQueue.queue_position"))

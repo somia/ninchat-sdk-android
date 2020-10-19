@@ -13,9 +13,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.ninchat.client.Props;
 import com.ninchat.client.Session;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
-import com.ninchat.sdk.adapters.NinchatQueueListAdapter;
+import com.ninchat.sdk.ninchatqueuelist.view.NinchatQueueListAdapter;
 import com.ninchat.sdk.helper.session.NinchatSessionManagerHelper;
-import com.ninchat.sdk.models.NinchatQueue;
+import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue;
 import com.ninchat.sdk.models.NinchatSessionCredentials;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
@@ -206,7 +206,6 @@ public final class NinchatSessionManager {
     }
 
 
-
     public NinchatQueue getQueue(final String queueId) {
         for (NinchatQueue queue : ninchatState.getQueues()) {
             if (queue.getId().equals(queueId)) {
@@ -254,7 +253,8 @@ public final class NinchatSessionManager {
             load.setString("message_id", messageId);
         }
         try {
-            ninchatSessionHolder.getCurrentSession().send(load, null);
+            if (ninchatSessionHolder.getCurrentSession() != null)
+                ninchatSessionHolder.getCurrentSession().send(load, null);
         } catch (final Exception e) {
             // Ignore
         }

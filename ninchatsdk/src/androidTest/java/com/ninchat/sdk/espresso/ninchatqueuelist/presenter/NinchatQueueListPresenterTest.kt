@@ -1,25 +1,76 @@
-package com.ninchat.sdk.espresso.ninchatqueue.model
+package com.ninchat.sdk.espresso.ninchatqueuelist.presenter
 
+import android.content.Context
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 import androidx.test.platform.app.InstrumentationRegistry
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
+import com.ninchat.sdk.R
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder
-import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
+import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
+import com.ninchat.sdk.ninchatqueuelist.presenter.NinchatQueueListPresenter
 import org.junit.Assert
 import org.junit.Test
+import org.junit.runner.RunWith
 
-class NinchatQueueModelTest {
-    val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-    val configurationKey = appContext.getString(com.ninchat.sdk.R.string.ninchat_configuration_key)
-
+@RunWith(AndroidJUnit4::class)
+@LargeTest
+class NinchatQueueListPresenterTest {
     val siteConfig = """
         {
           "description": "SDK test queues",
           "default": {
             "questionnaireName": "Botti",
             "questionnaireAvatar": "http://testquestion.avatar.img",
+            "preAudienceQuestionnaireStyle": "conversation",
             "postAudienceQuestionnaireStyle": "conversation",
+            "preAudienceQuestionnaire": 
+                [{
+                   "element":"text",
+                   "label":"<h3>Welcome!</h3><p>Tell some info about yourself before entering chat</p>",
+                   "name":"intro"
+                },
+                {
+                   "element":"text",
+                   "label":"Hello! How can we help?",
+                   "name":"intro"
+                },
+                {
+                    "element":"radio",
+                    "name":"Aiheet",
+                    "label":"Hei. Voin auttaa sinua koronavirusta (COVID-19) koskevissa kysymyksissä. Mitä tietoa etsit?",
+                    "required":true,
+                    "options":[
+                        {
+                        "label":"Mikä on koronavirus?",
+                        "value":"Mikä on koronavirus"
+                        },
+                    ]
+            }],
+            "postAudienceQuestionnaire":
+                [{
+                   "element":"text",
+                   "label":"<h3>Welcome!</h3><p>Tell some info about yourself before entering chat</p>",
+                   "name":"intro"
+                },
+                {
+                   "element":"text",
+                   "label":"Hello! How can we help?",
+                   "name":"intro"
+                },
+                {
+                    "element":"radio",
+                    "name":"Aiheet",
+                    "label":"Hei. Voin auttaa sinua koronavirusta (COVID-19) koskevissa kysymyksissä. Mitä tietoa etsit?",
+                    "required":true,
+                    "options":[
+                        {
+                        "label":"Mikä on koronavirus?",
+                        "value":"Mikä on koronavirus"
+                        },
+                    ]
+            }],
             "inQueueText": "in queue text test",
             "translations": {
               "Join audience queue {{audienceQueue.queue_attrs.name}}": "Aloita chat",
@@ -60,55 +111,18 @@ class NinchatQueueModelTest {
           }
         }
     """.trimIndent()
+    val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+    val configurationKey = appContext.getString(R.string.ninchat_configuration_key)
 
     @Test
-    fun `should_update_queue_id`() {
-        Thread.sleep(2000)
-        val expectedQueueId = "12345"
-        val ninchatQueueModel = NinchatQueueModel()
-        ninchatQueueModel.queueId = expectedQueueId
-        Assert.assertEquals(expectedQueueId, ninchatQueueModel.queueId)
-    }
+    fun `should_return_true_for_requireOpenQuestionnaireActivity_with_pre-audience_questionnaire_and_when_session_is_not_resumed`() {
+        val currentQueue = NinchatQueue(id = "1234", name = "test-q1")
+        val ninchatQueueListPresenter = NinchatQueueListPresenter(listOf(currentQueue))
 
-    @Test
-    fun `should_be_able_to_parse_queue_related_text_from_site_config_with_queue_position_greater_than_one`() {
-        Thread.sleep(2000)
         NinchatSession.Builder(appContext, configurationKey).create()
-
-        val currentQueue = NinchatQueue("1234", "test-queue").also {
-            it.position = 2
-            it.isClosed = false
-        }
-        // attach queue information
-        NinchatSessionManager.getInstance().ninchatState.queues = arrayListOf(currentQueue)
         NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
         NinchatSessionManager.getInstance().ninchatState.ninchatQuestionnaire = NinchatQuestionnaireHolder(NinchatSessionManager.getInstance())
 
-        val ninchatQueueModel = NinchatQueueModel()
-        ninchatQueueModel.queueId = currentQueue.id
-        Assert.assertEquals("in queue text test", ninchatQueueModel.getInQueueMessageText())
-        Assert.assertEquals("Sulje keskustelu", ninchatQueueModel.getChatCloseText())
-        Assert.assertEquals("Kiitos! Ohjaan sinut nyt hoitajan chat-vastaanotolle.<br><br>Olet jonossa sijalla 2.<br>Odota, että Terveystalon asiantuntija poimii sinut jonosta.", ninchatQueueModel.getQueueStatus())
-    }
-
-    @Test
-    fun `should_be_able_to_parse_queue_related_text_from_site_config_with_queue_position_one`() {
-        Thread.sleep(2000)
-        NinchatSession.Builder(appContext, configurationKey).create()
-
-        val currentQueue = NinchatQueue("1234", "test-queue").also {
-            it.position = 1
-            it.isClosed = false
-        }
-        // attach queue information
-        NinchatSessionManager.getInstance().ninchatState.queues = arrayListOf(currentQueue)
-        NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
-        NinchatSessionManager.getInstance().ninchatState.ninchatQuestionnaire = NinchatQuestionnaireHolder(NinchatSessionManager.getInstance())
-
-        val ninchatQueueModel = NinchatQueueModel()
-        ninchatQueueModel.queueId = currentQueue.id
-        Assert.assertEquals("in queue text test", ninchatQueueModel.getInQueueMessageText())
-        Assert.assertEquals("Sulje keskustelu", ninchatQueueModel.getChatCloseText())
-        Assert.assertEquals("Kiitos! Ohjaan sinut nyt hoitajan chat-vastaanotolle.<br>Olet seuraavana vuorossa.<br>Odota, että Terveystalon asiantuntija poimii sinut jonosta.", ninchatQueueModel.getQueueStatus())
+        Assert.assertEquals(true, ninchatQueueListPresenter.requireOpenQuestionnaireActivity())
     }
 }

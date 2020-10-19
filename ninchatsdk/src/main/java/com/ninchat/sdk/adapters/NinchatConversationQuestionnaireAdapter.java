@@ -1,7 +1,6 @@
 package com.ninchat.sdk.adapters;
 
 import androidx.annotation.NonNull;
-import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -11,6 +10,8 @@ import com.ninchat.sdk.adapters.holders.conversationview.NinchatConversationView
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 
 import org.json.JSONObject;
+
+import kotlin.Pair;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.setViewAndChildrenEnabled;
 

@@ -7,6 +7,7 @@ import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig
 import com.ninchat.sdk.models.*
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder
 import com.ninchat.sdk.ninchatmedia.model.NinchatFile
+import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.utils.misc.Misc
 
 class NinchatState {

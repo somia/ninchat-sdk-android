@@ -14,6 +14,7 @@ import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig
 import com.ninchat.sdk.models.NinchatSessionCredentials
+import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeRealmQueues
 import com.ninchat.sdk.states.NinchatState
 import com.ninchat.sdk.utils.misc.Misc
@@ -36,6 +37,7 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
         ninchatState.queueId = if (ninchatState.queueId == null && !ninchatSiteConfig.getAudienceAutoQueue().isNullOrBlank()) {
             ninchatSiteConfig.getAudienceAutoQueue()
         } else ninchatState.queueId
+
         ninchatState.currentSessionState = ninchatState.currentSessionState or (1 shl Misc.NEW_SESSION)
         if (NinchatPropsParser.hasUserChannel(ninchatState.userChannels)) {
             ninchatState.currentSessionState = ninchatState.currentSessionState or (1 shl Misc.HAS_CHANNEL)
@@ -81,7 +83,9 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
                     // ignore
                 }
                 else -> {
-                    listener?.onSessionInitFailed()
+                    Handler(Looper.getMainLooper()).post {
+                        listener?.onSessionInitFailed()
+                    }
                 }
             }
         }
@@ -108,6 +112,9 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
                 "channel_member_updated", "user_updated" -> NinchatSessionManagerHelper.memberUpdated(params)
                 "audience_registered" -> EventBus.getDefault().post(OnAudienceRegistered(false))
                 "error" -> EventBus.getDefault().post(OnAudienceRegistered(true))
+            }
+            Handler(Looper.getMainLooper()).post {
+                listener?.onEvent(params, payload)
             }
         }
     }

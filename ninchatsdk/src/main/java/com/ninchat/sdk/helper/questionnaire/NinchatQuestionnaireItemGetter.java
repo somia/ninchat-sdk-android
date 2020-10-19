@@ -1,7 +1,6 @@
 package com.ninchat.sdk.helper.questionnaire;
 
 
-import androidx.core.util.Pair;
 
 import android.text.InputType;
 import android.text.TextUtils;
@@ -19,6 +18,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import kotlin.Pair;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireLogicUtil.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.*;
@@ -361,12 +362,12 @@ public class NinchatQuestionnaireItemGetter {
 
     public static String getBotName(Pair<String, String> botDetails) {
         if (botDetails == null) return "";
-        return TextUtils.isEmpty(botDetails.first) ? "" : botDetails.first;
+        return TextUtils.isEmpty(botDetails.getFirst()) ? "" : botDetails.getFirst();
     }
 
     public static String getBotAvatar(Pair<String, String> botDetails) {
         if (botDetails == null) return "";
-        return TextUtils.isEmpty(botDetails.second) ? "" : botDetails.second;
+        return TextUtils.isEmpty(botDetails.getSecond()) ? "" : botDetails.getSecond();
     }
 
     public static int getInputType(JSONObject item) {
