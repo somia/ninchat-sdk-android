@@ -39,7 +39,7 @@
             android:id="@+id/ninchat_chat_message_bot_writing_root"
             layout="@layout/bot_writing_indicator" />
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:background="@android:color/transparent"
             android:id="@+id/questionnaire_conversation_rview"
             android:layout_width="match_parent"

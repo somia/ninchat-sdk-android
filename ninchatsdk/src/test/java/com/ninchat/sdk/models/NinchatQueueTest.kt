@@ -1,10 +1,9 @@
 package com.ninchat.sdk.models
 
-import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
 
 class NinchatQueueTest {
     lateinit var queueId: String
@@ -38,30 +37,30 @@ class NinchatQueueTest {
     @Test
     fun `should be able to set queue position to 10`() {
         val ninchatQueue = NinchatQueue(queueId, queueName)
-        ninchatQueue.setPosition(10L)
+        ninchatQueue.position = 10L
         Assert.assertEquals(10L, ninchatQueue.position)
     }
 
     @Test
     fun `should be able to set a queue to closed`() {
         val ninchatQueue = NinchatQueue(queueId, queueName)
-        ninchatQueue.setClosed(true)
+        ninchatQueue.isClosed = true
         Assert.assertEquals(true, ninchatQueue.isClosed)
     }
 
     @Test
     fun `should be able to set a queue to open`() {
         val ninchatQueue = NinchatQueue(queueId, queueName)
-        ninchatQueue.setClosed(false)
+        ninchatQueue.isClosed = false
         Assert.assertEquals(false, ninchatQueue.isClosed)
     }
 
     @Test
     fun `should be able to check whether a queue is closed or open using isClosed`() {
         val ninchatQueue = NinchatQueue(queueId, queueName)
-        ninchatQueue.setClosed(false)
+        ninchatQueue.isClosed = false
         Assert.assertEquals(false, ninchatQueue.isClosed)
-        ninchatQueue.setClosed(true)
+        ninchatQueue.isClosed = true
         Assert.assertEquals(true, ninchatQueue.isClosed)
     }
 

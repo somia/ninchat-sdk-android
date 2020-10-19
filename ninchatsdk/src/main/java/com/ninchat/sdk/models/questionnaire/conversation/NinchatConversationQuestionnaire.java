@@ -1,9 +1,8 @@
 package com.ninchat.sdk.models.questionnaire.conversation;
 
 import android.os.Handler;
-import android.support.v4.util.Pair;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.ninchat.sdk.adapters.NinchatConversationQuestionnaireAdapter;
 import com.ninchat.sdk.events.OnComponentError;
@@ -13,6 +12,7 @@ import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireBase;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import kotlin.Pair;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.*;

@@ -222,7 +222,7 @@ For now, the application can override certain images/animations of the SDK. The 
 | ninchat_border_with_unfocus   | Questionnaire input field styling when field input field is not focused |  |
 | ninchat_chat_bubble_left_repeated_disabled | Question item background styling where they are disabled or already filled |  |
 | ninchat_chat_disable_button | Questionnaire button element styling when they are disabled |  |
-| ninchat_chat_form_questionnaire_background | Form like questionnaire background styling |  |
+| ninchat_chat_questionnaire_background | Form and conversation like questionnaire background styling |  |
 | ninchat_chat_secondary_onclicked_button | Question next button styling when they are clicked |  |
 | ninchat_chat_secondary_onclicked_button | Question previous button styling when they are clicked |  |
 | ninchat_dropdown_border_select | Questionnaire drop down item border styling when they are selected |  |

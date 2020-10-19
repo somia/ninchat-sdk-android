@@ -1,10 +1,9 @@
 package com.ninchat.sdk.adapters.holders.formview;
 
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
@@ -68,7 +67,7 @@ public class NinchatInputFieldViewHolder extends RecyclerView.ViewHolder {
         setText(questionnaireElement);
         if (isFormLikeQuestionnaire) {
             itemView.setBackground(
-                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
+                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_questionnaire_background));
         }
         updateUI(questionnaireElement, false);
         if (!isUpdate)

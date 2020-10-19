@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/ninchat_queue_activity"
     android:background="@color/ninchat_color_background_bottom"
-    tools:context=".activities.NinchatQueueActivity"
+    tools:context=".ninchatqueue.view.NinchatQueueActivity"
     android:fadeScrollbars="false">
 
     <LinearLayout

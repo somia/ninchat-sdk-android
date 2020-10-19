@@ -19,10 +19,6 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil.
 public class NinchatQuestionnaireMiscUtil {
     public static final int DURATION = 500;
 
-    public static Spanned fromHTML(String source) {
-        return source == null ? null : Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(source, Html.FROM_HTML_MODE_COMPACT) : Html.fromHtml(source);
-    }
-
     public static boolean hasPattern(JSONObject element) {
         if (element == null) {
             return false;
@@ -99,6 +95,7 @@ public class NinchatQuestionnaireMiscUtil {
     }
 
     public static boolean isClosedQueue(String queueId) {
+        if (NinchatSessionManager.getInstance() == null) return true;
         return (NinchatSessionManager.getInstance().getQueue(queueId) == null || NinchatSessionManager.getInstance().getQueue(queueId).isClosed());
     }
 

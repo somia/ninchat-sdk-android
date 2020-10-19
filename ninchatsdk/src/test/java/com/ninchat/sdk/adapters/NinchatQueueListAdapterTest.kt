@@ -1,7 +1,8 @@
 package com.ninchat.sdk.adapters
 
 import android.app.Activity
-import com.ninchat.sdk.models.NinchatQueue
+import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
+import com.ninchat.sdk.ninchatqueuelist.view.NinchatQueueListAdapter
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.ArgumentMatchers
