@@ -8,7 +8,6 @@ import com.ninchat.client.Objects
 import com.ninchat.client.Props
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.ninchatactivity.view.NinchatActivity
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getChannelIdFromUserChannel
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getOpenQueueList
@@ -24,7 +23,6 @@ import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Parameter
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler.getIOScope
-import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -181,9 +179,9 @@ class NinchatSessionManagerHelper {
                     currentSession.ninchatState.addQueue(NinchatQueue(queueId, queueName))
                 }
                 val currentQueue = currentSession.getQueue(queueId)
-                currentQueue?.let {
-                    currentQueue.position = queuePosition
-                    currentQueue.isClosed = closed
+                currentQueue?.apply {
+                    position = queuePosition
+                    isClosed = closed
                 }
                 return queueId
             }
@@ -244,10 +242,14 @@ class NinchatSessionManagerHelper {
             val sessionManager = NinchatSessionManager.getInstance()
             sessionManager?.let { currentSession ->
                 val isClosed = try {
-                    val channelAttrs = params.getObject("channel_attrs")
-                    channelAttrs.getBool("closed")
+                    params.getObject("channel_attrs")?.getBool("closed")
                 } catch (e: Exception) {
                     false
+                }
+                currentSession.ninchatState.queueId = try {
+                    params.getObject("channel_attrs")?.getString("queue_id")
+                } catch (e: Exception) {
+                    sessionManager.ninchatState.queueId
                 }
                 currentSession.ninchatState?.channelId = try {
                     params.getString("channel_id")
@@ -263,9 +265,8 @@ class NinchatSessionManagerHelper {
                     );
                 }
                 Handler(Looper.getMainLooper()).post {
-                    currentSession.messageAdapter?.addMetaMessage("", currentSession.getChatStarted())
+                    currentSession.reInitializeMessageAdapter(currentSession)
                 }
-
                 currentSession.contextWeakReference?.get()?.let { mContext ->
                     val i = Intent(Broadcast.CHANNEL_JOINED)
                     i.putExtra(Parameter.CHAT_IS_CLOSED, isClosed)
