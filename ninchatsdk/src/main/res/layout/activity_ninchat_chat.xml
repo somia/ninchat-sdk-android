@@ -37,7 +37,7 @@
             android:textColorHint="@color/ninchat_color_textarea_text"
             android:background="@null"
             android:inputType="textMultiLine|textCapSentences"
-            android:maxLines="5"
+            android:maxLines="6"
             />
 
         <LinearLayout
