@@ -7,6 +7,8 @@
       <module fileurl="file://$PROJECT_DIR$/ninchat-ninchat-sdk-android.iml" filepath="$PROJECT_DIR$/ninchat-ninchat-sdk-android.iml" group="ninchat-sdk-android" />
       <module fileurl="file://$PROJECT_DIR$/ninchat-sdk-android.iml" filepath="$PROJECT_DIR$/ninchat-sdk-android.iml" />
       <module fileurl="file://$PROJECT_DIR$/ninchatsdk/ninchat-sdk-android-ninchatsdk.iml" filepath="$PROJECT_DIR$/ninchatsdk/ninchat-sdk-android-ninchatsdk.iml" group="ninchat-sdk-android/ninchatsdk" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ninchat-sdk-questionnaire-ninchat-sdk-android.iml" filepath="$PROJECT_DIR$/.idea/modules/ninchat-sdk-questionnaire-ninchat-sdk-android.iml" group="ninchat-sdk-android" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ninchatsdk/ninchat-sdk-questionnaire-ninchat-sdk-android-ninchatsdk.iml" filepath="$PROJECT_DIR$/.idea/modules/ninchatsdk/ninchat-sdk-questionnaire-ninchat-sdk-android-ninchatsdk.iml" group="ninchat-sdk-android/ninchatsdk" />
       <module fileurl="file://$PROJECT_DIR$/ninchatsdk/ninchatsdk.iml" filepath="$PROJECT_DIR$/ninchatsdk/ninchatsdk.iml" />
     </modules>
   </component>

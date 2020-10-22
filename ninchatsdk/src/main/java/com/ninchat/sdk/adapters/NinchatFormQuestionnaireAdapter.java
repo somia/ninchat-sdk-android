@@ -7,12 +7,12 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.adapters.holders.formview.NinchatCheckboxViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatDropDownSelectViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatInputFieldViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatRadioBtnViewHolder;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 import com.ninchat.sdk.ninchatquestionnaire.view.NinchatButtonViewHolder;
+import com.ninchat.sdk.ninchatquestionnaire.view.NinchatCheckboxViewHolder;
 import com.ninchat.sdk.ninchatquestionnaire.view.NinchatTextViewHolder;
 
 import org.json.JSONObject;
@@ -56,7 +56,7 @@ public class NinchatFormQuestionnaireAdapter extends NinchatQuestionnaireBaseAda
             case CHECKBOX:
                 return new NinchatCheckboxViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.checkbox_simple, parent, false),
-                        currentItem, isFormLikeQuestionnaire, position);
+                        currentItem, isFormLikeQuestionnaire);
             case BUTTON:
                 return new NinchatButtonViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.control_buttons, parent, false),
@@ -78,7 +78,7 @@ public class NinchatFormQuestionnaireAdapter extends NinchatQuestionnaireBaseAda
         } else if (viewHolder instanceof NinchatRadioBtnViewHolder) {
             ((NinchatRadioBtnViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position, true);
         } else if (viewHolder instanceof NinchatCheckboxViewHolder) {
-            ((NinchatCheckboxViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position, true);
+            ((NinchatCheckboxViewHolder) viewHolder).update(currentItem, this.isFormLikeQuestionnaire);
         } else if (viewHolder instanceof NinchatButtonViewHolder) {
             ((NinchatButtonViewHolder) viewHolder).update(currentItem);
         }
