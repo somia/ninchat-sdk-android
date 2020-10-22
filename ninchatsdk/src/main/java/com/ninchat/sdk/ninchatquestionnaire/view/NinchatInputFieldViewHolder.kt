@@ -17,8 +17,8 @@ import org.json.JSONObject
 
 class NinchatInputFieldViewHolder(
         itemView: View,
-        isMultiline: Boolean,
         jsonObject: JSONObject?,
+        isMultiline: Boolean,
         isFormLikeQuestionnaire: Boolean = true,
 ) : RecyclerView.ViewHolder(itemView), INinchatInputFieldViewPresenter {
 
