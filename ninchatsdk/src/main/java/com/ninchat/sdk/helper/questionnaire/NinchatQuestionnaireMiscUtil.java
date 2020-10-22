@@ -27,6 +27,14 @@ public class NinchatQuestionnaireMiscUtil {
         return element.has("pattern");
     }
 
+    public static String getPattern(JSONObject element) {
+        if (element == null) {
+            return "";
+        }
+        // return element.has("pattern") && !TextUtils.isEmpty(element.optString("pattern", null));
+        return element.optString("pattern", "");
+    }
+
 
     public static boolean matchPattern(String currentInput, String pattern) {
         if (TextUtils.isEmpty(pattern)) {
@@ -51,7 +59,6 @@ public class NinchatQuestionnaireMiscUtil {
         }
         return true;
     }
-
 
     public static boolean hasResult(JSONObject element) {
         if (isInput(element) || isTextArea(element) || isSelect(element) || isLikeRT(element) || isRadio(element)) {
