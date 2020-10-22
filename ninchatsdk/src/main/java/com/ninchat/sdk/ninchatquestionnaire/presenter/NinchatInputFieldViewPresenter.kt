@@ -43,7 +43,7 @@ class NinchatInputFieldViewPresenter(
     fun isMultiline(): Boolean = ninchatInputFieldViewModel.isMultiline
 
     override fun onTextChange(text: String?) {
-        ninchatInputFieldViewModel.value = text
+        ninchatInputFieldViewModel.value = NinchatQuestionnaireMiscUtil.sanitizeString(text)
         ninchatInputFieldViewModel.hasError = NinchatQuestionnaireMiscUtil.matchPattern(text, ninchatInputFieldViewModel.pattern)
         // check if there is any error
         viewCallback.onUpdateText(
