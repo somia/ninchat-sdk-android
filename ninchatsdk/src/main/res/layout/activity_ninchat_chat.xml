@@ -34,9 +34,11 @@
             android:layout_height="wrap_content"
             tools:hint="Enter your message"
             android:layout_margin="@dimen/ninchat_chat_activity_message_margin"
-            android:inputType="textCapSentences"
             android:textColorHint="@color/ninchat_color_textarea_text"
-            android:background="@null"/>
+            android:background="@null"
+            android:inputType="textMultiLine|textCapSentences"
+            android:maxLines="6"
+            />
 
         <LinearLayout
             android:orientation="horizontal"

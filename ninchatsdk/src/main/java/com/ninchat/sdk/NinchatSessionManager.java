@@ -114,6 +114,11 @@ public final class NinchatSessionManager {
         return messageAdapter;
     }
 
+    public void reInitializeMessageAdapter(NinchatSessionManager currentSession) {
+        messageAdapter = new NinchatMessageAdapter();
+        messageAdapter.addMetaMessage("", currentSession.getChatStarted());
+    }
+
     public void setConfiguration(final String config) {
         Log.v(TAG, "Got configuration: " + config);
         ninchatState.getSiteConfig().setConfigString(config, ninchatState.getPreferredEnvironments());
