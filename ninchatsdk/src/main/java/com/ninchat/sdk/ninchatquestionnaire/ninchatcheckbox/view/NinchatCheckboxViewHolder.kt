@@ -1,11 +1,11 @@
-package com.ninchat.sdk.ninchatquestionnaire.view
+package com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.view
 
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
-import com.ninchat.sdk.ninchatquestionnaire.presenter.INinchatCheckboxViewPresenter
-import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatCheckboxViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.INinchatCheckboxViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.NinchatCheckboxViewPresenter
 import kotlinx.android.synthetic.main.checkbox_simple.view.*
 import org.json.JSONObject
 

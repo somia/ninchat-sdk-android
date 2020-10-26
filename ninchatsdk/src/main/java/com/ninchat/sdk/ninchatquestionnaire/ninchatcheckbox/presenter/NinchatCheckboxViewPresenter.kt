@@ -1,7 +1,7 @@
-package com.ninchat.sdk.ninchatquestionnaire.presenter
+package com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter
 
 import com.ninchat.sdk.events.OnNextQuestionnaire
-import com.ninchat.sdk.ninchatquestionnaire.model.NinchatCheckboxViewModel
+import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.model.NinchatCheckboxViewModel
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
