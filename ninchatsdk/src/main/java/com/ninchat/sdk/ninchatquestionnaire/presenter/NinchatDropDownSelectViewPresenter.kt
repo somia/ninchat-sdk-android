@@ -1,6 +1,6 @@
 package com.ninchat.sdk.ninchatquestionnaire.presenter
 
-import com.ninchat.sdk.ninchatquestionnaire.model.NinchatDropDownSelectViewModel
+import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.model.NinchatDropDownSelectViewModel
 import com.ninchat.sdk.ninchatquestionnaire.view.INinchatDropDownSelectViewHolder
 import org.json.JSONObject
 
