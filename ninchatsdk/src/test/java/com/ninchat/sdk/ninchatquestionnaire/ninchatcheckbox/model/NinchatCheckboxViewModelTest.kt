@@ -16,7 +16,7 @@ class NinchatCheckboxViewModelTest {
     }
 
     @Test
-    fun `should_parse_data_class_from_json_object`() {
+    fun `should_parse_data_from_json_object`() {
         val jsonObject = JSONObject("""{
             "result": true,
             "label": "test-label",

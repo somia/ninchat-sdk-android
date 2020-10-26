@@ -1,7 +1,7 @@
 package com.ninchat.sdk.ninchatquestionnaire.presenter
 
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil
-import com.ninchat.sdk.ninchatquestionnaire.model.NinchatInputFieldViewModel
+import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.model.NinchatInputFieldViewModel
 import com.ninchat.sdk.ninchatquestionnaire.view.INinchatInputFieldViewHolder
 import org.json.JSONObject
 
