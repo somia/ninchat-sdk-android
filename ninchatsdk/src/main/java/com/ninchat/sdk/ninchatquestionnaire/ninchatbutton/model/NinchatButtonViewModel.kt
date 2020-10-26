@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatquestionnaire.model
+package com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.model
 
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil

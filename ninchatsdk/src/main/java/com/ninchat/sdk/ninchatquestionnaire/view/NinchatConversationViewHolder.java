@@ -1,4 +1,4 @@
-package com.ninchat.sdk.adapters.holders.conversationview;
+package com.ninchat.sdk.ninchatquestionnaire.view;
 
 
 import android.graphics.drawable.AnimationDrawable;
@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.adapters.NinchatFormQuestionnaireAdapter;
 import com.ninchat.sdk.events.OnComponentError;
 import com.ninchat.sdk.events.OnItemLoaded;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;

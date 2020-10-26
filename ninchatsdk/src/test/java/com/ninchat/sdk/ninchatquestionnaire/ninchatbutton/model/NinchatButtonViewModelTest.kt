@@ -1,5 +1,6 @@
-package com.ninchat.sdk.ninchatquestionnaire.model
+package com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.model
 
+import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.model.NinchatButtonViewModel
 import org.junit.Assert
 import org.junit.Test
 

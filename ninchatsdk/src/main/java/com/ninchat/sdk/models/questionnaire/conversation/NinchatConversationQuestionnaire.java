@@ -4,7 +4,7 @@ import android.os.Handler;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ninchat.sdk.adapters.NinchatConversationQuestionnaireAdapter;
+import com.ninchat.sdk.ninchatquestionnaire.view.NinchatConversationQuestionnaireAdapter;
 import com.ninchat.sdk.events.OnComponentError;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireBase;

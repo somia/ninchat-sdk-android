@@ -1,10 +1,10 @@
-package com.ninchat.sdk.espresso.ninchatquestionnaire.model
+package com.ninchat.sdk.espresso.ninchatquestionnaire.ninchatbutton.model
 
 
 import androidx.test.platform.app.InstrumentationRegistry
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.ninchatquestionnaire.model.NinchatButtonViewModel
+import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.model.NinchatButtonViewModel
 import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test

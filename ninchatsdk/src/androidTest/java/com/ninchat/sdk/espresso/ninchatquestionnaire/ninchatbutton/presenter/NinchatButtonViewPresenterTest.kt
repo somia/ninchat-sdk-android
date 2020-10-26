@@ -1,7 +1,7 @@
-package com.ninchat.sdk.espresso.ninchatquestionnaire.presenter
+package com.ninchat.sdk.espresso.ninchatquestionnaire.ninchatbutton.presenter
 
-import com.ninchat.sdk.ninchatquestionnaire.presenter.INinchatButtonViewPresenter
-import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatButtonViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.presenter.INinchatButtonViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.presenter.NinchatButtonViewPresenter
 import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test

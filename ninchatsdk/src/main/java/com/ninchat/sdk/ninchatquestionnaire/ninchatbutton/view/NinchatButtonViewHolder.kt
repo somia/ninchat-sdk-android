@@ -1,11 +1,11 @@
-package com.ninchat.sdk.ninchatquestionnaire.view
+package com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.view
 
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
-import com.ninchat.sdk.ninchatquestionnaire.presenter.INinchatButtonViewPresenter
-import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatButtonViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.presenter.INinchatButtonViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.presenter.NinchatButtonViewPresenter
 import kotlinx.android.synthetic.main.control_buttons.view.*
 import org.json.JSONObject
 

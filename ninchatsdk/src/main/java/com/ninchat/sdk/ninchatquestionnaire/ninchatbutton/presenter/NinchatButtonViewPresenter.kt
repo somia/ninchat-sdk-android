@@ -1,8 +1,8 @@
-package com.ninchat.sdk.ninchatquestionnaire.presenter
+package com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.presenter
 
 import com.ninchat.sdk.events.OnNextQuestionnaire
-import com.ninchat.sdk.ninchatquestionnaire.model.NinchatButtonViewModel
-import com.ninchat.sdk.ninchatquestionnaire.view.INinchatButtonViewHolder
+import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.model.NinchatButtonViewModel
+import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.view.INinchatButtonViewHolder
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
