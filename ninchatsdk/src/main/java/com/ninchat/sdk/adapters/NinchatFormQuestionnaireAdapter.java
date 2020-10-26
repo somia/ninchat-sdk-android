@@ -7,11 +7,11 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.adapters.holders.formview.NinchatDropDownSelectViewHolder;
 import com.ninchat.sdk.adapters.holders.formview.NinchatRadioBtnViewHolder;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 import com.ninchat.sdk.ninchatquestionnaire.view.NinchatButtonViewHolder;
 import com.ninchat.sdk.ninchatquestionnaire.view.NinchatCheckboxViewHolder;
+import com.ninchat.sdk.ninchatquestionnaire.view.NinchatDropDownSelectViewHolder;
 import com.ninchat.sdk.ninchatquestionnaire.view.NinchatInputFieldViewHolder;
 import com.ninchat.sdk.ninchatquestionnaire.view.NinchatTextViewHolder;
 
@@ -52,7 +52,7 @@ public class NinchatFormQuestionnaireAdapter extends NinchatQuestionnaireBaseAda
             case LIKERT:
                 return new NinchatDropDownSelectViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.dropdown_with_label, parent, false),
-                        currentItem, isFormLikeQuestionnaire, position);
+                        currentItem, isFormLikeQuestionnaire);
             case CHECKBOX:
                 return new NinchatCheckboxViewHolder(
                         LayoutInflater.from(parent.getContext()).inflate(R.layout.checkbox_simple, parent, false),
@@ -74,7 +74,7 @@ public class NinchatFormQuestionnaireAdapter extends NinchatQuestionnaireBaseAda
         } else if (viewHolder instanceof NinchatInputFieldViewHolder) {
             ((NinchatInputFieldViewHolder) viewHolder).update(currentItem, this.isFormLikeQuestionnaire);
         } else if (viewHolder instanceof NinchatDropDownSelectViewHolder) {
-            ((NinchatDropDownSelectViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position, true);
+            ((NinchatDropDownSelectViewHolder) viewHolder).update(currentItem, this.isFormLikeQuestionnaire);
         } else if (viewHolder instanceof NinchatRadioBtnViewHolder) {
             ((NinchatRadioBtnViewHolder) viewHolder).bind(currentItem, this.isFormLikeQuestionnaire, position, true);
         } else if (viewHolder instanceof NinchatCheckboxViewHolder) {
