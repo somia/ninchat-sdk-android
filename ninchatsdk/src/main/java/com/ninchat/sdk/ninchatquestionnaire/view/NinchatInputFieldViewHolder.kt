@@ -7,8 +7,8 @@ import android.view.View.OnFocusChangeListener
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
-import com.ninchat.sdk.ninchatquestionnaire.presenter.INinchatInputFieldViewPresenter
-import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatInputFieldViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.INinchatInputFieldViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.NinchatInputFieldViewPresenter
 import kotlinx.android.synthetic.main.text_area.view.*
 import kotlinx.android.synthetic.main.text_area_with_label.view.*
 import kotlinx.android.synthetic.main.text_field.view.*

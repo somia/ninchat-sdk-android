@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatquestionnaire.presenter
+package com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter
 
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.model.NinchatInputFieldViewModel
@@ -22,11 +22,11 @@ class NinchatInputFieldViewPresenter(
             viewCallback.onUpdateFromView(
                     label = ninchatInputFieldViewModel.label ?: "",
             )
-            return
+        } else {
+            viewCallback.onUpdateConversationView(
+                    label = ninchatInputFieldViewModel.label ?: "",
+            )
         }
-        viewCallback.onUpdateConversationView(
-                label = ninchatInputFieldViewModel.label ?: "",
-        )
         // update text change
         viewCallback.onUpdateText(
                 value = ninchatInputFieldViewModel.value ?: "",
