@@ -8,8 +8,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
-import com.ninchat.sdk.ninchatquestionnaire.presenter.INinchatDropDownSelectViewPresenter
-import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatDropDownSelectViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.INinchatDropDownSelectViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.NinchatDropDownSelectViewPresenter
 import kotlinx.android.synthetic.main.dropdown_list.view.*
 import kotlinx.android.synthetic.main.dropdown_with_label.view.*
 import org.json.JSONObject
