@@ -9,8 +9,9 @@ data class NinchatCheckboxViewModel(
         var isChecked: Boolean = false,
         var label: String? = "",
         var hasError: Boolean = false,
-        var fireEvent: Boolean = false
-        ) {
+        var fireEvent: Boolean = false,
+) {
+
     fun parse(jsonObject: JSONObject?): NinchatCheckboxViewModel {
         this.isChecked = NinchatQuestionnaireItemGetter.getResultBoolean(jsonObject)
         this.label = NinchatQuestionnaireItemGetter.getLabel(jsonObject)
