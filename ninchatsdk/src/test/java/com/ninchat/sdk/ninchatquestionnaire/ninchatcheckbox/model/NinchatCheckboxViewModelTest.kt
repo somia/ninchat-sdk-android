@@ -33,4 +33,22 @@ class NinchatCheckboxViewModelTest {
         Assert.assertEquals(true, ninchatCheckboxViewModel.hasError)
         Assert.assertEquals(true, ninchatCheckboxViewModel.fireEvent)
     }
+
+    @Test
+    fun `should update a json model`() {
+        val jsonObject = JSONObject("""{
+            "result": false,
+            "hasError": false
+        }""".trimIndent())
+
+        val ninchatCheckboxViewModel = NinchatCheckboxViewModel(isFormLikeQuestionnaire = false).parse(
+                jsonObject = jsonObject
+        )
+        ninchatCheckboxViewModel.hasError = true
+        ninchatCheckboxViewModel.isChecked = true
+        ninchatCheckboxViewModel.updateJson(jsonObject = jsonObject)
+
+        Assert.assertEquals(true, jsonObject.optBoolean("result"))
+        Assert.assertEquals(true, jsonObject.optBoolean("hasError"))
+    }
 }

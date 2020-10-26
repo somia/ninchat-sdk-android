@@ -6,9 +6,9 @@ import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
 class NinchatCheckboxViewPresenter(
-        jsonObject: JSONObject?,
+        val jsonObject: JSONObject?,
         isFormLikeQuestionnaire: Boolean = true,
-        val iPresent: INinchatCheckboxViewPresenter,
+        private val iPresent: INinchatCheckboxViewPresenter,
 ) {
     private var ninchatCheckboxViewModel = NinchatCheckboxViewModel(
             isFormLikeQuestionnaire = isFormLikeQuestionnaire
@@ -41,7 +41,10 @@ class NinchatCheckboxViewPresenter(
         ninchatCheckboxViewModel.hasError = false
         iPresent.onCheckBoxToggled(
                 isChecked = ninchatCheckboxViewModel.isChecked,
-                hasError = ninchatCheckboxViewModel.hasError )
+                hasError = ninchatCheckboxViewModel.hasError)
+
+        // update json model
+        ninchatCheckboxViewModel.updateJson(jsonObject = jsonObject)
         if (!isChecked) return
         mayBeFireEvent()
     }
