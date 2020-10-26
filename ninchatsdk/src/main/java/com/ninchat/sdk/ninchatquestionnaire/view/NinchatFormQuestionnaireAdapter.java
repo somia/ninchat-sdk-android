@@ -10,6 +10,7 @@ import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatQuestionnaireBaseAdapter;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.view.NinchatButtonViewHolder;
+import com.ninchat.sdk.ninchatquestionnaire.ninchattext.view.NinchatTextViewHolder;
 
 import org.json.JSONObject;
 

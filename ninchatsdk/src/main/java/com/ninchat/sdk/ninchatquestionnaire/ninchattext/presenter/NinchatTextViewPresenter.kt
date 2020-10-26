@@ -1,6 +1,6 @@
-package com.ninchat.sdk.ninchatquestionnaire.presenter
+package com.ninchat.sdk.ninchatquestionnaire.ninchattext.presenter
 
-import com.ninchat.sdk.ninchatquestionnaire.model.NinchatTextViewModel
+import com.ninchat.sdk.ninchatquestionnaire.ninchattext.model.NinchatTextViewModel
 import org.json.JSONObject
 
 

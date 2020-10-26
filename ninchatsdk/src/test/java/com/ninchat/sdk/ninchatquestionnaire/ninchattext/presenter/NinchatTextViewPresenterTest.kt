@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatquestionnaire.presenter
+package com.ninchat.sdk.ninchatquestionnaire.ninchattext.presenter
 
 import org.json.JSONObject
 import org.junit.Assert

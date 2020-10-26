@@ -1,13 +1,17 @@
 package com.ninchat.sdk.espresso.ninchatquestionnaire.ninchatbutton.presenter
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.presenter.INinchatButtonViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.presenter.NinchatButtonViewPresenter
 import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
+@LargeTest
 class NinchatButtonViewPresenterTest {
-
     @Test
     fun `should_fire_both_next_and_back_button_update_callback_with_proper_parameter`() {
         val json = """{
