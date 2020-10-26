@@ -1,5 +1,6 @@
 package com.ninchat.sdk.espresso.ninchatquestionnaire.ninchatinputfield.presenter
 
+import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.model.NinchatInputFieldViewModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.INinchatInputFieldViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.NinchatInputFieldViewPresenter
 import org.json.JSONObject
@@ -159,7 +160,6 @@ class NinchatInputFieldViewPresenterTest {
             "label": "test-label",
             "hasError": true
         }""".trimIndent())
-
         val viewCallback = object : INinchatInputFieldViewPresenter {
             override fun onUpdateFromView(label: String) {
                 Assert.assertEquals("Should not be called", true)
@@ -182,7 +182,24 @@ class NinchatInputFieldViewPresenterTest {
                 isMultiline = false,
                 isFormLikeQuestionnaire = false,
                 viewCallback = viewCallback)
-
         ninchatInputFieldViewPresenter.onFocusChange(true)
+    }
+
+    @Test
+    fun `should_update_a_json_model`() {
+        val jsonObject = JSONObject("""{
+            "result": "test-result",
+            "pattern": "test-pattern",
+            "label": "test-label",
+            "inputmode": "text",
+            "hasError": true
+        }""".trimIndent())
+        val ninchatInputFieldViewModel = NinchatInputFieldViewModel(
+                isFormLikeQuestionnaire = false, isMultiline = false).parse(jsonObject = jsonObject)
+        ninchatInputFieldViewModel.hasError = true
+        ninchatInputFieldViewModel.value = "test"
+        ninchatInputFieldViewModel.updateJson(jsonObject = jsonObject)
+        Assert.assertEquals("test", jsonObject.optString("result"))
+        Assert.assertEquals(true, jsonObject.optBoolean("hasError"))
     }
 }

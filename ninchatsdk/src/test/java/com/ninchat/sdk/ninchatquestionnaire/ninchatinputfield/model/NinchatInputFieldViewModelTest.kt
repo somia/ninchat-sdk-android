@@ -1,6 +1,7 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.model
 
 import android.text.InputType
+import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.model.NinchatCheckboxViewModel
 import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
@@ -28,8 +29,6 @@ class NinchatInputFieldViewModelTest {
             "inputmode": "text",
             "hasError": true
         }""".trimIndent())
-
-
         val ninchatInputFieldViewModel = NinchatInputFieldViewModel(isFormLikeQuestionnaire = false, isMultiline = false).parse(jsonObject = jsonObject)
         Assert.assertEquals(false, ninchatInputFieldViewModel.isMultiline)
         Assert.assertEquals("test-pattern", ninchatInputFieldViewModel.pattern)

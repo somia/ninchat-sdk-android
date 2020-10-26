@@ -6,7 +6,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.view.INinchatInput
 import org.json.JSONObject
 
 class NinchatInputFieldViewPresenter(
-        jsonObject: JSONObject?,
+        val jsonObject: JSONObject?,
         isMultiline: Boolean,
         isFormLikeQuestionnaire: Boolean = true,
         val viewCallback: INinchatInputFieldViewPresenter,
@@ -50,6 +50,8 @@ class NinchatInputFieldViewPresenter(
                 value = ninchatInputFieldViewModel.value ?: "",
                 hasError = ninchatInputFieldViewModel.hasError
         )
+        // update json model
+        ninchatInputFieldViewModel.updateJson(jsonObject = jsonObject)
     }
 
     override fun onFocusChange(hasFocus: Boolean) {
