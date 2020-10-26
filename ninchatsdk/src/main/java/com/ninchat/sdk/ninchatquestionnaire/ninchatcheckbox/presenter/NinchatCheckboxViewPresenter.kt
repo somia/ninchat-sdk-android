@@ -23,20 +23,25 @@ class NinchatCheckboxViewPresenter(
             // render form like
             iPresent.onUpdateFromView(
                     label = ninchatCheckboxViewModel.label,
-                    isChecked = ninchatCheckboxViewModel.isChecked
+                    isChecked = ninchatCheckboxViewModel.isChecked,
+                    hasError = ninchatCheckboxViewModel.hasError
             )
             return
         }
         // render conversation like
         iPresent.onUpdateConversationView(
                 label = ninchatCheckboxViewModel.label,
-                isChecked = ninchatCheckboxViewModel.isChecked
+                isChecked = ninchatCheckboxViewModel.isChecked,
+                hasError = ninchatCheckboxViewModel.hasError
         )
     }
 
     fun handleCheckBoxToggled(isChecked: Boolean) {
         ninchatCheckboxViewModel.isChecked = isChecked
-        renderCurrentView()
+        ninchatCheckboxViewModel.hasError = false
+        iPresent.onCheckBoxToggled(
+                isChecked = ninchatCheckboxViewModel.isChecked,
+                hasError = ninchatCheckboxViewModel.hasError )
         if (!isChecked) return
         mayBeFireEvent()
     }
@@ -48,6 +53,7 @@ class NinchatCheckboxViewPresenter(
 }
 
 interface INinchatCheckboxViewPresenter {
-    fun onUpdateFromView(label: String?, isChecked: Boolean)
-    fun onUpdateConversationView(label: String?, isChecked: Boolean)
+    fun onUpdateFromView(label: String?, isChecked: Boolean, hasError: Boolean)
+    fun onUpdateConversationView(label: String?, isChecked: Boolean, hasError: Boolean)
+    fun onCheckBoxToggled(isChecked: Boolean, hasError: Boolean)
 }

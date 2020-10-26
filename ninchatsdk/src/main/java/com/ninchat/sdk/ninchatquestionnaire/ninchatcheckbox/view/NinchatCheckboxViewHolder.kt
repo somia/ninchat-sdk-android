@@ -35,21 +35,31 @@ class NinchatCheckboxViewHolder(
     }
 
 
-    override fun onUpdateFromView(label: String?, isChecked: Boolean) {
+    override fun onUpdateFromView(label: String?, isChecked: Boolean, hasError: Boolean) {
         val background = R.drawable.ninchat_chat_questionnaire_background
         itemView.background = ContextCompat.getDrawable(itemView.context, background)
-        renderCommonView(label = label, isChecked = isChecked)
+        renderCommonView(label = label, isChecked = isChecked, hasError = hasError)
     }
 
-    override fun onUpdateConversationView(label: String?, isChecked: Boolean) {
-        renderCommonView(label = label, isChecked = isChecked)
+    override fun onUpdateConversationView(label: String?, isChecked: Boolean, hasError: Boolean) {
+        renderCommonView(label = label, isChecked = isChecked, hasError = hasError)
     }
 
-    private fun renderCommonView(label: String?, isChecked: Boolean) {
-        val color = R.color.ninchat_color_checkbox_selected
+    override fun onCheckBoxToggled(isChecked: Boolean, hasError: Boolean) {
+        itemView.ninchat_checkbox.isChecked = isChecked
+        itemView.ninchat_checkbox.setTextColor(ContextCompat.getColor(itemView.context,
+                if (isChecked) R.color.ninchat_color_checkbox_selected else R.color.ninchat_color_checkbox_unselected));
+    }
+
+    private fun renderCommonView(label: String?, isChecked: Boolean, hasError: Boolean) {
         itemView.ninchat_checkbox.text = label
         itemView.ninchat_checkbox.isChecked = isChecked
-        itemView.ninchat_checkbox.setTextColor(ContextCompat.getColor(itemView.context, color));
+        itemView.ninchat_checkbox.setTextColor(ContextCompat.getColor(itemView.context,
+                if (isChecked) R.color.ninchat_color_checkbox_selected else R.color.ninchat_color_checkbox_unselected));
+
+        if (hasError) {
+            itemView.ninchat_checkbox.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background));
+        }
     }
 
 }
