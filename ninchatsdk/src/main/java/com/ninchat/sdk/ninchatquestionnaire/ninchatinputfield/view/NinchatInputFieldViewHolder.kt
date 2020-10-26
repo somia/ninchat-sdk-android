@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatquestionnaire.view
+package com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.view
 
 import android.text.Editable
 import android.text.TextWatcher
