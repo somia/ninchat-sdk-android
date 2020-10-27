@@ -6,27 +6,28 @@ import org.json.JSONObject
 
 class NinchatDropDownSelectViewPresenter(
         isFormLikeQuestionnaire: Boolean,
-        jsonObject: JSONObject?,
+        val jsonObject: JSONObject?,
         val viewCallback: INinchatDropDownSelectViewPresenter,
 ) : INinchatDropDownSelectViewHolder {
     private val ninchatDropDownSelectViewModel = NinchatDropDownSelectViewModel(
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
     ).parse(jsonObject = jsonObject)
-    
+
     fun renderCurrentView() {
         if (ninchatDropDownSelectViewModel.isFormLikeQuestionnaire) {
             viewCallback.onUpdateFromView(label = ninchatDropDownSelectViewModel.label
                     ?: "", options = ninchatDropDownSelectViewModel.optionList)
-            return
+        } else {
+            viewCallback.onUpdateConversationView(label = ninchatDropDownSelectViewModel.label
+                    ?: "", options = ninchatDropDownSelectViewModel.optionList)
         }
-        viewCallback.onUpdateConversationView(label = ninchatDropDownSelectViewModel.label
-                ?: "", options = ninchatDropDownSelectViewModel.optionList)
-
+        // cal on item selection change
         onItemSelectionChange(ninchatDropDownSelectViewModel.selectedIndex)
     }
 
     override fun onItemSelectionChange(position: Int) {
-        val value = ninchatDropDownSelectViewModel.optionList[position]
+        val value = ninchatDropDownSelectViewModel.optionList.getOrNull(position)
+        ninchatDropDownSelectViewModel.hasError = false
         // first position is "Selected" and should be consider as not selected
         if (position == 0) {
             viewCallback.onUnSelected(
@@ -36,7 +37,6 @@ class NinchatDropDownSelectViewPresenter(
                     position = position,
                     hasError = ninchatDropDownSelectViewModel.hasError)
         } else {
-            ninchatDropDownSelectViewModel.hasError = false
             viewCallback.onUnSelected(
                     position = ninchatDropDownSelectViewModel.selectedIndex,
                     hasError = ninchatDropDownSelectViewModel.hasError)
