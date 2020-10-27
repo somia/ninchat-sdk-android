@@ -13,9 +13,14 @@ class NinchatDropDownSelectViewPresenter(
 ) : INinchatDropDownSelectViewHolder {
     private val ninchatDropDownSelectViewModel = NinchatDropDownSelectViewModel(
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-    ).parse(jsonObject = jsonObject)
+    ).apply {
+        parse(jsonObject = jsonObject)
+    }
 
-    fun renderCurrentView() {
+    fun renderCurrentView(jsonObject: JSONObject? = null) {
+        jsonObject?.let {
+            ninchatDropDownSelectViewModel.update(jsonObject = jsonObject)
+        }
         if (ninchatDropDownSelectViewModel.isFormLikeQuestionnaire) {
             viewCallback.onUpdateFromView(label = ninchatDropDownSelectViewModel.label
                     ?: "", options = ninchatDropDownSelectViewModel.optionList)
@@ -29,24 +34,18 @@ class NinchatDropDownSelectViewPresenter(
 
     override fun onItemSelectionChange(position: Int) {
         val value = ninchatDropDownSelectViewModel.optionList.getOrNull(position)
-        ninchatDropDownSelectViewModel.hasError = false
         // first position is "Selected" and should be consider as not selected
         if (position == 0) {
-            viewCallback.onUnSelected(
-                    position = ninchatDropDownSelectViewModel.selectedIndex,
-                    hasError = ninchatDropDownSelectViewModel.hasError)
             viewCallback.onUnSelected(
                     position = position,
                     hasError = ninchatDropDownSelectViewModel.hasError)
         } else {
-            viewCallback.onUnSelected(
-                    position = ninchatDropDownSelectViewModel.selectedIndex,
-                    hasError = ninchatDropDownSelectViewModel.hasError)
+            ninchatDropDownSelectViewModel.hasError = false
             viewCallback.onSelected(
                     position = position,
                     hasError = ninchatDropDownSelectViewModel.hasError)
         }
-        ninchatDropDownSelectViewModel.value = value
+        ninchatDropDownSelectViewModel.value = if (value == "Select") "" else value
         ninchatDropDownSelectViewModel.selectedIndex = position
         // update json model
         ninchatDropDownSelectViewModel.updateJson(jsonObject = jsonObject)

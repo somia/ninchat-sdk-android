@@ -6,6 +6,7 @@ import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.INinchatDropDownSelectViewPresenter
@@ -13,6 +14,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.Ninc
 import kotlinx.android.synthetic.main.dropdown_list.view.*
 import kotlinx.android.synthetic.main.dropdown_with_label.view.*
 import org.json.JSONObject
+
 
 class NinchatDropDownSelectViewHolder(
         itemView: View,
@@ -27,7 +29,7 @@ class NinchatDropDownSelectViewHolder(
     )
 
     fun update(jsonObject: JSONObject?, isFormLikeQuestionnaire: Boolean = true) {
-        iPresenter.renderCurrentView()
+        iPresenter.renderCurrentView(jsonObject)
         attachUserActionHandler()
     }
 
@@ -54,8 +56,10 @@ class NinchatDropDownSelectViewHolder(
         itemView.ninchat_dropdown_list?.setSelection(position)
         itemView.dropdown_select_layout.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_dropdown_border_select)
         itemView.ninchat_dropdown_list_icon?.setColorFilter(ContextCompat.getColor(itemView.context, R.color.ninchat_color_dropdown_selected_text))
-        val selectedTextView = itemView.ninchat_dropdown_list.getChildAt(position) as TextView
-        selectedTextView.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_dropdown_selected_text))
+        itemView.ninchat_dropdown_list.selectedView?.let {
+            val currentView = it as TextView
+            currentView.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_dropdown_selected_text))
+        }
         if (hasError) {
             renderErrorView(position)
         }
@@ -64,8 +68,11 @@ class NinchatDropDownSelectViewHolder(
     override fun onUnSelected(position: Int, hasError: Boolean) {
         itemView.dropdown_select_layout.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_dropdown_border_not_selected)
         itemView.ninchat_dropdown_list_icon?.setColorFilter(ContextCompat.getColor(itemView.context, R.color.ninchat_color_dropdown_unselected_text))
-        val selectedTextView = itemView.ninchat_dropdown_list.getChildAt(position) as TextView
-        selectedTextView.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_dropdown_unselected_text))
+        itemView.ninchat_dropdown_list.selectedView?.let {
+            val currentView = it as TextView
+            currentView.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_dropdown_unselected_text))
+        }
+
         if (hasError) {
             renderErrorView(position)
         }
@@ -83,8 +90,11 @@ class NinchatDropDownSelectViewHolder(
     private fun renderErrorView(position: Int = 0) {
         itemView.dropdown_select_layout.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_dropdown_border_with_error)
         itemView.ninchat_dropdown_list_icon?.setColorFilter(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background))
-        val selectedTextView = itemView.ninchat_dropdown_list.getChildAt(position) as TextView
-        selectedTextView.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background))
+        itemView.ninchat_dropdown_list.selectedView?.let {
+            val currentView = it as TextView
+            currentView.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background))
+        }
+
     }
 
 }

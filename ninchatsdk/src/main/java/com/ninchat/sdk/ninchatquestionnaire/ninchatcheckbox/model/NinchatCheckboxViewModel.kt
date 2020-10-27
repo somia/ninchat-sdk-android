@@ -13,14 +13,18 @@ data class NinchatCheckboxViewModel(
         var fireEvent: Boolean = false,
 ) {
 
-    fun parse(jsonObject: JSONObject?): NinchatCheckboxViewModel {
+    fun parse(jsonObject: JSONObject?) {
         this.isChecked = NinchatQuestionnaireItemGetter.getResultBoolean(jsonObject)
         this.label = NinchatQuestionnaireItemGetter.getLabel(jsonObject)
         this.hasError = NinchatQuestionnaireItemGetter.getError(jsonObject)
         this.fireEvent = jsonObject?.optBoolean("fireEvent", false) ?: false
         // may be translate
         this.translate()
-        return this
+    }
+
+    fun update(jsonObject: JSONObject?) {
+        this.isChecked = NinchatQuestionnaireItemGetter.getResultBoolean(jsonObject)
+        this.hasError = NinchatQuestionnaireItemGetter.getError(jsonObject)
     }
 
     private fun translate() {

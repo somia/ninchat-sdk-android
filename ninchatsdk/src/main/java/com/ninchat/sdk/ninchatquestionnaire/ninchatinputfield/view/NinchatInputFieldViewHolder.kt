@@ -66,6 +66,8 @@ class NinchatInputFieldViewHolder(
         val mEditText = if (iPresenter.isMultiline()) itemView.multiline_text_area else itemView.simple_text_field
         if (hasError) {
             mEditText?.setBackgroundResource(R.drawable.ninchat_border_with_error);
+        } else {
+            mEditText?.setBackgroundResource(R.drawable.ninchat_border_with_focus);
         }
     }
 

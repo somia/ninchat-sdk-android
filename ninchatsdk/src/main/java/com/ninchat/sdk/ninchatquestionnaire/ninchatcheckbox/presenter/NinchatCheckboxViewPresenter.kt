@@ -12,13 +12,15 @@ class NinchatCheckboxViewPresenter(
 ) {
     private var ninchatCheckboxViewModel = NinchatCheckboxViewModel(
             isFormLikeQuestionnaire = isFormLikeQuestionnaire
-    ).parse(jsonObject = jsonObject)
-
-    fun updateModel(jsonObject: JSONObject?, isFormLikeQuestionnaire: Boolean = true) {
-        ninchatCheckboxViewModel = NinchatCheckboxViewModel(isFormLikeQuestionnaire = isFormLikeQuestionnaire).parse(jsonObject = jsonObject)
+    ).apply {
+        parse(jsonObject = jsonObject)
     }
 
-    fun renderCurrentView() {
+
+    fun renderCurrentView(jsonObject: JSONObject? = null) {
+        jsonObject?.let {
+            ninchatCheckboxViewModel.update(jsonObject = jsonObject)
+        }
         if (ninchatCheckboxViewModel.isFormLikeQuestionnaire) {
             // render form like
             iPresent.onUpdateFromView(

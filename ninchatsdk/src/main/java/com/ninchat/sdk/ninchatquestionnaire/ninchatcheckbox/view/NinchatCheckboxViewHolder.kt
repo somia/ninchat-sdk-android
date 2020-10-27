@@ -22,7 +22,7 @@ class NinchatCheckboxViewHolder(
     )
 
     fun update(jsonObject: JSONObject?, isFormLikeQuestionnaire: Boolean = true) {
-        ninchatCheckboxViewPresenter.renderCurrentView()
+        ninchatCheckboxViewPresenter.renderCurrentView(jsonObject = jsonObject)
         attachUserActionHandler()
     }
 

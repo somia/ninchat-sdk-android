@@ -20,7 +20,7 @@ data class NinchatButtonViewModel(
         var isThankYouText: Boolean = false,
 ) {
 
-    fun parse(jsonObject: JSONObject?): NinchatButtonViewModel {
+    fun parse(jsonObject: JSONObject?) {
         val hasPreviousButton = NinchatQuestionnaireMiscUtil.hasButton(jsonObject, true)
         val previousButtonLabel = jsonObject?.optString("back", "") ?: ""
         val hasNextButton = NinchatQuestionnaireMiscUtil.hasButton(jsonObject, false)
@@ -43,7 +43,6 @@ data class NinchatButtonViewModel(
         this.isThankYouText = isThankYouText
         // do necessary translation
         this.translate()
-        return this
     }
 
     private fun translate() {

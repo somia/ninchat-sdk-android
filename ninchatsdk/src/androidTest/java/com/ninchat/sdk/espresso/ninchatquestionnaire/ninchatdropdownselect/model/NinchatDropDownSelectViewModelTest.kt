@@ -36,7 +36,9 @@ class NinchatDropDownSelectViewModelTest {
         }""".trimIndent())
 
         val ninchatDropDownViewModel = NinchatDropDownSelectViewModel(
-                isFormLikeQuestionnaire = false).parse(jsonObject = jsonObject)
+                isFormLikeQuestionnaire = false).apply {
+            parse(jsonObject = jsonObject)
+        }
         Assert.assertEquals(false, ninchatDropDownViewModel.isFormLikeQuestionnaire)
         Assert.assertEquals("test-label", ninchatDropDownViewModel.label)
         Assert.assertEquals(true, ninchatDropDownViewModel.hasError)
@@ -62,7 +64,9 @@ class NinchatDropDownSelectViewModelTest {
         NinchatSession.Builder(appContext, configurationKey).create()
         NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
         val ninchatDropDownViewModel = NinchatDropDownSelectViewModel(
-                isFormLikeQuestionnaire = false).parse(jsonObject = jsonObject)
+                isFormLikeQuestionnaire = false).apply {
+            parse(jsonObject = jsonObject)
+        }
 
         Assert.assertEquals(listOf("Select", "a-t", "b", "c-t"), ninchatDropDownViewModel.optionList)
     }

@@ -24,9 +24,9 @@ class NinchatCheckboxViewModelTest {
             "fireEvent": true
         }""".trimIndent())
 
-        val ninchatCheckboxViewModel = NinchatCheckboxViewModel(isFormLikeQuestionnaire = false).parse(
-                jsonObject = jsonObject
-        )
+        val ninchatCheckboxViewModel = NinchatCheckboxViewModel(isFormLikeQuestionnaire = false).apply {
+            parse(jsonObject = jsonObject)
+        }
         Assert.assertEquals(false, ninchatCheckboxViewModel.isFormLikeQuestionnaire)
         Assert.assertEquals(true, ninchatCheckboxViewModel.isChecked)
         Assert.assertEquals("test-label", ninchatCheckboxViewModel.label)
@@ -41,9 +41,9 @@ class NinchatCheckboxViewModelTest {
             "hasError": false
         }""".trimIndent())
 
-        val ninchatCheckboxViewModel = NinchatCheckboxViewModel(isFormLikeQuestionnaire = false).parse(
-                jsonObject = jsonObject
-        )
+        val ninchatCheckboxViewModel = NinchatCheckboxViewModel(isFormLikeQuestionnaire = false).apply {
+            parse(jsonObject = jsonObject)
+        }
         ninchatCheckboxViewModel.hasError = true
         ninchatCheckboxViewModel.isChecked = true
         ninchatCheckboxViewModel.updateJson(jsonObject = jsonObject)

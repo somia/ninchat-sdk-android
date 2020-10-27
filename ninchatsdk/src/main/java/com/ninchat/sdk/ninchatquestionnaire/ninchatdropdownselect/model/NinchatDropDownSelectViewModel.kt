@@ -16,7 +16,7 @@ data class NinchatDropDownSelectViewModel(
         var optionList: List<String> = listOf(),
 ) {
 
-    fun parse(jsonObject: JSONObject?, isFormLikeQuestionnaire: Boolean = false): NinchatDropDownSelectViewModel {
+    fun parse(jsonObject: JSONObject?, isFormLikeQuestionnaire: Boolean = false) {
         val optionList = arrayListOf("Select")
         NinchatQuestionnaireItemGetter.getOptions(jsonObject)?.let { options ->
             for (i in 0 until options.length()) {
@@ -32,7 +32,13 @@ data class NinchatDropDownSelectViewModel(
         this.fireEvent = jsonObject?.optBoolean("fireEvent", false) ?: false
         this.selectedIndex = max(optionList.indexOf(this.value), 0)
         this.translate()
-        return this
+    }
+
+    fun update(jsonObject: JSONObject?) {
+        this.value = NinchatQuestionnaireItemGetter.getResultString(jsonObject)
+        this.hasError = NinchatQuestionnaireItemGetter.getError(jsonObject)
+        this.selectedIndex = max(optionList.indexOf(this.value), 0)
+        this.translate()
     }
 
     private fun translate() {

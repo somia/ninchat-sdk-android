@@ -33,8 +33,9 @@ class NinchatCheckboxViewModelTest {
 
         NinchatSession.Builder(appContext, configurationKey).create()
         NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
-        val ninchatCheckboxViewModel = NinchatCheckboxViewModel(isFormLikeQuestionnaire = false).parse(
-                jsonObject = jsonObject)
+        val ninchatCheckboxViewModel = NinchatCheckboxViewModel(isFormLikeQuestionnaire = false).apply {
+            parse(jsonObject = jsonObject)
+        }
 
         Assert.assertEquals("test-label-translated", ninchatCheckboxViewModel.label)
     }
