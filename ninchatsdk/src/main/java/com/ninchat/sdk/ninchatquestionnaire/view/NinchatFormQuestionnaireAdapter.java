@@ -11,6 +11,7 @@ import com.ninchat.sdk.adapters.NinchatQuestionnaireBaseAdapter;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.view.NinchatButtonViewHolder;
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.view.NinchatCheckboxViewHolder;
+import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.view.NinchatDropDownSelectViewHolder;
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.view.NinchatInputFieldViewHolder;
 import com.ninchat.sdk.ninchatquestionnaire.ninchattext.view.NinchatTextViewHolder;
 

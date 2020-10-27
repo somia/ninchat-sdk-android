@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatquestionnaire.view
+package com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.view
 
 import android.view.View
 import android.widget.AdapterView
