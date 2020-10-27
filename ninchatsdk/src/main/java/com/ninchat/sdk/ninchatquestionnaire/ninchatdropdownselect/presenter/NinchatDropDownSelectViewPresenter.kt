@@ -1,7 +1,9 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter
 
+import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.model.NinchatDropDownSelectViewModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.view.INinchatDropDownSelectViewHolder
+import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
 class NinchatDropDownSelectViewPresenter(
@@ -46,6 +48,16 @@ class NinchatDropDownSelectViewPresenter(
         }
         ninchatDropDownSelectViewModel.value = value
         ninchatDropDownSelectViewModel.selectedIndex = position
+        // update json model
+        ninchatDropDownSelectViewModel.updateJson(jsonObject = jsonObject)
+        if (position != 0) {
+            mayBeFireEvent()
+        }
+    }
+
+    private fun mayBeFireEvent() {
+        if (!ninchatDropDownSelectViewModel.fireEvent) return
+        EventBus.getDefault().post(OnNextQuestionnaire(OnNextQuestionnaire.other))
     }
 }
 
