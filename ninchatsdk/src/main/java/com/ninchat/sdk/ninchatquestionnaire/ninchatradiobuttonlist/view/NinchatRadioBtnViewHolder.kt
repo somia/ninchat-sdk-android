@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.view
+package com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.view
 
 import android.view.LayoutInflater
 import android.view.View
