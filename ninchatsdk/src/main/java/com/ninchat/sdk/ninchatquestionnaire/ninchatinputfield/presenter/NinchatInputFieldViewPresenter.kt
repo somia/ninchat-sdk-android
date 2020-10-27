@@ -44,7 +44,7 @@ class NinchatInputFieldViewPresenter(
 
     override fun onTextChange(text: String?) {
         ninchatInputFieldViewModel.value = NinchatQuestionnaireMiscUtil.sanitizeString(text)
-        ninchatInputFieldViewModel.hasError = NinchatQuestionnaireMiscUtil.matchPattern(text, ninchatInputFieldViewModel.pattern)
+        ninchatInputFieldViewModel.hasError = NinchatQuestionnaireMiscUtil.matchPattern(text, ninchatInputFieldViewModel.pattern) == false
         // check if there is any error
         viewCallback.onUpdateText(
                 value = ninchatInputFieldViewModel.value ?: "",
