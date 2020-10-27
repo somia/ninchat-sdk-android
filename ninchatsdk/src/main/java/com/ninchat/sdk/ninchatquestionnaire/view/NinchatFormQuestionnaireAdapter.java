@@ -13,6 +13,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.view.NinchatButtonView
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.view.NinchatCheckboxViewHolder;
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.view.NinchatDropDownSelectViewHolder;
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.view.NinchatInputFieldViewHolder;
+import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.view.NinchatRadioBtnViewHolder;
 import com.ninchat.sdk.ninchatquestionnaire.ninchattext.view.NinchatTextViewHolder;
 
 import org.json.JSONObject;

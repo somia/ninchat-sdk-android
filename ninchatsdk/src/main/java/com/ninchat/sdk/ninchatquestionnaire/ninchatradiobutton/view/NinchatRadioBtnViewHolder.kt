@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatquestionnaire.view
+package com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.view
 
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +28,7 @@ class NinchatRadioBtnViewHolder(
     private val mLabel: TextView = itemView.findViewById(R.id.radio_option_label)
     private val mRecyclerViewWeakReference: WeakReference<RecyclerView> = WeakReference(itemView.findViewById(R.id.ninchat_chat_radio_options))
     private var rootElement: JSONObject? = null
+
     fun bind(questionnaireElement: JSONObject?, isFormLikeQuestionnaire: Boolean, position: Int, isUpdate: Boolean) {
         rootElement = questionnaireElement
         if (isFormLikeQuestionnaire) {
