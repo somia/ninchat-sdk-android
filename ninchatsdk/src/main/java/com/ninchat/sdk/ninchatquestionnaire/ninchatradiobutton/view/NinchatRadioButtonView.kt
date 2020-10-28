@@ -19,8 +19,9 @@ class NinchatRadioButtonView(
             viewCallback = this
     )
 
-    fun update(jsonObject: JSONObject? = null) {
-        ninchatRadioButtonPresenter.renderCurrentView(jsonObject = jsonObject)
+    fun update(isSelected: Boolean, hasError: Boolean) {
+        ninchatRadioButtonPresenter.renderCurrentView(
+                isSelected = isSelected, hasError = hasError)
         attachUserActionHandler()
     }
 
@@ -30,10 +31,17 @@ class NinchatRadioButtonView(
         }
     }
 
-    override fun renderView(label: String) {
+    override fun renderView(label: String, isSelected: Boolean, hasError: Boolean) {
         itemView.single_radio_item.text = label
-        itemView.single_radio_item.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_radio_item_unselected_text))
-        itemView.single_radio_item.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_ui_compose_select_button)
+        // render initialize view
+        if (isSelected) {
+            onSelected()
+        } else {
+            onUnSelected()
+        }
+        if (hasError) {
+            onError()
+        }
     }
 
     override fun onSelected() {

@@ -8,7 +8,14 @@ data class NinchatRadioButtonModel(
         var hasError: Boolean = false,
         var isSelected: Boolean = false,
 ) {
-    fun parse(jsonObject: JSONObject?) {
-        label = NinchatQuestionnaireItemGetter.getLabel(jsonObject)
+    fun parse(jsonObject: JSONObject?, hasError: Boolean = false, isSelected: Boolean = false) {
+        this.label = NinchatQuestionnaireItemGetter.getLabel(jsonObject)
+        this.hasError = hasError
+        this.isSelected = isSelected
+    }
+
+    fun update(hasError: Boolean = false, isSelected: Boolean = false) {
+        this.hasError = hasError
+        this.isSelected = isSelected
     }
 }

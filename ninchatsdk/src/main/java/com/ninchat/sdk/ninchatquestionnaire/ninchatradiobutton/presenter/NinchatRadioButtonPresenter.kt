@@ -13,9 +13,18 @@ class NinchatRadioButtonPresenter(
         parse(jsonObject = jsonObject)
     }
 
-    fun renderCurrentView(jsonObject: JSONObject? = null) {
+    fun renderCurrentView(isSelected: Boolean, hasError: Boolean) {
+        ninchatRadioButtonModel.update(
+                isSelected = isSelected,
+                hasError = hasError
+        )
+
         // if nothing is selected then do not call
-        viewCallback.renderView(label = ninchatRadioButtonModel.label ?: "")
+        viewCallback.renderView(
+                label = ninchatRadioButtonModel.label ?: "",
+                isSelected = ninchatRadioButtonModel.isSelected,
+                hasError = ninchatRadioButtonModel.hasError
+        )
     }
 
     override fun onToggleSelection() {
@@ -32,7 +41,7 @@ class NinchatRadioButtonPresenter(
 }
 
 interface INinchatRadioButtonPresenter {
-    fun renderView(label: String)
+    fun renderView(label: String, isSelected: Boolean, hasError: Boolean)
     fun onSelected()
     fun onUnSelected()
     fun onError()
