@@ -38,6 +38,8 @@ class NinchatRadioButtonPresenter(
             viewCallback.onError()
         }
     }
+
+    internal fun getNinchatRadioButtonModel(): NinchatRadioButtonModel = ninchatRadioButtonModel
 }
 
 interface INinchatRadioButtonPresenter {
