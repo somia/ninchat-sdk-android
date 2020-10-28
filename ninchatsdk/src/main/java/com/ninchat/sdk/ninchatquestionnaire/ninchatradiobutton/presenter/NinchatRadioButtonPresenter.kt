@@ -1,21 +1,33 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.presenter
 
+import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.model.NinchatRadioButtonModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.view.INinchatRadioButtonView
 import org.json.JSONObject
 
 class NinchatRadioButtonPresenter(
         jsonObject: JSONObject?,
         val viewCallback: INinchatRadioButtonPresenter,
-): INinchatRadioButtonView {
+) : INinchatRadioButtonView {
+
+    private val ninchatRadioButtonModel = NinchatRadioButtonModel().apply {
+        parse(jsonObject = jsonObject)
+    }
 
     fun renderCurrentView(jsonObject: JSONObject? = null) {
-        // if nothing is selected then donot call
-        // onSelected, or onUnSelected
-
+        // if nothing is selected then do not call
+        viewCallback.renderView(label = ninchatRadioButtonModel.label ?: "")
     }
 
     override fun onToggleSelection() {
-        TODO("Not yet implemented")
+        ninchatRadioButtonModel.isSelected = !ninchatRadioButtonModel.isSelected
+        if (ninchatRadioButtonModel.isSelected) {
+            viewCallback.onSelected()
+        } else {
+            viewCallback.onUnSelected()
+        }
+        if (ninchatRadioButtonModel.hasError) {
+            viewCallback.onError()
+        }
     }
 }
 
@@ -23,4 +35,5 @@ interface INinchatRadioButtonPresenter {
     fun renderView(label: String)
     fun onSelected()
     fun onUnSelected()
+    fun onError()
 }
