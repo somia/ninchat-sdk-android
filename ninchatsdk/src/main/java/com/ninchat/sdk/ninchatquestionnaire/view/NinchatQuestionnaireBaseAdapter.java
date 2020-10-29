@@ -1,4 +1,4 @@
-package com.ninchat.sdk.adapters;
+package com.ninchat.sdk.ninchatquestionnaire.view;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;

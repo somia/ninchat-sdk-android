@@ -11,7 +11,7 @@ import android.view.View;
 import com.ninchat.client.Props;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.adapters.NinchatQuestionnaireBaseAdapter;
+import com.ninchat.sdk.ninchatquestionnaire.view.NinchatQuestionnaireBaseAdapter;
 import com.ninchat.sdk.events.OnAudienceRegistered;
 import com.ninchat.sdk.events.OnCompleteQuestionnaire;
 import com.ninchat.sdk.events.OnItemLoaded;
