@@ -13,17 +13,12 @@ class NinchatRadioButtonPresenter(
         parse(jsonObject = jsonObject)
     }
 
-    fun renderCurrentView(isSelected: Boolean, hasError: Boolean) {
-        ninchatRadioButtonModel.update(
-                isSelected = isSelected,
-                hasError = hasError
-        )
-
+    fun renderCurrentView(isSelected: Boolean) {
+        ninchatRadioButtonModel.update(isSelected = isSelected)
         // if nothing is selected then do not call
         viewCallback.renderView(
                 label = ninchatRadioButtonModel.label ?: "",
                 isSelected = ninchatRadioButtonModel.isSelected,
-                hasError = ninchatRadioButtonModel.hasError
         )
     }
 
@@ -34,9 +29,6 @@ class NinchatRadioButtonPresenter(
         } else {
             viewCallback.onUnSelected()
         }
-        if (ninchatRadioButtonModel.hasError) {
-            viewCallback.onError()
-        }
     }
 
     fun getLabel() = ninchatRadioButtonModel.label
@@ -44,8 +36,7 @@ class NinchatRadioButtonPresenter(
 }
 
 interface INinchatRadioButtonPresenter {
-    fun renderView(label: String, isSelected: Boolean, hasError: Boolean)
+    fun renderView(label: String, isSelected: Boolean)
     fun onSelected()
     fun onUnSelected()
-    fun onError()
 }

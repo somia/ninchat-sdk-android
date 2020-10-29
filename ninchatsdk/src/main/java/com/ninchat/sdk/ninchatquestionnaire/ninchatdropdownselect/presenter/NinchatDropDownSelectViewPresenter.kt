@@ -8,7 +8,7 @@ import org.json.JSONObject
 
 class NinchatDropDownSelectViewPresenter(
         isFormLikeQuestionnaire: Boolean,
-        val jsonObject: JSONObject?,
+        val jsonObject: JSONObject? = null,
         val viewCallback: INinchatDropDownSelectViewPresenter,
 ) : INinchatDropDownSelectViewHolder {
     private val ninchatDropDownSelectViewModel = NinchatDropDownSelectViewModel(

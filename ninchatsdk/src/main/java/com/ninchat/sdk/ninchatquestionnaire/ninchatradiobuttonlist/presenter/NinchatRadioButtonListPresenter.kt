@@ -7,7 +7,7 @@ import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
 class NinchatRadioButtonListPresenter(
-        jsonObject: JSONObject?,
+        var jsonObject: JSONObject? = null,
         isFormLikeQuestionnaire: Boolean,
         val viewCallback: INinchatRadioButtonListPresenter,
 ) {
@@ -19,25 +19,33 @@ class NinchatRadioButtonListPresenter(
     fun renderCurrentView(jsonObject: JSONObject? = null) {
         jsonObject?.let { ninchatRadioButtonList.update(jsonObject = jsonObject) }
         if (ninchatRadioButtonList.isFormLikeQuestionnaire) {
-            viewCallback.onUpdateFormView(label = ninchatRadioButtonList.label ?: "")
+            viewCallback.onUpdateFormView(label = ninchatRadioButtonList.label ?: "", hasError = ninchatRadioButtonList.hasError)
         } else {
-            viewCallback.onUpdateConversationView(label = ninchatRadioButtonList.label ?: "")
+            viewCallback.onUpdateConversationView(label = ninchatRadioButtonList.label ?: "", hasError = ninchatRadioButtonList.hasError)
         }
     }
 
-    fun handleOptionToggled(isSelected: Boolean, label: String?): Int {
-        val previouslySelected = ninchatRadioButtonList.value
-        ninchatRadioButtonList.value = if (isSelected) label else ""
-        return ninchatRadioButtonList.getIndex(previouslySelected)
+    fun handleOptionToggled(isSelected: Boolean, position: Int): Int {
+        val previousPosition = ninchatRadioButtonList.position
+        ninchatRadioButtonList.value = if (isSelected) ninchatRadioButtonList.getValue(position) else null
+        ninchatRadioButtonList.position = if(isSelected) position else -1
+        ninchatRadioButtonList.hasError = if(isSelected) false else ninchatRadioButtonList.hasError
+
+        // update json model
+        ninchatRadioButtonList.updateJson(jsonObject = jsonObject)
+        if (isSelected) {
+            mayBeFireEvent()
+        }
+        return previousPosition
     }
 
     fun isSelected(jsonObject: JSONObject?): Boolean {
         return jsonObject?.let {
-            ninchatRadioButtonList.value == NinchatQuestionnaireItemGetter.getResultString(it) ?: "~"
+            ninchatRadioButtonList.position != -1 && ninchatRadioButtonList.position == NinchatQuestionnaireItemGetter.getOptionPosition(it)
         } ?: false
     }
 
-    fun mayBeFireEvent() {
+    private fun mayBeFireEvent() {
         if (ninchatRadioButtonList.fireEvent) {
             EventBus.getDefault().post(OnNextQuestionnaire(OnNextQuestionnaire.other));
         }
@@ -48,6 +56,6 @@ class NinchatRadioButtonListPresenter(
 }
 
 interface INinchatRadioButtonListPresenter {
-    fun onUpdateFormView(label: String)
-    fun onUpdateConversationView(label: String)
+    fun onUpdateFormView(label: String, hasError: Boolean)
+    fun onUpdateConversationView(label: String, hasError: Boolean)
 }

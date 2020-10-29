@@ -8,10 +8,9 @@ class NinchatRadioButtonPresenterTest {
     @Test
     fun should_render_view_with_given_params() {
         val viewCallback = object : INinchatRadioButtonPresenter {
-            override fun renderView(label: String, isSelected: Boolean, hasError: Boolean) {
+            override fun renderView(label: String, isSelected: Boolean) {
                 Assert.assertEquals("test-label", label)
                 Assert.assertEquals(true, isSelected)
-                Assert.assertEquals(true, hasError)
             }
 
             override fun onSelected() {
@@ -19,10 +18,6 @@ class NinchatRadioButtonPresenterTest {
             }
 
             override fun onUnSelected() {
-                Assert.assertEquals("Should not be called", true)
-            }
-
-            override fun onError() {
                 Assert.assertEquals("Should not be called", true)
             }
         }
@@ -33,13 +28,13 @@ class NinchatRadioButtonPresenterTest {
                 jsonObject = jsonObject,
                 viewCallback = viewCallback
         )
-        ninchatRadioButtonPresenter.renderCurrentView( isSelected = true, hasError = true)
+        ninchatRadioButtonPresenter.renderCurrentView(isSelected = true, hasError = true)
     }
 
     @Test
-    fun call_on_selected_callback_without_error() {
+    fun call_on_selected_callback() {
         val viewCallback = object : INinchatRadioButtonPresenter {
-            override fun renderView(label: String, isSelected: Boolean, hasError: Boolean) {
+            override fun renderView(label: String, isSelected: Boolean) {
                 Assert.assertEquals("Should not be called", true)
             }
 
@@ -48,10 +43,6 @@ class NinchatRadioButtonPresenterTest {
             }
 
             override fun onUnSelected() {
-                Assert.assertEquals("Should not be called", true)
-            }
-
-            override fun onError() {
                 Assert.assertEquals("Should not be called", true)
             }
         }
@@ -63,15 +54,14 @@ class NinchatRadioButtonPresenterTest {
                 viewCallback = viewCallback
         )
         ninchatRadioButtonPresenter.getNinchatRadioButtonModel().isSelected = false
-        ninchatRadioButtonPresenter.getNinchatRadioButtonModel().hasError = false
         ninchatRadioButtonPresenter.onToggleSelection()
-        Assert.assertEquals(false, ninchatRadioButtonPresenter.getNinchatRadioButtonModel().isSelected)
+        Assert.assertEquals(true, ninchatRadioButtonPresenter.getNinchatRadioButtonModel().isSelected)
     }
 
     @Test
-    fun call_on_un_selected_callback_without_error() {
+    fun call_on_un_selected_callback() {
         val viewCallback = object : INinchatRadioButtonPresenter {
-            override fun renderView(label: String, isSelected: Boolean, hasError: Boolean) {
+            override fun renderView(label: String, isSelected: Boolean) {
                 Assert.assertEquals("Should not be called", true)
             }
 
@@ -81,10 +71,6 @@ class NinchatRadioButtonPresenterTest {
 
             override fun onUnSelected() {
                 Assert.assertEquals(true, true)
-            }
-
-            override fun onError() {
-                Assert.assertEquals("Should not be called", true)
             }
         }
         val jsonObject = JSONObject("""{
@@ -95,40 +81,7 @@ class NinchatRadioButtonPresenterTest {
                 viewCallback = viewCallback
         )
         ninchatRadioButtonPresenter.getNinchatRadioButtonModel().isSelected = true
-        ninchatRadioButtonPresenter.getNinchatRadioButtonModel().hasError = false
         ninchatRadioButtonPresenter.onToggleSelection()
         Assert.assertEquals(false, ninchatRadioButtonPresenter.getNinchatRadioButtonModel().isSelected)
-    }
-
-    @Test
-    fun call_on_on_error() {
-        val viewCallback = object : INinchatRadioButtonPresenter {
-            override fun renderView(label: String, isSelected: Boolean, hasError: Boolean) {
-                Assert.assertEquals("Should not be called", true)
-            }
-
-            override fun onSelected() {
-                Assert.assertEquals(true, true)
-            }
-
-            override fun onUnSelected() {
-                Assert.assertEquals("Should not be called", true)
-            }
-
-            override fun onError() {
-                Assert.assertEquals(true, true)
-            }
-        }
-        val jsonObject = JSONObject("""{
-            "label": "test-label"
-        }""".trimIndent())
-        val ninchatRadioButtonPresenter = NinchatRadioButtonPresenter(
-                jsonObject = jsonObject,
-                viewCallback = viewCallback
-        )
-        ninchatRadioButtonPresenter.getNinchatRadioButtonModel().isSelected = false
-        ninchatRadioButtonPresenter.getNinchatRadioButtonModel().hasError = true
-        ninchatRadioButtonPresenter.onToggleSelection()
-        Assert.assertEquals(true, ninchatRadioButtonPresenter.getNinchatRadioButtonModel().isSelected)
     }
 }

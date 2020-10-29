@@ -29,19 +29,24 @@ class NinchatRadioButtonListView(
         ninchatRadioButtonList.renderCurrentView(jsonObject = jsonObject)
     }
 
-    override fun onUpdateFormView(label: String) {
+    override fun onUpdateFormView(label: String, hasError: Boolean) {
         itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
-        renderCommon(label = label)
+        renderCommon(label = label, hasError = hasError)
     }
 
-    override fun onUpdateConversationView(label: String) {
-        renderCommon(label = label)
+    override fun onUpdateConversationView(label: String, hasError: Boolean) {
+        renderCommon(label = label, hasError = hasError)
     }
 
-    private fun renderCommon(label: String) {
+    private fun renderCommon(label: String, hasError: Boolean) {
         itemView.radio_option_label.text = label
         itemView.ninchat_chat_radio_options.layoutManager = LinearLayoutManager(itemView.context)
         itemView.ninchat_chat_radio_options.adapter = NinchatRadioButtonListViewAdapter()
+        if (hasError) {
+            itemView.radio_option_label.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background));
+        } else {
+            itemView.radio_option_label.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_colorPrimary));
+        }
     }
 
     inner class NinchatRadioButtonListViewAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>(), INinchatRadioButtonListView {
@@ -61,28 +66,25 @@ class NinchatRadioButtonListView(
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val jsonObject = ninchatRadioButtonList.optionList()?.optJSONObject(position)
             val isSelected = ninchatRadioButtonList.isSelected(jsonObject = jsonObject)
-            val hasError = ninchatRadioButtonList.hasError()
-            (holder as NinchatRadioButtonView).update(
-                    isSelected = isSelected,
-                    hasError = hasError)
+            (holder as NinchatRadioButtonView).update(isSelected = isSelected)
         }
 
         override fun getItemCount(): Int {
             return ninchatRadioButtonList.optionList()?.length() ?: 0
         }
 
-        override fun onOptionToggled(isSelected: Boolean, label: String?) {
+        override fun onOptionToggled(isSelected: Boolean, position: Int) {
             val previousIndex = ninchatRadioButtonList.handleOptionToggled(
                     isSelected = isSelected,
-                    label = label)
+                    position = position)
+            // if there is a last selected position
             if (previousIndex != -1) {
                 notifyItemChanged(previousIndex)
-                ninchatRadioButtonList.mayBeFireEvent()
             }
         }
     }
 }
 
 interface INinchatRadioButtonListView {
-    fun onOptionToggled(isSelected: Boolean, label: String?)
+    fun onOptionToggled(isSelected: Boolean, position: Int)
 }

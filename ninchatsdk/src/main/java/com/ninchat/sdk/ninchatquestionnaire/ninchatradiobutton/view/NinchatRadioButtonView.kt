@@ -20,9 +20,8 @@ class NinchatRadioButtonView(
             jsonObject = jsonObject,
             viewCallback = this)
 
-    fun update(isSelected: Boolean, hasError: Boolean) {
-        ninchatRadioButtonPresenter.renderCurrentView(
-                isSelected = isSelected, hasError = hasError)
+    fun update(isSelected: Boolean) {
+        ninchatRadioButtonPresenter.renderCurrentView(isSelected = isSelected)
         attachUserActionHandler()
     }
 
@@ -32,33 +31,30 @@ class NinchatRadioButtonView(
         }
     }
 
-    override fun renderView(label: String, isSelected: Boolean, hasError: Boolean) {
+    override fun renderView(label: String, isSelected: Boolean) {
         itemView.single_radio_item.text = label
         // render initialize view
         if (isSelected) {
-            onSelected()
+            itemView.single_radio_item.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_radio_item_selected_text))
+            itemView.single_radio_item.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_radio_select_button)
         } else {
-            onUnSelected()
+            itemView.single_radio_item.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_radio_item_unselected_text))
+            itemView.single_radio_item.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_ui_compose_select_button)
         }
-        if (hasError) {
-            onError()
-        }
-        optionToggleCallback.onOptionToggled(isSelected = isSelected, label = ninchatRadioButtonPresenter.getLabel())
     }
 
     override fun onSelected() {
         itemView.single_radio_item.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_radio_item_selected_text))
         itemView.single_radio_item.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_radio_select_button)
+        optionToggleCallback.onOptionToggled(isSelected = true, position = layoutPosition)
     }
 
     override fun onUnSelected() {
         itemView.single_radio_item.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_radio_item_unselected_text))
         itemView.single_radio_item.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_ui_compose_select_button)
+        optionToggleCallback.onOptionToggled(isSelected = false, position = layoutPosition)
     }
 
-    override fun onError() {
-        itemView.single_radio_item.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background))
-    }
 }
 
 interface INinchatRadioButtonView {

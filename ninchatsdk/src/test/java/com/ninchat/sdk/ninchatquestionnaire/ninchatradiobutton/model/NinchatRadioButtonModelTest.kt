@@ -9,7 +9,6 @@ class NinchatRadioButtonModelTest {
     fun `create ninchat radio button view model with default value`() {
         val ninchatRadioButtonModel = NinchatRadioButtonModel()
         Assert.assertEquals("", ninchatRadioButtonModel.label)
-        Assert.assertEquals(false, ninchatRadioButtonModel.hasError)
         Assert.assertEquals(false, ninchatRadioButtonModel.isSelected)
     }
 
