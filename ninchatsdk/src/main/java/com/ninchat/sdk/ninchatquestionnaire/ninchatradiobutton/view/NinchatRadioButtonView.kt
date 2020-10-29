@@ -6,18 +6,19 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.presenter.INinchatRadioButtonPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.presenter.NinchatRadioButtonPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.view.INinchatRadioButtonListView
 import kotlinx.android.synthetic.main.radio_item.view.*
 import org.json.JSONObject
 
 class NinchatRadioButtonView(
         itemView: View,
         jsonObject: JSONObject?,
+        private val optionToggleCallback: INinchatRadioButtonListView,
 ) : RecyclerView.ViewHolder(itemView), INinchatRadioButtonPresenter {
 
     private val ninchatRadioButtonPresenter = NinchatRadioButtonPresenter(
             jsonObject = jsonObject,
-            viewCallback = this
-    )
+            viewCallback = this)
 
     fun update(isSelected: Boolean, hasError: Boolean) {
         ninchatRadioButtonPresenter.renderCurrentView(
@@ -42,6 +43,7 @@ class NinchatRadioButtonView(
         if (hasError) {
             onError()
         }
+        optionToggleCallback.onOptionToggled(isSelected = isSelected, label = ninchatRadioButtonPresenter.getLabel())
     }
 
     override fun onSelected() {

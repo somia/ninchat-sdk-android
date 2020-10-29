@@ -18,13 +18,13 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 
-class NinchatRadioBtnViewHolder(
+class NinchatRadioBtnViewHolderOld(
         itemView: View,
         questionnaireElement: JSONObject?,
         isFormLikeQuestionnaire: Boolean,
         position: Int
 ) : RecyclerView.ViewHolder(itemView) {
-    private val TAG = NinchatRadioBtnViewHolder::class.java.simpleName
+    private val TAG = NinchatRadioBtnViewHolderOld::class.java.simpleName
     private val mLabel: TextView = itemView.findViewById(R.id.radio_option_label)
     private val mRecyclerViewWeakReference: WeakReference<RecyclerView> = WeakReference(itemView.findViewById(R.id.ninchat_chat_radio_options))
     private var rootElement: JSONObject? = null

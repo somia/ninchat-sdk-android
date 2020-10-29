@@ -1,9 +1,7 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.presenter
 
-import com.ninchat.sdk.events.OnRadioButtonOptionToggled
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.model.NinchatRadioButtonModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.view.INinchatRadioButtonView
-import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
 class NinchatRadioButtonPresenter(
@@ -39,14 +37,9 @@ class NinchatRadioButtonPresenter(
         if (ninchatRadioButtonModel.hasError) {
             viewCallback.onError()
         }
-        // fire event that radio button option toggle happened
-        fireEvent()
     }
 
-    private fun fireEvent() {
-        EventBus.getDefault().post(OnRadioButtonOptionToggled())
-    }
-
+    fun getLabel() = ninchatRadioButtonModel.label
     internal fun getNinchatRadioButtonModel(): NinchatRadioButtonModel = ninchatRadioButtonModel
 }
 
