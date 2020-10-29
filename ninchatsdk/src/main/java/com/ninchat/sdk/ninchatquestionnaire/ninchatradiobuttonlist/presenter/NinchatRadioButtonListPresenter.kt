@@ -52,7 +52,8 @@ class NinchatRadioButtonListPresenter(
     }
 
     fun optionList() = ninchatRadioButtonList.optionList
-    fun hasError(): Boolean = ninchatRadioButtonList.hasError ?: false
+    fun hasError(): Boolean = ninchatRadioButtonList.hasError
+    internal fun getModel() = ninchatRadioButtonList
 }
 
 interface INinchatRadioButtonListPresenter {
