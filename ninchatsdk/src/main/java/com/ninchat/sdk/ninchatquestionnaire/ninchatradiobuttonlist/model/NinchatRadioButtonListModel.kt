@@ -6,7 +6,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 data class NinchatRadioButtonListModel(
-        val isFormLikeQuestionnaire: Boolean = false,
+        val isFormLikeQuestionnaire: Boolean = true,
         var label: String? = "",
         var hasError: Boolean = false,
         var value: String? = "",

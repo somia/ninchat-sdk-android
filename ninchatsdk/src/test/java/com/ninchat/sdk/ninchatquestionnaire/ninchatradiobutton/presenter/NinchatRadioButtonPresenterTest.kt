@@ -28,7 +28,7 @@ class NinchatRadioButtonPresenterTest {
                 jsonObject = jsonObject,
                 viewCallback = viewCallback
         )
-        ninchatRadioButtonPresenter.renderCurrentView(isSelected = true, hasError = true)
+        ninchatRadioButtonPresenter.renderCurrentView(isSelected = true)
     }
 
     @Test
