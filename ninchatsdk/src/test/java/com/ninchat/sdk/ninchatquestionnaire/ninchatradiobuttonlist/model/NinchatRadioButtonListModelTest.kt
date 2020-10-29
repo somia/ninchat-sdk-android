@@ -48,4 +48,100 @@ class NinchatRadioButtonListModelTest {
         Assert.assertEquals(1, ninchatRadioButtonListModel.position)
         Assert.assertEquals(true, ninchatRadioButtonListModel.fireEvent)
     }
+
+    @Test
+    fun `should update model with params`(){
+        val jsonObject = JSONObject("""{
+            "label": "test-label",
+            "hasError": true,
+            "result": "result-1",
+            "options": [
+                {"value": "a", "label": "la"},
+                {"value": "b", "label": "lb"}
+            ],
+            "position": 1
+        }""".trimIndent())
+
+        val updatedJsonObject = JSONObject("""{
+            "hasError": false,
+            "result": "result-2",
+            "position": 2
+        }""".trimIndent())
+
+
+        val ninchatRadioButtonListModel = NinchatRadioButtonListModel().apply {
+            parse(jsonObject = jsonObject)
+        }
+        ninchatRadioButtonListModel.update(jsonObject = updatedJsonObject)
+        Assert.assertEquals(false, ninchatRadioButtonListModel.hasError)
+        Assert.assertEquals("result-2", ninchatRadioButtonListModel.value)
+        Assert.assertEquals(2, ninchatRadioButtonListModel.position)
+    }
+
+    @Test
+    fun `should return value at given position`(){
+        val jsonObject = JSONObject("""{
+            "label": "test-label",
+            "hasError": true,
+            "result": "result-1",
+            "options": [
+                {"value": "a", "label": "la"},
+                {"value": "b", "label": "lb"}
+            ],
+            "position": 1
+        }""".trimIndent())
+
+        val ninchatRadioButtonListModel = NinchatRadioButtonListModel().apply {
+            parse(jsonObject = jsonObject)
+        }
+        Assert.assertEquals("b", ninchatRadioButtonListModel.getValue(1))
+    }
+
+    @Test
+    fun `should return null value for wrong index`(){
+        val jsonObject = JSONObject("""{
+            "label": "test-label",
+            "hasError": true,
+            "result": "result-1",
+            "options": [
+                {"value": "a", "label": "la"},
+                {"value": "b", "label": "lb"}
+            ],
+            "position": 1
+        }""".trimIndent())
+
+        val ninchatRadioButtonListModel = NinchatRadioButtonListModel().apply {
+            parse(jsonObject = jsonObject)
+        }
+        Assert.assertEquals(null, ninchatRadioButtonListModel.getValue(10000))
+    }
+
+    @Test
+    fun `should update json attributes`(){
+        val jsonObject = JSONObject("""{
+            "label": "test-label",
+            "hasError": true,
+            "result": "result-1",
+            "options": [
+                {"value": "a", "label": "la"},
+                {"value": "b", "label": "lb"}
+            ],
+            "position": 1
+        }""".trimIndent())
+
+        val ninchatRadioButtonListModel = NinchatRadioButtonListModel().apply {
+            parse(jsonObject = jsonObject)
+        }
+        ninchatRadioButtonListModel.hasError = false
+        ninchatRadioButtonListModel.value = "result-2"
+        ninchatRadioButtonListModel.position = 2
+        ninchatRadioButtonListModel.updateJson(jsonObject = jsonObject)
+        Assert.assertEquals(false, jsonObject.optBoolean("hasError"))
+        Assert.assertEquals("result-2", jsonObject.optString("result"))
+        Assert.assertEquals(2, jsonObject.optInt("position"))
+    }
+
+
+
+
 }
