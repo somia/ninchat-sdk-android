@@ -1,105 +1,94 @@
-package com.ninchat.sdk.ninchatquestionnaire.ninchatconversationquestionnaire.view;
+package com.ninchat.sdk.ninchatquestionnaire.ninchatconversationquestionnaire.view
 
+import android.graphics.drawable.AnimationDrawable
+import android.text.TextUtils
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.ninchat.sdk.GlideApp
+import com.ninchat.sdk.R
+import com.ninchat.sdk.events.OnComponentError
+import com.ninchat.sdk.events.OnItemLoaded
+import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration
+import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter
+import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import org.json.JSONObject
+import java.lang.ref.WeakReference
 
-import android.graphics.drawable.AnimationDrawable;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.ninchat.sdk.GlideApp;
-import com.ninchat.sdk.R;
-import com.ninchat.sdk.events.OnComponentError;
-import com.ninchat.sdk.events.OnItemLoaded;
-import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-import org.json.JSONObject;
-
-import java.lang.ref.WeakReference;
-
-import kotlin.Pair;
-
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter.*;
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.getFirstErrorIndex;
-
-public class NinchatConversationViewHolder extends RecyclerView.ViewHolder {
-    private String TAG = NinchatConversationViewHolder.class.getSimpleName();
-    TextView mTextView;
-    ImageView mImageView;
-    ImageView mBotImageView;
-    private RecyclerView mRecyclerView;
-    private NinchatFormQuestionnaireAdapter mFormLikeAudienceQuestionnaireAdapter;
-    private WeakReference<JSONObject> mQuestionnaireElementWeakReference;
-
-    public NinchatConversationViewHolder(@NonNull View itemView,
-                                         JSONObject questionnaireElement,
-                                         Pair<String, String> botDetails,
-                                         int position) {
-        super(itemView);
-        EventBus.getDefault().register(this);
-        mTextView = itemView.findViewById(R.id.ninchat_chat_message_bot_text);
-        mImageView = itemView.findViewById(R.id.ninchat_chat_message_bot_writing);
-        mBotImageView = itemView.findViewById(R.id.ninchat_chat_message_bot_avatar);
-        mRecyclerView = itemView.findViewById(R.id.questionnaire_conversation_rview);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(itemView.getContext()));
-        mQuestionnaireElementWeakReference = new WeakReference(questionnaireElement);
-        bind(questionnaireElement, botDetails, position);
-    }
-
-    public void bind(JSONObject questionnaireElement, Pair<String, String> botDetails, int position) {
-        mTextView.setText(getBotName(botDetails));
-        if (!TextUtils.isEmpty(getBotAvatar(botDetails))) {
+class NinchatConversationViewHolder(
+        itemView: View,
+        questionnaireElement: JSONObject?,
+        botDetails: Pair<String?, String?>?,
+        position: Int
+) : RecyclerView.ViewHolder(itemView) {
+    private val TAG = NinchatConversationViewHolder::class.java.simpleName
+    var mTextView: TextView
+    var mImageView: ImageView
+    var mBotImageView: ImageView
+    private val mRecyclerView: RecyclerView
+    private var mFormLikeAudienceQuestionnaireAdapter: NinchatFormQuestionnaireAdapter? = null
+    private val mQuestionnaireElementWeakReference: WeakReference<JSONObject?>
+    fun bind(questionnaireElement: JSONObject?, botDetails: Pair<String?, String?>?, position: Int) {
+        mTextView.text = NinchatQuestionnaireItemGetter.getBotName(botDetails)
+        if (!TextUtils.isEmpty(NinchatQuestionnaireItemGetter.getBotAvatar(botDetails))) {
             // has bot image utl
             try {
-                GlideApp.with(itemView.getContext())
-                        .load(getBotAvatar(botDetails))
+                GlideApp.with(itemView.context)
+                        .load(NinchatQuestionnaireItemGetter.getBotAvatar(botDetails))
                         .circleCrop()
-                        .into(mBotImageView);
-            } catch (Exception e) {
-                mImageView.setImageResource(R.drawable.ninchat_chat_avatar_left);
+                        .into(mBotImageView)
+            } catch (e: Exception) {
+                mImageView.setImageResource(R.drawable.ninchat_chat_avatar_left)
             }
-
         }
-        mImageView.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator);
-        AnimationDrawable animationDrawable = (AnimationDrawable) mImageView.getBackground();
-        animationDrawable.start();
-        mRecyclerView.postDelayed(() -> {
-            animationDrawable.stop();
-            itemView.findViewById(R.id.ninchat_chat_message_bot_writing_root).setVisibility(View.GONE);
-
-            mFormLikeAudienceQuestionnaireAdapter = new NinchatFormQuestionnaireAdapter(
-                    new NinchatQuestionnaire(getElements(questionnaireElement)), false);
-            int spaceInPixelTop = itemView.getResources().getDimensionPixelSize(R.dimen.ninchat_questionnaire_item_margin_start);
-            int spaceLeft = 0;
-            int spaceRight = 0;
-            mRecyclerView.addItemDecoration(new NinchatQuestionnaireItemDecoration(
+        mImageView.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator)
+        val animationDrawable = mImageView.background as AnimationDrawable
+        animationDrawable.start()
+        mRecyclerView.postDelayed({
+            animationDrawable.stop()
+            itemView.findViewById<View>(R.id.ninchat_chat_message_bot_writing_root).visibility = View.GONE
+            mFormLikeAudienceQuestionnaireAdapter = NinchatFormQuestionnaireAdapter(
+                    NinchatQuestionnaire(NinchatQuestionnaireItemGetter.getElements(questionnaireElement)), false)
+            val spaceInPixelTop = itemView.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_item_margin_start)
+            val spaceLeft = 0
+            val spaceRight = 0
+            mRecyclerView.addItemDecoration(NinchatQuestionnaireItemDecoration(
                     spaceInPixelTop,
                     spaceLeft,
                     spaceRight
-            ));
-            mRecyclerView.setAdapter(mFormLikeAudienceQuestionnaireAdapter);
-            mRecyclerView.setHasFixedSize(true);
-            EventBus.getDefault().post(new OnItemLoaded(position));
-        }, 1500);
+            ))
+            mRecyclerView.adapter = mFormLikeAudienceQuestionnaireAdapter
+            mRecyclerView.setHasFixedSize(true)
+            EventBus.getDefault().post(OnItemLoaded(position))
+        }, 1500)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onEvent(OnComponentError onComponentError) {
-        String name = getName(mQuestionnaireElementWeakReference.get());
-        if (TextUtils.isEmpty(name) || !name.equalsIgnoreCase(onComponentError.itemName)) {
-            return;
+    fun onEvent(onComponentError: OnComponentError) {
+        val name = NinchatQuestionnaireItemGetter.getName(mQuestionnaireElementWeakReference.get())
+        if (TextUtils.isEmpty(name) || !name.equals(onComponentError.itemName, ignoreCase = true)) {
+            return
         }
-        mFormLikeAudienceQuestionnaireAdapter.notifyDataSetChanged();
-        int errorIndex = getFirstErrorIndex(mQuestionnaireElementWeakReference.get());
-        mRecyclerView.clearFocus();
-        mRecyclerView.scrollToPosition(errorIndex);
+        mFormLikeAudienceQuestionnaireAdapter.notifyDataSetChanged()
+        val errorIndex = NinchatQuestionnaireItemSetter.getFirstErrorIndex(mQuestionnaireElementWeakReference.get())
+        mRecyclerView.clearFocus()
+        mRecyclerView.scrollToPosition(errorIndex)
+    }
+
+    init {
+        EventBus.getDefault().register(this)
+        mTextView = itemView.findViewById(R.id.ninchat_chat_message_bot_text)
+        mImageView = itemView.findViewById(R.id.ninchat_chat_message_bot_writing)
+        mBotImageView = itemView.findViewById(R.id.ninchat_chat_message_bot_avatar)
+        mRecyclerView = itemView.findViewById(R.id.questionnaire_conversation_rview)
+        mRecyclerView.layoutManager = LinearLayoutManager(itemView.context)
+        mQuestionnaireElementWeakReference = WeakReference<Any?>(questionnaireElement)
+        bind(questionnaireElement, botDetails, position)
     }
 }
