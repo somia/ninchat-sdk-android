@@ -3,7 +3,7 @@ package com.ninchat.sdk.models.questionnaire.form;
 import android.os.Handler;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ninchat.sdk.ninchatquestionnaire.view.NinchatFormQuestionnaireAdapter;
+import com.ninchat.sdk.ninchatquestionnaire.ninchatformquestionnaire.view.NinchatFormQuestionnaireAdapter;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireBase;
 

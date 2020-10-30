@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatquestionnaire.model
+package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model
 
 import com.ninchat.sdk.NinchatSessionManager
 

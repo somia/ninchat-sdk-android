@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatquestionnaire.view;
+package com.ninchat.sdk.ninchatquestionnaire.ninchatconversationquestionnaire.view;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
+import com.ninchat.sdk.ninchatquestionnaire.ninchatbasequestionnaire.view.NinchatQuestionnaireBaseAdapter;
 
 import org.json.JSONObject;
 

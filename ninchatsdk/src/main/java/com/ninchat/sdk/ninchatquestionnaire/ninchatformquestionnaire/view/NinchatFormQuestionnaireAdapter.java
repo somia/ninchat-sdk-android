@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatquestionnaire.view;
+package com.ninchat.sdk.ninchatquestionnaire.ninchatformquestionnaire.view;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,6 +14,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.view.NinchatDr
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.view.NinchatInputFieldViewHolder;
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.view.NinchatRadioButtonListView;
 import com.ninchat.sdk.ninchatquestionnaire.ninchattext.view.NinchatTextViewHolder;
+import com.ninchat.sdk.ninchatquestionnaire.ninchatbasequestionnaire.view.NinchatQuestionnaireBaseAdapter;
 
 import org.json.JSONObject;
 

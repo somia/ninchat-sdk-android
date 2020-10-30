@@ -15,7 +15,7 @@ import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import com.ninchat.sdk.ninchatactivity.model.NinchatActivityModel
 import com.ninchat.sdk.ninchatactivity.view.NinchatActivity
-import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatQuestionnairePresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.NinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
 import com.ninchat.sdk.utils.misc.Misc.Companion.toRichText

@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatquestionnaire.view
+package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,9 +7,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
-import com.ninchat.sdk.ninchatquestionnaire.model.NinchatQuestionnaireModel
-import com.ninchat.sdk.ninchatquestionnaire.presenter.INinchatQuestionnairePresenter
-import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatQuestionnairePresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.INinchatQuestionnairePresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.NinchatQuestionnairePresenter
 import kotlinx.android.synthetic.main.activity_ninchat_questionnaire.*
 
 class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnairePresenter {
