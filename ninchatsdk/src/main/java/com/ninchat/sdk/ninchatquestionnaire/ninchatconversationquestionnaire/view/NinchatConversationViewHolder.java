@@ -17,7 +17,6 @@ import com.ninchat.sdk.events.OnComponentError;
 import com.ninchat.sdk.events.OnItemLoaded;
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
-import com.ninchat.sdk.ninchatquestionnaire.ninchatformquestionnaire.view.NinchatFormQuestionnaireAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

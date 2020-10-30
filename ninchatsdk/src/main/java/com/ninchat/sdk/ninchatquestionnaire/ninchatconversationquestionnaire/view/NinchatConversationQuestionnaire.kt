@@ -1,43 +1,33 @@
-package com.ninchat.sdk.ninchatquestionnaire.ninchatconversationquestionnaire.view;
+package com.ninchat.sdk.ninchatquestionnaire.ninchatconversationquestionnaire.view
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire
+import com.ninchat.sdk.ninchatquestionnaire.ninchatconversationquestionnaire.presenter.NinchatConversationQuestionnairePresenter
 
-import com.ninchat.sdk.R;
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
-import com.ninchat.sdk.ninchatquestionnaire.ninchatbasequestionnaire.view.NinchatQuestionnaireBaseAdapter;
+class NinchatConversationQuestionnaire(
+        ninchatQuestionnaire: NinchatQuestionnaire?,
+        botDetails: Pair<String?, String?>?,
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), INinchatConversationQuestionnaire {
 
-import org.json.JSONObject;
+    private val presenter = NinchatConversationQuestionnairePresenter(
+            questionnaire = ninchatQuestionnaire, botDetails = botDetails, viewCallback = this)
 
-import kotlin.Pair;
-
-import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter.setViewAndChildrenEnabled;
-
-public class NinchatConversationQuestionnaireAdapter extends NinchatQuestionnaireBaseAdapter {
-    private String TAG = NinchatConversationQuestionnaireAdapter.class.getSimpleName();
-
-    public NinchatConversationQuestionnaireAdapter(NinchatQuestionnaire ninchatQuestionnaire, Pair<String, String> botDetails) {
-        // expect list of questionnaire with object. later from the bot view holder we will expand to elements
-        super(ninchatQuestionnaire, botDetails, false);
+    override fun onCreateViewHolder(parent: ViewGroup, position: Int): RecyclerView.ViewHolder {
+        val currentItem = presenter.get(position)
     }
 
-    @NonNull
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
-        JSONObject currentItem = questionnaire.getItem(position);
-        return new NinchatConversationViewHolder(
-                LayoutInflater.from(parent.getContext()).inflate(R.layout.bot_conversation_item, parent, false),
-                currentItem, botDetails, position);
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        TODO("Not yet implemented")
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        if (position + 1 >= getItemCount()) {
-            setViewAndChildrenEnabled(viewHolder.itemView, true);
-        } else {
-            setViewAndChildrenEnabled(viewHolder.itemView, false);
-        }
+    override fun getItemCount(): Int = presenter.size()
+    override fun getItemViewType(position: Int): Int = position
+    override fun onRemovedElement(position: Int) {
+        notifyItemChanged(position)
     }
+}
+
+interface INinchatConversationQuestionnaire {
+    fun onRemovedElement(position: Int)
 }

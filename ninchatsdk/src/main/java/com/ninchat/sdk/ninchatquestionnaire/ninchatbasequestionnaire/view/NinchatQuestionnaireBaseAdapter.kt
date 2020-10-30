@@ -13,7 +13,7 @@ abstract class NinchatQuestionnaireBaseAdapter(
         return position
     }
 
-    fun addContent(questionnaireList: JSONObject?) { )
+    fun addContent(questionnaireList: JSONObject?) {
         questionnaire!!.addQuestionnaire(questionnaireList)
     }
 

@@ -4,7 +4,6 @@ import android.os.Handler;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ninchat.sdk.ninchatquestionnaire.ninchatconversationquestionnaire.view.NinchatConversationQuestionnaireAdapter;
 import com.ninchat.sdk.events.OnComponentError;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaire;
 import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireBase;
@@ -18,7 +17,7 @@ import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSette
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireNavigationUtil.*;
 
-public class NinchatConversationQuestionnaire extends NinchatQuestionnaireBase<NinchatConversationQuestionnaireAdapter> {
+public class NinchatConversationQuestionnaire extends NinchatQuestionnaireBase<NinchatConversationQuestionnaire> {
     private boolean markDirty = false;
     public NinchatConversationQuestionnaire(String queueId,
                                             int questionnaireType,
@@ -26,7 +25,7 @@ public class NinchatConversationQuestionnaire extends NinchatQuestionnaireBase<N
                                             RecyclerView recyclerView,
                                             LinearLayoutManager linearLayout) {
         super(queueId, questionnaireType, recyclerView, linearLayout);
-        ninchatQuestionnaireAdapter = new NinchatConversationQuestionnaireAdapter(getInitialQuestionnaire(), botDetails);
+        ninchatQuestionnaireAdapter = new NinchatConversationQuestionnaire(getInitialQuestionnaire(), botDetails);
     }
 
     @Override
