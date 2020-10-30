@@ -8,6 +8,8 @@ interface INinchatQuestionnairePresenter {
     fun updateContent(questionnaireList: JSONArray?)
     fun lastElement(): JSONObject?
     fun secondLastElement(): JSONObject?
-    fun removeLast(): JSONObject?
+    fun removeLast()
     fun getQuestionnaireList(): JSONArray?
+    fun get(at: Int): JSONObject?
+    fun size(): Int
 }

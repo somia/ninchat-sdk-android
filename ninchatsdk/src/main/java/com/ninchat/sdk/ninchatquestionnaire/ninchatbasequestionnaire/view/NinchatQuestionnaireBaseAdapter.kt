@@ -6,16 +6,14 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 abstract class NinchatQuestionnaireBaseAdapter(
-        public var questionnaire: NinchatQuestionnaire?,
-        protected var botDetails: Pair<String, String>,
-        protected var isFormLikeQuestionnaire: Boolean,
+        var questionnaire: NinchatQuestionnaire? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun getItemViewType(position: Int): Int {
         return position
     }
 
-    fun addContent(questionnaireList: JSONObject?) {
+    fun addContent(questionnaireList: JSONObject?) { )
         questionnaire!!.addQuestionnaire(questionnaireList)
     }
 
