@@ -92,10 +92,10 @@ class NinchatQueuePresenter(
 
 
     fun mayBeDeleteUser() {
-        NinchatSessionManager.getInstance().let { ninchatSessionManager ->
+        NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
             NinchatScopeHandler.getIOScope().launch {
                 NinchatDeleteUser.execute(
-                        currentSession = ninchatSessionManager?.session
+                        currentSession = ninchatSessionManager.session
                 )
             }
         }
