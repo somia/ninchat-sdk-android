@@ -125,7 +125,7 @@ class NinchatSession {
             requestCode: Int? = NINCHAT_SESSION_REQUEST_CODE,
             queueId: String? = null,
     ) {
-        sessionManager.start(activity, siteSecret, requestCode!!, queueId)
+        sessionManager.start(activity, siteSecret, requestCode?:0, queueId)
     }
 
     fun close() {
