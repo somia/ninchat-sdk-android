@@ -16,11 +16,13 @@ import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -37,6 +39,7 @@ import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
+import com.ninchat.sdk.managers.IOrientationManager;
 import com.ninchat.sdk.managers.OrientationManager;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
@@ -62,7 +65,7 @@ import java.util.List;
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
  */
-public final class NinchatChatActivity extends NinchatBaseActivity {
+public final class NinchatChatActivity extends NinchatBaseActivity implements IOrientationManager {
 
     public static int REQUEST_CODE = NinchatChatActivity.class.hashCode() & 0xffff;
 
@@ -70,6 +73,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     protected static final int PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() & 0xffff;
     private OrientationManager orientationManager;
     private boolean historyLoaded = false;
+    private boolean toggleFullScreen = false;
     private int rootViewHeight = 0;
 
     private NinchatMessageAdapter messageAdapter = NinchatSessionManager.getInstance() != null ? NinchatSessionManager.getInstance().getMessageAdapter() : new NinchatMessageAdapter();
@@ -347,7 +351,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
     }
 
     public void onToggleFullScreen(final View view) {
-
+        toggleFullScreen = !toggleFullScreen;
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
@@ -502,7 +506,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             return;
         }
 
-        orientationManager = new OrientationManager(this, SensorManager.SENSOR_DELAY_UI);
+        // start with orientation toggled false
+        toggleFullScreen = false;
+        orientationManager = new OrientationManager(this, this, SensorManager.SENSOR_DELAY_UI);
         orientationManager.enable();
 
         videoContainer = findViewById(R.id.videoContainer);
@@ -637,6 +643,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
 
     // Reinitialize webRTC on hangup for possible new connection
     private void hangUp() {
+        toggleFullScreen = false;
         NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         if (sessionManager != null && webRTCView != null) {
             webRTCView.hangUp();
@@ -674,5 +681,17 @@ public final class NinchatChatActivity extends NinchatBaseActivity {
             }
             rootViewHeight = activityRootView.getHeight();
         });
+    }
+
+    @Override
+    public void onOrientationChange(int orientation) {
+        if (toggleFullScreen) {
+            return;
+        }
+        if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else if (orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
     }
 }

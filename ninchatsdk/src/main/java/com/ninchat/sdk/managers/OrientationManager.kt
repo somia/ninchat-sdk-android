@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.view.OrientationEventListener
 
-class OrientationManager(private val activity: Activity, rate: Int) : OrientationEventListener(activity, rate) {
+class OrientationManager(private val callback: IOrientationManager, activity: Activity, rate: Int) : OrientationEventListener(activity, rate) {
     private var oldRotation = -1
     override fun onOrientationChanged(orientation: Int) {
         if (orientation < 0) return
@@ -21,14 +21,11 @@ class OrientationManager(private val activity: Activity, rate: Int) : Orientatio
         }
         if (oldRotation != curOrientation) {
             oldRotation = curOrientation
-            changeOrientation(curOrientation)
+            callback.onOrientationChange(curOrientation)
         }
     }
+}
 
-    private fun changeOrientation(orientation: Int) {
-        when (orientation) {
-            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        }
-    }
+interface IOrientationManager {
+    fun onOrientationChange(orientation: Int)
 }
