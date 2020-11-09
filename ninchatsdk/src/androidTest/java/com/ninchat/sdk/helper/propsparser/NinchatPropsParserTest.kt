@@ -169,6 +169,14 @@ class NinchatPropsParserTest {
     }
 
     @Test
+    fun `parse_audience_metadata_from_a_null_or_empty_string_representation`() {
+        val retval1 = NinchatPropsParser.toAudienceMetadata("")
+        val retval2 = NinchatPropsParser.toAudienceMetadata(null)
+        Assert.assertNull(retval1)
+        Assert.assertNull(retval2)
+    }
+
+    @Test
     fun `parse_audience_metadata_from_an_invalid_json_string_representation`() {
         try {
             val retval = NinchatPropsParser.toAudienceMetadata("""{""")

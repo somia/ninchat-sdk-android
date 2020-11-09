@@ -173,7 +173,8 @@ class NinchatPropsParser {
             return props?.marshalJSON()
         }
 
-        fun toAudienceMetadata(audienceMetadata: String): Props? {
+        fun toAudienceMetadata(audienceMetadata: String?): Props? {
+            if(audienceMetadata.isNullOrEmpty()) return null
             val props = Props()
             props.unmarshalJSON(audienceMetadata)
             return props
