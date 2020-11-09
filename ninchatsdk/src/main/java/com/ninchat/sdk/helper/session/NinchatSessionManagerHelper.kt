@@ -80,7 +80,7 @@ class NinchatSessionManagerHelper {
                     NinchatRequestAudience.execute(
                             currentSession = currentSession.session,
                             queueId = queueId,
-                            audienceMetadata = currentSession.ninchatState?.audienceMetadata
+                            audienceMetadata = currentSession.ninchatState?.audienceMetadata?.get()
                     )
                 }
 
