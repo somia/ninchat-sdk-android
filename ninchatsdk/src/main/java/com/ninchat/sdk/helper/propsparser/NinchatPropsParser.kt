@@ -169,12 +169,14 @@ class NinchatPropsParser {
             }
         }
 
-        fun getAudienceMetadata(props: Props?): List< Pair<String,Any> > {
-            val parser = NinchatPropVisitor()
-            props?.accept(parser)
-            return parser.properties.map {
-                Pair(it.key, it.value)
-            }
+        fun getAudienceMetadata(props: Props?): String? {
+            return props?.marshalJSON()
+        }
+
+        fun toAudienceMetadata(audienceMetadata: String): Props? {
+            val props = Props()
+            props.unmarshalJSON(audienceMetadata)
+            return props
         }
 
     }
