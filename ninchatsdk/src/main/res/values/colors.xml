@@ -4,12 +4,8 @@
     <color name="ninchat_colorPrimary">#242424</color>
     <color name="ninchat_colorPrimaryDark">#0D2230</color>
     <color name="ninchat_colorAccent">#008aff</color>
-    <color name="ninchat_colorDisabled">#abd8ff</color>
-    <color name="ninchat_colorOnClicked">#006FCE</color>
-    <color name="ninchat_colorWhite">#FFFFFF</color>
-    <color name="ninchat_colorQuestionnaireDisabled">#B8B8B8</color>
-    <color name="ninchat_backgroundColorDisabled">#F8F8F8</color>
-    <color name="ninchat_colorTimestamp">#7492AA</color>
+    <color name="ninchat_colorDisabled">#F8F8F8</color>
+
     <color name="ninchat_activity_top_matter_background">@android:color/white</color>
     <color name="ninchat_activity_bottom_matter_background">#e9e9e9</color>
     <color name="ninchat_color_hint">#A2A2A2</color>
@@ -25,6 +21,7 @@
     <color name="ninchat_color_background_bottom">@color/ninchat_activity_bottom_matter_background</color>
     <color name="ninchat_color_text_bottom">@color/ninchat_colorPrimary</color>
     <color name="ninchat_color_text_normal">@color/ninchat_colorPrimary</color>
+    <color name="ninchat_color_text_disabled">@color/ninchat_colorDisabled</color>
 
     <color name="ninchat_color_error_background">#983637</color>
 
@@ -32,7 +29,7 @@
     <color name="ninchat_color_link">@color/ninchat_colorAccent</color>
 
     <color name="ninchat_color_chat_name">@color/ninchat_colorPrimary</color>
-    <color name="ninchat_color_chat_timestamp">@color/ninchat_colorTimestamp</color>
+    <color name="ninchat_color_chat_timestamp">#7492AA</color>
     <color name="ninchat_color_chat_bubble_left_text">@color/ninchat_colorPrimary</color>
     <color name="ninchat_color_chat_bubble_left_link">@color/ninchat_colorAccent</color>
     <color name="ninchat_color_chat_bubble_right_text">@android:color/white</color>
