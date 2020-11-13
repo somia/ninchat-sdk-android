@@ -218,18 +218,17 @@ For now, the application can override certain images/animations of the SDK. The 
 | ninchat_ui_compose_select_submit   | Multichoice selection submit button |  |
 | ninchat_border_with_error | Questionnaire input field styling when error occured |  |
 | ninchat_border_with_focus   | Questionnaire input field styling when field is focused |  |
-| ninchat_border_with_ok   | Questionnaire input field styling when field input passed the pattern and condition |  |
+| ninchat_border_with_ok   | Questionnaire input field styling when field input value is a valid value |  |
 | ninchat_border_with_unfocus   | Questionnaire input field styling when field input field is not focused |  |
 | ninchat_chat_bubble_left_repeated_disabled | Question item background styling where they are disabled or already filled |  |
 | ninchat_chat_disable_button | Questionnaire button element styling when they are disabled |  |
 | ninchat_chat_questionnaire_background | Form and conversation like questionnaire background styling |  |
-| ninchat_chat_secondary_onclicked_button | Question next button styling when they are clicked |  |
 | ninchat_chat_secondary_onclicked_button | Question previous button styling when they are clicked |  |
 | ninchat_dropdown_border_select | Questionnaire drop down item border styling when they are selected |  |
 | ninchat_dropdown_border_not_selected | Questionnaire drop down item default border styling or when when they are selected | |
 | ninchat_dropdown_border_with_error | Questionnaire drop down item border styling when error occured | |
-| ninchat_dropdown_spinner_arrow | Questionnaire drop down spinner styling | |
-| ninchat_icon_back | Questionnaire back or previous button styling | |
+| ninchat_dropdown_arrow | Questionnaire drop down option arrow styling | |
+| ninchat_icon_back | Questionnaire back button styling | |
 | ninchat_icon_next | Questionnaire next icon button styling | |
 | ninchat_radio_select_button | Questionnaire radio button syling when it is selected | |
 
@@ -246,6 +245,7 @@ In addition, the application can override colors used in the SDK. The colors nee
 |:------------- |:-------------|
 | ninchat_color_button_primary_text | Text on 'primary' buttons |
 | ninchat_color_button_secondary_text | Text on 'secondary' buttons |
+| ninchat_color_button_disable_text | Ninchat questionnaire Button text color when it is disabled |
 | ninchat_color_info_text | Chat view's meta information (eg. 'Chat started') |
 | ninchat_color_chat_name | User name above chat bubbles |
 | ninchat_color_chat_timestamp | Timestamp above chat bubbles |
@@ -268,14 +268,8 @@ In addition, the application can override colors used in the SDK. The colors nee
 | ninchat_color_ui_compose_select_unselected_text | Text on the unselected multichoice button |
 | ninchat_color_ui_compose_select_selected_text | Text on the selected multichoice button |
 | ninchat_color_ui_compose_submit_text | Text on the multichoice selection submit button |
-| ninchat_colorDisabled | Questionnaire Button color when questionnaire(s) are disabled |
-| ninchat_colorOnClicked | Questionnaire Button color when they are clicked |
-| ninchat_colorWhite | Ninchat color white |
-| ninchat_colorQuestionnaireDisabled | Ninchat questionnaire TextView item color when the item is disabled |
-| ninchat_backgroundColorDisabled | Ninchat conversation like questionnaire chat bubble background color when the item is disabled |
-| ninchat_color_transparent | Ninchat transparent color |
-| ninchat_color_button_disable_text | Ninchat questionnaire Button text color when it is disabled |
 | ninchat_color_text_normal | Ninchat questionnaire TextView default item color |
+| ninchat_color_text_disabled | Ninchat questionnaire TextView item color when they are disabled |
 | ninchat_color_radio_item_selected_text | Ninchat questionnaire Radio Button item color when the item is selected |
 | ninchat_color_radio_item_unselected_text | Ninchat questionnaire Radio Button item color when the item is not selected |
 | ninchat_color_dropdown_selected_text | Ninchat questionnaire dropdown select item text color when the item is selected |
