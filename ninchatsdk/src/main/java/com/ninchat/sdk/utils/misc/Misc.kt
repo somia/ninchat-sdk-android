@@ -59,6 +59,7 @@ class Broadcast {
         const val WEBRTC_MESSAGE_SENDER = WEBRTC_MESSAGE + ".sender"
         const val WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type"
         const val WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content"
+        const val CLOSE_NINCHAT_ACTIVITY = BuildConfig.LIBRARY_PACKAGE_NAME + ".closeActivity"
     }
 }
 
