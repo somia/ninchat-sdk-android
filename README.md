@@ -193,12 +193,12 @@ private val eventListener: NinchatSDKEventListener = object : NinchatSDKEventLis
 
 #### Notes related to secure metadata 
 
-If you are using secure metadata in your application, and for some reason the secure metadata has expired or already used; Ninchat SDK will through a relivant error event. *In this case, you have to reinitialize ninchat session with new secure token*. You can leverage `onEvent` callback to catch secure metadata related error. Along with that, you will receive all ninchat SDK related low-level events in `onEvent` callback from `NinchatSDKEventListener`. 
+If you are using secure metadata in your application, and for some reason the secure metadata has expired or already used; Ninchat SDK will through a relivant error event. *In this case, you have to reinitialize ninchat session with new secure token*. You can leverage `onEvent` callback to catch secure metadata related error. Along with that, you will receive all Ninchat SDK related low-level events in `onEvent` callback. 
 
 - [List of Low-level API events](https://github.com/ninchat/ninchat-api/blob/v2/api.md#events)
 - [List of Low-level API Error types](https://github.com/ninchat/ninchat-api/blob/v2/api.md#error-types)
 
-For secure metadata related error, we are only interested `permission_already_spent` or `permission_expired`. If any of the error happens, close the existing ninchat session, and creates a new ninchat session with valid secure metadata. Please, check the immediate above  `onEvent`  sample code implementation for reference.
+For secure metadata related error, we are only interested `permission_already_spent` or `permission_expired`. If any of the error happens, close the existing Ninchat session, and creates a new Ninchat session with a valid secure metadata. Please, check the above `onEvent`  sample code implementation for reference.
 
 
 
