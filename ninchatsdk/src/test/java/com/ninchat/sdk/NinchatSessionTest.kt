@@ -1,8 +1,6 @@
 package com.ninchat.sdk
 
-import android.app.Activity
 import android.app.Application
-import android.content.Context
 import org.junit.Assert
 import org.junit.Test
 import org.mockito.Mockito.*
@@ -34,9 +32,9 @@ class NinchatSessionTest {
     @Test
     fun `should set ninchat preferred environments`() {
         val mockBuild = mock(NinchatSession.Builder::class.java)
-        `when`(mockBuild.setPreferredEnvironments(null)).thenReturn(mockBuild)
-        mockBuild.setPreferredEnvironments(null)
-        verify(mockBuild).setPreferredEnvironments(null)
+        `when`(mockBuild.setPreferredEnvironments(arrayOf("a"))).thenReturn(mockBuild)
+        mockBuild.setPreferredEnvironments(arrayOf("a"))
+        verify(mockBuild).setPreferredEnvironments(arrayOf("a"))
     }
 
     @Test
@@ -49,10 +47,11 @@ class NinchatSessionTest {
 
     @Test
     fun `should set ninchat log listeners`() {
+        val logListener = NinchatSDKLogListener { message, throwable ->  }
         val mockBuild = mock(NinchatSession.Builder::class.java)
-        `when`(mockBuild.setLogListener(null)).thenReturn(mockBuild)
-        mockBuild.setLogListener(null)
-        verify(mockBuild).setLogListener(null)
+        `when`(mockBuild.setEventListener(null)).thenReturn(mockBuild)
+        mockBuild.setLogListener(logListener)
+        verify(mockBuild).setLogListener(logListener)
     }
 
     @Test

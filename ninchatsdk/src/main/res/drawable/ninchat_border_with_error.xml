@@ -5,7 +5,7 @@
     <solid android:color="@android:color/white" />
     <stroke
         android:width="2dp"
-        android:color="@color/ninchat_color_error_background" />
+        android:color="#FF0003" />
     <corners android:bottomLeftRadius="10dp"
         android:bottomRightRadius="10dp"
         android:topLeftRadius="10dp"

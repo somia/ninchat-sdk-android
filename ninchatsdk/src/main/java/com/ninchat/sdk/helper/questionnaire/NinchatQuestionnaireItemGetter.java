@@ -1,7 +1,7 @@
 package com.ninchat.sdk.helper.questionnaire;
 
 
-import android.support.v4.util.Pair;
+
 import android.text.InputType;
 import android.text.TextUtils;
 
@@ -18,6 +18,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import kotlin.Pair;
 
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireLogicUtil.*;
 import static com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil.*;
@@ -244,18 +246,18 @@ public class NinchatQuestionnaireItemGetter {
     public static String getAudienceRegisteredText(int questionnaireType) {
         NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaireHolder();
+                .ninchatState.getNinchatQuestionnaire();
 
-        return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
+        return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE && questionnaires != null ?
                 questionnaires.getAudienceRegisteredText() : "";
     }
 
     public static String getAudienceRegisteredClosedText(int questionnaireType) {
         NinchatQuestionnaireHolder questionnaires = NinchatSessionManager
                 .getInstance()
-                .getNinchatQuestionnaireHolder();
+                .ninchatState.getNinchatQuestionnaire();
 
-        return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE ?
+        return questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE && questionnaires != null ?
                 questionnaires.getAudienceRegisteredClosedText() : "";
     }
 
@@ -360,12 +362,12 @@ public class NinchatQuestionnaireItemGetter {
 
     public static String getBotName(Pair<String, String> botDetails) {
         if (botDetails == null) return "";
-        return TextUtils.isEmpty(botDetails.first) ? "" : botDetails.first;
+        return TextUtils.isEmpty(botDetails.getFirst()) ? "" : botDetails.getFirst();
     }
 
     public static String getBotAvatar(Pair<String, String> botDetails) {
         if (botDetails == null) return "";
-        return TextUtils.isEmpty(botDetails.second) ? "" : botDetails.second;
+        return TextUtils.isEmpty(botDetails.getSecond()) ? "" : botDetails.getSecond();
     }
 
     public static int getInputType(JSONObject item) {
@@ -396,70 +398,36 @@ public class NinchatQuestionnaireItemGetter {
     }
 
     public static String getBotQuestionnaireNameFromConfig(@NotNull NinchatSessionManager ninchatSessionManager) {
-        String text = "";
-        try {
-            text = ninchatSessionManager.getStringFromConfiguration("questionnaireName");
-        } catch (JSONException e) {
-            text = "";
-        }
-        return text;
+        return ninchatSessionManager.ninchatState.getSiteConfig().getQuestionnaireName();
     }
 
     public static String getBotQuestionnaireAvatarFromConfig(@NotNull NinchatSessionManager ninchatSessionManager) {
-        String text = "";
-        try {
-            text = ninchatSessionManager.getStringFromConfiguration("questionnaireAvatar");
-        } catch (JSONException e) {
-            text = "";
-        }
-        return text;
+        return ninchatSessionManager.ninchatState.getSiteConfig().getQuestionnaireAvatar();
     }
 
     public static String getAudienceRegisteredTextFromConfig(@NotNull NinchatSessionManager ninchatSessionManager) {
-        String text = "";
-        try {
-            text = ninchatSessionManager.getStringFromConfiguration("audienceRegisteredText");
-        } catch (JSONException e) {
-            text = "";
-        }
-        return text;
+        return ninchatSessionManager.ninchatState.getSiteConfig().getAudienceRegisteredText();
     }
 
     public static String getAudienceRegisteredClosedTextFromConfig(@NotNull NinchatSessionManager ninchatSessionManager) {
-        String text = "";
-        try {
-            text = ninchatSessionManager.getStringFromConfiguration("audienceRegisteredClosedText");
-        } catch (JSONException e) {
-            text = "";
-        }
-        return text;
+        return ninchatSessionManager.ninchatState.getSiteConfig().getAudienceRegisteredClosedText();
     }
 
     public static JSONArray getPreAudienceQuestionnaire(@NotNull NinchatSessionManager ninchatSessionManager) {
-        return ninchatSessionManager.getArrayFromConfiguration("preAudienceQuestionnaire");
+        return ninchatSessionManager.ninchatState.getSiteConfig().getPreAudienceQuestionnaire();
     }
 
     public static JSONArray getPostAudienceQuestionnaire(@NotNull NinchatSessionManager ninchatSessionManager) {
-        return ninchatSessionManager.getArrayFromConfiguration("postAudienceQuestionnaire");
+        return ninchatSessionManager.ninchatState.getSiteConfig().getPostAudienceQuestionnaire();
     }
 
     public static boolean isConversationLikePreAudienceQuestionnaire(@NotNull NinchatSessionManager ninchatSessionManager) {
-        String questionnaireStyle = "";
-        try {
-            questionnaireStyle = ninchatSessionManager.getStringFromConfiguration("preAudienceQuestionnaireStyle");
-        } catch (JSONException e) {
-            questionnaireStyle = null;
-        }
-        return (questionnaireStyle == null ? "" : questionnaireStyle).equalsIgnoreCase("conversation");
+        String questionnaireStyle = ninchatSessionManager.ninchatState.getSiteConfig().getPreAudienceQuestionnaireStyle();
+        return "conversation".equalsIgnoreCase(questionnaireStyle);
     }
 
     public static boolean isConversationLikePostAudienceQuestionnaire(@NotNull NinchatSessionManager ninchatSessionManager) {
-        String questionnaireStyle = "";
-        try {
-            questionnaireStyle = ninchatSessionManager.getStringFromConfiguration("postAudienceQuestionnaireStyle");
-        } catch (JSONException e) {
-            questionnaireStyle = null;
-        }
-        return (questionnaireStyle == null ? "" : questionnaireStyle).equalsIgnoreCase("conversation");
+        String questionnaireStyle = ninchatSessionManager.ninchatState.getSiteConfig().getPostAudienceQuestionnaireStyle();
+        return "conversation".equalsIgnoreCase(questionnaireStyle);
     }
 }

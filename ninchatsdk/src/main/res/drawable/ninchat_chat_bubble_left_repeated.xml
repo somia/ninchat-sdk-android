@@ -10,7 +10,7 @@
                 android:radius="@dimen/ninchat_chat_activity_message_bubble_corner_radius"
                 android:topLeftRadius="0dp"
                 />
-            <solid android:color="@color/ninchat_colorWhite" />
+            <solid android:color="#FFFFFF" />
         </shape>
     </item>
     <item>

@@ -1,8 +1,8 @@
 package com.ninchat.sdk.adapters.holders.formview;
 
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.CheckBox;
@@ -45,7 +45,7 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
         setChecked(questionnaireElement);
         if (isFormLikeQuestionnaire) {
             itemView.setBackground(
-                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
+                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_questionnaire_background));
         }
         updateUI(questionnaireElement);
         if (!isUpdate)
@@ -57,7 +57,7 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
         if (TextUtils.isEmpty(text)) {
             return;
         }
-        mCheckbox.setText(NinchatSessionManager.getInstance().getTranslation(text));
+        mCheckbox.setText( NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getTranslation(text));
     }
 
     private void setChecked(JSONObject item) {

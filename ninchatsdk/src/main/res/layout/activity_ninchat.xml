@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/ninchat_color_background_bottom"
-    tools:context=".activities.NinchatActivity">
+    tools:context=".ninchatactivity.view.NinchatActivity">
 
     <LinearLayout
         android:orientation="vertical"
@@ -47,13 +47,13 @@
                 android:textColor="@color/ninchat_color_text_top"
                 tools:visibility="visible" />
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/ninchat_activity_queue_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/ninchat_button_queue_horizontal_margin"
                 android:layout_marginEnd="@dimen/ninchat_button_queue_horizontal_margin"
-                app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="3"
                 tools:listitem="@layout/item_queue" />
 

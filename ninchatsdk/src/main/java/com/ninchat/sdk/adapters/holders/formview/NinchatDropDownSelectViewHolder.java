@@ -1,15 +1,15 @@
 package com.ninchat.sdk.adapters.holders.formview;
 
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -47,7 +47,7 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
         ArrayAdapter<String> dataAdapter = getRTDataAdapter(questionnaireElement);
         if (isFormLikeQuestionnaire) {
             itemView.setBackground(
-                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_form_questionnaire_background));
+                    ContextCompat.getDrawable(itemView.getContext(), R.drawable.ninchat_chat_questionnaire_background));
         }
         mSpinner.setAdapter(dataAdapter);
         mSpinner.setSelection(previouslySelected);
@@ -113,11 +113,12 @@ public class NinchatDropDownSelectViewHolder extends RecyclerView.ViewHolder {
     private ArrayAdapter<String> getRTDataAdapter(JSONObject questionnaireElement) {
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(itemView.getContext(), R.layout.dropdown_item_text_view);
         JSONArray options = getOptions(questionnaireElement);
-        dataAdapter.add(NinchatSessionManager.getInstance().getTranslation("Select"));
+        dataAdapter.add(NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getTranslation(
+                "Select"));
         for (int i = 0; i < options.length(); i += 1) {
             JSONObject curOption = options.optJSONObject(i);
             String label = curOption.optString("label");
-            dataAdapter.add(NinchatSessionManager.getInstance().getTranslation(label));
+            dataAdapter.add(NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getTranslation(label));
         }
         return dataAdapter;
     }
