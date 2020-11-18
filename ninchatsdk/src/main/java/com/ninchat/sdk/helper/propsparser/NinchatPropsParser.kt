@@ -169,5 +169,16 @@ class NinchatPropsParser {
             }
         }
 
+        fun getAudienceMetadata(props: Props?): String? {
+            return props?.marshalJSON()
+        }
+
+        fun toAudienceMetadata(audienceMetadata: String?): Props? {
+            if(audienceMetadata.isNullOrEmpty()) return null
+            val props = Props()
+            props.unmarshalJSON(audienceMetadata)
+            return props
+        }
+
     }
 }

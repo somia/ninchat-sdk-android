@@ -1,8 +1,10 @@
 package com.ninchat.sdk.helper.session
 
+import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.client.Payload
 import com.ninchat.client.Props
 import com.ninchat.client.Session
@@ -14,9 +16,9 @@ import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig
 import com.ninchat.sdk.models.NinchatSessionCredentials
-import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeRealmQueues
 import com.ninchat.sdk.states.NinchatState
+import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.coroutines.launch
@@ -111,7 +113,10 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
                 "file_found" -> NinchatSessionManagerHelper.fileFound(params)
                 "channel_member_updated", "user_updated" -> NinchatSessionManagerHelper.memberUpdated(params)
                 "audience_registered" -> EventBus.getDefault().post(OnAudienceRegistered(false))
-                "error" -> EventBus.getDefault().post(OnAudienceRegistered(true))
+                "error" -> {
+                    if (params.getString("error_type") !in listOf("permission_expired", "permission_already_spent"))
+                        EventBus.getDefault().post(OnAudienceRegistered(true))
+                }
             }
             Handler(Looper.getMainLooper()).post {
                 listener?.onEvent(params, payload)
@@ -132,7 +137,10 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
     }
 
     fun dispose() {
-        // todo ( pallab )
+        NinchatSessionManager.getInstance()?.context?.let {
+            LocalBroadcastManager.getInstance(it).sendBroadcast(Intent(Broadcast.CLOSE_NINCHAT_ACTIVITY))
+        }
+
     }
 
 }
