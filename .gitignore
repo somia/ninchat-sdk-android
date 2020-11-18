@@ -84,3 +84,4 @@ fastlane/test_output
 fastlane/readme.md
 /.idea/vcs.xml
 /.idea/modules.xml
+/.idea/jarRepositories.xml
