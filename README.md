@@ -137,40 +137,68 @@ NinchatSession.Builder builder = new NinchatSession.Builder(
 
 
 
-One way to get and update user credentails is to listen `onSessionInitiated`, `onSessionInitFailed` callback(s) from `NinchatSDKEventListener`.
+One way to get and update user credentails is to listen `onSessionInitiated`, `onSessionInitFailed` callback(s) from `NinchatSDKEventListener`. When session is initialised you can catch the user id, user auth, and session id related information which you can later pass by call `setSessionCredentials` method.
 
-```java
-private NinchatSDKEventListener eventListener = new NinchatSDKEventListener() {
-    public void onSessionInitiated(NinchatSessionCredentials sessionCredentials) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferences pref = getApplicationContext().getSharedPreferences("pref", MODE_PRIVATE);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.putString("user_id", sessionCredentials.getUserId());
-                editor.putString("user_auth", sessionCredentials.getUserAuth());
-                editor.putString("session_id", sessionCredentials.getSessionId());
-                editor.apply();
+```kotlin
+private val eventListener: NinchatSDKEventListener = object : NinchatSDKEventListener() {
+        override fun onSessionInitiated(sessionCredentials: NinchatSessionCredentials) {
+            Log.e(">>", sessionCredentials.toString())
+            Handler(Looper.getMainLooper()).post {
+                findViewById<View>(R.id.button).visibility = View.VISIBLE
+                findViewById<View>(R.id.progress).visibility = View.GONE
+                val pref = applicationContext.getSharedPreferences("pref", MODE_PRIVATE)
+                val editor = pref.edit()
+                editor.putString("user_id", sessionCredentials.userId)
+                editor.putString("user_auth", sessionCredentials.userAuth)
+                editor.putString("session_id", sessionCredentials.sessionId)
+                editor.apply()
             }
-        });
-    }
+        }
 
-    @Override
-    public void onSessionInitFailed() {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferences pref = getApplicationContext().getSharedPreferences("pref", MODE_PRIVATE);
-                SharedPreferences.Editor editor = pref.edit();
-                editor.remove("user_id");
-                editor.remove("user_auth");
-                editor.remove("session_id");
-                editor.apply();
+        override fun onSessionInitFailed() {
+            Log.e(">>", "session failed")
+            Handler(Looper.getMainLooper()).post {
+                findViewById<View>(R.id.button).visibility = View.VISIBLE
+                findViewById<View>(R.id.progress).visibility = View.GONE
+                val pref = applicationContext.getSharedPreferences("pref", MODE_PRIVATE)
+                val editor = pref.edit()
+                editor.remove("user_id")
+                editor.remove("user_auth")
+                editor.remove("session_id")
+                editor.apply()
             }
-        });
+        }
+
+        override fun onSessionError(error: Exception) {
+            Log.e(">>", error.localizedMessage)
+        }
+
+        override fun onEvent(params: Props, payload: Payload) {
+            Log.e("On Event >>", params.toString())
+            if(params.getString("event") != "error" ) {
+                return
+            }
+            // there is an error event. may be process error event based on application needs
+            when(params.getString("error_type")){
+                 "permission_already_spent", "permission_expired" -> {
+                    // close ninchat session and try with valid secure metadata
+                     ninchatSession?.close()
+                }
+            }
+        }
     }
-};
 ```
+
+
+
+#### Notes related to secure metadata 
+
+If you are using secure metadata in your application, and for some reason the secure metadata has expired or already used; Ninchat SDK will through a relivant error event. *In this case, you have to reinitialize ninchat session with new secure token*. You can leverage `onEvent` callback to catch secure metadata related error. Along with that, you will receive all ninchat SDK related low-level events in `onEvent` callback from `NinchatSDKEventListener`. 
+
+- [List of Low-level API events](https://github.com/ninchat/ninchat-api/blob/v2/api.md#events)
+- [List of Low-level API Error types](https://github.com/ninchat/ninchat-api/blob/v2/api.md#error-types)
+
+For secure metadata related error, we are only interested `permission_already_spent` or `permission_expired`. If any of the error happens, close the existing ninchat session, and creates a new ninchat session with valid secure metadata. Please, check the immediate above  `onEvent`  sample code implementation for reference.
 
 
 
