@@ -4,7 +4,7 @@
         <shape android:shape="rectangle">
             <corners
                 android:radius="@dimen/ninchat_chat_activity_message_bubble_corner_radius" />
-            <solid android:color="@android:color/white" />
+            <solid android:color="#FFFFFF" />
         </shape>
     </item>
     <item>

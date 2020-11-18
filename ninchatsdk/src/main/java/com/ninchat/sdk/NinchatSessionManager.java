@@ -106,6 +106,10 @@ public final class NinchatSessionManager {
                 s -> {
                     setConfiguration(s);
                     return null;
+                },
+                e -> {
+                    sessionError(e);
+                    return null;
                 }
         );
     }

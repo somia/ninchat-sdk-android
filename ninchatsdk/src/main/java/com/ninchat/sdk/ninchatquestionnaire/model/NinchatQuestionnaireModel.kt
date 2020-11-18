@@ -11,10 +11,10 @@ class NinchatQuestionnaireModel {
 
     fun isConversationLikeQuestionnaire(questionnaireType: Int): Boolean {
         return if (questionnaireType == PRE_AUDIENCE_QUESTIONNAIRE) {
-            NinchatSessionManager.getInstance().ninchatState?.ninchatQuestionnaire?.conversationLikePreAudienceQuestionnaire()
+            NinchatSessionManager.getInstance()?.ninchatState?.ninchatQuestionnaire?.conversationLikePreAudienceQuestionnaire()
                     ?: false
         } else {
-            NinchatSessionManager.getInstance().ninchatState?.ninchatQuestionnaire?.conversationLikePostAudienceQuestionnaire()
+            NinchatSessionManager.getInstance()?.ninchatState?.ninchatQuestionnaire?.conversationLikePostAudienceQuestionnaire()
                     ?: false
         }
     }

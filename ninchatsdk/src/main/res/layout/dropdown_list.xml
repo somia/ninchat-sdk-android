@@ -24,7 +24,7 @@
         android:layout_weight="0.10"
         android:layout_height="@dimen/ninchat_questionnaire_item_dropdown_height"
         android:layout_gravity="center"
-        android:src="@drawable/ninchat_dropdown_spinner_arrow"
+        android:src="@drawable/ninchat_dropdown_arrow"
         android:tint="@color/ninchat_color_dropdown_unselected_text" />
 
 </LinearLayout>

@@ -17,8 +17,10 @@ class NinchatFetchConfiguration {
         const val TIMEOUT_MS = 10000
 
         @SuppressLint("LongLogTag")
-        suspend fun execute(serverAddress: String? = null,
-                            configurationKey: String? = null): String =
+        suspend fun execute(
+                serverAddress: String? = null,
+                configurationKey: String? = null,
+        ): String =
                 withContext(Dispatchers.IO) {
                     val configurationUrl = "https://$serverAddress/config/$configurationKey"
                     Log.i(TAG, "Fetching configuration...")
@@ -88,8 +90,11 @@ class NinchatFetchConfiguration {
                 scope: CoroutineScope,
                 serverAddress: String? = null,
                 configurationKey: String? = null,
-                callback: ((configuration: String) -> Long)? = null) {
-            scope.launch {
+                callback: ((configuration: String) -> Long)? = null,
+                exceptionHandler: ((error: Exception) -> Unit)? = null,
+        ) {
+
+            scope.launch(CoroutineExceptionHandler { _, exception -> exceptionHandler?.let { it(Exception(exception)) }}) {
                 val configuration = execute(serverAddress, configurationKey)
                 callback?.let { it(configuration) }
             }

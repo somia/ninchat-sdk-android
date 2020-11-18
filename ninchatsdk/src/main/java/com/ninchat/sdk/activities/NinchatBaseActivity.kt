@@ -2,6 +2,10 @@ package com.ninchat.sdk.activities
 
 import android.Manifest
 import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -10,8 +14,9 @@ import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.R
-import org.jetbrains.annotations.TestOnly
+import com.ninchat.sdk.utils.misc.Broadcast
 
 abstract class NinchatBaseActivity : Activity() {
     @get:LayoutRes
@@ -34,6 +39,16 @@ abstract class NinchatBaseActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layoutRes)
+        LocalBroadcastManager.getInstance(applicationContext).run {
+            registerReceiver(closeActivityReceiver, IntentFilter(Broadcast.CLOSE_NINCHAT_ACTIVITY))
+        }
+    }
+
+    override fun onDestroy() {
+        LocalBroadcastManager.getInstance(applicationContext).run {
+            unregisterReceiver(closeActivityReceiver)
+        }
+        super.onDestroy()
     }
 
     protected fun showError(@IdRes layoutId: Int, @StringRes message: Int) {
@@ -51,6 +66,15 @@ abstract class NinchatBaseActivity : Activity() {
     override fun onBackPressed() {
         if (allowBackButton()) {
             super.onBackPressed()
+        }
+    }
+
+    private val closeActivityReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent?) {
+            if (intent?.action == Broadcast.CLOSE_NINCHAT_ACTIVITY) {
+                setResult(RESULT_CANCELED, null)
+                finish()
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import android.content.Context
 import com.ninchat.client.Props
 import com.ninchat.client.Session
 import com.ninchat.sdk.models.NinchatSessionCredentials
+import com.ninchat.sdk.ninchataudiencemetadata.NinchatAudienceMetadata
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 17/08/2018.
@@ -113,7 +114,12 @@ class NinchatSession {
     }
 
     fun setAudienceMetadata(audienceMetadata: Props?) {
-        sessionManager.ninchatState?.audienceMetadata = audienceMetadata
+        sessionManager.ninchatState?.audienceMetadata = NinchatAudienceMetadata().apply {
+            // remove old metadata if any
+            remove()
+            // set new metadata
+            set(audienceMetadata)
+        }
     }
 
     val session: Session
@@ -125,7 +131,7 @@ class NinchatSession {
             requestCode: Int? = NINCHAT_SESSION_REQUEST_CODE,
             queueId: String? = null,
     ) {
-        sessionManager.start(activity, siteSecret, requestCode!!, queueId)
+        sessionManager.start(activity, siteSecret, requestCode ?: 0, queueId)
     }
 
     fun close() {

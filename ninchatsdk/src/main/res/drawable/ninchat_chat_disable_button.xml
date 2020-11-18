@@ -3,9 +3,9 @@
     <corners
         android:radius="@dimen/ninchat_button_corner_radius"
         />
-    <solid android:color="@color/ninchat_colorDisabled" />
+    <solid android:color="#abd8ff" />
     <stroke
         android:width="2dp"
-        android:color="@color/ninchat_colorDisabled"
+        android:color="#abd8ff"
         />
 </shape>

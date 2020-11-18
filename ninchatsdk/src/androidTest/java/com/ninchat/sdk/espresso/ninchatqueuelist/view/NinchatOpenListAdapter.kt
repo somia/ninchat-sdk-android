@@ -78,7 +78,7 @@ class NinchatOpenListAdapter {
             it.position = 1
             it.isClosed = false
         }
-        NinchatSessionManager.getInstance().ninchatState.queues = arrayListOf()
+        NinchatSessionManager.getInstance()?.ninchatState?.queues = arrayListOf()
         activityScenario = ActivityScenario.launch(intent)
         Thread.sleep(60000)
     }

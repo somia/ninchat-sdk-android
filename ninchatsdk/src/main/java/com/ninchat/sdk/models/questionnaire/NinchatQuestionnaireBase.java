@@ -2,9 +2,11 @@ package com.ninchat.sdk.models.questionnaire;
 
 import android.content.Context;
 import android.os.Handler;
+
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.TextUtils;
 import android.view.View;
 
@@ -22,6 +24,7 @@ import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
 import com.ninchat.sdk.networkdispatchers.NinchatPartChannel;
 import com.ninchat.sdk.networkdispatchers.NinchatRegisterAudience;
 import com.ninchat.sdk.networkdispatchers.NinchatSendPostAudienceQuestionnaire;
+import com.ninchat.sdk.ninchataudiencemetadata.NinchatAudienceMetadata;
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
 import org.greenrobot.eventbus.EventBus;
@@ -233,12 +236,18 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
 
     private void setAudienceMetadata(JSONObject answers) {
         // no audience meta data is set
-        if (NinchatSessionManager.getInstance().ninchatState.getAudienceMetadata() == null) {
-            NinchatSessionManager.getInstance().ninchatState.setAudienceMetadata(new Props());
+        NinchatSessionManager ninchatSessionManager = NinchatSessionManager.getInstance();
+        if (ninchatSessionManager == null || ninchatSessionManager.ninchatState == null) return;
+        Props audienceMetadata = ninchatSessionManager.ninchatState.getAudienceMetadata() == null ? new Props() : ninchatSessionManager.ninchatState.getAudienceMetadata().get();
+        if (audienceMetadata == null) {
+            audienceMetadata = new Props();
         }
         // escape setting answers if they are empty
         if (answers != null) {
-            NinchatSessionManager.getInstance().ninchatState.getAudienceMetadata().setObject("pre_answers", getPreAnswers(answers));
+            audienceMetadata.setObject("pre_answers", getPreAnswers(answers));
+            NinchatAudienceMetadata ninchatAudienceMetadata = new NinchatAudienceMetadata(null, null);
+            ninchatAudienceMetadata.set(audienceMetadata);
+            ninchatSessionManager.ninchatState.setAudienceMetadata(ninchatAudienceMetadata);
         }
     }
 
