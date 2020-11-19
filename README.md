@@ -193,7 +193,7 @@ private val eventListener: NinchatSDKEventListener = object : NinchatSDKEventLis
 
 #### Notes related to secure metadata 
 
-If you are using secure metadata in your application, and for some reason the secure metadata has expired or already used; Ninchat SDK will through a relivant error event. *In this case, you have to reinitialize ninchat session with new secure token*. You can leverage `onEvent` callback to catch secure metadata related error. Along with that, you will receive all Ninchat SDK related low-level events in `onEvent` callback. 
+If you are using secure metadata in your application, and for some reason the secure metadata has expired or already in used; Ninchat SDK will throw a relevant error event. *In this case, you have to reinitialize Ninchat session with new secure token*. You can leverage `onEvent` callback to catch secure metadata related error. Along with that, you will receive all Ninchat SDK related low-level events in `onEvent` callback. 
 
 - [List of Low-level API events](https://github.com/ninchat/ninchat-api/blob/v2/api.md#events)
 - [List of Low-level API Error types](https://github.com/ninchat/ninchat-api/blob/v2/api.md#error-types)
