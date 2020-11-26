@@ -22,7 +22,7 @@ class NinchatTextViewHolder(
             iPresenter = this
     )
 
-    fun update(jsonObject: JSONObject?, isFormLikeQuestionnaire: Boolean = true) {
+    fun update(jsonObject: JSONObject?) {
         presenter.renderCurrentView()
     }
 
