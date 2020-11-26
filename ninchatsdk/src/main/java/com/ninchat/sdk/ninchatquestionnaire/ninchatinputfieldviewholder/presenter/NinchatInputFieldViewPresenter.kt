@@ -19,7 +19,9 @@ class NinchatInputFieldViewPresenter(
     }
 
 
-    fun renderCurrentView() {
+    fun renderCurrentView(jsonObject: JSONObject?) {
+        jsonObject?.let { model.update(jsonObject = jsonObject) }
+        
         if (model.isFormLikeQuestionnaire) {
             viewCallback.onUpdateFromView(
                     label = model.label ?: "",

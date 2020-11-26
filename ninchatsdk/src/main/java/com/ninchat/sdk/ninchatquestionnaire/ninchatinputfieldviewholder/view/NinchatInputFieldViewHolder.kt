@@ -30,7 +30,7 @@ class NinchatInputFieldViewHolder(
     )
 
     fun update(jsonObject: JSONObject?) {
-        presenter.renderCurrentView()
+        presenter.renderCurrentView(jsonObject = jsonObject)
         attachUserActionHandler()
     }
 

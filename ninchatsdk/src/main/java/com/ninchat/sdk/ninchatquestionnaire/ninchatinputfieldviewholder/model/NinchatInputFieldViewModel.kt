@@ -22,6 +22,11 @@ data class NinchatInputFieldViewModel(
         this.pattern = NinchatQuestionnaireItemGetter.getPattern(jsonObject)
     }
 
+    fun update(jsonObject: JSONObject) {
+        this.hasError = NinchatQuestionnaireItemGetter.getError(jsonObject)
+        this.value = NinchatQuestionnaireItemGetter.getResultString(jsonObject)
+    }
+
     @Deprecated("will be removed once converted to kotlin data model")
     fun updateJson(jsonObject: JSONObject?) {
         NinchatQuestionnaireItemSetter.setResult(jsonObject, this.value)
