@@ -1,7 +1,9 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.model
 
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants as Constant
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
+
 import org.json.JSONObject
 
 data class NinchatButtonViewModel(
@@ -21,14 +23,16 @@ data class NinchatButtonViewModel(
 ) {
 
     fun parse(jsonObject: JSONObject?) {
-        val hasPreviousButton = NinchatQuestionnaireMiscUtil.hasButton(jsonObject, true)
-        val previousButtonLabel = jsonObject?.optString("back", "") ?: ""
-        val hasNextButton = NinchatQuestionnaireMiscUtil.hasButton(jsonObject, false)
-        val nextButtonLabel = jsonObject?.optString("next", "") ?: ""
+        val hasPreviousButton = NinchatQuestionnaireJsonUtil.hasButton(jsonObject, true)
+        val previousButtonLabel = jsonObject?.optString(Constant.back, "")
+                ?: ""
+        val hasNextButton = NinchatQuestionnaireJsonUtil.hasButton(jsonObject, false)
+        val nextButtonLabel = jsonObject?.optString(Constant.next, "") ?: ""
         val showBackImageButton = hasPreviousButton && (previousButtonLabel == "true" || previousButtonLabel.isEmpty())
         val showNextImageButton = hasNextButton && (nextButtonLabel == "true" || nextButtonLabel.isEmpty())
-        val fireEvent = jsonObject?.optBoolean("fireEvent", false) ?: false
-        val isThankYouText = jsonObject?.optString("type", "") == "thankYouText"
+        val fireEvent = jsonObject?.optBoolean(Constant.fireEvent, false)
+                ?: false
+        val isThankYouText = jsonObject?.optString(Constant.type, "") == Constant.thankYouText
 
 
         this.showPreviousImageButton = showBackImageButton

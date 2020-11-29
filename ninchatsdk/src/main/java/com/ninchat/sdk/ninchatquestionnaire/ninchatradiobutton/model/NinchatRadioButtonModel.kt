@@ -1,6 +1,6 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.model
 
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
 import org.json.JSONObject
 
 data class NinchatRadioButtonModel(
@@ -8,7 +8,7 @@ data class NinchatRadioButtonModel(
         var isSelected: Boolean = false,
 ) {
     fun parse(jsonObject: JSONObject?, hasError: Boolean = false, isSelected: Boolean = false) {
-        this.label = NinchatQuestionnaireItemGetter.getLabel(jsonObject)
+        this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label)
         this.isSelected = isSelected
     }
 

@@ -1,7 +1,6 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.model
 
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -16,31 +15,32 @@ data class NinchatRadioButtonListModel(
 ) {
 
     fun parse(jsonObject: JSONObject?) {
-        this.label = NinchatQuestionnaireItemGetter.getLabel(jsonObject)
-        this.value = NinchatQuestionnaireItemGetter.getResultString(jsonObject)
-        this.position = NinchatQuestionnaireItemGetter.getOptionPosition(jsonObject)
-        this.hasError = NinchatQuestionnaireItemGetter.getError(jsonObject)
-        this.fireEvent = jsonObject?.optBoolean("fireEvent", false) ?: false
-        this.optionList = NinchatQuestionnaireItemGetter.getOptions(jsonObject)
+        this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label)
+        this.value = jsonObject?.optString(NinchatQuestionnaireConstants.result)
+        this.position = jsonObject?.optInt(NinchatQuestionnaireConstants.position) ?: -1
+        this.hasError = jsonObject?.optBoolean(NinchatQuestionnaireConstants.hasError) ?: false
+        this.fireEvent = jsonObject?.optBoolean(NinchatQuestionnaireConstants.fireEvent) ?: false
+        this.optionList = jsonObject?.optJSONArray(NinchatQuestionnaireConstants.options)
+                ?: JSONArray()
     }
 
     fun update(jsonObject: JSONObject) {
-        this.hasError = NinchatQuestionnaireItemGetter.getError(jsonObject)
-        this.value = NinchatQuestionnaireItemGetter.getResultString(jsonObject)
-        this.position = NinchatQuestionnaireItemGetter.getOptionPosition(jsonObject)
+        this.hasError = jsonObject.optBoolean(NinchatQuestionnaireConstants.hasError, false)
+        this.value = jsonObject.optString(NinchatQuestionnaireConstants.result)
+        this.position = jsonObject.optInt(NinchatQuestionnaireConstants.position, -1)
     }
 
     fun getValue(position: Int): String? {
         return optionList?.let {
-            if(position >= it.length()) return null
-            NinchatQuestionnaireItemGetter.getValue(it.optJSONObject(position))
+            if (position >= it.length()) return null
+            it.optJSONObject(position)?.optString(NinchatQuestionnaireConstants.value)
         }
     }
 
     @Deprecated("will be removed once converted to kotlin data model")
     fun updateJson(jsonObject: JSONObject?) {
-        NinchatQuestionnaireItemSetter.setResult(jsonObject, this.value)
-        NinchatQuestionnaireItemSetter.setPosition(jsonObject, this.position)
-        NinchatQuestionnaireItemSetter.setError(jsonObject, this.hasError)
+        jsonObject?.putOpt(NinchatQuestionnaireConstants.result, this.value)
+        jsonObject?.putOpt(NinchatQuestionnaireConstants.position, this.position)
+        jsonObject?.putOpt(NinchatQuestionnaireConstants.hasError, this.hasError)
     }
 }

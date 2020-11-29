@@ -1,7 +1,7 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.model
 
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemSetter
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil.Companion.inputType
 import org.json.JSONObject
 
 data class NinchatInputFieldViewModel(
@@ -15,21 +15,21 @@ data class NinchatInputFieldViewModel(
         var hasFocus: Boolean = false,
 ) {
     fun parse(jsonObject: JSONObject?) {
-        this.label = NinchatQuestionnaireItemGetter.getLabel(jsonObject)
-        this.value = NinchatQuestionnaireItemGetter.getResultString(jsonObject)
-        this.hasError = NinchatQuestionnaireItemGetter.getError(jsonObject)
-        this.inputType = NinchatQuestionnaireItemGetter.getInputType(jsonObject)
-        this.pattern = NinchatQuestionnaireItemGetter.getPattern(jsonObject)
+        this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label)
+        this.value = jsonObject?.optString(NinchatQuestionnaireConstants.result)
+        this.hasError = jsonObject?.optBoolean(NinchatQuestionnaireConstants.hasError) ?: false
+        this.inputType = inputType(jsonObject)
+        this.pattern = jsonObject?.optString(NinchatQuestionnaireConstants.pattern)
     }
 
     fun update(jsonObject: JSONObject) {
-        this.hasError = NinchatQuestionnaireItemGetter.getError(jsonObject)
-        this.value = NinchatQuestionnaireItemGetter.getResultString(jsonObject)
+        this.hasError = jsonObject.optBoolean(NinchatQuestionnaireConstants.hasError)
+        this.value = jsonObject.optString(NinchatQuestionnaireConstants.result)
     }
 
     @Deprecated("will be removed once converted to kotlin data model")
     fun updateJson(jsonObject: JSONObject?) {
-        NinchatQuestionnaireItemSetter.setResult(jsonObject, this.value)
-        NinchatQuestionnaireItemSetter.setError(jsonObject, this.hasError)
+        jsonObject?.putOpt(NinchatQuestionnaireConstants.result, this.value)
+        jsonObject?.putOpt(NinchatQuestionnaireConstants.hasError, this.hasError)
     }
 }

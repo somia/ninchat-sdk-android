@@ -1,0 +1,103 @@
+package com.ninchat.sdk.ninchatquestionnaire.helper
+
+import android.text.InputType
+import org.json.JSONArray
+import org.json.JSONObject
+
+inline fun <reified T> fromJSONArray(questionnaireList: JSONArray?): ArrayList<Any> {
+    val klass = T::class
+    val retval = arrayListOf<Any>()
+    return questionnaireList?.let { currentList ->
+        for (i in 0 until currentList.length()) {
+            when (klass) {
+                Int::class -> {
+                    val currentElement = currentList.optJSONObject(i)
+                    retval.add(currentElement)
+                }
+                Boolean::class -> {
+                    val currentElement = currentList.optBoolean(i)
+                    retval.add(currentElement)
+                }
+                String::class -> {
+                    val currentElement = currentList.optString(i)
+                    retval.add(currentElement)
+                }
+                JSONObject::class -> {
+                    val currentElement = currentList.optJSONObject(i)
+                    retval.add(currentElement)
+                }
+                JSONArray::class -> {
+                    val currentElement = currentList.optJSONArray(i)
+                    retval.add(currentElement)
+                }
+                Double::class -> {
+                    val currentElement = currentList.optDouble(i)
+                    retval.add(currentElement)
+                }
+                Long::class -> {
+                    val currentElement = currentList.optLong(i)
+                    retval.add(currentElement)
+                }
+            }
+        }
+        retval
+    } ?: retval
+}
+
+fun toJSONArray(questionnaireList: List<Any>?): JSONArray {
+    val retval = JSONArray()
+    questionnaireList?.forEach {
+        retval.put(it)
+    }
+    return retval
+}
+
+
+class NinchatQuestionnaireJsonUtil {
+    companion object {
+        fun inputType(json: JSONObject?): Int {
+            return json?.optString(NinchatQuestionnaireConstants.inputMode)?.let {
+                when {
+                    it.contains("text") -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                    it.contains("tel") -> InputType.TYPE_CLASS_PHONE
+                    it.contains("email") -> InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS
+                    it.contains("numeric") -> InputType.TYPE_CLASS_NUMBER
+                    it.contains("decimal") -> InputType.TYPE_NUMBER_FLAG_DECIMAL
+                    it.contains("url") -> InputType.TYPE_TEXT_VARIATION_URI
+                    else -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                }
+            } ?: InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+        }
+
+        fun hasButton(json: JSONObject?, isBack: Boolean = false): Boolean {
+            val key = if (isBack) NinchatQuestionnaireConstants.back else NinchatQuestionnaireConstants.next
+            return json?.optString(key) !in listOf("false", "")
+        }
+
+        fun getButtonElement(json: JSONObject?, hideBack: Boolean): JSONObject {
+            val buttonMap = mapOf(
+                    NinchatQuestionnaireConstants.elements to NinchatQuestionnaireConstants.buttons,
+                    NinchatQuestionnaireConstants.fireEvent to true,
+                    NinchatQuestionnaireConstants.back to if (hideBack) false else hasButton(json = json?.optJSONObject(NinchatQuestionnaireConstants.buttons), isBack = true),
+                    NinchatQuestionnaireConstants.next to hasButton(json = json?.optJSONObject(NinchatQuestionnaireConstants.buttons), isBack = false),
+            )
+            return JSONObject(buttonMap)
+        }
+
+        fun getLogicByName(questionnaireList: JSONArray?, logicName: String): List<JSONObject> {
+            return fromJSONArray<JSONObject>(questionnaireList = questionnaireList)
+                    // is a logic element
+                    .filter { (it as JSONObject).has(NinchatQuestionnaireConstants.logic) }
+                    // if the name of the element start with given logic name or Logic-name prefix
+                    .filter {
+                        val currentElement = it as JSONObject
+                        val name = currentElement.optString(NinchatQuestionnaireConstants.name, "")
+                        name.startsWith(logicName) || name.startsWith("Logic-$logicName")
+                    }
+                    // convert it to json list
+                    .map {
+                        it as JSONObject
+                    }
+        }
+    }
+}
