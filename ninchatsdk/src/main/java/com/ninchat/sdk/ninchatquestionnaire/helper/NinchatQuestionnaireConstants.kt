@@ -29,5 +29,8 @@ class NinchatQuestionnaireConstants {
         const val redirects = "redirects"
         const val group = "group"
         const val telda = "~"
+        const val questionnaireType = "questionType"
+        const val preAudienceQuestionnaire = 1
+        const val postAudienceQuestionnaire = 2
     }
 }

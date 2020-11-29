@@ -8,7 +8,7 @@ import com.ninchat.sdk.events.OnCompleteQuestionnaire
 import com.ninchat.sdk.models.questionnaire.conversation.NinchatConversationQuestionnaire
 import com.ninchat.sdk.models.questionnaire.form.NinchatFormQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.model.NinchatQuestionnaireModel
-import com.ninchat.sdk.ninchatquestionnaire.view.NinchatQuestionnaireActivity
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode

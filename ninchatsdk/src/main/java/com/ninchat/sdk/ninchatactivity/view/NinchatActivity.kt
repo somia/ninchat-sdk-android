@@ -7,7 +7,6 @@ import android.view.View
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
-import com.ninchat.sdk.ninchatquestionnaire.view.NinchatQuestionnaireActivity
 import com.ninchat.sdk.ninchatactivity.model.NinchatActivityModel
 import com.ninchat.sdk.ninchatactivity.presenter.INinchatActivityPresenter
 import com.ninchat.sdk.ninchatactivity.presenter.NinchatActivityPresenter
