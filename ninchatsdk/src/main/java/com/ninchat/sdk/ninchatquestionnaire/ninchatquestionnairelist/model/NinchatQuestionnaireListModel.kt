@@ -1,5 +1,6 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model
 
+import android.util.Log
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNormalizer
@@ -16,6 +17,7 @@ data class NinchatQuestionnaireListModel(
         else
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPostAudienceQuestionnaire()
         questionnaireList = NinchatQuestionnaireNormalizer.unifyQuestionnaireList(questionnaireArr = questionnaireArr)
+        Log.e(">>", questionnaireList.toString())
     }
 
     fun update() {

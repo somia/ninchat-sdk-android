@@ -46,7 +46,7 @@ class NinchatQuestionnaireType {
                 val logic = currentElement.optJSONObject(NinchatQuestionnaireConstants.logic)
                 val buttons = currentElement.optJSONObject(NinchatQuestionnaireConstants.buttons)
                 val elementType = currentElement.optString(NinchatQuestionnaireConstants.type)
-                return redirects != null || logic != null || buttons != null || elementType == NinchatQuestionnaireConstants.group
+                redirects != null || logic != null || buttons != null || elementType == NinchatQuestionnaireConstants.group
             }.not()
         }
 

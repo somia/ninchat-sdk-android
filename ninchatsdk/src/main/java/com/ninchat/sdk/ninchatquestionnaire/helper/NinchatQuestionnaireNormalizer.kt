@@ -63,16 +63,16 @@ class NinchatQuestionnaireNormalizer {
         }
 
         internal fun updateActions(questionnaireList: List<JSONObject>): List<JSONObject> {
-            return questionnaireList.mapIndexedNotNull { index, currentElement ->
+            return questionnaireList.mapIndexed { index, currentElement ->
                 val elementList = currentElement.optJSONArray("elements")
                 if (NinchatQuestionnaireType.isLogic(currentElement) || elementList == null) {
-                    null
+                    currentElement
                 } else {
                     val hasBackButton = NinchatQuestionnaireType.isButton(json = currentElement, isBack = true)
                     val hasNextButton = NinchatQuestionnaireType.isButton(json = currentElement, isBack = false)
                     if (hasBackButton || hasNextButton) {
                         // next button always true hard coded
-                        val tempElement = NinchatQuestionnaireJsonUtil.getButtonElement(json = currentElement, hideBack = index == 0, forceNext = true)
+                        val tempElement = NinchatQuestionnaireJsonUtil.getButtonElement(json = currentElement, hideBack = index == 0)
                         elementList.put(tempElement)
                     } else {
                         // add event fire capability to last element if it is not an text, input, or
@@ -80,7 +80,7 @@ class NinchatQuestionnaireNormalizer {
                         if (NinchatQuestionnaireType.isText(tempElement) ||
                                 NinchatQuestionnaireType.isInput(tempElement) ||
                                 NinchatQuestionnaireType.isTextArea(tempElement)) {
-                            val tempBtnElement = NinchatQuestionnaireItemGetter.getButtonElement(true)
+                            val tempBtnElement = NinchatQuestionnaireJsonUtil.getButtonElement(json = currentElement, hideBack = index == 0)
                             elementList.put(tempBtnElement)
                         } else {
                             tempElement.putOpt("fireEvent", true)
@@ -92,9 +92,9 @@ class NinchatQuestionnaireNormalizer {
         }
 
         internal fun updateLikeRTElements(questionnaireList: List<JSONObject>): List<JSONObject> {
-            return questionnaireList.mapNotNull { currentElement ->
+            return questionnaireList.map { currentElement ->
                 val elementList = currentElement.optJSONArray("elements")
-                if (NinchatQuestionnaireType.isLogic(currentElement) || elementList == null) null
+                if (NinchatQuestionnaireType.isLogic(currentElement) || elementList == null) currentElement
                 else {
                     fromJSONArray<JSONObject>(elementList).forEach {
                         val likeRTElement = it as JSONObject
@@ -133,14 +133,10 @@ class NinchatQuestionnaireNormalizer {
                             redirectList
                         }
                     }.flatten()
-            return retval
-                    .plus(logicElement)
-                    .also {
-                        updateActions(questionnaireList = it)
-                    }
-                    .also {
-                        updateLikeRTElements(questionnaireList = it)
-                    }
+
+            return retval.plus(logicElement)
+                    .also { updateActions(it) }
+                    .also { updateLikeRTElements(it) }
         }
     }
 }

@@ -72,12 +72,15 @@ class NinchatQuestionnaireJsonUtil {
         }
 
 
-        fun getButtonElement(json: JSONObject?, hideBack: Boolean, forceNext: Boolean = false): JSONObject {
+        fun getButtonElement(json: JSONObject?, hideBack: Boolean): JSONObject {
+            val hasBackButton = if (hideBack) false else NinchatQuestionnaireType.isButton(json = json?.optJSONObject(NinchatQuestionnaireConstants.buttons), isBack = true)
+            val hasNextButton = NinchatQuestionnaireType.isButton(json = json?.optJSONObject(NinchatQuestionnaireConstants.buttons), isBack = false)
+
             val buttonMap = mapOf(
                     NinchatQuestionnaireConstants.elements to NinchatQuestionnaireConstants.buttons,
                     NinchatQuestionnaireConstants.fireEvent to true,
-                    NinchatQuestionnaireConstants.back to if (hideBack) false else NinchatQuestionnaireType.isButton(json = json?.optJSONObject(NinchatQuestionnaireConstants.buttons), isBack = true),
-                    NinchatQuestionnaireConstants.next to if (forceNext) true else NinchatQuestionnaireType.isButton(json = json?.optJSONObject(NinchatQuestionnaireConstants.buttons), isBack = false),
+                    NinchatQuestionnaireConstants.back to if(hasBackButton) json?.optJSONObject(NinchatQuestionnaireConstants.buttons)?.optString("back") else false,
+                    NinchatQuestionnaireConstants.next to if(hasNextButton) json?.optJSONObject(NinchatQuestionnaireConstants.buttons)?.optString("next") else true,
             )
             return JSONObject(buttonMap)
         }
@@ -102,7 +105,7 @@ class NinchatQuestionnaireJsonUtil {
                     .filter {
                         val currentElement = it as JSONObject
                         val name = currentElement.optString(NinchatQuestionnaireConstants.name, "")
-                        name.startsWith(logicName) || name.startsWith("Logic-$logicName")
+                        name.startsWith(logicName) || name.startsWith("logic$logicName") || name.startsWith("Logic-$logicName")
                     }
                     // convert it to json list
                     .map {
