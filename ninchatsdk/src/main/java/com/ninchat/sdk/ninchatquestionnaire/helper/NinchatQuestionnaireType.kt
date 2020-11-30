@@ -7,7 +7,7 @@ class NinchatQuestionnaireType {
     companion object {
         fun isText(jsonObject: JSONObject): Boolean =
                 "text" == jsonObject.optString("element")
-        
+
         fun isInput(jsonObject: JSONObject): Boolean =
                 "input" == jsonObject.optString("element")
 
@@ -22,7 +22,7 @@ class NinchatQuestionnaireType {
 
         fun isLikeRT(jsonObject: JSONObject): Boolean =
                 "likert" == jsonObject.optString("element")
-        
+
         fun isCheckBox(jsonObject: JSONObject): Boolean =
                 "checkbox" == jsonObject.optString("element")
 
@@ -33,6 +33,11 @@ class NinchatQuestionnaireType {
 
         fun isEoF(jsonObject: JSONObject): Boolean =
                 "eof" == jsonObject.optString("element")
+
+        fun isButton(json: JSONObject?, isBack: Boolean = false): Boolean {
+            val key = if (isBack) NinchatQuestionnaireConstants.back else NinchatQuestionnaireConstants.next
+            return json?.optString(key) !in listOf("false", "")
+        }
 
         fun isSimpleFormLikeQuestionnaire(questionnaires: JSONArray?): Boolean {
             return fromJSONArray<JSONObject>(questionnaireList = questionnaires).any {

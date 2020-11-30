@@ -1,10 +1,10 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model
 
 import android.content.Intent
-import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
 
 data class NinchatQuestionnaireModel(
-        var questionnaireType: Int = preAudienceQuestionnaire,
+        var questionnaireType: Int = NinchatQuestionnaireConstants.preAudienceQuestionnaire,
         var queueId: String? = null,
 ) {
 
@@ -21,7 +21,5 @@ data class NinchatQuestionnaireModel(
         const val OPEN_QUEUE = "openQueue"
         const val QUEUE_ID = "queueId"
         const val QUESTIONNAIRE_TYPE = "questionType"
-        const val preAudienceQuestionnaire = 1
-        const val postAudienceQuestionnaire = 2
     }
 }

@@ -1,7 +1,6 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView

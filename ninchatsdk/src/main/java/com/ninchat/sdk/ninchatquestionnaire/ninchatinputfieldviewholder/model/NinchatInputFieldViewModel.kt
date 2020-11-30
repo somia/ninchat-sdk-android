@@ -1,7 +1,7 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.model
 
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
-import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil.Companion.inputType
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
 import org.json.JSONObject
 
 data class NinchatInputFieldViewModel(
@@ -18,7 +18,7 @@ data class NinchatInputFieldViewModel(
         this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label)
         this.value = jsonObject?.optString(NinchatQuestionnaireConstants.result)
         this.hasError = jsonObject?.optBoolean(NinchatQuestionnaireConstants.hasError) ?: false
-        this.inputType = inputType(jsonObject)
+        this.inputType = NinchatQuestionnaireJsonUtil.getInputType(jsonObject)
         this.pattern = jsonObject?.optString(NinchatQuestionnaireConstants.pattern)
     }
 

@@ -54,8 +54,10 @@ fun toJSONArray(questionnaireList: List<Any>?): JSONArray {
 
 
 class NinchatQuestionnaireJsonUtil {
+
     companion object {
-        fun inputType(json: JSONObject?): Int {
+
+        fun getInputType(json: JSONObject?): Int {
             return json?.optString(NinchatQuestionnaireConstants.inputMode)?.let {
                 when {
                     it.contains("text") -> InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
@@ -69,19 +71,27 @@ class NinchatQuestionnaireJsonUtil {
             } ?: InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
         }
 
-        fun hasButton(json: JSONObject?, isBack: Boolean = false): Boolean {
-            val key = if (isBack) NinchatQuestionnaireConstants.back else NinchatQuestionnaireConstants.next
-            return json?.optString(key) !in listOf("false", "")
-        }
 
-        fun getButtonElement(json: JSONObject?, hideBack: Boolean): JSONObject {
+        fun getButtonElement(json: JSONObject?, hideBack: Boolean, forceNext: Boolean = false): JSONObject {
             val buttonMap = mapOf(
                     NinchatQuestionnaireConstants.elements to NinchatQuestionnaireConstants.buttons,
                     NinchatQuestionnaireConstants.fireEvent to true,
-                    NinchatQuestionnaireConstants.back to if (hideBack) false else hasButton(json = json?.optJSONObject(NinchatQuestionnaireConstants.buttons), isBack = true),
-                    NinchatQuestionnaireConstants.next to hasButton(json = json?.optJSONObject(NinchatQuestionnaireConstants.buttons), isBack = false),
+                    NinchatQuestionnaireConstants.back to if (hideBack) false else NinchatQuestionnaireType.isButton(json = json?.optJSONObject(NinchatQuestionnaireConstants.buttons), isBack = true),
+                    NinchatQuestionnaireConstants.next to if (forceNext) true else NinchatQuestionnaireType.isButton(json = json?.optJSONObject(NinchatQuestionnaireConstants.buttons), isBack = false),
             )
             return JSONObject(buttonMap)
+        }
+
+
+        fun getLikeRTOptions(): JSONArray {
+            val optionList = """[
+                {"label":"Strongly disagree","value":"strongly_disagree"},
+                {"label":"Disagree","value":"disagree"},
+                {"label":"Neither agree nor disagree","value":"neither_agree_nor_disagree"},
+                {"label":"Agree","value":"agree"},
+                {"label":"Strongly agree","value":"strongly_agree"}
+            ]""".trimIndent()
+            return JSONArray(optionList)
         }
 
         fun getLogicByName(questionnaireList: JSONArray?, logicName: String): List<JSONObject> {
