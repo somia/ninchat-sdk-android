@@ -17,7 +17,6 @@ data class NinchatQuestionnaireListModel(
         else
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPostAudienceQuestionnaire()
         questionnaireList = NinchatQuestionnaireNormalizer.unifyQuestionnaireList(questionnaireArr = questionnaireArr)
-        Log.e(">>", questionnaireList.toString())
     }
 
     fun update() {
