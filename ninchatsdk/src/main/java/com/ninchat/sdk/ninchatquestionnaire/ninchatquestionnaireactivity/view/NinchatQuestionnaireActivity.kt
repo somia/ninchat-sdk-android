@@ -10,6 +10,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.present
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.NinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.NinchatQuestionnaireListAdapter
 import kotlinx.android.synthetic.main.activity_ninchat_questionnaire.*
+import org.json.JSONObject
 
 class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnairePresenter {
     private val presenter = NinchatQuestionnairePresenter(viewCallback = this)
@@ -35,10 +36,10 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
         finish()
     }
 
-    override fun renderQuestionnaireList(questionnaireType: Int) {
+    override fun renderQuestionnaireList(questionnaireList: List<JSONObject>) {
         val mRecyclerView = questionnaire_form_rview as RecyclerView
         mRecyclerView.layoutManager = LinearLayoutManager(this)
-        mRecyclerView.adapter = NinchatQuestionnaireListAdapter(questionnaireType = questionnaireType)
+        mRecyclerView.adapter = NinchatQuestionnaireListAdapter(questionnaireList = questionnaireList)
     }
 
 }

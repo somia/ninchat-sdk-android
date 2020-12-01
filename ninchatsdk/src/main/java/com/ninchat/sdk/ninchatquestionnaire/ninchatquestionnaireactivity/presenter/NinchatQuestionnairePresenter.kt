@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity
+import org.json.JSONObject
 
 class NinchatQuestionnairePresenter(
         val viewCallback: INinchatQuestionnairePresenter,
@@ -12,7 +13,7 @@ class NinchatQuestionnairePresenter(
 
     fun renderCurrentView(intent: Intent?) {
         model.update(intent)
-        viewCallback.renderQuestionnaireList(model.questionnaireType)
+        viewCallback.renderQuestionnaireList(model.questionnaireList)
     }
 
     companion object {
@@ -27,5 +28,5 @@ class NinchatQuestionnairePresenter(
 }
 
 interface INinchatQuestionnairePresenter {
-    fun renderQuestionnaireList(questionnaireType: Int)
+    fun renderQuestionnaireList(questionnaireList: List<JSONObject>)
 }

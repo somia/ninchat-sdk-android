@@ -1,14 +1,36 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter
 
+import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model.NinchatQuestionnaireListModel
-import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONObject
 
-class NinchatQuestionnaireListPresenter(questionnaireType: Int) {
-    val model = NinchatQuestionnaireListModel(questionnaireType = questionnaireType).apply {
+class NinchatQuestionnaireListPresenter(
+        questionnaireList: List<JSONObject>,
+        val viewCallback: INinchatQuestionnaireListPresenter,
+) {
+    init {
+        EventBus.getDefault().register(this)
+    }
+
+    val model = NinchatQuestionnaireListModel(questionnaireList = questionnaireList).apply {
         parse()
     }
 
-    fun get(at: Int): JSONObject = model.questionnaireList.getOrNull(at) ?: JSONObject()
-    fun size() = model.questionnaireList.size
+    fun get(at: Int): JSONObject = model.answerList.getOrNull(at) ?: JSONObject()
+    fun size() = model.answerList.size
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    @JvmName("onNextQuestionnaire")
+    fun onNextQuestionnaire(onNextQuestionnaire: OnNextQuestionnaire) {
+        val positionStart = size()
+        val itemCount = model.loadNext()
+        viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+    }
+}
+
+interface INinchatQuestionnaireListPresenter {
+    fun onAddItem(positionStart: Int, itemCount: Int)
 }

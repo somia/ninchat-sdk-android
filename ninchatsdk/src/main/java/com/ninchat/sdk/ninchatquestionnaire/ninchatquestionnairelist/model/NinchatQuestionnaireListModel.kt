@@ -1,25 +1,31 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model
 
 import android.util.Log
-import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
-import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNormalizer
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNavigator
+import com.ninchat.sdk.ninchatquestionnaire.helper.fromJSONArray
 import org.json.JSONObject
 
 data class NinchatQuestionnaireListModel(
-        val questionnaireType: Int,
         var questionnaireList: List<JSONObject> = listOf(),
+        var answerList: List<JSONObject> = listOf(),
+        var currentIndex: Int = 0,
 ) {
-
     fun parse() {
-        val questionnaireArr = if (questionnaireType == NinchatQuestionnaireConstants.preAudienceQuestionnaire)
-            NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPreAudienceQuestionnaire()
-        else
-            NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPostAudienceQuestionnaire()
-        questionnaireList = NinchatQuestionnaireNormalizer.unifyQuestionnaireList(questionnaireArr = questionnaireArr)
+        nextElement(index = currentIndex)
     }
 
-    fun update() {
-
+    fun loadNext(): Int {
+        currentIndex += 1
+        return nextElement(index = currentIndex)
     }
+
+    internal fun nextElement(index: Int = currentIndex): Int {
+        val nextElement = NinchatQuestionnaireNavigator.getNextElement(questionnaireList = questionnaireList, index = index)
+                ?: return 0
+
+        val nextElementList = fromJSONArray<JSONObject>(nextElement.optJSONArray("elements"))
+        answerList = answerList.plus(nextElementList).map { it as JSONObject }
+        return nextElementList.size
+    }
+
 }

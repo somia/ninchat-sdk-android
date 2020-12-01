@@ -4,7 +4,7 @@ import android.text.InputType
 import org.json.JSONArray
 import org.json.JSONObject
 
-inline fun <reified T> fromJSONArray(questionnaireList: JSONArray?): ArrayList<Any> {
+inline fun <reified T> fromJSONArray(questionnaireList: JSONArray?): List<Any> {
     val klass = T::class
     val retval = arrayListOf<Any>()
     return questionnaireList?.let { currentList ->
@@ -77,7 +77,7 @@ class NinchatQuestionnaireJsonUtil {
             val hasNextButton = NinchatQuestionnaireType.isButton(json = json?.optJSONObject(NinchatQuestionnaireConstants.buttons), isBack = false)
 
             val buttonMap = mapOf(
-                    NinchatQuestionnaireConstants.elements to NinchatQuestionnaireConstants.buttons,
+                    NinchatQuestionnaireConstants.element to NinchatQuestionnaireConstants.buttons,
                     NinchatQuestionnaireConstants.fireEvent to true,
                     NinchatQuestionnaireConstants.back to if(hasBackButton) json?.optJSONObject(NinchatQuestionnaireConstants.buttons)?.optString("back") else false,
                     NinchatQuestionnaireConstants.next to if(hasNextButton) json?.optJSONObject(NinchatQuestionnaireConstants.buttons)?.optString("next") else true,

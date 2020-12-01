@@ -63,7 +63,8 @@ class NinchatQuestionnaireType {
                 NinchatQuestionnaireConstants.required == NinchatQuestionnaireConstants.elements
 
         fun isElement(element: JSONObject?): Boolean =
-                element?.optString(NinchatQuestionnaireConstants.type) in listOf("elements", "element")
+                element?.has("elements") == true || element?.has("element") == true
+
 
         fun isLogic(element: JSONObject): Boolean =
                 element.has(NinchatQuestionnaireConstants.logic)

@@ -27,12 +27,18 @@ class NinchatTextViewHolder(
     }
 
     override fun onUpdateConversationView(label: String?) {
-        itemView.text_view_content.text = Misc.toRichText(label, itemView.text_view_content)
+        val text = Misc.toRichText(label, itemView.text_view_content)
+        if (text.isNotBlank()) {
+            itemView.text_view_content.text = text
+        }
     }
 
     override fun onUpdateFormView(label: String?) {
+        val text = Misc.toRichText(label, itemView.text_view_content)
         val background = R.drawable.ninchat_chat_questionnaire_background
-        itemView.text_view_content.text = Misc.toRichText(label, itemView.text_view_content)
+        if (text.isNotBlank()) {
+            itemView.text_view_content.text = text
+        }
         itemView.background = ContextCompat.getDrawable(itemView.context, background)
     }
 }

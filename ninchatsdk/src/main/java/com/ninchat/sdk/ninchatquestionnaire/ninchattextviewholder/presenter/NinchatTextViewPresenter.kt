@@ -10,7 +10,7 @@ class NinchatTextViewPresenter(
         val iPresenter: INinchatTextViewPresenter,
 ) {
     private var model = NinchatTextViewModel(
-            isFormLikeQuestionnaire = isFormLikeQuestionnaire).apply{
+            isFormLikeQuestionnaire = isFormLikeQuestionnaire).apply {
         parse(jsonObject = jsonObject)
     }
 

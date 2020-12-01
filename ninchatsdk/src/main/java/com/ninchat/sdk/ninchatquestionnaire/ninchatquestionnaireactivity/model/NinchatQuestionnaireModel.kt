@@ -1,11 +1,15 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model
 
 import android.content.Intent
+import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNormalizer
+import org.json.JSONObject
 
 data class NinchatQuestionnaireModel(
         var questionnaireType: Int = NinchatQuestionnaireConstants.preAudienceQuestionnaire,
         var queueId: String? = null,
+        var questionnaireList: List<JSONObject> = listOf(),
 ) {
 
     fun update(intent: Intent?) {
@@ -15,6 +19,12 @@ data class NinchatQuestionnaireModel(
         intent?.getStringExtra(QUEUE_ID)?.let {
             queueId = it
         }
+        val questionnaireArr = if (questionnaireType == NinchatQuestionnaireConstants.preAudienceQuestionnaire)
+            NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPreAudienceQuestionnaire()
+        else
+            NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPostAudienceQuestionnaire()
+        questionnaireList = NinchatQuestionnaireNormalizer.unifyQuestionnaireList(questionnaireArr = questionnaireArr)
+
     }
 
     companion object {

@@ -36,19 +36,21 @@ class NinchatInputFieldViewHolder(
 
     private fun attachUserActionHandler() {
         val mEditText = if (presenter.isMultiline()) itemView.multiline_text_area else itemView.simple_text_field
-        mEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
+        mEditText?.let {
+            it.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                }
 
-            override fun afterTextChanged(text: Editable?) {
-                presenter.onTextChange(text?.toString())
+                override fun afterTextChanged(text: Editable?) {
+                    presenter.onTextChange(text?.toString())
+                }
+            })
+            it.onFocusChangeListener = OnFocusChangeListener { v: View?, hasFocus: Boolean ->
+                presenter.onFocusChange(hasFocus = hasFocus)
             }
-        })
-        mEditText.onFocusChangeListener = OnFocusChangeListener { v: View?, hasFocus: Boolean ->
-            presenter.onFocusChange(hasFocus = hasFocus)
         }
     }
 
@@ -79,8 +81,10 @@ class NinchatInputFieldViewHolder(
     private fun renderCommonView(isMultiline: Boolean, label: String) {
         // set label
         val mLabel = if (isMultiline) itemView.multiline_text_label else itemView.simple_text_label
-        mLabel.text = label
-
+        mLabel?.let {
+            if (label.isNotBlank())
+                mLabel.text = label
+        }
         // set input type if it is a simple view
         if (!isMultiline) {
             setInputType()
