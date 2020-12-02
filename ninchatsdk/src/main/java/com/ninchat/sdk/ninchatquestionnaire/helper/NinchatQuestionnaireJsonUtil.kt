@@ -57,10 +57,8 @@ class NinchatQuestionnaireJsonUtil {
 
     companion object {
 
-        fun getThankYouElement(thankYouString: String): JSONArray {
-            return JSONArray("""
-                [
-                  {
+        fun getThankYouElement(thankYouString: String): JSONObject {
+            return JSONObject("""{
                     "name": "ThankYouForm",
                     "type": "group",
                     "buttons": {
@@ -84,15 +82,7 @@ class NinchatQuestionnaireJsonUtil {
                         "type": "thankYouText"
                       }
                     ]
-                  },
-                  {
-                    "name": "ThankYouForm-Logic1",
-                    "logic": {
-                      "target": "_register"
-                    }
-                  }
-                ]
-            """.trimIndent())
+            }""".trimIndent())
         }
 
         fun getInputType(json: JSONObject?): Int {

@@ -25,10 +25,16 @@ class NinchatQuestionnaireListPresenter(
     fun get(at: Int): JSONObject = model.answerList.getOrNull(at) ?: JSONObject()
     fun size() = model.answerList.size
 
-    fun loadNext(elementName: String?): Int {
+    private fun loadNext(elementName: String?): Int {
         if (!model.hasMatch(elementName = elementName)) return 0
         val index = model.getIndex(elementName = elementName)
         val nextElement = model.nextElement(index = index + 1)
+        val itemCount = model.addElement(jsonObject = nextElement)
+        return itemCount
+    }
+
+    private fun loadThankYou(text: String): Int {
+        val nextElement = NinchatQuestionnaireJsonUtil.getThankYouElement(thankYouString = text)
         val itemCount = model.addElement(jsonObject = nextElement)
         return itemCount
     }
@@ -61,15 +67,28 @@ class NinchatQuestionnaireListPresenter(
             }
             matchedLogic?.optJSONObject("logic")?.optString("target") == "_complete" -> {
                 // reached to complete phase
+                // get audience register close text
+                model.audienceRegisterCloseText()?.let {
+                    val positionStart = size()
+                    val itemCount = loadThankYou(it)
+                    if (itemCount > 0)
+                        viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+                    return
+                }
                 return
             }
             matchedLogic?.optJSONObject("logic")?.optString("target") == "_register" -> {
                 // reached to complete phase
-                return
+                // get audience register test
+                model.audienceRegisterText()?.let {
+                    val positionStart = size()
+                    val itemCount = loadThankYou(it)
+                    if (itemCount > 0)
+                        viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+                    return
+                }
             }
         }
-        val test = NinchatQuestionnaireJsonUtil.getThankYouElement("xerxes")
-
         val positionStart = size()
         val itemCount = loadNext(elementName = matchedLogic?.optJSONObject("logic")?.optString("target"))
         // there are still some item available

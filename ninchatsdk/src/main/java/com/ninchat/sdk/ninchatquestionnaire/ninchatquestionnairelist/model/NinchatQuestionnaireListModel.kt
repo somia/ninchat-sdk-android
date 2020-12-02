@@ -1,5 +1,6 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model
 
+import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNavigator
 import com.ninchat.sdk.ninchatquestionnaire.helper.fromJSONArray
@@ -71,5 +72,11 @@ data class NinchatQuestionnaireListModel(
 
     fun nextElement(index: Int = 0): JSONObject? =
             NinchatQuestionnaireNavigator.getNextElement(questionnaireList = questionnaireList, index = index)
+
+    fun audienceRegisterText(): String? =
+            NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getAudienceRegisteredText()
+
+    fun audienceRegisterCloseText(): String? =
+            NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getAudienceRegisteredClosedText()
 
 }
