@@ -1,5 +1,6 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model
 
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNavigator
 import com.ninchat.sdk.ninchatquestionnaire.helper.fromJSONArray
 import org.json.JSONObject
@@ -19,7 +20,7 @@ data class NinchatQuestionnaireListModel(
     fun addElement(jsonObject: JSONObject?): Int {
         return jsonObject?.let { currentElement ->
             val nextElementList = fromJSONArray<JSONObject>(currentElement.optJSONArray("elements"))
-            answerList = answerList.plus(nextElementList).map { it as JSONObject }
+            answerList = answerList.plus(nextElementList).map { NinchatQuestionnaireJsonUtil.slowCopy(it as JSONObject) }
             // add it in the selected element
             selectedElement.add(Pair(currentElement.optString("name"), nextElementList.size))
             return nextElementList.size
@@ -31,6 +32,11 @@ data class NinchatQuestionnaireListModel(
             answerList = answerList.dropLast(n = it.second)
             it.second
         } ?: 0
+    }
+
+    fun updateError() {
+        answerList = NinchatQuestionnaireJsonUtil.updateError(answerList = answerList,
+                selectedElement = selectedElement.lastOrNull() ?: Pair("", 0))
     }
 
     fun getIndex(elementName: String?): Int {
@@ -47,11 +53,10 @@ data class NinchatQuestionnaireListModel(
     }
 
     fun hasError(): Boolean {
-        return selectedElement.lastOrNull()?.let {
-            // check if pattern matched
-            // check if it was required but field is missing
-            true
-        } ?: false
+        return answerList.takeLast(selectedElement.lastOrNull()?.second ?: 0).any {
+            // is required but there is no result
+            !NinchatQuestionnaireJsonUtil.requiredOk(json = it) || !NinchatQuestionnaireJsonUtil.matchPattern(json = it)
+        }
     }
 
     fun hasMatch(elementName: String?): Boolean {

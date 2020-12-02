@@ -36,6 +36,11 @@ class NinchatQuestionnaireListPresenter(
     @Subscribe(threadMode = ThreadMode.MAIN)
     @JvmName("onNextQuestionnaire")
     fun onNextQuestionnaire(onNextQuestionnaire: OnNextQuestionnaire) {
+        val matchedLogic = NinchatQuestionnaireJsonUtil.getMatchingLogic(
+                questionnaireList = model.questionnaireList,
+                elementName = model.selectedElement.lastOrNull()?.first ?: "~",
+                answerList = model.answerList)
+
         when {
             onNextQuestionnaire.moveType == OnNextQuestionnaire.back -> {
                 val positionStart = size()
@@ -45,18 +50,27 @@ class NinchatQuestionnaireListPresenter(
             }
             onNextQuestionnaire.moveType == OnNextQuestionnaire.thankYou -> {
                 // close questionnaire
+                return
             }
             model.hasError() -> {
                 val positionStart = size()
-
+                val itemCount = model.selectedElement.lastOrNull()?.second ?: 0
+                model.updateError()
+                viewCallback.onItemUpdate(positionStart = positionStart - itemCount, itemCount = itemCount)
+                return
+            }
+            matchedLogic?.optJSONObject("logic")?.optString("target") == "_complete" -> {
+                // reached to complete phase
+                return
+            }
+            matchedLogic?.optJSONObject("logic")?.optString("target") == "_register" -> {
+                // reached to complete phase
+                return
             }
         }
         val positionStart = size()
-        val matchedLogic = NinchatQuestionnaireJsonUtil.getMatchingLogic(
-                questionnaireList = model.questionnaireList,
-                elementName = model.selectedElement.lastOrNull()?.first ?: "~",
-                answerList = model.answerList)
         val itemCount = loadNext(elementName = matchedLogic?.optJSONObject("logic")?.optString("target"))
+        // there are still some item available
         if (itemCount > 0)
             viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
     }

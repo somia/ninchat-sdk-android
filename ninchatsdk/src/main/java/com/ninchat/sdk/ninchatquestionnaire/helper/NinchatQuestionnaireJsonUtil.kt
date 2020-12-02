@@ -1,6 +1,9 @@
 package com.ninchat.sdk.ninchatquestionnaire.helper
 
 import android.text.InputType
+import android.text.TextUtils
+import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter
+import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -187,5 +190,63 @@ class NinchatQuestionnaireJsonUtil {
                 }
             }
         }
+
+        fun requiredOk(json: JSONObject): Boolean {
+            val isRequired = json.optBoolean("required", false)
+            if (!isRequired) return true
+            return when {
+                NinchatQuestionnaireType.isInput(json) ||
+                        NinchatQuestionnaireType.isTextArea(json) ||
+                        NinchatQuestionnaireType.isSelect(json) ||
+                        NinchatQuestionnaireType.isLikeRT(json) ||
+                        NinchatQuestionnaireType.isRadio(json) -> {
+                    !json.optString("result").isNullOrBlank()
+                }
+                NinchatQuestionnaireType.isCheckBox(json) -> {
+                    json.optBoolean("result", false)
+                }
+                else -> {
+                    true
+                }
+            }
+        }
+
+        fun matchPattern(json: JSONObject): Boolean {
+            val hasPattern = json.has("pattern")
+            if (!hasPattern) return true
+            return when {
+                NinchatQuestionnaireType.isInput(json) ||
+                        NinchatQuestionnaireType.isTextArea(json) ||
+                        NinchatQuestionnaireType.isSelect(json) ||
+                        NinchatQuestionnaireType.isLikeRT(json) ||
+                        NinchatQuestionnaireType.isRadio(json) -> {
+                    matchPattern(currentInput = json.optString("result"),
+                            pattern = json.optString("pattern"))
+                }
+                else -> {
+                    true
+                }
+            }
+        }
+
+        fun hasError(answerList: List<JSONObject>, selectedElement: Pair<String, Int>): Boolean {
+            return answerList.takeLast(selectedElement.second).any {
+                // is required but there is no result
+                !requiredOk(json = it) || !matchPattern(json = it)
+            }
+        }
+
+        fun updateError(answerList: List<JSONObject>, selectedElement: Pair<String, Int>): List<JSONObject> {
+            answerList.takeLast(selectedElement.second).forEach {
+                // is required but there is no result
+                if (!requiredOk(json = it) || !matchPattern(json = it)) {
+                    it.putOpt("hasError", true)
+                }
+            }
+            return answerList
+        }
+
+        fun slowCopy(json: JSONObject): JSONObject =
+                JSONObject(json.toString(2))
     }
 }
