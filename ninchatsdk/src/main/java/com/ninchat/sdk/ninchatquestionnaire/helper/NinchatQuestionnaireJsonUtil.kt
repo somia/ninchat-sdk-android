@@ -1,9 +1,6 @@
 package com.ninchat.sdk.ninchatquestionnaire.helper
 
 import android.text.InputType
-import android.text.TextUtils
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -59,6 +56,44 @@ fun toJSONArray(questionnaireList: List<Any>?): JSONArray {
 class NinchatQuestionnaireJsonUtil {
 
     companion object {
+
+        fun getThankYouElement(thankYouString: String): JSONArray {
+            return JSONArray("""
+                [
+                  {
+                    "name": "ThankYouForm",
+                    "type": "group",
+                    "buttons": {
+                      "element": "buttons",
+                      "fireEvent": true,
+                      "back": false,
+                      "next": "Close chat",
+                      "type": "thankYouText"
+                    },
+                    "elements": [
+                      {
+                        "element": "text",
+                        "name": "ThankYouText",
+                        "label": "$thankYouString"
+                      },
+                      {
+                        "element": "buttons",
+                        "fireEvent": true,
+                        "back": false,
+                        "next": "Close chat",
+                        "type": "thankYouText"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "ThankYouForm-Logic1",
+                    "logic": {
+                      "target": "_register"
+                    }
+                  }
+                ]
+            """.trimIndent())
+        }
 
         fun getInputType(json: JSONObject?): Int {
             return json?.optString(NinchatQuestionnaireConstants.inputMode)?.let {

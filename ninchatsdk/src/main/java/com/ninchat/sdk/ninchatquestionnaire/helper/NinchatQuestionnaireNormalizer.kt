@@ -1,58 +1,56 @@
 package com.ninchat.sdk.ninchatquestionnaire.helper
 
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter
 import org.json.JSONArray
 import org.json.JSONObject
 
 class NinchatQuestionnaireNormalizer {
     companion object {
         internal fun simpleFormToGroupQuestionnaire(questionnaireArr: JSONArray?): JSONArray {
-            val retval = JSONArray()
-            val simpleForm = JSONObject()
-            simpleForm.putOpt("name", "SimpleForm")
-            simpleForm.putOpt("type", "group")
-            simpleForm.putOpt("buttons", JSONObject("""{
-                "back": false,
-                "next": true
-            }""".trimIndent()))
-            simpleForm.putOpt("elements", questionnaireArr)
-            retval.put(simpleForm)
-            retval.put(JSONObject("""{
-                "name": "SimpleForm-Logic1",
-                "logic": {
-                    "target": "_complete"
+            return JSONArray("""[
+                {
+                    "name": "SimpleForm",
+                    "type": "group",
+                    "buttons": {
+                        "back": false,
+                        "next": true
+                    },
+                    "elements": ${questionnaireArr?.toString(2)}
+                },
+                {
+                    "name": "SimpleForm-Logic1",
+                    "logic": {
+                        "target": "_complete"
+                    }
                 }
-            }""".trimIndent()))
-            return retval
+            ]""".trimIndent())
         }
 
         internal fun makeGroupElement(nonGroupElement: JSONObject): JSONObject {
-            val elements = JSONArray()
-            elements.put(JSONObject(nonGroupElement.toString()))
-
-            val retval = JSONObject(nonGroupElement.toString())
-            retval.putOpt("elements", elements)
-            retval.putOpt("type", "group")
-            return retval
+            return JSONObject(nonGroupElement.toString())
+                    .apply {
+                        putOpt("elements", JSONArray("""[
+                            ${nonGroupElement.toString(2)}
+                        ]""".trimIndent()))
+                        putOpt("type", "group")
+                    }
         }
 
         internal fun makeLogicElement(redirectElement: JSONObject, elementName: String, logicIndex: Int): JSONObject {
-            val andLogic = JSONObject()
-            andLogic.put(elementName, redirectElement.optString("pattern"))
-
-            val andLogicList = JSONArray()
-            andLogicList.put(andLogic)
-            val logic = JSONObject()
-            logic.putOpt("target", redirectElement.optString("target"))
-
-            // only add logic if it has pattern
-            if (redirectElement.has("pattern")) {
-                logic.putOpt("and", andLogicList)
-            }
-            val retval = JSONObject()
-            retval.putOpt("name", "$elementName-Logic$logicIndex")
-            retval.putOpt("logic", logic)
-            return retval
+            val logic = JSONObject("""{
+                        "target": ${redirectElement.optString("target")}   
+                    }""".trimIndent())
+                    .apply {
+                        // only add logic if it has pattern
+                        if (redirectElement.has("pattern")) {
+                            putOpt("and", """[{
+                                "$elementName": ${redirectElement.optString("pattern")}
+                            }]""".trimMargin())
+                        }
+                    }
+            return JSONObject("""{
+                "name": "${elementName}-logic:${logicIndex}",
+                "logic": ${logic.toString(2)}
+            }""".trimIndent())
         }
 
         internal fun redirectToLogicElement(elements: JSONObject, logicIndex: Int): List<JSONObject> {

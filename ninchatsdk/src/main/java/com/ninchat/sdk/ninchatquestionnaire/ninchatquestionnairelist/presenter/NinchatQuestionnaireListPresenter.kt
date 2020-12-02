@@ -68,6 +68,8 @@ class NinchatQuestionnaireListPresenter(
                 return
             }
         }
+        val test = NinchatQuestionnaireJsonUtil.getThankYouElement("xerxes")
+
         val positionStart = size()
         val itemCount = loadNext(elementName = matchedLogic?.optJSONObject("logic")?.optString("target"))
         // there are still some item available
