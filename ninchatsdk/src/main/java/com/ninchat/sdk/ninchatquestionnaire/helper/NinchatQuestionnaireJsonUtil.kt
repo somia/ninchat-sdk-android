@@ -79,8 +79,8 @@ class NinchatQuestionnaireJsonUtil {
             val buttonMap = mapOf(
                     NinchatQuestionnaireConstants.element to NinchatQuestionnaireConstants.buttons,
                     NinchatQuestionnaireConstants.fireEvent to true,
-                    NinchatQuestionnaireConstants.back to if(hasBackButton) json?.optJSONObject(NinchatQuestionnaireConstants.buttons)?.optString("back") else false,
-                    NinchatQuestionnaireConstants.next to if(hasNextButton) json?.optJSONObject(NinchatQuestionnaireConstants.buttons)?.optString("next") else true,
+                    NinchatQuestionnaireConstants.back to if (hasBackButton) json?.optJSONObject(NinchatQuestionnaireConstants.buttons)?.optString("back") else false,
+                    NinchatQuestionnaireConstants.next to if (hasNextButton) json?.optJSONObject(NinchatQuestionnaireConstants.buttons)?.optString("next") else true,
             )
             return JSONObject(buttonMap)
         }
@@ -97,8 +97,62 @@ class NinchatQuestionnaireJsonUtil {
             return JSONArray(optionList)
         }
 
-        fun getLogicByName(questionnaireList: JSONArray?, logicName: String): List<JSONObject> {
-            return fromJSONArray<JSONObject>(questionnaireList = questionnaireList)
+        fun hasLogic(logicElement: JSONObject?, isAnd: Boolean): Boolean {
+            // get all and or or logic list
+            fromJSONArray<JSONObject>(logicElement?.optJSONArray(if (isAnd) "and" else "or")).forEach {
+                val currentLogic = it as JSONObject
+                // iterate throw the keys and see any key is no empty
+                currentLogic.keys().forEach { currentKey: String ->
+                    if (currentKey.isEmpty().not()) {
+                        return true
+                    }
+                }
+            }
+            return false
+        }
+
+        fun matchPattern(currentInput: String?, pattern: String?): Boolean {
+            return when {
+                pattern.isNullOrEmpty() -> true
+                currentInput ?: "" == pattern ?: "" -> true
+                (currentInput ?: "").matches((pattern ?: "").toRegex()) -> true
+                else ->
+                    false
+            }
+        }
+
+        fun matchedLogicAll(logicList: JSONArray?, answerList: List<JSONObject>): Boolean {
+            return fromJSONArray<JSONObject>(logicList).all {
+                val currentLogic = it as JSONObject
+                var found = false
+                currentLogic.keys().forEach { currentKey: String ->
+                    val pattern = currentLogic.optString(currentKey)
+                    found = found or answerList.any { currentAnswer: JSONObject ->
+                        val result = currentAnswer.optString("result")
+                        matchPattern(currentInput = result, pattern = pattern)
+                    }
+                }
+                found
+            }
+        }
+
+        fun matchedLogicAny(logicList: JSONArray?, answerList: List<JSONObject>): Boolean {
+            return fromJSONArray<JSONObject>(logicList).any {
+                val currentLogic = it as JSONObject
+                var found = false
+                currentLogic.keys().forEach { currentKey: String ->
+                    val pattern = currentLogic.optString(currentKey)
+                    found = found or answerList.any { currentAnswer: JSONObject ->
+                        val result = currentAnswer.optString("result")
+                        matchPattern(currentInput = result, pattern = pattern)
+                    }
+                }
+                found
+            }
+        }
+
+        fun getLogicByName(questionnaireList: List<JSONObject>, logicName: String): List<JSONObject> {
+            return questionnaireList
                     // is a logic element
                     .filter { (it as JSONObject).has(NinchatQuestionnaireConstants.logic) }
                     // if the name of the element start with given logic name or Logic-name prefix
@@ -111,6 +165,27 @@ class NinchatQuestionnaireJsonUtil {
                     .map {
                         it as JSONObject
                     }
+        }
+
+        fun getMatchingLogic(questionnaireList: List<JSONObject>, elementName: String, answerList: List<JSONObject>): JSONObject? {
+            val logicList = getLogicByName(questionnaireList = questionnaireList, logicName = elementName)
+            return logicList.firstOrNull {
+                val currentLogic = it.optJSONObject("logic")
+                val hasAndLogic = hasLogic(logicElement = currentLogic, isAnd = true)
+                val hasOrLogic = hasLogic(logicElement = currentLogic, isAnd = false)
+                when {
+                    // if does not have both and or or logic then it a direct match
+                    !hasAndLogic && !hasOrLogic -> {
+                        true
+                    }
+                    matchedLogicAll(logicList = currentLogic?.optJSONArray("and"), answerList = answerList) ->
+                        true
+                    matchedLogicAny(logicList = currentLogic?.optJSONArray("or"), answerList = answerList) ->
+                        true
+                    else ->
+                        false
+                }
+            }
         }
     }
 }
