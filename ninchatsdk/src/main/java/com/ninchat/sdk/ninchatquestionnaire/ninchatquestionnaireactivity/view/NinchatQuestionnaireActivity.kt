@@ -36,10 +36,13 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
         finish()
     }
 
-    override fun renderQuestionnaireList(questionnaireList: List<JSONObject>) {
+    override fun renderQuestionnaireList(questionnaireList: List<JSONObject>, isFormLike: Boolean) {
         val mRecyclerView = questionnaire_form_rview as RecyclerView
         mRecyclerView.layoutManager = LinearLayoutManager(this)
-        mRecyclerView.adapter = NinchatQuestionnaireListAdapter(questionnaireList = questionnaireList)
+        mRecyclerView.adapter = NinchatQuestionnaireListAdapter(questionnaireList = questionnaireList,
+                isFormLike = isFormLike,
+                recyclerView = mRecyclerView
+        )
     }
 
 }

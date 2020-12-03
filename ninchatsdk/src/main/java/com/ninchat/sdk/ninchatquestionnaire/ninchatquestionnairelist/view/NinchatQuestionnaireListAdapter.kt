@@ -20,9 +20,12 @@ import org.json.JSONObject
 
 class NinchatQuestionnaireListAdapter(
         questionnaireList: List<JSONObject>,
+        isFormLike: Boolean,
+        var recyclerView: RecyclerView
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), INinchatQuestionnaireListPresenter {
     val presenter = NinchatQuestionnaireListPresenter(
             questionnaireList = questionnaireList,
+            isFormLike = isFormLike,
             viewCallback = this
     )
 
@@ -117,5 +120,10 @@ class NinchatQuestionnaireListAdapter(
 
     override fun onItemUpdate(positionStart: Int, itemCount: Int) {
         notifyItemRangeChanged(positionStart, itemCount)
+    }
+
+    override fun onDataSetChange() {
+        recyclerView.adapter = null
+        recyclerView.adapter = this
     }
 }

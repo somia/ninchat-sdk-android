@@ -6,12 +6,13 @@ import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNavigator
 import com.ninchat.sdk.ninchatquestionnaire.helper.fromJSONArray
 import org.json.JSONObject
 
-data class NinchatQuestionnaireListModel(
+open class NinchatQuestionnaireListModel(
         var questionnaireList: List<JSONObject> = listOf(),
         var answerList: List<JSONObject> = listOf(),
         var selectedElement: ArrayList<Pair<String, Int>> = arrayListOf(),
+        var isFormLike: Boolean = true
 ) {
-    fun parse() {
+    open fun parse() {
         // get first element
         val element = nextElement(0)
         // add that element
@@ -79,4 +80,6 @@ data class NinchatQuestionnaireListModel(
     fun audienceRegisterCloseText(): String? =
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getAudienceRegisteredClosedText()
 
+    open fun size(): Int = 0
+    open fun get(at: Int): JSONObject = JSONObject()
 }

@@ -2,9 +2,8 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter
 
 import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
-import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNavigator
-import com.ninchat.sdk.ninchatquestionnaire.helper.fromJSONArray
-import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model.NinchatQuestionnaireListModel
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model.ConversationLikeModel
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model.FormLikeModel
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -12,18 +11,33 @@ import org.json.JSONObject
 
 class NinchatQuestionnaireListPresenter(
         questionnaireList: List<JSONObject>,
+        isFormLike: Boolean,
         val viewCallback: INinchatQuestionnaireListPresenter,
 ) {
     init {
         EventBus.getDefault().register(this)
     }
 
-    val model = NinchatQuestionnaireListModel(questionnaireList = questionnaireList).apply {
-        parse()
+    val model = if (isFormLike) {
+        FormLikeModel(
+                questionnaireList = questionnaireList,
+                answerList = listOf(),
+                selectedElement = arrayListOf(),
+                isFormLike = isFormLike
+        ).apply {
+            parse()
+        }
+    } else {
+        ConversationLikeModel(
+                questionnaireList = questionnaireList,
+                answerList = listOf(),
+                selectedElement = arrayListOf(),
+                isFormLike = isFormLike
+        ).apply { parse() }
     }
 
-    fun get(at: Int): JSONObject = model.answerList.getOrNull(at) ?: JSONObject()
-    fun size() = model.answerList.size
+    fun get(at: Int): JSONObject = model.get(at)
+    fun size() = model.size()
 
     private fun loadNext(elementName: String?): Int {
         if (!model.hasMatch(elementName = elementName)) return 0
@@ -51,7 +65,11 @@ class NinchatQuestionnaireListPresenter(
             onNextQuestionnaire.moveType == OnNextQuestionnaire.back -> {
                 val positionStart = size()
                 val itemCount = model.removeLast()
-                viewCallback.onItemRemoved(positionStart = positionStart, itemCount = itemCount)
+                if (model.isFormLike) {
+                    viewCallback.onDataSetChange()
+                } else {
+                    viewCallback.onItemRemoved(positionStart = positionStart, itemCount = itemCount)
+                }
                 return
             }
             onNextQuestionnaire.moveType == OnNextQuestionnaire.thankYou -> {
@@ -62,7 +80,11 @@ class NinchatQuestionnaireListPresenter(
                 val positionStart = size()
                 val itemCount = model.selectedElement.lastOrNull()?.second ?: 0
                 model.updateError()
-                viewCallback.onItemUpdate(positionStart = positionStart - itemCount, itemCount = itemCount)
+                if (model.isFormLike) {
+                    viewCallback.onDataSetChange()
+                } else {
+                    viewCallback.onItemUpdate(positionStart = positionStart - itemCount, itemCount = itemCount)
+                }
                 return
             }
             matchedLogic?.optJSONObject("logic")?.optString("target") == "_complete" -> {
@@ -71,8 +93,13 @@ class NinchatQuestionnaireListPresenter(
                 model.audienceRegisterCloseText()?.let {
                     val positionStart = size()
                     val itemCount = loadThankYou(it)
-                    if (itemCount > 0)
-                        viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+                    if (itemCount > 0) {
+                        if (model.isFormLike) {
+                            viewCallback.onDataSetChange()
+                        } else {
+                            viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+                        }
+                    }
                     return
                 }
                 return
@@ -83,8 +110,13 @@ class NinchatQuestionnaireListPresenter(
                 model.audienceRegisterText()?.let {
                     val positionStart = size()
                     val itemCount = loadThankYou(it)
-                    if (itemCount > 0)
-                        viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+                    if (itemCount > 0) {
+                        if (model.isFormLike) {
+                            viewCallback.onDataSetChange()
+                        } else {
+                            viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+                        }
+                    }
                     return
                 }
             }
@@ -92,8 +124,14 @@ class NinchatQuestionnaireListPresenter(
         val positionStart = size()
         val itemCount = loadNext(elementName = matchedLogic?.optJSONObject("logic")?.optString("target"))
         // there are still some item available
-        if (itemCount > 0)
-            viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+        if (itemCount > 0) {
+            if (model.isFormLike) {
+                viewCallback.onDataSetChange()
+            } else {
+                viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+            }
+        }
+
     }
 }
 
@@ -101,4 +139,5 @@ interface INinchatQuestionnaireListPresenter {
     fun onAddItem(positionStart: Int, itemCount: Int)
     fun onItemRemoved(positionStart: Int, itemCount: Int)
     fun onItemUpdate(positionStart: Int, itemCount: Int)
+    fun onDataSetChange()
 }

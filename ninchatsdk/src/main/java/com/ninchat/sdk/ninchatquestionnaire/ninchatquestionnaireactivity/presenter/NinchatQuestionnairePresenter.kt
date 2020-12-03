@@ -13,7 +13,7 @@ class NinchatQuestionnairePresenter(
 
     fun renderCurrentView(intent: Intent?) {
         model.update(intent)
-        viewCallback.renderQuestionnaireList(model.questionnaireList)
+        viewCallback.renderQuestionnaireList(model.questionnaireList, model.isFormLike)
     }
 
     companion object {
@@ -28,5 +28,5 @@ class NinchatQuestionnairePresenter(
 }
 
 interface INinchatQuestionnairePresenter {
-    fun renderQuestionnaireList(questionnaireList: List<JSONObject>)
+    fun renderQuestionnaireList(questionnaireList: List<JSONObject>, isFormLike: Boolean)
 }
