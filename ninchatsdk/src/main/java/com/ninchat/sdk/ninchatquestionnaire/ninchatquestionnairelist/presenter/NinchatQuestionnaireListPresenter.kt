@@ -45,14 +45,12 @@ class NinchatQuestionnaireListPresenter(
         if (!model.hasMatch(elementName = elementName)) return 0
         val index = model.getIndex(elementName = elementName)
         val nextElement = model.nextElement(index = index + 1)
-        val itemCount = model.addElement(jsonObject = nextElement)
-        return itemCount
+        return model.addElement(jsonObject = nextElement)
     }
 
     private fun loadThankYou(text: String): Int {
         val nextElement = NinchatQuestionnaireJsonUtil.getThankYouElement(thankYouString = text)
-        val itemCount = model.addElement(jsonObject = nextElement)
-        return itemCount
+        return model.addElement(jsonObject = nextElement)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -94,7 +92,7 @@ class NinchatQuestionnaireListPresenter(
                 return
             }
             matchedLogic?.optJSONObject("logic")?.optString("target") == "_register" -> {
-                rootActivityCallback.onComplete(answerList = model.answerList)
+                rootActivityCallback.onRegistered(answerList = model.answerList)
                 return
             }
         }
@@ -112,6 +110,8 @@ class NinchatQuestionnaireListPresenter(
 
     fun showThankYouText(isComplete: Boolean) {
         val thankYouText = if (isComplete) model.audienceRegisterCloseText() else model.audienceRegisterText()
+        // if has thank you text then show thank you text
+        // otherwise just call finish
         thankYouText?.let {
             val positionStart = size()
             val itemCount = loadThankYou(it)
@@ -123,7 +123,7 @@ class NinchatQuestionnaireListPresenter(
                 }
             }
             return
-        }
+        } ?: rootActivityCallback.onFinish()
     }
 }
 

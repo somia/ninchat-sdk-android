@@ -9,6 +9,7 @@ import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireAnswers
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 class NinchatQuestionnairePresenter(
@@ -63,6 +64,20 @@ class NinchatQuestionnairePresenter(
             answers.setStringArray("tags", tags)
         }
         return answers
+    }
+
+    fun mayBeRegisterAudience() {
+        val questionnaireAnswers = getAnswersAsProps()
+        val audienceMetadata = model.audienceMetadata().get()?: Props()
+        audienceMetadata.apply {
+            setObject("pre_answers", questionnaireAnswers)
+        }
+
+        // send audience metadata
+        NinchatSessionManager.getInstance()?.let {
+
+        }
+
     }
 
     companion object {

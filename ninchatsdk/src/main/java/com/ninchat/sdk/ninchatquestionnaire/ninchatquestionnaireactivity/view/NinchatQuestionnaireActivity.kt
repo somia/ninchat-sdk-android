@@ -48,6 +48,7 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
 
     override fun onRegistered(answerList: List<JSONObject>) {
         presenter.updateAnswers(answerList = answerList)
+        presenter.mayBeRegisterAudience()
     }
 
     override fun onComplete(answerList: List<JSONObject>) {
