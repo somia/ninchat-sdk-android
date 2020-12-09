@@ -12,7 +12,6 @@ import org.json.JSONObject
 open class NinchatQuestionnaireListModel(
         var questionnaireList: List<JSONObject> = listOf(),
         var answerList: List<JSONObject> = listOf(),
-        var queueId: String?,
         var selectedElement: ArrayList<Pair<String, Int>> = arrayListOf(),
         var isFormLike: Boolean = true,
 ) {
@@ -83,44 +82,6 @@ open class NinchatQuestionnaireListModel(
 
     fun audienceRegisterCloseText(): String? =
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getAudienceRegisteredClosedText()
-
-    fun getAnswers(): Triple<List<Pair<String, String>>, List<String>, String?> {
-        val qAnswers = NinchatQuestionnaireJsonUtil.getQuestionnaireAnswers(answerList = answerList)
-        val tags = NinchatQuestionnaireJsonUtil.getQuestionnaireTags(answerList = answerList)
-        val queue = NinchatQuestionnaireJsonUtil.getQuestionnaireQueue(answerList = answerList)
-        return Triple(qAnswers, tags, queue)
-    }
-
-    fun isQueueClosed(queue: String?): Boolean {
-        val isClosed = NinchatSessionManager.getInstance()?.ninchatState?.queues?.find { it.id == queue }?.isClosed
-        // if null -> queue closed
-        // if close -> queue closed
-        return isClosed ?: true
-    }
-
-    fun audienceMetadata(): NinchatAudienceMetadata {
-        return NinchatSessionManager.getInstance()?.ninchatState?.audienceMetadata
-                ?: NinchatAudienceMetadata()
-    }
-
-    fun hasAnswers(answerList: Triple<List<Pair<String, String>>, List<String>, String?>): Boolean {
-        return answerList.first.isNullOrEmpty().not() || answerList.second.isNullOrEmpty().not()
-    }
-
-    fun getAnswersAsProps(answerList: Triple<List<Pair<String, String>>, List<String>, String?>): Props {
-        val answers = Props()
-        if (answerList.first.isNullOrEmpty().not()) {
-            answerList.first.forEach {
-                answers.setString(it.first, it.second)
-            }
-        }
-        if (answerList.second.isNullOrEmpty().not()) {
-            val tags = Strings()
-            answerList.second.forEach { tags.append(it) }
-            answers.setStringArray("tags", tags)
-        }
-        return answers
-    }
 
     open fun size(): Int = 0
     open fun get(at: Int): JSONObject = JSONObject()

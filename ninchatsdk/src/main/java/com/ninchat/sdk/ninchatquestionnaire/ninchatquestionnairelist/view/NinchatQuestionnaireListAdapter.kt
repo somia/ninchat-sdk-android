@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
+import com.ninchat.sdk.events.OnAudienceRegistered
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireType
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.view.NinchatButtonViewHolder
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.view.NinchatCheckboxViewHolder
@@ -21,14 +22,12 @@ import org.json.JSONObject
 
 class NinchatQuestionnaireListAdapter(
         questionnaireList: List<JSONObject>,
-        queueId: String?,
         isFormLike: Boolean,
         rootActivityCallback: QuestionnaireActivityCallback
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), INinchatQuestionnaireListPresenter {
     val presenter = NinchatQuestionnaireListPresenter(
             questionnaireList = questionnaireList,
             isFormLike = isFormLike,
-            queueId = queueId,
             rootActivityCallback = rootActivityCallback,
             viewCallback = this
     )
@@ -126,7 +125,7 @@ class NinchatQuestionnaireListAdapter(
         notifyItemRangeChanged(positionStart, itemCount)
     }
 
-    fun showThankYou(){
-
+    fun showThankYou(isComplete: Boolean = false){
+        presenter.showThankYouText(isComplete)
     }
 }

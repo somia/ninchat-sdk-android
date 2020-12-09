@@ -42,17 +42,16 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
         mRecyclerView.adapter = NinchatQuestionnaireListAdapter(
                 questionnaireList = questionnaireList,
                 isFormLike = isFormLike,
-                queueId = queueId,
                 rootActivityCallback = this
         )
     }
 
     override fun onRegistered(answerList: List<JSONObject>) {
-        TODO("Not yet implemented")
+        presenter.updateAnswers(answerList = answerList)
     }
 
     override fun onComplete(answerList: List<JSONObject>) {
-        TODO("Not yet implemented")
+        presenter.updateAnswers(answerList = answerList)
     }
 
     override fun onDataSetChange() {

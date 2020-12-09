@@ -13,7 +13,6 @@ import org.json.JSONObject
 class NinchatQuestionnaireListPresenter(
         questionnaireList: List<JSONObject>,
         isFormLike: Boolean,
-        queueId: String?,
         var rootActivityCallback: QuestionnaireActivityCallback,
         val viewCallback: INinchatQuestionnaireListPresenter,
 ) {
@@ -25,7 +24,6 @@ class NinchatQuestionnaireListPresenter(
         FormLikeModel(
                 questionnaireList = questionnaireList,
                 answerList = listOf(),
-                queueId = queueId,
                 selectedElement = arrayListOf(),
                 isFormLike = isFormLike
         ).apply {
@@ -35,7 +33,6 @@ class NinchatQuestionnaireListPresenter(
         ConversationLikeModel(
                 questionnaireList = questionnaireList,
                 answerList = listOf(),
-                queueId = queueId,
                 selectedElement = arrayListOf(),
                 isFormLike = isFormLike
         ).apply { parse() }
@@ -93,11 +90,11 @@ class NinchatQuestionnaireListPresenter(
                 return
             }
             matchedLogic?.optJSONObject("logic")?.optString("target") == "_complete" -> {
-                handleComplete()
+                rootActivityCallback.onComplete(answerList = model.answerList)
                 return
             }
             matchedLogic?.optJSONObject("logic")?.optString("target") == "_register" -> {
-                handleRegister(fromComplete = false)
+                rootActivityCallback.onComplete(answerList = model.answerList)
                 return
             }
         }
@@ -113,36 +110,8 @@ class NinchatQuestionnaireListPresenter(
         }
     }
 
-    private fun handleRegister(fromComplete: Boolean) {
-        val questionnairesAnswers = model.getAnswers()
-        // update queue
-        questionnairesAnswers.third?.let {
-            model.queueId = it
-        }
-        val audienceMetadata = model.audienceMetadata()
-        val answerMetadata = model.getAnswersAsProps(questionnairesAnswers)
-        // reached to complete phase
-        // get audience register test
-        showThankYouText(fromComplete)
-    }
-
-    private fun handleComplete() {
-        // set audience register and goto queue
-        val questionnairesAnswers = model.getAnswers()
-        // update queue
-        questionnairesAnswers.third?.let {
-            model.queueId = it
-        }
-        if (model.isQueueClosed(queue = model.queueId)) {
-            handleRegister(fromComplete = true)
-            return
-        }
-
-    }
-
-    private fun showThankYouText(fromComplete: Boolean) {
-        val thankYouText = if (fromComplete) model.audienceRegisterCloseText() else model.audienceRegisterText()
-
+    fun showThankYouText(isComplete: Boolean) {
+        val thankYouText = if (isComplete) model.audienceRegisterCloseText() else model.audienceRegisterText()
         thankYouText?.let {
             val positionStart = size()
             val itemCount = loadThankYou(it)

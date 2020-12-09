@@ -3,9 +3,12 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presen
 import android.content.Context
 import android.content.Intent
 import androidx.recyclerview.widget.RecyclerView
+import com.ninchat.client.Props
+import com.ninchat.client.Strings
+import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireAnswers
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity
-import kotlinx.android.synthetic.main.activity_ninchat_questionnaire.*
 import org.json.JSONObject
 
 class NinchatQuestionnairePresenter(
@@ -24,6 +27,42 @@ class NinchatQuestionnairePresenter(
             it.adapter = null
             it.adapter = previousAdapter
         }
+    }
+
+    fun updateAnswers(answerList: List<JSONObject>) {
+        model.answers = NinchatQuestionnaireAnswers().apply {
+            parse(questionnaireList = answerList)
+        }
+        // update queue from answers
+        model.answers?.queueId?.let {
+            model.queueId = it
+        }
+    }
+
+    fun isQueueClosed(): Boolean {
+        val isClosed = NinchatSessionManager.getInstance()?.ninchatState?.queues?.find { it.id == model.queueId }?.isClosed
+        // if null -> queue closed
+        // if close -> queue closed
+        return isClosed ?: true
+    }
+
+    fun hasAnswers(): Boolean {
+        return model.answers?.answerList.isNullOrEmpty().not() || model.answers?.tagList.isNullOrEmpty().not()
+    }
+
+    fun getAnswersAsProps(): Props {
+        val answers = Props()
+        if (model.answers?.answerList.isNullOrEmpty().not()) {
+            model.answers?.answerList?.forEach {
+                answers.setString(it.first, it.second)
+            }
+        }
+        if (model.answers?.tagList.isNullOrEmpty().not()) {
+            val tags = Strings()
+            model.answers?.tagList?.forEach { tags.append(it) }
+            answers.setStringArray("tags", tags)
+        }
+        return answers
     }
 
     companion object {
