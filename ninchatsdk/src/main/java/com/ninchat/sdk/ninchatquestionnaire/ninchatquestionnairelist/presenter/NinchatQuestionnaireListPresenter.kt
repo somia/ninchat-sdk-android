@@ -131,8 +131,8 @@ class NinchatQuestionnaireListPresenter(
                 viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
             }
         }
-
     }
+
 }
 
 interface INinchatQuestionnaireListPresenter {

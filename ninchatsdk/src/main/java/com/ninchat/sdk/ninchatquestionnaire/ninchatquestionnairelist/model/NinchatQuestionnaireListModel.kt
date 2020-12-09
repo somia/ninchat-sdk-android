@@ -80,6 +80,10 @@ open class NinchatQuestionnaireListModel(
     fun audienceRegisterCloseText(): String? =
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getAudienceRegisteredClosedText()
 
+    fun getQuestionnaireAnswersList() {
+
+    }
+
     open fun size(): Int = 0
     open fun get(at: Int): JSONObject = JSONObject()
 }

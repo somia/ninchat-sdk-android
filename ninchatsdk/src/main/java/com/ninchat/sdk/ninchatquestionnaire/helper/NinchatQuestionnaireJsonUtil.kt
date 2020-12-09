@@ -273,5 +273,44 @@ class NinchatQuestionnaireJsonUtil {
 
         fun slowCopy(json: JSONObject): JSONObject =
                 JSONObject(json.toString(2))
+
+        fun getQuestionnaireAnswers(answerList: List<JSONObject>): List<Pair<String, String>> {
+            return answerList.asReversed()
+                    .distinctBy {
+                        it.optString("name")
+                    }
+                    .mapNotNull {
+                        when {
+                            NinchatQuestionnaireType.isLogic(it) || NinchatQuestionnaireType.isButton(it) || NinchatQuestionnaireType.isText(it) -> null
+                            it.optString("result").isNullOrBlank() -> null
+                            else -> it
+                        }
+                    }
+                    .map {
+                        Pair<String, String>(it.optString("name"), it.optString("result"))
+                    }
+        }
+
+        fun getQuestionnaireTags(answerList: List<JSONObject>): List<String> {
+            return answerList
+                    .asReversed()
+                    .distinctBy {
+                        it.optString("name")
+                    }
+                    .map {
+                        fromJSONArray<String>(it.optJSONArray("tags")).map { tag -> tag as String }
+                    }.flatten()
+        }
+
+        fun getQuestionnaireQueue(answerList: List<JSONObject>): String? {
+            return answerList
+                    .asReversed()
+                    .distinctBy {
+                        it.optString("name")
+                    }
+                    .mapNotNull {
+                        it.optString("queue")
+                    }.firstOrNull()
+        }
     }
 }
