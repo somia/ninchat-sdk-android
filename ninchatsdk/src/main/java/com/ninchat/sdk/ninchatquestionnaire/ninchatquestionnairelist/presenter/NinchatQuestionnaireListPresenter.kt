@@ -2,6 +2,7 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter
 
 import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.QuestionnaireActivityCallback
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model.ConversationLikeModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model.FormLikeModel
 import org.greenrobot.eventbus.EventBus
@@ -12,6 +13,8 @@ import org.json.JSONObject
 class NinchatQuestionnaireListPresenter(
         questionnaireList: List<JSONObject>,
         isFormLike: Boolean,
+        queueId: String?,
+        var rootActivityCallback: QuestionnaireActivityCallback,
         val viewCallback: INinchatQuestionnaireListPresenter,
 ) {
     init {
@@ -22,6 +25,7 @@ class NinchatQuestionnaireListPresenter(
         FormLikeModel(
                 questionnaireList = questionnaireList,
                 answerList = listOf(),
+                queueId = queueId,
                 selectedElement = arrayListOf(),
                 isFormLike = isFormLike
         ).apply {
@@ -31,6 +35,7 @@ class NinchatQuestionnaireListPresenter(
         ConversationLikeModel(
                 questionnaireList = questionnaireList,
                 answerList = listOf(),
+                queueId = queueId,
                 selectedElement = arrayListOf(),
                 isFormLike = isFormLike
         ).apply { parse() }
@@ -66,14 +71,14 @@ class NinchatQuestionnaireListPresenter(
                 val positionStart = size()
                 val itemCount = model.removeLast()
                 if (model.isFormLike) {
-                    viewCallback.onDataSetChange()
+                    rootActivityCallback.onDataSetChange()
                 } else {
                     viewCallback.onItemRemoved(positionStart = positionStart, itemCount = itemCount)
                 }
                 return
             }
             onNextQuestionnaire.moveType == OnNextQuestionnaire.thankYou -> {
-                // close questionnaire
+                rootActivityCallback.onFinish()
                 return
             }
             model.hasError() -> {
@@ -81,44 +86,19 @@ class NinchatQuestionnaireListPresenter(
                 val itemCount = model.selectedElement.lastOrNull()?.second ?: 0
                 model.updateError()
                 if (model.isFormLike) {
-                    viewCallback.onDataSetChange()
+                    rootActivityCallback.onDataSetChange()
                 } else {
                     viewCallback.onItemUpdate(positionStart = positionStart - itemCount, itemCount = itemCount)
                 }
                 return
             }
             matchedLogic?.optJSONObject("logic")?.optString("target") == "_complete" -> {
-                // reached to complete phase
-                // get audience register close text
-                model.audienceRegisterCloseText()?.let {
-                    val positionStart = size()
-                    val itemCount = loadThankYou(it)
-                    if (itemCount > 0) {
-                        if (model.isFormLike) {
-                            viewCallback.onDataSetChange()
-                        } else {
-                            viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
-                        }
-                    }
-                    return
-                }
+                handleComplete()
                 return
             }
             matchedLogic?.optJSONObject("logic")?.optString("target") == "_register" -> {
-                // reached to complete phase
-                // get audience register test
-                model.audienceRegisterText()?.let {
-                    val positionStart = size()
-                    val itemCount = loadThankYou(it)
-                    if (itemCount > 0) {
-                        if (model.isFormLike) {
-                            viewCallback.onDataSetChange()
-                        } else {
-                            viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
-                        }
-                    }
-                    return
-                }
+                handleRegister(fromComplete = false)
+                return
             }
         }
         val positionStart = size()
@@ -126,18 +106,60 @@ class NinchatQuestionnaireListPresenter(
         // there are still some item available
         if (itemCount > 0) {
             if (model.isFormLike) {
-                viewCallback.onDataSetChange()
+                rootActivityCallback.onDataSetChange()
             } else {
                 viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
             }
         }
     }
 
+    private fun handleRegister(fromComplete: Boolean) {
+        val questionnairesAnswers = model.getAnswers()
+        // update queue
+        questionnairesAnswers.third?.let {
+            model.queueId = it
+        }
+        val audienceMetadata = model.audienceMetadata()
+        val answerMetadata = model.getAnswersAsProps(questionnairesAnswers)
+        // reached to complete phase
+        // get audience register test
+        showThankYouText(fromComplete)
+    }
+
+    private fun handleComplete() {
+        // set audience register and goto queue
+        val questionnairesAnswers = model.getAnswers()
+        // update queue
+        questionnairesAnswers.third?.let {
+            model.queueId = it
+        }
+        if (model.isQueueClosed(queue = model.queueId)) {
+            handleRegister(fromComplete = true)
+            return
+        }
+
+    }
+
+    private fun showThankYouText(fromComplete: Boolean) {
+        val thankYouText = if (fromComplete) model.audienceRegisterCloseText() else model.audienceRegisterText()
+
+        thankYouText?.let {
+            val positionStart = size()
+            val itemCount = loadThankYou(it)
+            if (itemCount > 0) {
+                if (model.isFormLike) {
+                    rootActivityCallback.onDataSetChange()
+                } else {
+                    viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+                }
+            }
+            return
+        }
+    }
 }
 
 interface INinchatQuestionnaireListPresenter {
     fun onAddItem(positionStart: Int, itemCount: Int)
     fun onItemRemoved(positionStart: Int, itemCount: Int)
     fun onItemUpdate(positionStart: Int, itemCount: Int)
-    fun onDataSetChange()
 }

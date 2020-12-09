@@ -12,7 +12,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.Nincha
 import kotlinx.android.synthetic.main.activity_ninchat_questionnaire.*
 import org.json.JSONObject
 
-class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnairePresenter {
+class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnairePresenter, QuestionnaireActivityCallback {
     private val presenter = NinchatQuestionnairePresenter(viewCallback = this)
 
     override val layoutRes: Int
@@ -36,13 +36,37 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
         finish()
     }
 
-    override fun renderQuestionnaireList(questionnaireList: List<JSONObject>, isFormLike: Boolean) {
+    override fun renderQuestionnaireList(questionnaireList: List<JSONObject>, queueId: String?, isFormLike: Boolean) {
         val mRecyclerView = questionnaire_form_rview as RecyclerView
         mRecyclerView.layoutManager = LinearLayoutManager(this)
-        mRecyclerView.adapter = NinchatQuestionnaireListAdapter(questionnaireList = questionnaireList,
+        mRecyclerView.adapter = NinchatQuestionnaireListAdapter(
+                questionnaireList = questionnaireList,
                 isFormLike = isFormLike,
-                recyclerView = mRecyclerView
+                queueId = queueId,
+                rootActivityCallback = this
         )
     }
 
+    override fun onRegistered(answerList: List<JSONObject>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onComplete(answerList: List<JSONObject>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDataSetChange() {
+        presenter.handleDataSetChange(questionnaire_form_rview as RecyclerView)
+    }
+
+    override fun onFinish() {
+
+    }
+}
+
+interface QuestionnaireActivityCallback {
+    fun onRegistered(answerList: List<JSONObject>)
+    fun onComplete(answerList: List<JSONObject>)
+    fun onDataSetChange()
+    fun onFinish()
 }

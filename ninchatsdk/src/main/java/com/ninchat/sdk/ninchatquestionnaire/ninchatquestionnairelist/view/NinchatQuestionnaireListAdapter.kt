@@ -10,6 +10,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.view.NinchatCheckbox
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.model.NinchatDropDownSelectViewModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.view.NinchatDropDownSelectViewHolder
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.view.NinchatInputFieldViewHolder
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.QuestionnaireActivityCallback
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.INinchatQuestionnaireListPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.NinchatQuestionnaireListPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.view.NinchatRadioButtonView
@@ -20,12 +21,15 @@ import org.json.JSONObject
 
 class NinchatQuestionnaireListAdapter(
         questionnaireList: List<JSONObject>,
+        queueId: String?,
         isFormLike: Boolean,
-        var recyclerView: RecyclerView
+        rootActivityCallback: QuestionnaireActivityCallback
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), INinchatQuestionnaireListPresenter {
     val presenter = NinchatQuestionnaireListPresenter(
             questionnaireList = questionnaireList,
             isFormLike = isFormLike,
+            queueId = queueId,
+            rootActivityCallback = rootActivityCallback,
             viewCallback = this
     )
 
@@ -122,8 +126,7 @@ class NinchatQuestionnaireListAdapter(
         notifyItemRangeChanged(positionStart, itemCount)
     }
 
-    override fun onDataSetChange() {
-        recyclerView.adapter = null
-        recyclerView.adapter = this
+    fun showThankYou(){
+
     }
 }

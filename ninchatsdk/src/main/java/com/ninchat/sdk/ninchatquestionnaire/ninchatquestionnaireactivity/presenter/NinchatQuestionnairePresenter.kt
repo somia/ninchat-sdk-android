@@ -2,8 +2,10 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presen
 
 import android.content.Context
 import android.content.Intent
+import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity
+import kotlinx.android.synthetic.main.activity_ninchat_questionnaire.*
 import org.json.JSONObject
 
 class NinchatQuestionnairePresenter(
@@ -13,7 +15,15 @@ class NinchatQuestionnairePresenter(
 
     fun renderCurrentView(intent: Intent?) {
         model.update(intent)
-        viewCallback.renderQuestionnaireList(model.questionnaireList, model.isFormLike)
+        viewCallback.renderQuestionnaireList(model.questionnaireList, model.queueId, model.isFormLike)
+    }
+
+    fun handleDataSetChange(mRecyclerView: RecyclerView?) {
+        mRecyclerView?.let {
+            val previousAdapter = it.adapter
+            it.adapter = null
+            it.adapter = previousAdapter
+        }
     }
 
     companion object {
@@ -28,5 +38,5 @@ class NinchatQuestionnairePresenter(
 }
 
 interface INinchatQuestionnairePresenter {
-    fun renderQuestionnaireList(questionnaireList: List<JSONObject>, isFormLike: Boolean)
+    fun renderQuestionnaireList(questionnaireList: List<JSONObject>, queueId: String?, isFormLike: Boolean)
 }
