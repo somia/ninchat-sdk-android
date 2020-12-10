@@ -14,7 +14,7 @@ import com.ninchat.client.Props;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatQuestionnaireBaseAdapter;
-import com.ninchat.sdk.events.OnAudienceRegistered;
+import com.ninchat.sdk.events.OnSubmitQuestionnaireAnswers;
 import com.ninchat.sdk.events.OnCompleteQuestionnaire;
 import com.ninchat.sdk.events.OnItemLoaded;
 import com.ninchat.sdk.events.OnNextQuestionnaire;
@@ -261,12 +261,12 @@ public abstract class NinchatQuestionnaireBase<T extends NinchatQuestionnaireBas
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onAudienceRegistered(OnAudienceRegistered onAudienceRegistered) {
+    public void onAudienceRegistered(OnSubmitQuestionnaireAnswers onSubmitQuestionnaireAnswers) {
         if (pendingRequest == AUDIENCE_REGISTER) {
             pendingRequest = NONE;
             // if no audience register test is set or there is an error to register the audience
             // then skip audience text ( thank you text )
-            if (TextUtils.isEmpty(thankYouText) || onAudienceRegistered.withError) {
+            if (TextUtils.isEmpty(thankYouText) || onSubmitQuestionnaireAnswers.withError) {
                 // close the session and exit
                 NinchatSessionManager.getInstance().close();
                 EventBus.getDefault().post(new OnCompleteQuestionnaire(false, queueId));

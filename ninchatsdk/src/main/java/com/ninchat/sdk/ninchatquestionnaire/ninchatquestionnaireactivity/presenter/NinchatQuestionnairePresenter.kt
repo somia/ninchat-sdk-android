@@ -6,9 +6,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.client.Props
 import com.ninchat.client.Strings
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.networkdispatchers.NinchatRegisterAudience
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireAnswers
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.NinchatQuestionnaireListAdapter
+import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
@@ -30,55 +34,62 @@ class NinchatQuestionnairePresenter(
         }
     }
 
+    fun showThankYouText(mRecyclerView: RecyclerView?, isComplete: Boolean) {
+        (mRecyclerView?.adapter as NinchatQuestionnaireListAdapter).showThankYou(isComplete)
+    }
+
     fun updateAnswers(answerList: List<JSONObject>) {
         model.answers = NinchatQuestionnaireAnswers().apply {
             parse(questionnaireList = answerList)
         }
         // update queue from answers
-        model.answers?.queueId?.let {
-            model.queueId = it
+        if (model.answers?.queueId.isNullOrEmpty().not()) {
+            model.queueId = model.answers?.queueId
         }
     }
 
-    fun isQueueClosed(): Boolean {
-        val isClosed = NinchatSessionManager.getInstance()?.ninchatState?.queues?.find { it.id == model.queueId }?.isClosed
-        // if null -> queue closed
-        // if close -> queue closed
-        return isClosed ?: true
-    }
-
-    fun hasAnswers(): Boolean {
-        return model.answers?.answerList.isNullOrEmpty().not() || model.answers?.tagList.isNullOrEmpty().not()
-    }
-
-    fun getAnswersAsProps(): Props {
-        val answers = Props()
-        if (model.answers?.answerList.isNullOrEmpty().not()) {
-            model.answers?.answerList?.forEach {
-                answers.setString(it.first, it.second)
-            }
+    fun mayeBeCompleteQuestionnaire() {
+        if (model.isQueueClosed()) {
+            mayBeRegisterAudience(fromComplete = true)
+            return
         }
-        if (model.answers?.tagList.isNullOrEmpty().not()) {
-            val tags = Strings()
-            model.answers?.tagList?.forEach { tags.append(it) }
-            answers.setStringArray("tags", tags)
-        }
-        return answers
-    }
-
-    fun mayBeRegisterAudience() {
-        val questionnaireAnswers = getAnswersAsProps()
-        val audienceMetadata = model.audienceMetadata().get()?: Props()
+        val questionnaireAnswers = model.getAnswersAsProps()
+        val audienceMetadata = model.audienceMetadata().get() ?: Props()
         audienceMetadata.apply {
             setObject("pre_answers", questionnaireAnswers)
         }
-
-        // send audience metadata
-        NinchatSessionManager.getInstance()?.let {
-
-        }
-
+        // update audience metadata
+        model.audienceMetadata().set(audienceMetadata)
+        viewCallback.onCompleteQuestionnaire()
     }
+
+    fun mayBeRegisterAudience(fromComplete: Boolean = false) {
+        model.fromComplete = fromComplete
+        val questionnaireAnswers = model.getAnswersAsProps()
+        val audienceMetadata = model.audienceMetadata().get() ?: Props()
+        audienceMetadata.apply {
+            setObject("pre_answers", questionnaireAnswers)
+        }
+        // send audience metadata
+        NinchatSessionManager.getInstance()?.session?.let {
+            // even if the error occurred,
+            NinchatScopeHandler.getIOScope().launch(CoroutineExceptionHandler(handler = { _, _ -> viewCallback.onAudienceRegisterError() })) {
+                val id = NinchatRegisterAudience.execute(
+                        currentSession = it,
+                        queueId = model.queueId,
+                        audienceMetadata = audienceMetadata
+                )
+                if (id == -1L) {
+                    viewCallback.onAudienceRegisterError()
+                } else {
+                    NinchatSessionManager.getInstance()?.ninchatState?.actionId
+                }
+            }
+        }
+    }
+
+    fun isComplete(): Boolean = model.fromComplete
+    fun queueId(): String? = model.queueId
 
     companion object {
         val REQUEST_CODE = NinchatQuestionnairePresenter::class.java.hashCode() and 0xffff
@@ -93,4 +104,6 @@ class NinchatQuestionnairePresenter(
 
 interface INinchatQuestionnairePresenter {
     fun renderQuestionnaireList(questionnaireList: List<JSONObject>, queueId: String?, isFormLike: Boolean)
+    fun onCompleteQuestionnaire()
+    fun onAudienceRegisterError()
 }

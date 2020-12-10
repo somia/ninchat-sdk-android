@@ -3,7 +3,7 @@ package com.ninchat.sdk.ninchatqueuelist.presenter
 import android.app.Activity
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
-import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatQuestionnairePresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.NinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter

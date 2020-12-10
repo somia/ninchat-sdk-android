@@ -1,6 +1,8 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model
 
 import android.content.Intent
+import com.ninchat.client.Props
+import com.ninchat.client.Strings
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.ninchataudiencemetadata.NinchatAudienceMetadata
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
@@ -13,7 +15,8 @@ data class NinchatQuestionnaireModel(
         var queueId: String? = null,
         var isFormLike: Boolean = true,
         var questionnaireList: List<JSONObject> = listOf(),
-        var answers: NinchatQuestionnaireAnswers? = null
+        var answers: NinchatQuestionnaireAnswers? = null,
+        var fromComplete: Boolean = false
 ) {
 
     fun update(intent: Intent?) {
@@ -42,6 +45,28 @@ data class NinchatQuestionnaireModel(
                 ?: NinchatAudienceMetadata()
     }
 
+    fun isQueueClosed(): Boolean {
+        val isClosed = NinchatSessionManager.getInstance()?.ninchatState?.queues?.find { it.id == queueId }?.isClosed
+        // if null -> queue closed
+        // if close -> queue closed
+        return isClosed ?: true
+    }
+
+    fun getAnswersAsProps(): Props {
+        val answerProps = Props()
+        if (answers?.answerList.isNullOrEmpty().not()) {
+            answers?.answerList?.forEach {
+                answerProps.setString(it.first, it.second)
+            }
+        }
+        if (answers?.tagList.isNullOrEmpty().not()) {
+            val tags = Strings()
+            answers?.tagList?.forEach { tags.append(it) }
+            answerProps.setStringArray("tags", tags)
+        }
+        return answerProps
+    }
+
     companion object {
         const val OPEN_QUEUE = "openQueue"
         const val QUEUE_ID = "queueId"
@@ -52,7 +77,7 @@ data class NinchatQuestionnaireModel(
 data class NinchatQuestionnaireAnswers(
         var answerList: List<Pair<String, String>> = listOf(),
         var tagList: List<String> = listOf(),
-        var queueId: String? = null
+        var queueId: String? = null,
 ) {
 
     fun parse(questionnaireList: List<JSONObject> = listOf()) {

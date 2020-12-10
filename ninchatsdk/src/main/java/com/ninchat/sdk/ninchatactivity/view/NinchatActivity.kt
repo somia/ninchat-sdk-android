@@ -10,8 +10,8 @@ import com.ninchat.sdk.activities.NinchatBaseActivity
 import com.ninchat.sdk.ninchatactivity.model.NinchatActivityModel
 import com.ninchat.sdk.ninchatactivity.presenter.INinchatActivityPresenter
 import com.ninchat.sdk.ninchatactivity.presenter.NinchatActivityPresenter
-import com.ninchat.sdk.ninchatquestionnaire.model.NinchatQuestionnaireModel
-import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatQuestionnairePresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.NinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import kotlinx.android.synthetic.main.activity_ninchat.*
 

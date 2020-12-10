@@ -73,7 +73,7 @@ class NinchatQuestionnaireListPresenter(
                 return
             }
             onNextQuestionnaire.moveType == OnNextQuestionnaire.thankYou -> {
-                rootActivityCallback.onFinish()
+                rootActivityCallback.onFinishQuestionnaire(openQueue = false)
                 return
             }
             model.hasError() -> {
@@ -123,7 +123,7 @@ class NinchatQuestionnaireListPresenter(
                 }
             }
             return
-        } ?: rootActivityCallback.onFinish()
+        } ?: rootActivityCallback.onFinishQuestionnaire(openQueue = false)
     }
 }
 
