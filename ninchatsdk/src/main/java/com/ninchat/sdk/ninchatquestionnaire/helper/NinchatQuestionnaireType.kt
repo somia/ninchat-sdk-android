@@ -52,16 +52,7 @@ class NinchatQuestionnaireType {
 
         fun isGroupElement(element: JSONObject?): Boolean =
                 element?.optString(NinchatQuestionnaireConstants.type) in listOf("group", "elements")
-
-        fun isRegister(target: String?): Boolean =
-                "_register" == target
-
-        fun isComplete(target: String?): Boolean =
-                "_complete" == target
-
-        fun isRequired(element: JSONObject?): Boolean =
-                NinchatQuestionnaireConstants.required == NinchatQuestionnaireConstants.elements
-
+        
         fun isElement(element: JSONObject?): Boolean =
                 element?.has("elements") == true || element?.has("element") == true
 

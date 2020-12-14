@@ -2,7 +2,7 @@ package com.ninchat.sdk.ninchatqueuelist.presenter
 
 import android.app.Activity
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.NinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
@@ -41,7 +41,7 @@ class NinchatQueueListPresenter(queueList: List<NinchatQueue>) {
     fun requireOpenQuestionnaireActivity(): Boolean {
         return NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
             return !ninchatSessionManager.ninchatSessionHolder.isResumedSession() &&
-                    ninchatSessionManager.ninchatState?.ninchatQuestionnaire?.hasPreAudienceQuestionnaire() ?: false
+                    ninchatSessionManager.ninchatState?.hasQuestionnaire(isPreAudienceQuestionnaire = true) ?: false
         } ?: false
     }
 
@@ -54,7 +54,7 @@ class NinchatQueueListPresenter(queueList: List<NinchatQueue>) {
     fun openQuestionnaireActivity(activity: Activity?, queueId: String) {
         activity?.startActivityForResult(
                 NinchatQuestionnairePresenter.getLaunchIntent(activity, queueId,
-                        NinchatQuestionnaireTypeUtil.PRE_AUDIENCE_QUESTIONNAIRE),
+                        NinchatQuestionnaireConstants.preAudienceQuestionnaire),
                 NinchatQuestionnairePresenter.REQUEST_CODE)
     }
 

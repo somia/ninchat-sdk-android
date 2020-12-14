@@ -13,7 +13,6 @@ import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.events.OnSubmitQuestionnaireAnswers
 import com.ninchat.sdk.helper.message.NinchatMessageService
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig
 import com.ninchat.sdk.models.NinchatSessionCredentials
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeRealmQueues
@@ -132,11 +131,11 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
     }
 
     fun isInQueue(): Boolean {
-        return (ninchatState.currentSessionState and (1 shl NinchatQuestionnaireTypeUtil.IN_QUEUE)) != 0
+        return (ninchatState.currentSessionState and (1 shl Misc.IN_QUEUE)) != 0
     }
 
     fun hasChannel(): Boolean {
-        return (ninchatState.currentSessionState and (1 shl NinchatQuestionnaireTypeUtil.HAS_CHANNEL)) != 0
+        return (ninchatState.currentSessionState and (1 shl Misc.HAS_CHANNEL)) != 0
     }
 
     fun dispose() {

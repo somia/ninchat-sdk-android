@@ -15,7 +15,7 @@ class Misc {
         const val IN_QUEUE = 2
         const val HAS_CHANNEL = 3
         const val NONE = 4
-
+        
         @JvmStatic
         fun center(text: String?): String {
             return text?.let {

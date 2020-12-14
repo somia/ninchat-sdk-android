@@ -97,8 +97,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         if (requestCode == NinchatReviewModel.REQUEST_CODE) {
             // coming from ninchat review
             if (sessionManager != null &&
-                    sessionManager.ninchatState.getNinchatQuestionnaire() != null &&
-                    !sessionManager.ninchatState.getNinchatQuestionnaire().hasPostAudienceQuestionnaire()) {
+                    sessionManager.ninchatState != null &&
+                    !sessionManager.ninchatState.hasQuestionnaire(false)) {
                 NinchatPartChannel.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         sessionManager.getSession(),

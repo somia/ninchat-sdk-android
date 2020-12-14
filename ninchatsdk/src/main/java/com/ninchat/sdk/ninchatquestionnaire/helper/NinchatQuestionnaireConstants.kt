@@ -2,7 +2,6 @@ package com.ninchat.sdk.ninchatquestionnaire.helper
 
 class NinchatQuestionnaireConstants {
     companion object {
-        const val elements = "elements"
         const val pattern = "pattern"
         const val label = "label"
         const val name = "name"
@@ -20,16 +19,12 @@ class NinchatQuestionnaireConstants {
         const val inputMode = "inputmode"
         const val conversation = "conversation"
         const val queue = "queue"
-        const val tags = "tags"
         const val logic = "logic"
-        const val select = "Select"
         const val type = "type"
         const val thankYouText = "thankYouText"
         const val required = "required"
         const val redirects = "redirects"
         const val group = "group"
-        const val telda = "~"
-        const val questionnaireType = "questionType"
         const val preAudienceQuestionnaire = 1
         const val postAudienceQuestionnaire = 2
     }

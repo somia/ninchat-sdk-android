@@ -1,7 +1,6 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter
 
 import com.ninchat.sdk.events.OnNextQuestionnaire
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.model.NinchatRadioButtonListModel
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
@@ -11,7 +10,7 @@ class NinchatRadioButtonListPresenter(
         isFormLikeQuestionnaire: Boolean,
         val viewCallback: INinchatRadioButtonListPresenter,
         val updateCallback: ButtonListUpdateListener,
-        position: Int
+        position: Int,
 ) {
     private val model = NinchatRadioButtonListModel(
             isFormLikeQuestionnaire = isFormLikeQuestionnaire, position = position).apply {
@@ -23,15 +22,16 @@ class NinchatRadioButtonListPresenter(
         if (model.isFormLikeQuestionnaire) {
             viewCallback.onUpdateFormView(label = model.label ?: "", hasError = model.hasError)
         } else {
-            viewCallback.onUpdateConversationView(label = model.label ?: "", hasError = model.hasError)
+            viewCallback.onUpdateConversationView(label = model.label
+                    ?: "", hasError = model.hasError)
         }
     }
 
     fun handleOptionToggled(isSelected: Boolean, listPosition: Int): Int {
         val previousPosition = model.listPosition
         model.value = if (isSelected) model.getValue(listPosition) else null
-        model.listPosition = if(isSelected) listPosition else -1
-        model.hasError = if(isSelected) false else model.hasError
+        model.listPosition = if (isSelected) listPosition else -1
+        model.hasError = if (isSelected) false else model.hasError
 
         updateCallback.onUpdate(value = model.value,
                 sublistPosition = model.listPosition,
@@ -45,7 +45,8 @@ class NinchatRadioButtonListPresenter(
 
     fun isSelected(jsonObject: JSONObject?): Boolean {
         return jsonObject?.let {
-            model.listPosition != -1 && model.listPosition == NinchatQuestionnaireItemGetter.getOptionPosition(it)
+            model.listPosition != -1
+                    && model.listPosition == it.optInt("position", -1)
         } ?: false
     }
 
@@ -65,6 +66,6 @@ interface INinchatRadioButtonListPresenter {
     fun onUpdateConversationView(label: String, hasError: Boolean)
 }
 
-interface ButtonListUpdateListener{
+interface ButtonListUpdateListener {
     fun onUpdate(value: String?, sublistPosition: Int, hasError: Boolean, position: Int)
 }

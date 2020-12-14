@@ -1,6 +1,7 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter
 
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireMiscUtil
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNormalizer
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.model.NinchatInputFieldViewModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.view.INinchatInputFieldViewHolder
 import org.json.JSONObject
@@ -50,8 +51,8 @@ class NinchatInputFieldViewPresenter(
     fun isMultiline(): Boolean = model.isMultiline
 
     override fun onTextChange(text: String?) {
-        model.value = NinchatQuestionnaireMiscUtil.sanitizeString(text)
-        model.hasError = NinchatQuestionnaireMiscUtil.matchPattern(text, model.pattern) == false
+        model.value = NinchatQuestionnaireNormalizer.sanitizeString(text)
+        model.hasError = NinchatQuestionnaireJsonUtil.matchPattern(text, model.pattern) == false
         // check if there is any error
         viewCallback.onUpdateText(
                 value = model.value ?: "",

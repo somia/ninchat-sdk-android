@@ -6,58 +6,61 @@ import org.json.JSONObject
 class NinchatQuestionnaireNormalizer {
     companion object {
         internal fun simpleFormToGroupQuestionnaire(questionnaireArr: JSONArray?): JSONArray {
-            return JSONArray("""[
-                {
-                    "name": "SimpleForm",
-                    "type": "group",
-                    "buttons": {
-                        "back": false,
-                        "next": true
-                    },
-                    "elements": ${questionnaireArr?.toString(2)}
-                },
-                {
-                    "name": "SimpleForm-Logic1",
-                    "logic": {
-                        "target": "_complete"
+            return JSONArray()
+                    .apply {
+                        put(JSONObject("""{
+                            "name": "SimpleForm",
+                            "type": "group",
+                            "buttons": {
+                                "back": false,
+                                "next": true
+                            }
+                        }""".trimIndent()).apply {
+                            putOpt("elements", questionnaireArr)
+                        })
+                        put(JSONObject("""{
+                            "name": "SimpleForm-Logic1",
+                            "logic": {
+                                "target": "_complete"
+                            }
+                        }""".trimIndent()))
                     }
-                }
-            ]""".trimIndent())
         }
 
         internal fun makeGroupElement(nonGroupElement: JSONObject): JSONObject {
             return JSONObject(nonGroupElement.toString())
                     .apply {
-                        putOpt("elements", JSONArray("""[
-                            ${nonGroupElement.toString(2)}
-                        ]""".trimIndent()))
+                        putOpt("elements", JSONArray().apply {
+                            put(JSONObject(nonGroupElement.toString()))
+                        })
                         putOpt("type", "group")
                     }
         }
 
         internal fun makeLogicElement(redirectElement: JSONObject, elementName: String, logicIndex: Int): JSONObject {
-            val logic = JSONObject("""{
-                        "target": ${redirectElement.optString("target")}   
-                    }""".trimIndent())
-                    .apply {
-                        // only add logic if it has pattern
-                        if (redirectElement.has("pattern")) {
-                            putOpt("and", """[{
-                                "$elementName": ${redirectElement.optString("pattern")}
-                            }]""".trimMargin())
-                        }
-                    }
-            return JSONObject("""{
-                "name": "${elementName}-logic:${logicIndex}",
-                "logic": ${logic.toString(2)}
-            }""".trimIndent())
+            val andLogic = JSONObject().apply {
+                putOpt(elementName, redirectElement.optString("pattern"))
+            }
+            val andLogicList = JSONArray().apply {
+                put(andLogic)
+            }
+            val logic = JSONObject().apply {
+                putOpt("target", redirectElement.optString("target"))
+                if (redirectElement.has("pattern")) {
+                    putOpt("and", andLogicList)
+                }
+            }
+            return JSONObject().apply {
+                putOpt("name", "${elementName}-logic:${logicIndex}")
+                putOpt("logic", logic)
+            }
         }
 
-        internal fun redirectToLogicElement(elements: JSONObject, logicIndex: Int): List<JSONObject> {
+        internal fun redirectToLogicElement(elements: JSONObject): List<JSONObject> {
             val name = elements.optString("name")
             val redirectList = elements.optJSONArray("redirects")
             return fromJSONArray<JSONObject>(redirectList)
-                    .map { makeLogicElement(redirectElement = it as JSONObject, elementName = name, logicIndex = logicIndex) }
+                    .mapIndexed { index, it -> makeLogicElement(redirectElement = it as JSONObject, elementName = name, logicIndex = index) }
         }
 
         internal fun updateActions(questionnaireList: List<JSONObject>): List<JSONObject> {
@@ -81,7 +84,7 @@ class NinchatQuestionnaireNormalizer {
                             val tempBtnElement = NinchatQuestionnaireJsonUtil.getButtonElement(json = currentElement, hideBack = index == 0)
                             elementList.put(tempBtnElement)
                         } else {
-                            tempElement.putOpt("fireEvent", true)
+                            tempElement?.putOpt("fireEvent", true)
                         }
                     }
                     currentElement
@@ -123,8 +126,8 @@ class NinchatQuestionnaireNormalizer {
                     }
             // convert any redirect to logic element
             val logicElement = retval
-                    .mapIndexedNotNull { index, currentElement ->
-                        val redirectList = redirectToLogicElement(elements = currentElement, logicIndex = index)
+                    .mapNotNull { currentElement ->
+                        val redirectList = redirectToLogicElement(elements = currentElement)
                         if (redirectList.isNullOrEmpty()) {
                             null
                         } else {
@@ -135,6 +138,13 @@ class NinchatQuestionnaireNormalizer {
             return retval.plus(logicElement)
                     .also { updateActions(it) }
                     .also { updateLikeRTElements(it) }
+        }
+
+        fun sanitizeString(text: String?): String? {
+            return text?.let {
+                text.replace("^[\\n\\r]".toRegex(), "")
+                        .replace("[\n\r]$".toRegex(), "").trim();
+            }
         }
     }
 }

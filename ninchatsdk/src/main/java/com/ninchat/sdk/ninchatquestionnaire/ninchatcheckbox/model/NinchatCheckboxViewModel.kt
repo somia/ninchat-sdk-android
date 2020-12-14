@@ -2,7 +2,6 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.model
 
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter
 import org.json.JSONObject
 
 data class NinchatCheckboxViewModel(
@@ -24,8 +23,8 @@ data class NinchatCheckboxViewModel(
     }
 
     fun update(jsonObject: JSONObject?) {
-        this.isChecked = NinchatQuestionnaireItemGetter.getResultBoolean(jsonObject)
-        this.hasError = NinchatQuestionnaireItemGetter.getError(jsonObject)
+        this.isChecked = jsonObject?.optBoolean("result", false)?: false
+        this.hasError = jsonObject?.optBoolean("hasError", false)?: false
     }
 
     private fun translate() {
@@ -36,10 +35,4 @@ data class NinchatCheckboxViewModel(
         } ?: label
     }
 
-
-    @Deprecated("will be removed once converted to kotlin data model")
-    fun updateJson(jsonObject: JSONObject?) {
-        jsonObject?.putOpt(NinchatQuestionnaireConstants.result, this.isChecked)
-        jsonObject?.putOpt(NinchatQuestionnaireConstants.hasError, this.hasError)
-    }
 }

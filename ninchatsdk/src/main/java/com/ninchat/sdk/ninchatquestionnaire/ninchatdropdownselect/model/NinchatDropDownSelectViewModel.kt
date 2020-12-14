@@ -2,7 +2,7 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.model
 
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireItemGetter
+import com.ninchat.sdk.ninchatquestionnaire.helper.fromJSONArray
 import org.json.JSONObject
 import kotlin.math.max
 
@@ -14,19 +14,13 @@ data class NinchatDropDownSelectViewModel(
         var selectedIndex: Int = 0,
         var value: String? = "",
         var optionList: List<String> = listOf(),
-        val position: Int
+        val position: Int,
 ) {
 
     fun parse(jsonObject: JSONObject?, isFormLikeQuestionnaire: Boolean = false) {
-        val optionList = arrayListOf(NinchatQuestionnaireConstants.select)
-        NinchatQuestionnaireItemGetter.getOptions(jsonObject)?.let { options ->
-            for (i in 0 until options.length()) {
-                options.optJSONObject(i)?.let {
-                    optionList.add(it.optString(NinchatQuestionnaireConstants.label))
-                }
-            }
-        }
-        this.optionList = optionList
+        this.optionList = arrayListOf("Select").plus(
+                fromJSONArray<JSONObject>(jsonObject?.optJSONArray("options"))
+                        .map { (it as JSONObject).optString("label") })
         this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label)
         this.value = jsonObject?.optString(NinchatQuestionnaireConstants.result)
         this.hasError = jsonObject?.optBoolean(NinchatQuestionnaireConstants.hasError) ?: false
@@ -36,8 +30,8 @@ data class NinchatDropDownSelectViewModel(
     }
 
     fun update(jsonObject: JSONObject?) {
-        this.value = NinchatQuestionnaireItemGetter.getResultString(jsonObject)
-        this.hasError = NinchatQuestionnaireItemGetter.getError(jsonObject)
+        this.value = jsonObject?.optString("result")
+        this.hasError = jsonObject?.optBoolean("hasError", false) ?: false
         this.selectedIndex = max(optionList.indexOf(this.value), 0)
         this.translate()
     }
