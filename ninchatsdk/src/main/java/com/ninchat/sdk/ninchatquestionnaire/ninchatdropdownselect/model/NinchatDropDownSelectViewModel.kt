@@ -41,10 +41,4 @@ data class NinchatDropDownSelectViewModel(
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getTranslation(it) ?: it
         }
     }
-
-    @Deprecated("will be removed once converted to kotlin data model")
-    fun updateJson(jsonObject: JSONObject?) {
-        jsonObject?.putOpt(NinchatQuestionnaireConstants.result, this.value)
-        jsonObject?.putOpt(NinchatQuestionnaireConstants.hasError, this.hasError)
-    }
 }

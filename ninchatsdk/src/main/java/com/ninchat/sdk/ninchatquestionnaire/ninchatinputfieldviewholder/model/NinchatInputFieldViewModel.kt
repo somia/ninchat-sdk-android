@@ -27,10 +27,4 @@ data class NinchatInputFieldViewModel(
         this.hasError = jsonObject.optBoolean(NinchatQuestionnaireConstants.hasError)
         this.value = jsonObject.optString(NinchatQuestionnaireConstants.result)
     }
-
-    @Deprecated("will be removed once converted to kotlin data model")
-    fun updateJson(jsonObject: JSONObject?) {
-        jsonObject?.putOpt(NinchatQuestionnaireConstants.result, this.value)
-        jsonObject?.putOpt(NinchatQuestionnaireConstants.hasError, this.hasError)
-    }
 }
