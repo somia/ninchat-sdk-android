@@ -20,6 +20,7 @@ data class NinchatButtonViewModel(
 
         var fireEvent: Boolean = false,
         var isThankYouText: Boolean = false,
+        val position: Int
 ) {
 
     fun parse(jsonObject: JSONObject?) {

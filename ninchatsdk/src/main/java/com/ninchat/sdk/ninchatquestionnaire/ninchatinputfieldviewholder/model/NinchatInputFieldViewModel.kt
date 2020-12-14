@@ -13,6 +13,7 @@ data class NinchatInputFieldViewModel(
         var inputType: Int = 0,
         var hasError: Boolean = false,
         var hasFocus: Boolean = false,
+        val position: Int
 ) {
     fun parse(jsonObject: JSONObject?) {
         this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label)

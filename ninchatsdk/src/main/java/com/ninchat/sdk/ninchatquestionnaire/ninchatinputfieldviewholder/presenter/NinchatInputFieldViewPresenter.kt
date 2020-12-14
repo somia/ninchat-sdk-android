@@ -6,14 +6,17 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.view.INinchatInput
 import org.json.JSONObject
 
 class NinchatInputFieldViewPresenter(
-        val jsonObject: JSONObject?,
+        jsonObject: JSONObject?,
         isMultiline: Boolean,
         isFormLikeQuestionnaire: Boolean = true,
         val viewCallback: INinchatInputFieldViewPresenter,
+        val updateCallback: InputFieldUpdateListener,
+        position: Int
 ) : INinchatInputFieldViewHolder {
     private var model = NinchatInputFieldViewModel(
             isMultiline = isMultiline,
-            isFormLikeQuestionnaire = isFormLikeQuestionnaire
+            isFormLikeQuestionnaire = isFormLikeQuestionnaire,
+            position = position
     ).apply {
         parse(jsonObject = jsonObject)
     }
@@ -54,8 +57,7 @@ class NinchatInputFieldViewPresenter(
                 value = model.value ?: "",
                 hasError = model.hasError
         )
-        // update json model
-        model.updateJson(jsonObject = jsonObject)
+        updateCallback.onUpdate(value = model.value, hasError = model.hasError, position = model.position)
     }
 
     override fun onFocusChange(hasFocus: Boolean) {
@@ -72,4 +74,9 @@ interface INinchatInputFieldViewPresenter {
     fun onUpdateConversationView(label: String)
     fun onUpdateText(value: String, hasError: Boolean)
     fun onUpdateFocus(hasFocus: Boolean)
+}
+
+
+interface InputFieldUpdateListener{
+    fun onUpdate(value: String?, hasError: Boolean, position: Int)
 }

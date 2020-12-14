@@ -1,9 +1,6 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model
 
-import com.ninchat.client.Props
-import com.ninchat.client.Strings
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.ninchataudiencemetadata.NinchatAudienceMetadata
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNavigator
 import com.ninchat.sdk.ninchatquestionnaire.helper.fromJSONArray
@@ -15,6 +12,7 @@ open class NinchatQuestionnaireListModel(
         var selectedElement: ArrayList<Pair<String, Int>> = arrayListOf(),
         var isFormLike: Boolean = true,
 ) {
+
     open fun parse() {
         // get first element
         val element = nextElement(0)
@@ -24,8 +22,8 @@ open class NinchatQuestionnaireListModel(
 
     fun addElement(jsonObject: JSONObject?): Int {
         return jsonObject?.let { currentElement ->
-            val nextElementList = fromJSONArray<JSONObject>(currentElement.optJSONArray("elements"))
-            answerList = answerList.plus(nextElementList).map { NinchatQuestionnaireJsonUtil.slowCopy(it as JSONObject) }
+            val nextElementList = fromJSONArray<JSONObject>(currentElement.optJSONArray("elements")).map { NinchatQuestionnaireJsonUtil.slowCopy(it as JSONObject) }
+            answerList = answerList.plus(nextElementList)
             // add it in the selected element
             selectedElement.add(Pair(currentElement.optString("name"), nextElementList.size))
             return nextElementList.size

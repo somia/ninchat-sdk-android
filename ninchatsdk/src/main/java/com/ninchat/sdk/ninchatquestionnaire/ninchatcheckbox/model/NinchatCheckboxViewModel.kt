@@ -11,6 +11,7 @@ data class NinchatCheckboxViewModel(
         var label: String? = "",
         var hasError: Boolean = false,
         var fireEvent: Boolean = false,
+        val position: Int
 ) {
 
     fun parse(jsonObject: JSONObject?) {

@@ -9,15 +9,14 @@ import org.json.JSONObject
 class NinchatButtonViewPresenter(
         jsonObject: JSONObject?,
         val iPresenter: INinchatButtonViewPresenter,
+        position: Int
 ) : INinchatButtonViewHolder {
-    private var ninchatButtonViewModel: NinchatButtonViewModel = NinchatButtonViewModel().apply {
+    private var ninchatButtonViewModel = NinchatButtonViewModel(position = position).apply {
         parse(jsonObject = jsonObject)
     }
 
     fun updateModel(jsonObject: JSONObject?) {
-        ninchatButtonViewModel = NinchatButtonViewModel().apply {
-            parse(jsonObject = jsonObject)
-        }
+        // ninchatButtonViewModel.parse(jsonObject = jsonObject)
     }
 
     fun renderCurrentView() {

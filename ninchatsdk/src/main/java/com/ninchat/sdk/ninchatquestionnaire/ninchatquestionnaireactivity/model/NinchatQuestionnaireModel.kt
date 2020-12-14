@@ -30,9 +30,7 @@ data class NinchatQuestionnaireModel(
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPreAudienceQuestionnaire()
         else
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPostAudienceQuestionnaire()
-
         questionnaireList = NinchatQuestionnaireNormalizer.unifyQuestionnaireList(questionnaireArr = questionnaireArr)
-
         isFormLike = if (questionnaireType == NinchatQuestionnaireConstants.preAudienceQuestionnaire) {
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPreAudienceQuestionnaireStyle() != "conversation"
         } else {

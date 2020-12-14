@@ -1,11 +1,14 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.client.Props
 import com.ninchat.client.Strings
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.networkdispatchers.NinchatRegisterAudience
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireAnswers
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
@@ -15,6 +18,7 @@ import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.util.logging.Logger
 
 class NinchatQuestionnairePresenter(
         val viewCallback: INinchatQuestionnairePresenter,
@@ -26,16 +30,19 @@ class NinchatQuestionnairePresenter(
         viewCallback.renderQuestionnaireList(model.questionnaireList, model.queueId, model.isFormLike)
     }
 
-    fun handleDataSetChange(mRecyclerView: RecyclerView?) {
+    fun handleDataSetChange(mRecyclerView: RecyclerView?, adapter: NinchatQuestionnaireListAdapter ) {
         mRecyclerView?.let {
-            val previousAdapter = it.adapter
             it.adapter = null
-            it.adapter = previousAdapter
+            it.adapter = adapter
         }
     }
 
-    fun showThankYouText(mRecyclerView: RecyclerView?, isComplete: Boolean) {
-        (mRecyclerView?.adapter as NinchatQuestionnaireListAdapter).showThankYou(isComplete)
+    fun showThankYouText(adapter: NinchatQuestionnaireListAdapter, isComplete: Boolean) {
+        adapter.showThankYou(isComplete)
+    }
+
+    fun showNextQuestionnaire(adapter: NinchatQuestionnaireListAdapter, onNextQuestionnaire: OnNextQuestionnaire) {
+        adapter.showNextQuestionnaire(onNextQuestionnaire)
     }
 
     fun updateAnswers(answerList: List<JSONObject>) {

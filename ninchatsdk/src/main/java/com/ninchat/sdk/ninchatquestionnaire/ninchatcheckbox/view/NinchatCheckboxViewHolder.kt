@@ -4,6 +4,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
+import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.CheckboxUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.INinchatCheckboxViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.NinchatCheckboxViewPresenter
 import kotlinx.android.synthetic.main.checkbox_simple.view.*
@@ -13,12 +14,16 @@ class NinchatCheckboxViewHolder(
         itemView: View,
         jsonObject: JSONObject?,
         isFormLikeQuestionnaire: Boolean = true,
+        updateCallback: CheckboxUpdateListener,
+        position: Int
 ) : RecyclerView.ViewHolder(itemView), INinchatCheckboxViewPresenter {
 
     private val ninchatCheckboxViewPresenter = NinchatCheckboxViewPresenter(
             jsonObject = jsonObject,
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-            iPresent = this
+            iPresent = this,
+            updateCallback = updateCallback,
+            position = position
     )
 
     fun update(jsonObject: JSONObject?) {

@@ -8,7 +8,9 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.INinchatInputFieldViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.InputFieldUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.NinchatInputFieldViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.OnChangeListener
 import kotlinx.android.synthetic.main.text_area.view.*
 import kotlinx.android.synthetic.main.text_area_with_label.view.*
 import kotlinx.android.synthetic.main.text_field.view.*
@@ -20,13 +22,17 @@ class NinchatInputFieldViewHolder(
         jsonObject: JSONObject?,
         isMultiline: Boolean,
         isFormLikeQuestionnaire: Boolean = true,
+        updateCallback: InputFieldUpdateListener,
+        position: Int
 ) : RecyclerView.ViewHolder(itemView), INinchatInputFieldViewPresenter {
 
     val presenter = NinchatInputFieldViewPresenter(
             jsonObject = jsonObject,
             isMultiline = isMultiline,
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-            viewCallback = this
+            viewCallback = this,
+            updateCallback = updateCallback,
+            position = position
     )
 
     fun update(jsonObject: JSONObject?) {
@@ -36,22 +42,30 @@ class NinchatInputFieldViewHolder(
 
     private fun attachUserActionHandler() {
         val mEditText = if (presenter.isMultiline()) itemView.multiline_text_area else itemView.simple_text_field
+        val onChangeListener = OnChangeListener(
+                intervalInMs = 100,
+                callback = {
+                    presenter.onTextChange(it?.toString())
+                }
+        )
+
         mEditText?.let {
             it.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 }
 
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 }
 
                 override fun afterTextChanged(text: Editable?) {
-                    presenter.onTextChange(text?.toString())
+                    onChangeListener.onChange(text = text)
                 }
             })
             it.onFocusChangeListener = OnFocusChangeListener { v: View?, hasFocus: Boolean ->
                 presenter.onFocusChange(hasFocus = hasFocus)
             }
         }
+
     }
 
     override fun onUpdateFromView(label: String) {

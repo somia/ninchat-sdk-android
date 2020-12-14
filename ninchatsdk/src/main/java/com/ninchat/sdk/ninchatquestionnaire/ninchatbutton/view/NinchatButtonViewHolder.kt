@@ -12,10 +12,13 @@ import org.json.JSONObject
 class NinchatButtonViewHolder(
         itemView: View,
         jsonObject: JSONObject?,
+        position: Int
 ) : RecyclerView.ViewHolder(itemView), INinchatButtonViewPresenter {
-    private val ninchatButtonViewPresenter: NinchatButtonViewPresenter = NinchatButtonViewPresenter(
+    private val ninchatButtonViewPresenter = NinchatButtonViewPresenter(
             jsonObject = jsonObject,
-            iPresenter = this)
+            iPresenter = this,
+            position = position
+    )
 
     fun update(jsonObject: JSONObject?) {
         ninchatButtonViewPresenter.renderCurrentView()

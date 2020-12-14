@@ -6,11 +6,12 @@ import org.json.JSONObject
 
 class NinchatTextViewPresenter(
         jsonObject: JSONObject?,
+        position: Int,
         isFormLikeQuestionnaire: Boolean = true,
         val iPresenter: INinchatTextViewPresenter,
 ) {
     private var model = NinchatTextViewModel(
-            isFormLikeQuestionnaire = isFormLikeQuestionnaire).apply {
+            isFormLikeQuestionnaire = isFormLikeQuestionnaire, position = position).apply {
         parse(jsonObject = jsonObject)
     }
 

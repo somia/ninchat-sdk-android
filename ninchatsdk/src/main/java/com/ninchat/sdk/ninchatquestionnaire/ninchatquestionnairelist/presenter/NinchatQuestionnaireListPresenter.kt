@@ -2,12 +2,13 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter
 
 import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
+import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.CheckboxUpdateListener
+import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.DropDownSelectUpdateListener
+import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.InputFieldUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.QuestionnaireActivityCallback
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model.ConversationLikeModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model.FormLikeModel
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
+import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.ButtonListUpdateListener
 import org.json.JSONObject
 
 class NinchatQuestionnaireListPresenter(
@@ -15,28 +16,25 @@ class NinchatQuestionnaireListPresenter(
         isFormLike: Boolean,
         var rootActivityCallback: QuestionnaireActivityCallback,
         val viewCallback: INinchatQuestionnaireListPresenter,
-) {
-    init {
-        EventBus.getDefault().register(this)
-    }
-
-    val model = if (isFormLike) {
-        FormLikeModel(
-                questionnaireList = questionnaireList,
-                answerList = listOf(),
-                selectedElement = arrayListOf(),
-                isFormLike = isFormLike
-        ).apply {
-            parse()
-        }
-    } else {
-        ConversationLikeModel(
-                questionnaireList = questionnaireList,
-                answerList = listOf(),
-                selectedElement = arrayListOf(),
-                isFormLike = isFormLike
-        ).apply { parse() }
-    }
+) : InputFieldUpdateListener, ButtonListUpdateListener, DropDownSelectUpdateListener, CheckboxUpdateListener {
+    val model =
+            if (isFormLike) {
+                FormLikeModel(
+                        questionnaireList = questionnaireList,
+                        answerList = listOf(),
+                        selectedElement = arrayListOf(),
+                        isFormLike = isFormLike
+                ).apply {
+                    parse()
+                }
+            } else {
+                ConversationLikeModel(
+                        questionnaireList = questionnaireList,
+                        answerList = listOf(),
+                        selectedElement = arrayListOf(),
+                        isFormLike = isFormLike
+                ).apply { parse() }
+            }
 
     fun get(at: Int): JSONObject = model.get(at)
     fun size() = model.size()
@@ -53,9 +51,7 @@ class NinchatQuestionnaireListPresenter(
         return model.addElement(jsonObject = nextElement)
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    @JvmName("onNextQuestionnaire")
-    fun onNextQuestionnaire(onNextQuestionnaire: OnNextQuestionnaire) {
+    fun showNext(onNextQuestionnaire: OnNextQuestionnaire) {
         val matchedLogic = NinchatQuestionnaireJsonUtil.getMatchingLogic(
                 questionnaireList = model.questionnaireList,
                 elementName = model.selectedElement.lastOrNull()?.first ?: "~",
@@ -124,6 +120,34 @@ class NinchatQuestionnaireListPresenter(
             }
             return
         } ?: rootActivityCallback.onFinishQuestionnaire(openQueue = false)
+    }
+
+    override fun onUpdate(value: String?, sublistPosition: Int, hasError: Boolean, position: Int) {
+        model.answerList.getOrNull(position)?.apply {
+            putOpt("result", value)
+            putOpt("hasError", hasError)
+            putOpt("position", sublistPosition)
+        }
+    }
+
+    override fun onUpdate(value: String?, position: Int) {
+        model.answerList.getOrNull(position)?.apply {
+            putOpt("result", value)
+        }
+    }
+
+    override fun onUpdate(value: Boolean, hasError: Boolean, position: Int) {
+        model.answerList.getOrNull(position)?.apply {
+            putOpt("result", value)
+            putOpt("hasError", hasError)
+        }
+    }
+
+    override fun onUpdate(value: String?, hasError: Boolean, position: Int) {
+        model.answerList.getOrNull(position)?.apply {
+            putOpt("result", value)
+            putOpt("hasError", hasError)
+        }
     }
 }
 

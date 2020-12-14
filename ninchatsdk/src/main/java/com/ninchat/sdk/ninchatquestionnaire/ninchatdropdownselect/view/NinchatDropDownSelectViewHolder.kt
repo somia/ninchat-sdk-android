@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
+import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.DropDownSelectUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.INinchatDropDownSelectViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.NinchatDropDownSelectViewPresenter
 import kotlinx.android.synthetic.main.dropdown_list.view.*
@@ -19,12 +20,16 @@ class NinchatDropDownSelectViewHolder(
         itemView: View,
         jsonObject: JSONObject?,
         isFormLikeQuestionnaire: Boolean = true,
+        updateCallback: DropDownSelectUpdateListener,
+        position: Int
 ) : RecyclerView.ViewHolder(itemView), INinchatDropDownSelectViewPresenter {
 
     val iPresenter = NinchatDropDownSelectViewPresenter(
             jsonObject = jsonObject,
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-            viewCallback = this
+            viewCallback = this,
+            updateCallback = updateCallback,
+            position = position,
     )
 
     fun update(jsonObject: JSONObject?) {

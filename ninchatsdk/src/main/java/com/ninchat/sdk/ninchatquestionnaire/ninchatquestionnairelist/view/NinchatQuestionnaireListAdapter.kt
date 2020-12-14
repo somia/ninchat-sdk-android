@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
+import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireType
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.view.NinchatButtonViewHolder
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.view.NinchatCheckboxViewHolder
@@ -19,7 +20,7 @@ import org.json.JSONObject
 class NinchatQuestionnaireListAdapter(
         questionnaireList: List<JSONObject>,
         isFormLike: Boolean,
-        rootActivityCallback: QuestionnaireActivityCallback
+        rootActivityCallback: QuestionnaireActivityCallback,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), INinchatQuestionnaireListPresenter {
     val presenter = NinchatQuestionnaireListPresenter(
             questionnaireList = questionnaireList,
@@ -38,15 +39,19 @@ class NinchatQuestionnaireListAdapter(
                 NinchatTextViewHolder(
                         itemView = view,
                         jsonObject = currentElement,
-                        isFormLikeQuestionnaire = false)
+                        isFormLikeQuestionnaire = false,
+                        position = position)
             }
-            NinchatQuestionnaireType.isInput(currentElement)-> {
+            NinchatQuestionnaireType.isInput(currentElement) -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.text_field_with_label, parent, false)
                 NinchatInputFieldViewHolder(
                         itemView = view,
                         jsonObject = currentElement,
                         isMultiline = NinchatQuestionnaireType.isTextArea(currentElement),
-                        isFormLikeQuestionnaire = false)
+                        isFormLikeQuestionnaire = false,
+                        updateCallback = presenter,
+                        position = position
+                )
             }
             NinchatQuestionnaireType.isTextArea(currentElement) -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.text_area_with_label, parent, false)
@@ -54,41 +59,57 @@ class NinchatQuestionnaireListAdapter(
                         itemView = view,
                         jsonObject = currentElement,
                         isMultiline = NinchatQuestionnaireType.isTextArea(currentElement),
-                        isFormLikeQuestionnaire = false)
+                        isFormLikeQuestionnaire = false,
+                        updateCallback = presenter,
+                        position = position
+                )
             }
             NinchatQuestionnaireType.isRadio(currentElement) -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.multichoice_with_label, parent, false)
                 NinchatRadioButtonListView(
                         itemView = view,
                         jsonObject = currentElement,
-                        isFormLikeQuestionnaire = false)
+                        isFormLikeQuestionnaire = false,
+                        updateCallback = presenter,
+                        position = position,
+                )
             }
             NinchatQuestionnaireType.isSelect(currentElement) || NinchatQuestionnaireType.isLikeRT(currentElement) -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.dropdown_with_label, parent, false)
                 NinchatDropDownSelectViewHolder(
                         itemView = view,
                         jsonObject = currentElement,
-                        isFormLikeQuestionnaire = false)
+                        isFormLikeQuestionnaire = false,
+                        updateCallback = presenter,
+                        position = position
+                )
             }
             NinchatQuestionnaireType.isCheckBox(currentElement) -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.checkbox_simple, parent, false)
                 NinchatCheckboxViewHolder(
                         itemView = view,
                         jsonObject = currentElement,
-                        isFormLikeQuestionnaire = false)
+                        isFormLikeQuestionnaire = false,
+                        updateCallback = presenter,
+                        position = position
+                )
             }
             NinchatQuestionnaireType.isButton(currentElement) -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.control_buttons, parent, false)
                 NinchatButtonViewHolder(
                         itemView = view,
-                        jsonObject = currentElement)
+                        jsonObject = currentElement,
+                        position = position
+                )
             }
             else -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.text_field_with_label, parent, false)
                 NinchatTextViewHolder(
                         itemView = view,
                         jsonObject = currentElement,
-                        isFormLikeQuestionnaire = false)
+                        isFormLikeQuestionnaire = false,
+                        position = position
+                )
             }
 
         }
@@ -121,7 +142,11 @@ class NinchatQuestionnaireListAdapter(
         notifyItemRangeChanged(positionStart, itemCount)
     }
 
-    fun showThankYou(isComplete: Boolean = false){
+    fun showThankYou(isComplete: Boolean = false) {
         presenter.showThankYouText(isComplete)
+    }
+
+    fun showNextQuestionnaire(onNextQuestionnaire: OnNextQuestionnaire) {
+        presenter.showNext(onNextQuestionnaire)
     }
 }

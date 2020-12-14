@@ -14,12 +14,14 @@ class NinchatTextViewHolder(
         itemView: View,
         jsonObject: JSONObject?,
         isFormLikeQuestionnaire: Boolean = true,
+        position: Int
 ) : RecyclerView.ViewHolder(itemView), INinchatTextViewPresenter {
 
     private val presenter = NinchatTextViewPresenter(
             jsonObject = jsonObject,
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-            iPresenter = this
+            iPresenter = this,
+            position = position
     )
 
     fun update(jsonObject: JSONObject?) {

@@ -7,32 +7,36 @@ import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
 class NinchatRadioButtonListPresenter(
-        var jsonObject: JSONObject? = null,
+        jsonObject: JSONObject? = null,
         isFormLikeQuestionnaire: Boolean,
         val viewCallback: INinchatRadioButtonListPresenter,
+        val updateCallback: ButtonListUpdateListener,
+        position: Int
 ) {
-    private val ninchatRadioButtonList = NinchatRadioButtonListModel(
-            isFormLikeQuestionnaire = isFormLikeQuestionnaire).apply {
+    private val model = NinchatRadioButtonListModel(
+            isFormLikeQuestionnaire = isFormLikeQuestionnaire, position = position).apply {
         parse(jsonObject = jsonObject)
     }
 
     fun renderCurrentView(jsonObject: JSONObject? = null) {
-        jsonObject?.let { ninchatRadioButtonList.update(jsonObject = jsonObject) }
-        if (ninchatRadioButtonList.isFormLikeQuestionnaire) {
-            viewCallback.onUpdateFormView(label = ninchatRadioButtonList.label ?: "", hasError = ninchatRadioButtonList.hasError)
+        jsonObject?.let { model.update(jsonObject = jsonObject) }
+        if (model.isFormLikeQuestionnaire) {
+            viewCallback.onUpdateFormView(label = model.label ?: "", hasError = model.hasError)
         } else {
-            viewCallback.onUpdateConversationView(label = ninchatRadioButtonList.label ?: "", hasError = ninchatRadioButtonList.hasError)
+            viewCallback.onUpdateConversationView(label = model.label ?: "", hasError = model.hasError)
         }
     }
 
-    fun handleOptionToggled(isSelected: Boolean, position: Int): Int {
-        val previousPosition = ninchatRadioButtonList.position
-        ninchatRadioButtonList.value = if (isSelected) ninchatRadioButtonList.getValue(position) else null
-        ninchatRadioButtonList.position = if(isSelected) position else -1
-        ninchatRadioButtonList.hasError = if(isSelected) false else ninchatRadioButtonList.hasError
+    fun handleOptionToggled(isSelected: Boolean, listPosition: Int): Int {
+        val previousPosition = model.listPosition
+        model.value = if (isSelected) model.getValue(listPosition) else null
+        model.listPosition = if(isSelected) listPosition else -1
+        model.hasError = if(isSelected) false else model.hasError
 
-        // update json model
-        ninchatRadioButtonList.updateJson(jsonObject = jsonObject)
+        updateCallback.onUpdate(value = model.value,
+                sublistPosition = model.listPosition,
+                hasError = model.hasError,
+                position = model.position)
         if (isSelected) {
             mayBeFireEvent()
         }
@@ -41,22 +45,26 @@ class NinchatRadioButtonListPresenter(
 
     fun isSelected(jsonObject: JSONObject?): Boolean {
         return jsonObject?.let {
-            ninchatRadioButtonList.position != -1 && ninchatRadioButtonList.position == NinchatQuestionnaireItemGetter.getOptionPosition(it)
+            model.listPosition != -1 && model.listPosition == NinchatQuestionnaireItemGetter.getOptionPosition(it)
         } ?: false
     }
 
     private fun mayBeFireEvent() {
-        if (ninchatRadioButtonList.fireEvent) {
+        if (model.fireEvent) {
             EventBus.getDefault().post(OnNextQuestionnaire(OnNextQuestionnaire.other));
         }
     }
 
-    fun optionList() = ninchatRadioButtonList.optionList
-    fun hasError(): Boolean = ninchatRadioButtonList.hasError
-    internal fun getModel() = ninchatRadioButtonList
+    fun optionList() = model.optionList
+    fun hasError(): Boolean = model.hasError
+    internal fun getModel() = model
 }
 
 interface INinchatRadioButtonListPresenter {
     fun onUpdateFormView(label: String, hasError: Boolean)
     fun onUpdateConversationView(label: String, hasError: Boolean)
+}
+
+interface ButtonListUpdateListener{
+    fun onUpdate(value: String?, sublistPosition: Int, hasError: Boolean, position: Int)
 }

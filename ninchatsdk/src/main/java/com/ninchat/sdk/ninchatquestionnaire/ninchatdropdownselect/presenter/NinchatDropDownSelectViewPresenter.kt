@@ -8,54 +8,56 @@ import org.json.JSONObject
 
 class NinchatDropDownSelectViewPresenter(
         isFormLikeQuestionnaire: Boolean,
-        val jsonObject: JSONObject? = null,
+        jsonObject: JSONObject? = null,
         val viewCallback: INinchatDropDownSelectViewPresenter,
+        val updateCallback: DropDownSelectUpdateListener,
+        position: Int
 ) : INinchatDropDownSelectViewHolder {
-    private val ninchatDropDownSelectViewModel = NinchatDropDownSelectViewModel(
+    private val model = NinchatDropDownSelectViewModel(
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
+            position = position
     ).apply {
         parse(jsonObject = jsonObject)
     }
 
     fun renderCurrentView(jsonObject: JSONObject? = null) {
         jsonObject?.let {
-            ninchatDropDownSelectViewModel.update(jsonObject = jsonObject)
+            model.update(jsonObject = jsonObject)
         }
-        if (ninchatDropDownSelectViewModel.isFormLikeQuestionnaire) {
-            viewCallback.onUpdateFromView(label = ninchatDropDownSelectViewModel.label
-                    ?: "", options = ninchatDropDownSelectViewModel.optionList)
+        if (model.isFormLikeQuestionnaire) {
+            viewCallback.onUpdateFromView(label = model.label
+                    ?: "", options = model.optionList)
         } else {
-            viewCallback.onUpdateConversationView(label = ninchatDropDownSelectViewModel.label
-                    ?: "", options = ninchatDropDownSelectViewModel.optionList)
+            viewCallback.onUpdateConversationView(label = model.label
+                    ?: "", options = model.optionList)
         }
         // cal on item selection change
-        onItemSelectionChange(ninchatDropDownSelectViewModel.selectedIndex)
+        onItemSelectionChange(model.selectedIndex)
     }
 
     override fun onItemSelectionChange(position: Int) {
-        val value = ninchatDropDownSelectViewModel.optionList.getOrNull(position)
+        val value = model.optionList.getOrNull(position)
         // first position is "Selected" and should be consider as not selected
         if (position == 0) {
             viewCallback.onUnSelected(
                     position = position,
-                    hasError = ninchatDropDownSelectViewModel.hasError)
+                    hasError = model.hasError)
         } else {
-            ninchatDropDownSelectViewModel.hasError = false
+            model.hasError = false
             viewCallback.onSelected(
                     position = position,
-                    hasError = ninchatDropDownSelectViewModel.hasError)
+                    hasError = model.hasError)
         }
-        ninchatDropDownSelectViewModel.value = if (value == "Select") "" else value
-        ninchatDropDownSelectViewModel.selectedIndex = position
-        // update json model
-        ninchatDropDownSelectViewModel.updateJson(jsonObject = jsonObject)
+        model.value = if (value == "Select") "" else value
+        model.selectedIndex = position
+        updateCallback.onUpdate(value = model.value, position = model.position)
         if (position != 0) {
             mayBeFireEvent()
         }
     }
 
     private fun mayBeFireEvent() {
-        if (!ninchatDropDownSelectViewModel.fireEvent) return
+        if (!model.fireEvent) return
         EventBus.getDefault().post(OnNextQuestionnaire(OnNextQuestionnaire.other))
     }
 }
@@ -65,4 +67,9 @@ interface INinchatDropDownSelectViewPresenter {
     fun onUpdateConversationView(label: String, options: List<String>)
     fun onSelected(position: Int, hasError: Boolean)
     fun onUnSelected(position: Int, hasError: Boolean)
+}
+
+
+interface DropDownSelectUpdateListener{
+    fun onUpdate(value: String?, position: Int)
 }

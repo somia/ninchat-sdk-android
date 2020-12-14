@@ -6,12 +6,15 @@ import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
 class NinchatCheckboxViewPresenter(
-        val jsonObject: JSONObject?,
+        jsonObject: JSONObject?,
         isFormLikeQuestionnaire: Boolean = true,
-        private val iPresent: INinchatCheckboxViewPresenter,
+        val iPresent: INinchatCheckboxViewPresenter,
+        val updateCallback: CheckboxUpdateListener,
+        position: Int
 ) {
-    private var ninchatCheckboxViewModel = NinchatCheckboxViewModel(
-            isFormLikeQuestionnaire = isFormLikeQuestionnaire
+    private var model = NinchatCheckboxViewModel(
+            isFormLikeQuestionnaire = isFormLikeQuestionnaire,
+            position = position
     ).apply {
         parse(jsonObject = jsonObject)
     }
@@ -19,40 +22,38 @@ class NinchatCheckboxViewPresenter(
 
     fun renderCurrentView(jsonObject: JSONObject? = null) {
         jsonObject?.let {
-            ninchatCheckboxViewModel.update(jsonObject = jsonObject)
+            model.update(jsonObject = jsonObject)
         }
-        if (ninchatCheckboxViewModel.isFormLikeQuestionnaire) {
+        if (model.isFormLikeQuestionnaire) {
             // render form like
             iPresent.onUpdateFromView(
-                    label = ninchatCheckboxViewModel.label,
-                    isChecked = ninchatCheckboxViewModel.isChecked,
-                    hasError = ninchatCheckboxViewModel.hasError
+                    label = model.label,
+                    isChecked = model.isChecked,
+                    hasError = model.hasError
             )
             return
         }
         // render conversation like
         iPresent.onUpdateConversationView(
-                label = ninchatCheckboxViewModel.label,
-                isChecked = ninchatCheckboxViewModel.isChecked,
-                hasError = ninchatCheckboxViewModel.hasError
+                label = model.label,
+                isChecked = model.isChecked,
+                hasError = model.hasError
         )
     }
 
     fun handleCheckBoxToggled(isChecked: Boolean) {
-        ninchatCheckboxViewModel.isChecked = isChecked
-        ninchatCheckboxViewModel.hasError = false
+        model.isChecked = isChecked
+        model.hasError = false
         iPresent.onCheckBoxToggled(
-                isChecked = ninchatCheckboxViewModel.isChecked,
-                hasError = ninchatCheckboxViewModel.hasError)
-
-        // update json model
-        ninchatCheckboxViewModel.updateJson(jsonObject = jsonObject)
+                isChecked = model.isChecked,
+                hasError = model.hasError)
+        updateCallback.onUpdate(value = model.isChecked, hasError = model.hasError, position = model.position)
         if (!isChecked) return
         mayBeFireEvent()
     }
 
     private fun mayBeFireEvent() {
-        if (!ninchatCheckboxViewModel.fireEvent) return
+        if (!model.fireEvent) return
         EventBus.getDefault().post(OnNextQuestionnaire(OnNextQuestionnaire.other))
     }
 }
@@ -61,4 +62,8 @@ interface INinchatCheckboxViewPresenter {
     fun onUpdateFromView(label: String?, isChecked: Boolean, hasError: Boolean)
     fun onUpdateConversationView(label: String?, isChecked: Boolean, hasError: Boolean)
     fun onCheckBoxToggled(isChecked: Boolean, hasError: Boolean)
+}
+
+interface CheckboxUpdateListener{
+    fun onUpdate(value: Boolean, hasError: Boolean, position: Int)
 }

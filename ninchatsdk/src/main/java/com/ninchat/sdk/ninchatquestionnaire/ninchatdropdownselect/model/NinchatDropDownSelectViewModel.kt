@@ -14,6 +14,7 @@ data class NinchatDropDownSelectViewModel(
         var selectedIndex: Int = 0,
         var value: String? = "",
         var optionList: List<String> = listOf(),
+        val position: Int
 ) {
 
     fun parse(jsonObject: JSONObject?, isFormLikeQuestionnaire: Boolean = false) {

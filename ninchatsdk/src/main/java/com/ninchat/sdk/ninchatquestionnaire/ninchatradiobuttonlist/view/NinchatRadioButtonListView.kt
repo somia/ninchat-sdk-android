@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.view.NinchatRadioButtonView
+import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.ButtonListUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.INinchatRadioButtonListPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.NinchatRadioButtonListPresenter
 import kotlinx.android.synthetic.main.multichoice_with_label.view.*
@@ -17,12 +18,16 @@ class NinchatRadioButtonListView(
         itemView: View,
         jsonObject: JSONObject?,
         isFormLikeQuestionnaire: Boolean,
+        updateCallback: ButtonListUpdateListener,
+        position: Int
 ) : RecyclerView.ViewHolder(itemView), INinchatRadioButtonListPresenter {
 
     private val ninchatRadioButtonList = NinchatRadioButtonListPresenter(
             jsonObject = jsonObject,
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-            viewCallback = this
+            viewCallback = this,
+            updateCallback = updateCallback,
+            position = position
     )
 
     fun update(jsonObject: JSONObject?) {
@@ -73,10 +78,10 @@ class NinchatRadioButtonListView(
             return ninchatRadioButtonList.optionList()?.length() ?: 0
         }
 
-        override fun onOptionToggled(isSelected: Boolean, position: Int) {
+        override fun onOptionToggled(isSelected: Boolean, listPosition: Int) {
             val previousIndex = ninchatRadioButtonList.handleOptionToggled(
                     isSelected = isSelected,
-                    position = position)
+                    listPosition = listPosition)
             // if there is a last selected position
             if (previousIndex != -1) {
                 notifyItemChanged(previousIndex)
@@ -86,5 +91,5 @@ class NinchatRadioButtonListView(
 }
 
 interface INinchatRadioButtonListView {
-    fun onOptionToggled(isSelected: Boolean, position: Int)
+    fun onOptionToggled(isSelected: Boolean, listPosition: Int)
 }
