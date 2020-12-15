@@ -4,9 +4,9 @@ import org.json.JSONObject
 
 class ConversationLikeModel(
         questionnaireList: List<JSONObject>,
-        answerList: List<JSONObject> ,
+        answerList: List<JSONObject>,
         selectedElement: ArrayList<Pair<String, Int>>,
-        isFormLike: Boolean ,
+        isFormLike: Boolean,
 ) : NinchatQuestionnaireListModel(
         questionnaireList = questionnaireList,
         answerList = answerList,
@@ -18,4 +18,10 @@ class ConversationLikeModel(
 
     override fun get(at: Int): JSONObject =
             answerList.getOrNull(at) ?: JSONObject()
+
+    override fun isLast(at: Int): Boolean {
+        // last block of questionnaire contains lastElementCount items
+        val lastElementCount = selectedElement.lastOrNull()?.second ?: 0
+        return at + lastElementCount >= answerList.size
+    }
 }

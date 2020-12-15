@@ -11,19 +11,25 @@ class NinchatRadioButtonListPresenter(
         val viewCallback: INinchatRadioButtonListPresenter,
         val updateCallback: ButtonListUpdateListener,
         position: Int,
+        enabled: Boolean,
 ) {
     private val model = NinchatRadioButtonListModel(
-            isFormLikeQuestionnaire = isFormLikeQuestionnaire, position = position).apply {
+            isFormLikeQuestionnaire = isFormLikeQuestionnaire,
+            position = position,
+            enabled = enabled).apply {
         parse(jsonObject = jsonObject)
     }
 
-    fun renderCurrentView(jsonObject: JSONObject? = null) {
-        jsonObject?.let { model.update(jsonObject = jsonObject) }
+    fun renderCurrentView(jsonObject: JSONObject? = null, enabled: Boolean) {
+        jsonObject?.let {
+            model.update(jsonObject = jsonObject, enabled = enabled)
+        }
         if (model.isFormLikeQuestionnaire) {
-            viewCallback.onUpdateFormView(label = model.label ?: "", hasError = model.hasError)
+            viewCallback.onUpdateFormView(label = model.label
+                    ?: "", hasError = model.hasError, enabled = model.enabled)
         } else {
             viewCallback.onUpdateConversationView(label = model.label
-                    ?: "", hasError = model.hasError)
+                    ?: "", hasError = model.hasError, enabled = model.enabled)
         }
     }
 
@@ -43,11 +49,8 @@ class NinchatRadioButtonListPresenter(
         return previousPosition
     }
 
-    fun isSelected(jsonObject: JSONObject?): Boolean {
-        return jsonObject?.let {
-            model.listPosition != -1
-                    && model.listPosition == it.optInt("position", -1)
-        } ?: false
+    fun isSelected(currentPosition: Int): Boolean {
+        return model.listPosition != -1 && model.listPosition == currentPosition
     }
 
     private fun mayBeFireEvent() {
@@ -58,12 +61,13 @@ class NinchatRadioButtonListPresenter(
 
     fun optionList() = model.optionList
     fun hasError(): Boolean = model.hasError
+    fun isEnabled(): Boolean = model.enabled
     internal fun getModel() = model
 }
 
 interface INinchatRadioButtonListPresenter {
-    fun onUpdateFormView(label: String, hasError: Boolean)
-    fun onUpdateConversationView(label: String, hasError: Boolean)
+    fun onUpdateFormView(label: String, hasError: Boolean, enabled: Boolean)
+    fun onUpdateConversationView(label: String, hasError: Boolean, enabled: Boolean)
 }
 
 interface ButtonListUpdateListener {

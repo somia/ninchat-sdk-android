@@ -10,7 +10,8 @@ data class NinchatCheckboxViewModel(
         var label: String? = "",
         var hasError: Boolean = false,
         var fireEvent: Boolean = false,
-        val position: Int
+        val position: Int,
+        var enabled: Boolean
 ) {
 
     fun parse(jsonObject: JSONObject?) {
@@ -22,7 +23,8 @@ data class NinchatCheckboxViewModel(
         this.translate()
     }
 
-    fun update(jsonObject: JSONObject?) {
+    fun update(jsonObject: JSONObject?, enabled: Boolean) {
+        this.enabled = enabled
         this.isChecked = jsonObject?.optBoolean("result", false)?: false
         this.hasError = jsonObject?.optBoolean("hasError", false)?: false
     }

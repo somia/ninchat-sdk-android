@@ -15,7 +15,8 @@ class NinchatCheckboxViewHolder(
         jsonObject: JSONObject?,
         isFormLikeQuestionnaire: Boolean = true,
         updateCallback: CheckboxUpdateListener,
-        position: Int
+        position: Int,
+        enabled: Boolean,
 ) : RecyclerView.ViewHolder(itemView), INinchatCheckboxViewPresenter {
 
     private val ninchatCheckboxViewPresenter = NinchatCheckboxViewPresenter(
@@ -23,11 +24,12 @@ class NinchatCheckboxViewHolder(
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
             iPresent = this,
             updateCallback = updateCallback,
-            position = position
+            position = position,
+            enabled = enabled
     )
 
-    fun update(jsonObject: JSONObject?) {
-        ninchatCheckboxViewPresenter.renderCurrentView(jsonObject = jsonObject)
+    fun update(jsonObject: JSONObject?, enabled: Boolean) {
+        ninchatCheckboxViewPresenter.renderCurrentView(jsonObject = jsonObject, enabled = enabled)
         attachUserActionHandler()
     }
 
@@ -40,14 +42,14 @@ class NinchatCheckboxViewHolder(
     }
 
 
-    override fun onUpdateFromView(label: String?, isChecked: Boolean, hasError: Boolean) {
+    override fun onUpdateFromView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean) {
         val background = R.drawable.ninchat_chat_questionnaire_background
         itemView.background = ContextCompat.getDrawable(itemView.context, background)
-        renderCommonView(label = label, isChecked = isChecked, hasError = hasError)
+        renderCommonView(label = label, isChecked = isChecked, hasError = hasError, enabled = enabled)
     }
 
-    override fun onUpdateConversationView(label: String?, isChecked: Boolean, hasError: Boolean) {
-        renderCommonView(label = label, isChecked = isChecked, hasError = hasError)
+    override fun onUpdateConversationView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean) {
+        renderCommonView(label = label, isChecked = isChecked, hasError = hasError, enabled = enabled)
     }
 
     override fun onCheckBoxToggled(isChecked: Boolean, hasError: Boolean) {
@@ -56,11 +58,19 @@ class NinchatCheckboxViewHolder(
                 if (isChecked) R.color.ninchat_color_checkbox_selected else R.color.ninchat_color_checkbox_unselected));
     }
 
-    private fun renderCommonView(label: String?, isChecked: Boolean, hasError: Boolean) {
+    private fun renderCommonView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean) {
+        itemView.isEnabled = enabled
+        itemView.ninchat_checkbox.isEnabled = enabled
         itemView.ninchat_checkbox.text = label
         itemView.ninchat_checkbox.isChecked = isChecked
         itemView.ninchat_checkbox.setTextColor(ContextCompat.getColor(itemView.context,
-                if (isChecked) R.color.ninchat_color_checkbox_selected else R.color.ninchat_color_checkbox_unselected));
+                when {
+                    hasError -> R.color.ninchat_color_error_background
+                    isChecked -> R.color.ninchat_color_checkbox_selected
+                    enabled -> R.color.ninchat_color_text_disabled
+                    else ->
+                        R.color.ninchat_color_checkbox_unselected
+                }))
 
         if (hasError) {
             itemView.ninchat_checkbox.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background));

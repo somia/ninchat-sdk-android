@@ -12,16 +12,20 @@ import org.json.JSONObject
 class NinchatButtonViewHolder(
         itemView: View,
         jsonObject: JSONObject?,
-        position: Int
+        position: Int,
+        enabled: Boolean,
 ) : RecyclerView.ViewHolder(itemView), INinchatButtonViewPresenter {
-    private val ninchatButtonViewPresenter = NinchatButtonViewPresenter(
+    private val presenter = NinchatButtonViewPresenter(
             jsonObject = jsonObject,
             iPresenter = this,
-            position = position
+            position = position,
+            enabled = enabled
     )
 
-    fun update(jsonObject: JSONObject?) {
-        ninchatButtonViewPresenter.renderCurrentView()
+    fun update(jsonObject: JSONObject?, enabled: Boolean) {
+        presenter.updateModel(jsonObject = jsonObject, enabled = enabled)
+        presenter.renderCurrentView()
+
         attachUserActionHandler()
     }
 
@@ -29,27 +33,30 @@ class NinchatButtonViewHolder(
         // update background of the button
         itemView.run {
             ninchat_image_button_previous?.setOnClickListener {
-                ninchatButtonViewPresenter.onBackButtonClicked()
+                presenter.onBackButtonClicked()
             }
             ninchat_button_previous?.setOnClickListener {
-                ninchatButtonViewPresenter.onBackButtonClicked()
+                presenter.onBackButtonClicked()
             }
             ninchat_image_button_next?.setOnClickListener {
-                ninchatButtonViewPresenter.onNextButtonClicked()
+                presenter.onNextButtonClicked()
             }
             ninchat_button_next?.setOnClickListener {
-                ninchatButtonViewPresenter.onNextButtonClicked()
+                presenter.onNextButtonClicked()
             }
         }
     }
 
-    override fun onBackButtonUpdated(visible: Boolean, text: String?, imageButton: Boolean, clicked: Boolean) {
+    override fun onBackButtonUpdated(visible: Boolean, text: String?, imageButton: Boolean, clicked: Boolean, enabled: Boolean) {
         val background = if (clicked) R.drawable.ninchat_chat_secondary_onclicked_button else R.drawable.ninchat_chat_secondary_button
         itemView.run {
+            isEnabled = enabled
             if (imageButton) {
-                ninchat_image_button_previous.background = ContextCompat.getDrawable(itemView.context, background)
+                ninchat_image_button_previous?.isEnabled = enabled
+                ninchat_image_button_previous?.background = ContextCompat.getDrawable(itemView.context, background)
                 ninchat_image_button_previous?.visibility = if (visible) View.VISIBLE else View.GONE
             } else {
+                ninchat_button_previous?.isEnabled = enabled
                 ninchat_button_previous?.background = ContextCompat.getDrawable(itemView.context, background)
                 ninchat_button_previous?.visibility = if (visible) View.VISIBLE else View.GONE
                 ninchat_button_previous?.text = text
@@ -57,13 +64,16 @@ class NinchatButtonViewHolder(
         }
     }
 
-    override fun onNextNextUpdated(visible: Boolean, text: String?, imageButton: Boolean, clicked: Boolean) {
+    override fun onNextNextUpdated(visible: Boolean, text: String?, imageButton: Boolean, clicked: Boolean, enabled: Boolean) {
         val background = if (clicked) R.drawable.ninchat_chat_primary_oncliked_button else R.drawable.ninchat_chat_primary_button
         itemView.run {
+            isEnabled = enabled
             if (imageButton) {
+                ninchat_image_button_next?.isEnabled = enabled
                 ninchat_image_button_next?.background = ContextCompat.getDrawable(itemView.context, background)
                 ninchat_image_button_next?.visibility = if (visible) View.VISIBLE else View.GONE
             } else {
+                ninchat_button_next?.isEnabled = enabled
                 ninchat_button_next?.background = ContextCompat.getDrawable(itemView.context, background)
                 ninchat_button_next?.visibility = if (visible) View.VISIBLE else View.GONE
                 ninchat_button_next?.text = text

@@ -10,26 +10,29 @@ class NinchatCheckboxViewPresenter(
         isFormLikeQuestionnaire: Boolean = true,
         val iPresent: INinchatCheckboxViewPresenter,
         val updateCallback: CheckboxUpdateListener,
-        position: Int
+        position: Int,
+        enabled: Boolean
 ) {
     private var model = NinchatCheckboxViewModel(
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-            position = position
+            position = position,
+            enabled = enabled,
     ).apply {
         parse(jsonObject = jsonObject)
     }
 
 
-    fun renderCurrentView(jsonObject: JSONObject? = null) {
+    fun renderCurrentView(jsonObject: JSONObject? = null, enabled: Boolean) {
         jsonObject?.let {
-            model.update(jsonObject = jsonObject)
+            model.update(jsonObject = jsonObject, enabled = enabled)
         }
         if (model.isFormLikeQuestionnaire) {
             // render form like
             iPresent.onUpdateFromView(
                     label = model.label,
                     isChecked = model.isChecked,
-                    hasError = model.hasError
+                    hasError = model.hasError,
+                    enabled = enabled
             )
             return
         }
@@ -37,7 +40,8 @@ class NinchatCheckboxViewPresenter(
         iPresent.onUpdateConversationView(
                 label = model.label,
                 isChecked = model.isChecked,
-                hasError = model.hasError
+                hasError = model.hasError,
+                enabled = enabled
         )
     }
 
@@ -59,8 +63,8 @@ class NinchatCheckboxViewPresenter(
 }
 
 interface INinchatCheckboxViewPresenter {
-    fun onUpdateFromView(label: String?, isChecked: Boolean, hasError: Boolean)
-    fun onUpdateConversationView(label: String?, isChecked: Boolean, hasError: Boolean)
+    fun onUpdateFromView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean)
+    fun onUpdateConversationView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean)
     fun onCheckBoxToggled(isChecked: Boolean, hasError: Boolean)
 }
 

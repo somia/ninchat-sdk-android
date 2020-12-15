@@ -5,6 +5,7 @@ import org.json.JSONObject
 
 data class NinchatRadioButtonModel(
         var label: String? = "",
+        var enabled: Boolean,
         var isSelected: Boolean = false,
 ) {
     fun parse(jsonObject: JSONObject?, hasError: Boolean = false, isSelected: Boolean = false) {
@@ -12,7 +13,8 @@ data class NinchatRadioButtonModel(
         this.isSelected = isSelected
     }
 
-    fun update(isSelected: Boolean = false) {
+    fun update(isSelected: Boolean = false, enabled: Boolean) {
         this.isSelected = isSelected
+        this.enabled = enabled
     }
 }

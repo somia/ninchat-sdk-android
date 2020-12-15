@@ -38,6 +38,7 @@ class NinchatQuestionnaireListPresenter(
 
     fun get(at: Int): JSONObject = model.get(at)
     fun size() = model.size()
+    fun isLast(at: Int): Boolean = model.isLast(at)
 
     private fun loadNext(elementName: String?): Int {
         if (!model.hasMatch(elementName = elementName)) return 0

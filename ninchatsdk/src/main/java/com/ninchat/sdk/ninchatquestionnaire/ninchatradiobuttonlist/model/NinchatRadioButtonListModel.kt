@@ -12,7 +12,8 @@ data class NinchatRadioButtonListModel(
         var optionList: JSONArray? = null,
         var listPosition: Int = -1,
         var fireEvent: Boolean = false,
-        val position: Int
+        val position: Int,
+        var enabled: Boolean
 ) {
 
     fun parse(jsonObject: JSONObject?) {
@@ -25,7 +26,8 @@ data class NinchatRadioButtonListModel(
                 ?: JSONArray()
     }
 
-    fun update(jsonObject: JSONObject) {
+    fun update(jsonObject: JSONObject, enabled: Boolean) {
+        this.enabled = enabled
         this.hasError = jsonObject.optBoolean(NinchatQuestionnaireConstants.hasError, false)
         this.value = jsonObject.optString(NinchatQuestionnaireConstants.result)
         this.listPosition = jsonObject.optInt(NinchatQuestionnaireConstants.position, -1)

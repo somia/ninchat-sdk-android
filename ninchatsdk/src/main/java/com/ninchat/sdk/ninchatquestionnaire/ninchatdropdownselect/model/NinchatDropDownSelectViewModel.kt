@@ -15,6 +15,7 @@ data class NinchatDropDownSelectViewModel(
         var value: String? = "",
         var optionList: List<String> = listOf(),
         val position: Int,
+        var enabled: Boolean
 ) {
 
     fun parse(jsonObject: JSONObject?, isFormLikeQuestionnaire: Boolean = false) {
@@ -29,7 +30,8 @@ data class NinchatDropDownSelectViewModel(
         this.translate()
     }
 
-    fun update(jsonObject: JSONObject?) {
+    fun update(jsonObject: JSONObject?, enabled: Boolean) {
+        this.enabled = enabled
         this.value = jsonObject?.optString("result")
         this.hasError = jsonObject?.optBoolean("hasError", false) ?: false
         this.selectedIndex = max(optionList.indexOf(this.value), 0)

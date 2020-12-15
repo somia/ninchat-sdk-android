@@ -11,25 +11,27 @@ class NinchatDropDownSelectViewPresenter(
         jsonObject: JSONObject? = null,
         val viewCallback: INinchatDropDownSelectViewPresenter,
         val updateCallback: DropDownSelectUpdateListener,
-        position: Int
+        position: Int,
+        enabled: Boolean,
 ) : INinchatDropDownSelectViewHolder {
     private val model = NinchatDropDownSelectViewModel(
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-            position = position
+            position = position,
+            enabled = enabled
     ).apply {
         parse(jsonObject = jsonObject)
     }
 
-    fun renderCurrentView(jsonObject: JSONObject? = null) {
+    fun renderCurrentView(jsonObject: JSONObject? = null, enabled: Boolean) {
         jsonObject?.let {
-            model.update(jsonObject = jsonObject)
+            model.update(jsonObject = jsonObject, enabled = enabled)
         }
         if (model.isFormLikeQuestionnaire) {
             viewCallback.onUpdateFromView(label = model.label
-                    ?: "", options = model.optionList)
+                    ?: "", options = model.optionList, enabled = enabled)
         } else {
             viewCallback.onUpdateConversationView(label = model.label
-                    ?: "", options = model.optionList)
+                    ?: "", options = model.optionList, enabled = enabled)
         }
         // cal on item selection change
         onItemSelectionChange(model.selectedIndex)
@@ -41,12 +43,12 @@ class NinchatDropDownSelectViewPresenter(
         if (position == 0) {
             viewCallback.onUnSelected(
                     position = position,
-                    hasError = model.hasError)
+                    hasError = model.hasError, enabled = model.enabled)
         } else {
             model.hasError = false
             viewCallback.onSelected(
                     position = position,
-                    hasError = model.hasError)
+                    hasError = model.hasError, model.enabled)
         }
         model.value = if (value == "Select") "" else value
         model.selectedIndex = position
@@ -63,13 +65,13 @@ class NinchatDropDownSelectViewPresenter(
 }
 
 interface INinchatDropDownSelectViewPresenter {
-    fun onUpdateFromView(label: String, options: List<String>)
-    fun onUpdateConversationView(label: String, options: List<String>)
-    fun onSelected(position: Int, hasError: Boolean)
-    fun onUnSelected(position: Int, hasError: Boolean)
+    fun onUpdateFromView(label: String, options: List<String>, enabled: Boolean)
+    fun onUpdateConversationView(label: String, options: List<String>, enabled: Boolean)
+    fun onSelected(position: Int, hasError: Boolean, enabled: Boolean)
+    fun onUnSelected(position: Int, hasError: Boolean, enabled: Boolean)
 }
 
 
-interface DropDownSelectUpdateListener{
+interface DropDownSelectUpdateListener {
     fun onUpdate(value: String?, position: Int)
 }

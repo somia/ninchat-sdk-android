@@ -23,4 +23,8 @@ class FormLikeModel(
                 .getOrNull(at) ?: JSONObject()
     }
 
+    override fun isLast(at: Int): Boolean {
+        return true
+    }
+
 }

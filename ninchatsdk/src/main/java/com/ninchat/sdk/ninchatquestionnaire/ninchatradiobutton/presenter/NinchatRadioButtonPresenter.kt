@@ -6,37 +6,39 @@ import org.json.JSONObject
 
 class NinchatRadioButtonPresenter(
         jsonObject: JSONObject?,
+        enabled: Boolean,
         val viewCallback: INinchatRadioButtonPresenter,
 ) : INinchatRadioButtonView {
 
-    private val ninchatRadioButtonModel = NinchatRadioButtonModel().apply {
+    private val model = NinchatRadioButtonModel(enabled = enabled).apply {
         parse(jsonObject = jsonObject)
     }
 
-    fun renderCurrentView(isSelected: Boolean) {
-        ninchatRadioButtonModel.update(isSelected = isSelected)
+    fun renderCurrentView(isSelected: Boolean, enabled: Boolean) {
+        model.update(isSelected = isSelected, enabled = enabled)
         // if nothing is selected then do not call
         viewCallback.renderView(
-                label = ninchatRadioButtonModel.label ?: "",
-                isSelected = ninchatRadioButtonModel.isSelected,
+                label = model.label ?: "",
+                isSelected = model.isSelected,
+                enabled = model.enabled
         )
     }
 
     override fun onToggleSelection() {
-        ninchatRadioButtonModel.isSelected = !ninchatRadioButtonModel.isSelected
-        if (ninchatRadioButtonModel.isSelected) {
+        model.isSelected = !model.isSelected
+        if (model.isSelected) {
             viewCallback.onSelected()
         } else {
             viewCallback.onUnSelected()
         }
     }
 
-    fun getLabel() = ninchatRadioButtonModel.label
-    internal fun getNinchatRadioButtonModel(): NinchatRadioButtonModel = ninchatRadioButtonModel
+    fun getLabel() = model.label
+    internal fun getNinchatRadioButtonModel(): NinchatRadioButtonModel = model
 }
 
 interface INinchatRadioButtonPresenter {
-    fun renderView(label: String, isSelected: Boolean)
+    fun renderView(label: String, isSelected: Boolean, enabled: Boolean)
     fun onSelected()
     fun onUnSelected()
 }

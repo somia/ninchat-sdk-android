@@ -12,27 +12,31 @@ class NinchatInputFieldViewPresenter(
         isFormLikeQuestionnaire: Boolean = true,
         val viewCallback: INinchatInputFieldViewPresenter,
         val updateCallback: InputFieldUpdateListener,
-        position: Int
+        position: Int,
+        enabled: Boolean
 ) : INinchatInputFieldViewHolder {
     private var model = NinchatInputFieldViewModel(
             isMultiline = isMultiline,
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-            position = position
+            position = position,
+            enabled = enabled
     ).apply {
         parse(jsonObject = jsonObject)
     }
 
 
-    fun renderCurrentView(jsonObject: JSONObject?) {
-        jsonObject?.let { model.update(jsonObject = jsonObject) }
+    fun renderCurrentView(jsonObject: JSONObject?, enabled: Boolean) {
+        jsonObject?.let { model.update(jsonObject = jsonObject, enabled = enabled) }
         
         if (model.isFormLikeQuestionnaire) {
             viewCallback.onUpdateFromView(
                     label = model.label ?: "",
+                    enabled = model.enabled
             )
         } else {
             viewCallback.onUpdateConversationView(
                     label = model.label ?: "",
+                    enabled = model.enabled
             )
         }
         // update text change
@@ -49,6 +53,7 @@ class NinchatInputFieldViewPresenter(
 
     fun getInputType(): Int = model.inputType
     fun isMultiline(): Boolean = model.isMultiline
+    fun getInputValue(): String? = model.value
 
     override fun onTextChange(text: String?) {
         model.value = NinchatQuestionnaireNormalizer.sanitizeString(text)
@@ -71,8 +76,8 @@ class NinchatInputFieldViewPresenter(
 }
 
 interface INinchatInputFieldViewPresenter {
-    fun onUpdateFromView(label: String)
-    fun onUpdateConversationView(label: String)
+    fun onUpdateFromView(label: String, enabled: Boolean)
+    fun onUpdateConversationView(label: String, enabled: Boolean)
     fun onUpdateText(value: String, hasError: Boolean)
     fun onUpdateFocus(hasFocus: Boolean)
 }

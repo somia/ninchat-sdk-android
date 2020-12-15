@@ -13,7 +13,8 @@ data class NinchatInputFieldViewModel(
         var inputType: Int = 0,
         var hasError: Boolean = false,
         var hasFocus: Boolean = false,
-        val position: Int
+        val position: Int,
+        var enabled: Boolean
 ) {
     fun parse(jsonObject: JSONObject?) {
         this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label)
@@ -23,7 +24,8 @@ data class NinchatInputFieldViewModel(
         this.pattern = jsonObject?.optString(NinchatQuestionnaireConstants.pattern)
     }
 
-    fun update(jsonObject: JSONObject) {
+    fun update(jsonObject: JSONObject, enabled: Boolean) {
+        this.enabled = enabled
         this.hasError = jsonObject.optBoolean(NinchatQuestionnaireConstants.hasError)
         this.value = jsonObject.optString(NinchatQuestionnaireConstants.result)
     }

@@ -40,7 +40,9 @@ class NinchatQuestionnaireListAdapter(
                         itemView = view,
                         jsonObject = currentElement,
                         isFormLikeQuestionnaire = false,
-                        position = position)
+                        position = position,
+                        enabled = presenter.isLast(position)
+                )
             }
             NinchatQuestionnaireType.isInput(currentElement) -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.text_field_with_label, parent, false)
@@ -50,7 +52,8 @@ class NinchatQuestionnaireListAdapter(
                         isMultiline = NinchatQuestionnaireType.isTextArea(currentElement),
                         isFormLikeQuestionnaire = false,
                         updateCallback = presenter,
-                        position = position
+                        position = position,
+                        enabled = presenter.isLast(position)
                 )
             }
             NinchatQuestionnaireType.isTextArea(currentElement) -> {
@@ -61,7 +64,8 @@ class NinchatQuestionnaireListAdapter(
                         isMultiline = NinchatQuestionnaireType.isTextArea(currentElement),
                         isFormLikeQuestionnaire = false,
                         updateCallback = presenter,
-                        position = position
+                        position = position,
+                        enabled = presenter.isLast(position)
                 )
             }
             NinchatQuestionnaireType.isRadio(currentElement) -> {
@@ -72,6 +76,7 @@ class NinchatQuestionnaireListAdapter(
                         isFormLikeQuestionnaire = false,
                         updateCallback = presenter,
                         position = position,
+                        enabled = presenter.isLast(position)
                 )
             }
             NinchatQuestionnaireType.isSelect(currentElement) || NinchatQuestionnaireType.isLikeRT(currentElement) -> {
@@ -81,7 +86,8 @@ class NinchatQuestionnaireListAdapter(
                         jsonObject = currentElement,
                         isFormLikeQuestionnaire = false,
                         updateCallback = presenter,
-                        position = position
+                        position = position,
+                        enabled = presenter.isLast(position)
                 )
             }
             NinchatQuestionnaireType.isCheckBox(currentElement) -> {
@@ -91,7 +97,8 @@ class NinchatQuestionnaireListAdapter(
                         jsonObject = currentElement,
                         isFormLikeQuestionnaire = false,
                         updateCallback = presenter,
-                        position = position
+                        position = position,
+                        enabled = presenter.isLast(position)
                 )
             }
             NinchatQuestionnaireType.isButton(currentElement) -> {
@@ -99,7 +106,8 @@ class NinchatQuestionnaireListAdapter(
                 NinchatButtonViewHolder(
                         itemView = view,
                         jsonObject = currentElement,
-                        position = position
+                        position = position,
+                        enabled = presenter.isLast(position)
                 )
             }
             else -> {
@@ -108,7 +116,8 @@ class NinchatQuestionnaireListAdapter(
                         itemView = view,
                         jsonObject = currentElement,
                         isFormLikeQuestionnaire = false,
-                        position = position
+                        position = position,
+                        enabled = presenter.isLast(position)
                 )
             }
 
@@ -119,12 +128,12 @@ class NinchatQuestionnaireListAdapter(
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         val currentElement = presenter.get(position)
         when (viewHolder) {
-            is NinchatTextViewHolder -> viewHolder.update(jsonObject = currentElement)
-            is NinchatInputFieldViewHolder -> viewHolder.update(jsonObject = currentElement)
-            is NinchatRadioButtonListView -> viewHolder.update(jsonObject = currentElement)
-            is NinchatDropDownSelectViewHolder -> viewHolder.update(jsonObject = currentElement)
-            is NinchatCheckboxViewHolder -> viewHolder.update(jsonObject = currentElement)
-            is NinchatButtonViewHolder -> viewHolder.update(jsonObject = currentElement)
+            is NinchatTextViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
+            is NinchatInputFieldViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
+            is NinchatRadioButtonListView -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
+            is NinchatDropDownSelectViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
+            is NinchatCheckboxViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
+            is NinchatButtonViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
         }
     }
 
@@ -132,6 +141,7 @@ class NinchatQuestionnaireListAdapter(
 
     override fun onAddItem(positionStart: Int, itemCount: Int) {
         notifyItemRangeInserted(positionStart, itemCount)
+        notifyItemRangeChanged(0, positionStart + 1)
     }
 
     override fun onItemRemoved(positionStart: Int, itemCount: Int) {

@@ -13,26 +13,29 @@ import org.json.JSONObject
 class NinchatRadioButtonView(
         itemView: View,
         jsonObject: JSONObject?,
+        enabled: Boolean,
         private val optionToggleCallback: INinchatRadioButtonListView,
 ) : RecyclerView.ViewHolder(itemView), INinchatRadioButtonPresenter {
 
-    private val ninchatRadioButtonPresenter = NinchatRadioButtonPresenter(
+    private val presenter = NinchatRadioButtonPresenter(
             jsonObject = jsonObject,
+            enabled = enabled,
             viewCallback = this)
 
-    fun update(isSelected: Boolean) {
-        ninchatRadioButtonPresenter.renderCurrentView(isSelected = isSelected)
+    fun update(isSelected: Boolean, enabled: Boolean) {
+        presenter.renderCurrentView(isSelected = isSelected, enabled = enabled)
         attachUserActionHandler()
     }
 
     private fun attachUserActionHandler() {
         itemView.single_radio_item.setOnClickListener { v: View ->
-            ninchatRadioButtonPresenter.onToggleSelection()
+            presenter.onToggleSelection()
         }
     }
 
-    override fun renderView(label: String, isSelected: Boolean) {
+    override fun renderView(label: String, isSelected: Boolean, enabled: Boolean) {
         itemView.single_radio_item.text = label
+        itemView.isEnabled = enabled
         // render initialize view
         if (isSelected) {
             itemView.single_radio_item.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_radio_item_selected_text))

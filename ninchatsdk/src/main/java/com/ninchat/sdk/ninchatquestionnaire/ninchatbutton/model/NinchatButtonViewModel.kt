@@ -20,7 +20,8 @@ data class NinchatButtonViewModel(
 
         var fireEvent: Boolean = false,
         var isThankYouText: Boolean = false,
-        val position: Int
+        val position: Int,
+        var enabled: Boolean
 ) {
 
     fun parse(jsonObject: JSONObject?) {
@@ -48,6 +49,10 @@ data class NinchatButtonViewModel(
         this.isThankYouText = isThankYouText
         // do necessary translation
         this.translate()
+    }
+
+    fun update(enabled: Boolean) {
+        this.enabled = enabled
     }
 
     private fun translate() {
