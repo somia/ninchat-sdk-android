@@ -130,9 +130,7 @@ public class NinchatQuestionnaireItemGetter {
             if (!isLogic(currentElement)) {
                 continue;
             }
-            if (getName(currentElement).startsWith(name)) {
-                retval.put(currentElement);
-            } else if (getName(currentElement).startsWith("Logic-" + name)) {
+            if (getName(currentElement).contains(name)) {
                 retval.put(currentElement);
             }
         }
