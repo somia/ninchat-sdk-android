@@ -273,6 +273,8 @@ public class NinchatQuestionnaireItemGetter {
                 Strings tags = getTags(result.optJSONArray("tags"));
                 if (tags.length() > 0) preAnswers.setStringArray("tags", tags);
             } else {
+                // ignore checkbox result that is false
+                if ("false".equals(result.optString(currentKey, ""))) continue;
                 preAnswers.setString(currentKey, result.optString(currentKey, ""));
             }
         }
