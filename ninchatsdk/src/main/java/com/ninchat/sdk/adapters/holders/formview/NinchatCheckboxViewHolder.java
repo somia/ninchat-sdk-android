@@ -62,6 +62,7 @@ public class NinchatCheckboxViewHolder extends RecyclerView.ViewHolder {
 
     private void setChecked(JSONObject item) {
         boolean result = getResultBoolean(item);
+        setResult(item, result);
         mCheckbox.setChecked(result);
     }
 
