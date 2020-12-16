@@ -377,7 +377,9 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     @Override
     public void onConnectionChange(PeerConnection.PeerConnectionState newState) {
-
+        if (newState == PeerConnection.PeerConnectionState.FAILED) {
+            new Handler(Looper.getMainLooper()).post(() -> hangUp(true));
+        }
     }
 
     @Override
