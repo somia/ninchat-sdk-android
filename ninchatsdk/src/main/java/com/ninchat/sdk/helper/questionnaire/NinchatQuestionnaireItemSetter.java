@@ -57,7 +57,7 @@ public class NinchatQuestionnaireItemSetter {
 
     public static void setQueue(JSONObject logic, JSONObject currentElement) {
         if (logic == null || currentElement == null) return;
-        String queue = logic.optString("queue");
+        String queue = logic.optString("queue", logic.optString("queueId"));
         if (TextUtils.isEmpty(queue)) return;
         try {
             currentElement.putOpt("queue", queue);
