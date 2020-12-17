@@ -130,9 +130,7 @@ public class NinchatQuestionnaireItemGetter {
             if (!isLogic(currentElement)) {
                 continue;
             }
-            if (getName(currentElement).startsWith(name)) {
-                retval.put(currentElement);
-            } else if (getName(currentElement).startsWith("Logic-" + name)) {
+            if (getName(currentElement).contains(name)) {
                 retval.put(currentElement);
             }
         }
@@ -275,6 +273,8 @@ public class NinchatQuestionnaireItemGetter {
                 Strings tags = getTags(result.optJSONArray("tags"));
                 if (tags.length() > 0) preAnswers.setStringArray("tags", tags);
             } else {
+                // ignore checkbox result that is false
+                if ("false".equals(result.optString(currentKey, ""))) continue;
                 preAnswers.setString(currentKey, result.optString(currentKey, ""));
             }
         }
@@ -342,7 +342,7 @@ public class NinchatQuestionnaireItemGetter {
         for (int i = questionnaireList.length() - 1; i >= 0; i -= 1) {
             JSONObject currentElement = questionnaireList.optJSONObject(i);
             // check parent level entry
-            final String parentQueue = currentElement == null ? null : currentElement.optString("queue", null);
+            final String parentQueue = currentElement == null ? null : currentElement.optString("queue", currentElement.optString("queueId"));
             if (!TextUtils.isEmpty(parentQueue)) {
                 return parentQueue;
             }
@@ -350,7 +350,7 @@ public class NinchatQuestionnaireItemGetter {
             JSONArray elementList = getElements(currentElement);
             for (int j = 0; elementList != null && j < elementList.length(); j += 1) {
                 if (elementList.optJSONObject(j) == null) continue;
-                final String childQueue = elementList.optJSONObject(j).optString("queue", null);
+                final String childQueue = elementList.optJSONObject(j).optString("queue", currentElement.optString("queueId"));
                 if (!TextUtils.isEmpty(childQueue)) {
                     // extract the first queue item and return it
                     return childQueue;

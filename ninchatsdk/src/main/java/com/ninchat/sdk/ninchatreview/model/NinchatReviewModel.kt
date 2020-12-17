@@ -34,11 +34,7 @@ class NinchatReviewModel {
         data.put("data", value)
         return data
     }
-
-    fun getThanksYouText(): String? {
-        return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getThankYouTextText()
-    }
-
+    
     fun getFeedbackTitleText(): String? {
         return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getFeedbackTitleText()
     }
