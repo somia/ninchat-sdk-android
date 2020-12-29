@@ -283,6 +283,8 @@ class NinchatQuestionnaireJsonUtil {
                         when {
                             NinchatQuestionnaireType.isLogic(it) || NinchatQuestionnaireType.isButton(it) || NinchatQuestionnaireType.isText(it) -> null
                             it.optString("result").isNullOrBlank() -> null
+                            // ignore any result that is false
+                            it.optString("result", "") == "false" -> null
                             else -> it
                         }
                     }
@@ -309,7 +311,7 @@ class NinchatQuestionnaireJsonUtil {
                         it.optString("name")
                     }
                     .mapNotNull {
-                        it.optString("queue")
+                        it.optString("queue", it.optString("queueId"))
                     }.firstOrNull()
         }
     }
