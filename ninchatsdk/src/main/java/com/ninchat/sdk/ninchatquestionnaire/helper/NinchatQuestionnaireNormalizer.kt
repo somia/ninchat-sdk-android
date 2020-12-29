@@ -69,8 +69,8 @@ class NinchatQuestionnaireNormalizer {
                 if (NinchatQuestionnaireType.isLogic(currentElement) || elementList == null) {
                     currentElement
                 } else {
-                    val hasBackButton = NinchatQuestionnaireType.isButton(json = currentElement, isBack = true)
-                    val hasNextButton = NinchatQuestionnaireType.isButton(json = currentElement, isBack = false)
+                    val hasBackButton = NinchatQuestionnaireType.isButton(json = currentElement.optJSONObject("buttons"), isBack = true)
+                    val hasNextButton = NinchatQuestionnaireType.isButton(json = currentElement.optJSONObject("buttons"), isBack = false)
                     if (hasBackButton || hasNextButton) {
                         // next button always true hard coded
                         val tempElement = NinchatQuestionnaireJsonUtil.getButtonElement(json = currentElement, hideBack = index == 0)
