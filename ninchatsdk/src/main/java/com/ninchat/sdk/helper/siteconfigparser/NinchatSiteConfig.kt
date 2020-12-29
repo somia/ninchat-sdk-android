@@ -185,9 +185,6 @@ class NinchatSiteConfig {
     fun getFeedbackTitleText(): String =
             getTranslation("How was our customer service?")
 
-    fun getThankYouTextText(): String =
-            getTranslation("Thank you for the conversation!")
-
     fun getFeedbackPositiveText(): String =
             getTranslation("Good")
 
