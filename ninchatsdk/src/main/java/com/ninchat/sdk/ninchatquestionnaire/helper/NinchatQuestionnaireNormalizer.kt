@@ -2,6 +2,7 @@ package com.ninchat.sdk.ninchatquestionnaire.helper
 
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.math.log
 
 class NinchatQuestionnaireNormalizer {
     companion object {
@@ -134,24 +135,26 @@ class NinchatQuestionnaireNormalizer {
                     .map {
                         val currentElement = it as JSONObject
                         when {
+                            NinchatQuestionnaireType.isRedirect(currentElement) -> {
+                                val logicList = redirectToLogicElement(elements = currentElement)
+                                listOf(currentElement).plus(logicList)
+                            }
+                            else ->
+                                listOf(currentElement)
+                        }
+                    }
+                    .flatten()
+                    .map {
+                        val currentElement = it as JSONObject
+                        when {
                             NinchatQuestionnaireType.isGroupElement(currentElement) -> currentElement
                             NinchatQuestionnaireType.isLogic(currentElement) -> currentElement
                             else ->
                                 makeGroupElement(currentElement)
                         }
                     }
-            // convert any redirect to logic element
-            val logicElement = retval
-                    .mapNotNull { currentElement ->
-                        val redirectList = redirectToLogicElement(elements = currentElement)
-                        if (redirectList.isNullOrEmpty()) {
-                            null
-                        } else {
-                            redirectList
-                        }
-                    }.flatten()
 
-            return retval.plus(logicElement)
+            return retval
                     .also { updateActions(it) }
                     .also { updateLikeRTElements(it) }
                     .also { updateCheckBoxElements(it) }
