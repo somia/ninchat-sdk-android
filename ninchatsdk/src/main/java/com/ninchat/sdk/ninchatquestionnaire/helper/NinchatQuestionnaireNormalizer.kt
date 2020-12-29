@@ -108,6 +108,22 @@ class NinchatQuestionnaireNormalizer {
             }
         }
 
+        internal fun updateCheckBoxElements(questionnaireList: List<JSONObject>): List<JSONObject> {
+            return questionnaireList.map { currentElement ->
+                val elementList = currentElement.optJSONArray("elements")
+                if (NinchatQuestionnaireType.isLogic(currentElement) || elementList == null) currentElement
+                else {
+                    fromJSONArray<JSONObject>(elementList).forEach {
+                        val checkBoxElement = it as JSONObject
+                        if (NinchatQuestionnaireType.isCheckBox(checkBoxElement)) {
+                            checkBoxElement.putOpt("result", false)
+                        }
+                    }
+                    currentElement
+                }
+            }
+        }
+
         fun unifyQuestionnaireList(questionnaireArr: JSONArray?): List<JSONObject> {
             val questionnaireList = if (NinchatQuestionnaireType.isSimpleFormLikeQuestionnaire(questionnaireArr)) {
                 simpleFormToGroupQuestionnaire(questionnaireArr = questionnaireArr)
@@ -138,6 +154,7 @@ class NinchatQuestionnaireNormalizer {
             return retval.plus(logicElement)
                     .also { updateActions(it) }
                     .also { updateLikeRTElements(it) }
+                    .also { updateCheckBoxElements(it) }
         }
 
         fun sanitizeString(text: String?): String? {
