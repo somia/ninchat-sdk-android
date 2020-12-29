@@ -44,10 +44,11 @@ data class NinchatQuestionnaireModel(
     }
 
     fun isQueueClosed(): Boolean {
-        val isClosed = NinchatSessionManager.getInstance()?.ninchatState?.queues?.find { it.id == queueId }?.isClosed
-        // if null -> queue closed
-        // if close -> queue closed
-        return isClosed ?: true
+        // todo ( pallab ) currently if queue not found then we consider it as open queue
+        val queue = NinchatSessionManager.getInstance()?.ninchatState?.queues?.find { it.id == queueId }
+        return queue?.let {
+            return it.isClosed
+        }?: false
     }
 
     fun getAnswersAsProps(): Props {
