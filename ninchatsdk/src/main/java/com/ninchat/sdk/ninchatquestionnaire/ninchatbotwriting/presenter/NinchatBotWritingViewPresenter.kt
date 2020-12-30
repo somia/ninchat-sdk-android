@@ -7,6 +7,7 @@ class NinchatBotWritingViewPresenter(
         jsonObject: JSONObject?,
         position: Int,
         enabled: Boolean,
+        val presenter: INinchatBotWritingViewPresenter
 ) {
     private var model = NinchatBotWritingViewModel(position = position, enabled = enabled).apply {
         parse(jsonObject = jsonObject)
@@ -17,5 +18,10 @@ class NinchatBotWritingViewPresenter(
     }
 
     fun renderCurrentView() {
+        presenter.onUpdateView(label = model.label, imgUrl = model.imgUrl, enabled = model.enabled)
     }
+}
+
+interface INinchatBotWritingViewPresenter {
+    fun onUpdateView(label: String?, imgUrl: String?, enabled: Boolean)
 }
