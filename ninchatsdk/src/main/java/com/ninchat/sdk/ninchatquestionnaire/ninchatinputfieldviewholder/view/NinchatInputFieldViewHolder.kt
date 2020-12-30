@@ -116,6 +116,7 @@ class NinchatInputFieldViewHolder(
                 it.setText(presenter.getInputValue())
             }
             it.isEnabled = enabled
+            it.setTextColor(ContextCompat.getColor(itemView.context, textColor))
         }
     }
 
