@@ -11,9 +11,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.INinchat
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.InputFieldUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.NinchatInputFieldViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.OnChangeListener
-import kotlinx.android.synthetic.main.text_area.view.*
 import kotlinx.android.synthetic.main.text_area_with_label.view.*
-import kotlinx.android.synthetic.main.text_field.view.*
 import kotlinx.android.synthetic.main.text_field_with_label.view.*
 import org.json.JSONObject
 
@@ -121,7 +119,7 @@ class NinchatInputFieldViewHolder(
     }
 
     private fun setInputType() {
-        itemView.simple_text_label.inputType = presenter.getInputType()
+        itemView.simple_text_field.inputType = presenter.getInputType()
     }
 }
 

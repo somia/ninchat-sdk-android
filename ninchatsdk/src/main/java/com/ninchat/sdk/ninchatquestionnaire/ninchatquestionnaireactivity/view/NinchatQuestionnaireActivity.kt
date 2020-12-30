@@ -9,6 +9,7 @@ import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
 import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.events.OnSubmitQuestionnaireAnswers
+import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.INinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.NinchatQuestionnairePresenter
@@ -52,8 +53,12 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
                 isFormLike = isFormLike,
                 rootActivityCallback = this
         )
+        val spaceInPixelTop = applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_items_margin_top)
+        val spaceLeft = applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_items_margin_left)
+        val spaceRight = applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_items_margin_right)
         (questionnaire_form_rview as RecyclerView).apply {
             layoutManager = LinearLayoutManager(context)
+            addItemDecoration(NinchatQuestionnaireItemDecoration(spaceInPixelTop, spaceLeft, spaceRight))
             adapter = currentAdapter
         }
     }
