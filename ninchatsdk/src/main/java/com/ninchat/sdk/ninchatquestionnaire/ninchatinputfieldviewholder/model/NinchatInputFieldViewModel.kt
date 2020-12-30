@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.model
+package com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.model
 
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil

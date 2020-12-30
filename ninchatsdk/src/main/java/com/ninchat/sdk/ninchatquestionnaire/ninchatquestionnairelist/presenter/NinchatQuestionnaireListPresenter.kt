@@ -5,7 +5,7 @@ import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireType
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.CheckboxUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.DropDownSelectUpdateListener
-import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.InputFieldUpdateListener
+import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.InputFieldUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.QuestionnaireActivityCallback
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model.ConversationLikeModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model.FormLikeModel

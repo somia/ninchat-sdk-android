@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.view
+package com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.view
 
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,9 +7,9 @@ import android.view.View.OnFocusChangeListener
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
-import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.INinchatInputFieldViewPresenter
-import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.InputFieldUpdateListener
-import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.NinchatInputFieldViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.INinchatInputFieldViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.InputFieldUpdateListener
+import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.NinchatInputFieldViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.OnChangeListener
 import kotlinx.android.synthetic.main.text_area_with_label.view.*
 import kotlinx.android.synthetic.main.text_field_with_label.view.*

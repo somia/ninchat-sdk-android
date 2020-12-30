@@ -1,9 +1,9 @@
-package com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter
+package com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter
 
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNormalizer
-import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.model.NinchatInputFieldViewModel
-import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.view.INinchatInputFieldViewHolder
+import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.model.NinchatInputFieldViewModel
+import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.view.INinchatInputFieldViewHolder
 import org.json.JSONObject
 
 class NinchatInputFieldViewPresenter(
