@@ -42,6 +42,20 @@ open class NinchatQuestionnaireListModel(
                 selectedElement = selectedElement.lastOrNull() ?: Pair("", 0))
     }
 
+    fun updateTagsAndQueueId(logicElement: JSONObject?) {
+        val tags = logicElement?.optJSONArray("tags")
+        val queueId = logicElement?.optString("queue", logicElement.optString("queueId"))
+
+        answerList.lastOrNull()?.apply {
+            queueId?.let {
+                putOpt("queueId", it)
+            }
+            tags?.let {
+                putOpt("tags", it)
+            }
+        }
+    }
+
     fun getIndex(elementName: String?): Int {
         // check if we can found the index for given element
         return NinchatQuestionnaireNavigator.getElementIndex(questionnaireList = questionnaireList,

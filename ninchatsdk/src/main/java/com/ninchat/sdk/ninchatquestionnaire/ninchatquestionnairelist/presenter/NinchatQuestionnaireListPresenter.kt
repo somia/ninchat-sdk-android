@@ -61,7 +61,7 @@ class NinchatQuestionnaireListPresenter(
                 // is this logic a match for all any existing answer ?
                 val matches = NinchatQuestionnaireJsonUtil.matchAnswerList(logicElement = currentElement, answerList = model.answerList)
                 if (matches) {
-                    // todo(pallab) need to update answers with logic values ( tags, queueId )
+                    model.updateTagsAndQueueId(currentElement)
                     currentElement?.optJSONObject("logic")?.optString("target")
                 } else
                     this.getNextElement(currentIndex = currentIndex + 1, sentinel = sentinel - 1)
