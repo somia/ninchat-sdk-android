@@ -85,6 +85,15 @@ class NinchatQuestionnaireJsonUtil {
             }""".trimIndent())
         }
 
+        fun getBotElement(botName: String?, botImgUrl: String): JSONObject {
+            return JSONObject("""{
+                "name": "botViewElement",
+                "element": "botElement",
+                "label": "$botName",
+                "imgUrl": "$botImgUrl"
+            }""".trimIndent())
+        }
+
         fun getInputType(json: JSONObject?): Int {
             return json?.optString(NinchatQuestionnaireConstants.inputMode)?.let {
                 when {
@@ -183,7 +192,7 @@ class NinchatQuestionnaireJsonUtil {
             val currentLogic = logicElement?.optJSONObject("logic")
             val hasAndLogic = hasLogic(logicElement = currentLogic, isAnd = true)
             val hasOrLogic = hasLogic(logicElement = currentLogic, isAnd = false)
-            return when{
+            return when {
                 // if does not have both and or or logic then it a direct match
                 !hasAndLogic && !hasOrLogic -> {
                     true
