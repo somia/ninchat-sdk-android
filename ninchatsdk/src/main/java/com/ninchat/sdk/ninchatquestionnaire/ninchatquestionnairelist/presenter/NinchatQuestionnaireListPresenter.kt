@@ -79,7 +79,7 @@ class NinchatQuestionnaireListPresenter(
     fun showNext(onNextQuestionnaire: OnNextQuestionnaire) {
         // get index of the element
         val index = model.getIndex(elementName = model.selectedElement.lastOrNull()?.first)
-        val nextTargetName = this.getNextElement(currentIndex = index + 1, 10000)
+        val nextTargetName = this.getNextElement(currentIndex = index + 1, 1000)
         when {
             onNextQuestionnaire.moveType == OnNextQuestionnaire.back -> {
                 val positionStart = size()
