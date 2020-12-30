@@ -19,7 +19,7 @@ class NinchatQuestionnaireNavigator {
          */
         fun getElementIndex(questionnaireList: List<JSONObject> = listOf(), elementName: String): Int {
             return questionnaireList
-                    .indexOfFirst { it.optString("name") == elementName }
+                    .indexOfFirst { it.optString("name") == elementName}
         }
     }
 }

@@ -15,7 +15,7 @@ open class NinchatQuestionnaireListModel(
 
     open fun parse() {
         // get first element
-        val element = nextElement(0)
+        val element = NinchatQuestionnaireNavigator.getNextElement(questionnaireList = questionnaireList, index = 0)
         // add that element
         addElement(element)
     }
@@ -44,15 +44,8 @@ open class NinchatQuestionnaireListModel(
 
     fun getIndex(elementName: String?): Int {
         // check if we can found the index for given element
-        val index = NinchatQuestionnaireNavigator.getElementIndex(questionnaireList = questionnaireList,
+        return NinchatQuestionnaireNavigator.getElementIndex(questionnaireList = questionnaireList,
                 elementName = elementName ?: "~")
-        // if there is a match return the index
-        // otherwise fetch the next element
-        return if (index != -1)
-            index - 1
-        else
-            NinchatQuestionnaireNavigator.getElementIndex(questionnaireList = questionnaireList,
-                    elementName = selectedElement.lastOrNull()?.first ?: "~")
     }
 
     fun hasError(): Boolean {
@@ -61,19 +54,6 @@ open class NinchatQuestionnaireListModel(
             !NinchatQuestionnaireJsonUtil.requiredOk(json = it) || !NinchatQuestionnaireJsonUtil.matchPattern(json = it)
         }
     }
-
-    fun hasMatch(elementName: String?): Boolean {
-        val index = NinchatQuestionnaireNavigator.getElementIndex(questionnaireList = questionnaireList,
-                elementName = elementName ?: "~")
-        return if (index >= 0)
-            true
-        else
-            NinchatQuestionnaireNavigator.getElementIndex(questionnaireList = questionnaireList,
-                    elementName = selectedElement.lastOrNull()?.first ?: "~") >= 0
-    }
-
-    fun nextElement(index: Int = 0): JSONObject? =
-            NinchatQuestionnaireNavigator.getNextElement(questionnaireList = questionnaireList, index = index)
 
     fun audienceRegisterText(): String? =
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getAudienceRegisteredText()

@@ -2,6 +2,7 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter
 
 import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireType
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.CheckboxUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.DropDownSelectUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfield.presenter.InputFieldUpdateListener
@@ -41,9 +42,8 @@ class NinchatQuestionnaireListPresenter(
     fun isLast(at: Int): Boolean = model.isLast(at)
 
     private fun loadNext(elementName: String?): Int {
-        if (!model.hasMatch(elementName = elementName)) return 0
         val index = model.getIndex(elementName = elementName)
-        val nextElement = model.nextElement(index = index + 1)
+        val nextElement = model.questionnaireList.getOrNull(index)
         return model.addElement(jsonObject = nextElement)
     }
 
@@ -52,12 +52,34 @@ class NinchatQuestionnaireListPresenter(
         return model.addElement(jsonObject = nextElement)
     }
 
-    fun showNext(onNextQuestionnaire: OnNextQuestionnaire) {
-        val matchedLogic = NinchatQuestionnaireJsonUtil.getMatchingLogic(
-                questionnaireList = model.questionnaireList,
-                elementName = model.selectedElement.lastOrNull()?.first ?: "~",
-                answerList = model.answerList)
+    // A sentinel value to make sure we don't fall into infinite loop
+    private fun getNextElement(currentIndex: Int, sentinel: Int): String? {
+        if (sentinel < 0) return null
+        val currentElement = model.questionnaireList.getOrNull(currentIndex)
+        return when {
+            NinchatQuestionnaireType.isLogic(currentElement) -> {
+                // is this logic a match for all any existing answer ?
+                val matches = NinchatQuestionnaireJsonUtil.matchAnswerList(logicElement = currentElement, answerList = model.answerList)
+                if (matches) {
+                    // todo(pallab) need to update answers with logic values ( tags, queueId )
+                    currentElement?.optJSONObject("logic")?.optString("target")
+                } else
+                    this.getNextElement(currentIndex = currentIndex + 1, sentinel = sentinel - 1)
+            }
+            NinchatQuestionnaireType.isElement(currentElement) -> {
+                currentElement?.optString("name")
+            }
+            else -> {
+                // null(end of element), or not an element or logic
+                null
+            }
+        }
+    }
 
+    fun showNext(onNextQuestionnaire: OnNextQuestionnaire) {
+        // get index of the element
+        val index = model.getIndex(elementName = model.selectedElement.lastOrNull()?.first)
+        val nextTargetName = this.getNextElement(currentIndex = index + 1, 10000)
         when {
             onNextQuestionnaire.moveType == OnNextQuestionnaire.back -> {
                 val positionStart = size()
@@ -84,17 +106,17 @@ class NinchatQuestionnaireListPresenter(
                 }
                 return
             }
-            matchedLogic?.optJSONObject("logic")?.optString("target") == "_complete" -> {
+            nextTargetName == "_complete" -> {
                 rootActivityCallback.onComplete(answerList = model.answerList)
                 return
             }
-            matchedLogic?.optJSONObject("logic")?.optString("target") == "_register" -> {
+            nextTargetName == "_register" -> {
                 rootActivityCallback.onRegistered(answerList = model.answerList)
                 return
             }
         }
         val positionStart = size()
-        val itemCount = loadNext(elementName = matchedLogic?.optJSONObject("logic")?.optString("target"))
+        val itemCount = loadNext(elementName = nextTargetName)
         // there are still some item available
         if (itemCount > 0) {
             if (model.isFormLike) {
@@ -102,6 +124,10 @@ class NinchatQuestionnaireListPresenter(
             } else {
                 viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
             }
+        } else {
+            // no more element. follow "_complete"
+            rootActivityCallback.onComplete(answerList = model.answerList)
+            return
         }
     }
 

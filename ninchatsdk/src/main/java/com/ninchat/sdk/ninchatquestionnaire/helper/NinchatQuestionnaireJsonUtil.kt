@@ -179,39 +179,21 @@ class NinchatQuestionnaireJsonUtil {
             }
         }
 
-        fun getLogicByName(questionnaireList: List<JSONObject>, logicName: String): List<JSONObject> {
-            return questionnaireList
-                    // is a logic element
-                    .filter { (it as JSONObject).has(NinchatQuestionnaireConstants.logic) }
-                    // if the name of the element start with given logic name or Logic-name prefix
-                    .filter {
-                        val currentElement = it as JSONObject
-                        val name = currentElement.optString(NinchatQuestionnaireConstants.name, "")
-                        name.startsWith(logicName) || name.startsWith("logic$logicName") || name.startsWith("Logic-$logicName")
-                    }
-                    // convert it to json list
-                    .map {
-                        it as JSONObject
-                    }
-        }
-
-        fun getMatchingLogic(questionnaireList: List<JSONObject>, elementName: String, answerList: List<JSONObject>): JSONObject? {
-            val logicList = getLogicByName(questionnaireList = questionnaireList, logicName = elementName)
-            return logicList.firstOrNull {
-                val currentLogic = it.optJSONObject("logic")
-                val hasAndLogic = hasLogic(logicElement = currentLogic, isAnd = true)
-                val hasOrLogic = hasLogic(logicElement = currentLogic, isAnd = false)
-                when {
-                    // if does not have both and or or logic then it a direct match
-                    !hasAndLogic && !hasOrLogic -> {
-                        true
-                    }
-                    matchedLogicAll(logicList = currentLogic?.optJSONArray("and"), answerList = answerList) ->
-                        true
-                    matchedLogicAny(logicList = currentLogic?.optJSONArray("or"), answerList = answerList) ->
-                        true
-                    else ->
-                        false
+        fun matchAnswerList(logicElement: JSONObject?, answerList: List<JSONObject>): Boolean {
+            val currentLogic = logicElement?.optJSONObject("logic")
+            val hasAndLogic = hasLogic(logicElement = currentLogic, isAnd = true)
+            val hasOrLogic = hasLogic(logicElement = currentLogic, isAnd = false)
+            return when{
+                // if does not have both and or or logic then it a direct match
+                !hasAndLogic && !hasOrLogic -> {
+                    true
+                }
+                matchedLogicAll(logicList = currentLogic?.optJSONArray("and"), answerList = answerList) ->
+                    true
+                matchedLogicAny(logicList = currentLogic?.optJSONArray("or"), answerList = answerList) ->
+                    true
+                else -> {
+                    false
                 }
             }
         }

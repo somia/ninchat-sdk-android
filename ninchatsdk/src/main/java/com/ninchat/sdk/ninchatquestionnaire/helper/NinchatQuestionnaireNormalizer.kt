@@ -81,6 +81,7 @@ class NinchatQuestionnaireNormalizer {
                         val tempElement = elementList.optJSONObject(elementList.length() - 1)
                         if (NinchatQuestionnaireType.isText(tempElement) ||
                                 NinchatQuestionnaireType.isInput(tempElement) ||
+                                NinchatQuestionnaireType.isCheckBox(tempElement) ||
                                 NinchatQuestionnaireType.isTextArea(tempElement)) {
                             val tempBtnElement = NinchatQuestionnaireJsonUtil.getButtonElement(json = currentElement, hideBack = index == 0)
                             elementList.put(tempBtnElement)
