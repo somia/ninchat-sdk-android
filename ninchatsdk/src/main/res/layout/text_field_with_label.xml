@@ -13,8 +13,20 @@
         android:id="@+id/simple_text_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Element label" />
+        tools:text="Element label that cross the boundry. Ok what else could happen" />
 
-    <include layout="@layout/text_field"/>
+    <EditText
+        android:id="@+id/simple_text_field"
+        android:theme="@style/NinchatTheme.Questionnaire.InputText.Cursor"
+        style="@style/NinchatTheme.Questionnaire.InputText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints="..."
+        android:inputType="text|textCapSentences"
+        android:minHeight="50dp"
+        android:selectAllOnFocus="false"
+        android:singleLine="true"
+        tools:hint="Enter text" />
+
 </LinearLayout>
 

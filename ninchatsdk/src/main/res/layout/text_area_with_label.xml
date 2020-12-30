@@ -15,6 +15,19 @@
         android:layout_height="wrap_content"
         tools:text="Element label"/>
 
-    <include layout="@layout/text_area"/>
+    <EditText
+        android:id="@+id/multiline_text_area"
+        android:theme="@style/NinchatTheme.Questionnaire.InputText.Cursor"
+        style="@style/NinchatTheme.Questionnaire.InputText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints="..."
+        android:gravity="top"
+        android:inputType="textMultiLine|textCapSentences"
+        android:minHeight="80dp"
+        android:maxLines="4"
+        tools:hint="Enter text" />
+
+
 </LinearLayout>
 
