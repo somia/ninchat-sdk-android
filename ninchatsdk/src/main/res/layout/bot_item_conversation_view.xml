@@ -27,7 +27,6 @@
         android:gravity="center|left"
         android:textColor="@color/ninchat_color_chat_name" />
 
-
     <LinearLayout
         android:id="@+id/ninchat_chat_message_bot_wrapper"
         android:layout_below="@id/ninchat_chat_message_bot_text"
@@ -39,13 +38,6 @@
             android:id="@+id/ninchat_chat_message_bot_writing_root"
             layout="@layout/bot_writing_indicator" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:background="@android:color/transparent"
-            android:id="@+id/questionnaire_conversation_rview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:overScrollMode="never"
-            tools:itemCount="5"/>
     </LinearLayout>
 
 </RelativeLayout>
