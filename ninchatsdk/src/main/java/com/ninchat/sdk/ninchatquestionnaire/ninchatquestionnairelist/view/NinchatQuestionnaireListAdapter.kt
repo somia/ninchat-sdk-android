@@ -14,6 +14,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.view.Nin
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.QuestionnaireActivityCallback
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.INinchatConversationListPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.NinchatConversationListPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.NinchatFormListPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.view.NinchatRadioButtonListView
 import com.ninchat.sdk.ninchatquestionnaire.ninchattextviewholder.view.NinchatTextViewHolder
 import org.json.JSONObject
@@ -23,7 +24,10 @@ class NinchatQuestionnaireListAdapter(
         isFormLike: Boolean,
         rootActivityCallback: QuestionnaireActivityCallback,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), INinchatConversationListPresenter {
-    val presenter = NinchatConversationListPresenter(
+    val presenter = if (isFormLike) NinchatFormListPresenter(
+            questionnaireList = questionnaireList,
+            rootActivityCallback = rootActivityCallback
+    ) else NinchatConversationListPresenter(
             questionnaireList = questionnaireList,
             rootActivityCallback = rootActivityCallback,
             viewCallback = this

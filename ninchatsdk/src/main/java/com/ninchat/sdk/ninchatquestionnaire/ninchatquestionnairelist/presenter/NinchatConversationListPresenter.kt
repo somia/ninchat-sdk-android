@@ -15,15 +15,7 @@ class NinchatConversationListPresenter(
         questionnaireList: List<JSONObject>,
         var rootActivityCallback: QuestionnaireActivityCallback,
         val viewCallback: INinchatConversationListPresenter,
-) : InputFieldUpdateListener, ButtonListUpdateListener, DropDownSelectUpdateListener, CheckboxUpdateListener {
-
-    var model = NinchatQuestionnaireListModel(
-            questionnaireList = questionnaireList,
-            answerList = listOf(),
-            selectedElement = arrayListOf()
-    )
-    var botViewCallback: ((Int) -> Unit)? = null
-
+) : NinchatQuestionnaireListPresenter (questionnaireList = questionnaireList) {
     init {
         // try to get the first element
         val nextElement = getNextElement(currentIndex = 0, 100)
@@ -42,36 +34,6 @@ class NinchatConversationListPresenter(
         } ?: rootActivityCallback.onComplete(answerList = model.answerList)
     }
 
-    private fun loadNextByElement(elementName: String?): Int {
-        val index = model.getIndex(elementName = elementName)
-        val nextElement = model.questionnaireList.getOrNull(index)
-        return model.addElement(jsonObject = nextElement)
-    }
-
-    // A sentinel value to make sure we don't fall into infinite loop
-    private fun getNextElement(currentIndex: Int, sentinel: Int): String? {
-        if (sentinel < 0) return null
-        val currentElement = model.questionnaireList.getOrNull(currentIndex)
-        return when {
-            NinchatQuestionnaireType.isLogic(currentElement) -> {
-                // is this logic a match for all any existing answer ?
-                val matches = NinchatQuestionnaireJsonUtil.matchAnswerList(logicElement = currentElement, answerList = model.answerList)
-                if (matches) {
-                    model.updateTagsAndQueueId(currentElement)
-                    currentElement?.optJSONObject("logic")?.optString("target")
-                } else
-                    this.getNextElement(currentIndex = currentIndex + 1, sentinel = sentinel - 1)
-            }
-            NinchatQuestionnaireType.isElement(currentElement) -> {
-                currentElement?.optString("name")
-            }
-            else -> {
-                // null(end of element), or not an element or logic
-                null
-            }
-        }
-    }
-
     private fun addBotWritingView() {
         val positionStart = size()
         val previousItemCount = model.selectedElement.lastOrNull()?.second ?: 0
@@ -80,16 +42,16 @@ class NinchatConversationListPresenter(
         viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount, previousItemCount = previousItemCount)
     }
 
-    fun get(at: Int): JSONObject = model.answerList[at]
+    override fun get(at: Int): JSONObject = model.answerList.getOrNull(at) ?: JSONObject()
 
-    fun size() = model.answerList.size
+    override fun size() = model.answerList.size
 
-    fun isLast(at: Int): Boolean {
+    override fun isLast(at: Int): Boolean {
         val lastElementCount = model.selectedElement.lastOrNull()?.second ?: 0
         return at + lastElementCount >= model.answerList.size
     }
 
-    fun addThankYouView(isComplete: Boolean) {
+    override fun addThankYouView(isComplete: Boolean) {
         val thankYouText = if (isComplete) model.audienceRegisterCloseText() else model.audienceRegisterText()
         thankYouText?.let {
             botViewCallback = fun(position: Int) {
@@ -107,7 +69,7 @@ class NinchatConversationListPresenter(
         } ?: rootActivityCallback.onFinishQuestionnaire(openQueue = false)
     }
 
-    fun showNext(onNextQuestionnaire: OnNextQuestionnaire?) {
+    override fun showNext(onNextQuestionnaire: OnNextQuestionnaire?) {
         // if a thank you text
         if (onNextQuestionnaire?.moveType == OnNextQuestionnaire.thankYou) {
             rootActivityCallback.onFinishQuestionnaire(openQueue = false)
@@ -149,34 +111,6 @@ class NinchatConversationListPresenter(
             }
             addBotWritingView()
         } ?: rootActivityCallback.onComplete(answerList = model.answerList)
-    }
-
-    override fun onUpdate(value: String?, sublistPosition: Int, hasError: Boolean, position: Int) {
-        model.answerList.getOrNull(position)?.apply {
-            putOpt("result", value)
-            putOpt("hasError", hasError)
-            putOpt("position", sublistPosition)
-        }
-    }
-
-    override fun onUpdate(value: String?, position: Int) {
-        model.answerList.getOrNull(position)?.apply {
-            putOpt("result", value)
-        }
-    }
-
-    override fun onUpdate(value: Boolean, hasError: Boolean, position: Int) {
-        model.answerList.getOrNull(position)?.apply {
-            putOpt("result", value)
-            putOpt("hasError", hasError)
-        }
-    }
-
-    override fun onUpdate(value: String?, hasError: Boolean, position: Int) {
-        model.answerList.getOrNull(position)?.apply {
-            putOpt("result", value)
-            putOpt("hasError", hasError)
-        }
     }
 }
 
