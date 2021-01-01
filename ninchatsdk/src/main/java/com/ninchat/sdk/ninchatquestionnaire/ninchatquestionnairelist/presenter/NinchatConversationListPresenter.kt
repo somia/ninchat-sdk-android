@@ -2,20 +2,14 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter
 
 import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
-import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireType
-import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.CheckboxUpdateListener
-import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.DropDownSelectUpdateListener
-import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.InputFieldUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.QuestionnaireActivityCallback
-import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model.NinchatQuestionnaireListModel
-import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.ButtonListUpdateListener
 import org.json.JSONObject
 
 class NinchatConversationListPresenter(
         questionnaireList: List<JSONObject>,
         var rootActivityCallback: QuestionnaireActivityCallback,
         val viewCallback: INinchatConversationListPresenter,
-) : NinchatQuestionnaireListPresenter (questionnaireList = questionnaireList) {
+) : NinchatQuestionnaireListPresenter(questionnaireList = questionnaireList) {
     init {
         // try to get the first element
         val nextElement = getNextElement(currentIndex = 0, 100)
@@ -76,7 +70,10 @@ class NinchatConversationListPresenter(
             return
         }
         if (onNextQuestionnaire?.moveType == OnNextQuestionnaire.back) {
-            // todo
+            val positionStart = size()
+            // remove last questionnaire element, and associate bot view element
+            val itemCount = model.removeLast() + model.removeLast()
+            viewCallback.onItemRemoved(positionStart = positionStart, itemCount = itemCount)
             return
         }
         // if the last answer has some error

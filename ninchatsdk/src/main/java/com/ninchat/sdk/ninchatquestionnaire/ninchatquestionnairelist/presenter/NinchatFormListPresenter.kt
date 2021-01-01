@@ -42,7 +42,8 @@ class NinchatFormListPresenter(
             return
         }
         if (onNextQuestionnaire?.moveType == OnNextQuestionnaire.back) {
-            // todo
+            model.removeLast()
+            rootActivityCallback.onDataSetChange()
             return
         }
         // if the last answer has some error
