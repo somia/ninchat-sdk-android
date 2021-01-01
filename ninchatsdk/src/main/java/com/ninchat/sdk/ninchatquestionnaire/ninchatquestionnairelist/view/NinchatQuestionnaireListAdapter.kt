@@ -150,9 +150,10 @@ class NinchatQuestionnaireListAdapter(
 
     override fun getItemCount(): Int = presenter.size()
 
-    override fun onAddItem(positionStart: Int, itemCount: Int) {
+    override fun onAddItem(positionStart: Int, itemCount: Int, previousItemCount: Int) {
         notifyItemRangeInserted(positionStart, itemCount)
-       // notifyItemRangeChanged(0, positionStart + 1)
+        // notify item updated
+        notifyItemRangeChanged(positionStart - previousItemCount, previousItemCount)
     }
 
     override fun onItemRemoved(positionStart: Int, itemCount: Int) {

@@ -34,8 +34,9 @@ class NinchatConversationListPresenter(
                     putOpt("loaded", true)
                 }
                 val positionStart = size()
+                val previousItemCount = model.selectedElement.lastOrNull()?.second ?: 0
                 val itemCount = loadNextByElement(elementName = it)
-                viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+                viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount, previousItemCount = previousItemCount)
             }
             addBotWritingView()
         } ?: rootActivityCallback.onComplete(answerList = model.answerList)
@@ -73,9 +74,10 @@ class NinchatConversationListPresenter(
 
     private fun addBotWritingView() {
         val positionStart = size()
+        val previousItemCount = model.selectedElement.lastOrNull()?.second ?: 0
         val currentElement = NinchatQuestionnaireJsonUtil.getBotElement(botName = model.getBotName(), botImgUrl = model.getBotAvatar())
         val itemCount = model.addElement(jsonObject = currentElement)
-        viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+        viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount, previousItemCount = previousItemCount)
     }
 
     fun get(at: Int): JSONObject = model.answerList[at]
@@ -87,7 +89,6 @@ class NinchatConversationListPresenter(
         return at + lastElementCount >= model.answerList.size
     }
 
-
     fun addThankYouView(isComplete: Boolean) {
         val thankYouText = if (isComplete) model.audienceRegisterCloseText() else model.audienceRegisterText()
         thankYouText?.let {
@@ -97,9 +98,10 @@ class NinchatConversationListPresenter(
                     putOpt("loaded", true)
                 }
                 val positionStart = size()
+                val previousItemCount = model.selectedElement.lastOrNull()?.second ?: 0
                 val currentElement = NinchatQuestionnaireJsonUtil.getThankYouElement(thankYouString = it)
                 val itemCount = model.addElement(jsonObject = currentElement)
-                viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+                viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount, previousItemCount = previousItemCount)
             }
             addBotWritingView()
         } ?: rootActivityCallback.onFinishQuestionnaire(openQueue = false)
@@ -141,8 +143,9 @@ class NinchatConversationListPresenter(
                     putOpt("loaded", true)
                 }
                 val positionStart = size()
+                val previousItemCount = model.selectedElement.lastOrNull()?.second ?: 0
                 val itemCount = loadNextByElement(elementName = nextTargetName)
-                viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount)
+                viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount, previousItemCount = previousItemCount)
             }
             addBotWritingView()
         } ?: rootActivityCallback.onComplete(answerList = model.answerList)
@@ -178,7 +181,7 @@ class NinchatConversationListPresenter(
 }
 
 interface INinchatConversationListPresenter {
-    fun onAddItem(positionStart: Int, itemCount: Int)
+    fun onAddItem(positionStart: Int, itemCount: Int, previousItemCount: Int)
     fun onItemRemoved(positionStart: Int, itemCount: Int)
     fun onItemUpdate(positionStart: Int, itemCount: Int)
 }
