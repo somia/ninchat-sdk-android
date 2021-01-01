@@ -84,7 +84,7 @@ class NinchatReviewPresenter(
 
         //4: start dummy animation
         view.ninchat_chat_message_bot_writing.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator)
-        val animationDrawable = (view.ninchat_chat_message_bot_writing.background as AnimationDrawable)
+        val animationDrawable = (view.ninchat_chat_message_bot_writing.background) as AnimationDrawable
         animationDrawable.start()
 
         //5: stop animation after 1.5 second

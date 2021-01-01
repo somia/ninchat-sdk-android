@@ -7,19 +7,29 @@ class NinchatBotWritingViewPresenter(
         jsonObject: JSONObject?,
         position: Int,
         enabled: Boolean,
-        val presenter: INinchatBotWritingViewPresenter
+        val updateCallback: ((Int) -> Unit)?,
+        val presenter: INinchatBotWritingViewPresenter,
 ) {
     private var model = NinchatBotWritingViewModel(position = position, enabled = enabled).apply {
         parse(jsonObject = jsonObject)
     }
 
     fun updateModel(jsonObject: JSONObject?, enabled: Boolean) {
-        model.update(enabled = enabled)
+        model.update(jsonObject = jsonObject, enabled = enabled)
     }
 
     fun renderCurrentView() {
         presenter.onUpdateView(label = model.label, imgUrl = model.imgUrl, enabled = model.enabled)
     }
+
+    fun onAnimationComplete() {
+        if (model.loaded == true) return
+        updateCallback?.let {
+            it(model.position)
+        }
+    }
+
+    fun isLoaded(): Boolean = model.loaded == true
 }
 
 interface INinchatBotWritingViewPresenter {

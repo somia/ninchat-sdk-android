@@ -6,18 +6,18 @@ import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNavigator
 import com.ninchat.sdk.ninchatquestionnaire.helper.fromJSONArray
 import org.json.JSONObject
 
-open class NinchatQuestionnaireListModel(
+data class NinchatQuestionnaireListModel(
         var questionnaireList: List<JSONObject> = listOf(),
         var answerList: List<JSONObject> = listOf(),
         var selectedElement: ArrayList<Pair<String, Int>> = arrayListOf(),
-        var isFormLike: Boolean = true,
 ) {
 
-    open fun parse() {
-        // get first element
-        val element = NinchatQuestionnaireNavigator.getNextElement(questionnaireList = questionnaireList, index = 0)
-        // add that element
-        addElement(element)
+    fun getBotName(): String? {
+        return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getQuestionnaireName()
+    }
+
+    fun getBotAvatar(): String? {
+        return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getQuestionnaireAvatar()
     }
 
     fun addElement(jsonObject: JSONObject?): Int {
@@ -74,8 +74,4 @@ open class NinchatQuestionnaireListModel(
 
     fun audienceRegisterCloseText(): String? =
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getAudienceRegisteredClosedText()
-
-    open fun size(): Int = 0
-    open fun get(at: Int): JSONObject = JSONObject()
-    open fun isLast(at: Int): Boolean = false
 }

@@ -85,12 +85,19 @@ class NinchatQuestionnaireJsonUtil {
             }""".trimIndent())
         }
 
-        fun getBotElement(botName: String?, botImgUrl: String): JSONObject {
+        fun getBotElement(botName: String?, botImgUrl: String?): JSONObject {
             return JSONObject("""{
                 "name": "botViewElement",
                 "element": "botElement",
                 "label": "$botName",
-                "imgUrl": "$botImgUrl"
+                "imgUrl": "$botImgUrl",
+                "elements": [{
+                    "name": "botViewElement",
+                    "element": "botElement",
+                    "label": "$botName",
+                    "imgUrl": "$botImgUrl",
+                    "loaded": false
+                }]
             }""".trimIndent())
         }
 

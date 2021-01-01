@@ -12,8 +12,8 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.view.NinchatCheckbox
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.view.NinchatDropDownSelectViewHolder
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.view.NinchatInputFieldViewHolder
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.QuestionnaireActivityCallback
-import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.INinchatQuestionnaireListPresenter
-import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.NinchatQuestionnaireListPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.INinchatConversationListPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.NinchatConversationListPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.view.NinchatRadioButtonListView
 import com.ninchat.sdk.ninchatquestionnaire.ninchattextviewholder.view.NinchatTextViewHolder
 import org.json.JSONObject
@@ -22,10 +22,9 @@ class NinchatQuestionnaireListAdapter(
         questionnaireList: List<JSONObject>,
         isFormLike: Boolean,
         rootActivityCallback: QuestionnaireActivityCallback,
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), INinchatQuestionnaireListPresenter {
-    val presenter = NinchatQuestionnaireListPresenter(
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), INinchatConversationListPresenter {
+    val presenter = NinchatConversationListPresenter(
             questionnaireList = questionnaireList,
-            isFormLike = isFormLike,
             rootActivityCallback = rootActivityCallback,
             viewCallback = this
     )
@@ -117,6 +116,7 @@ class NinchatQuestionnaireListAdapter(
                         itemView = view,
                         jsonObject = currentElement,
                         position = position,
+                        updateCallback = presenter.botViewCallback,
                         enabled = presenter.isLast(position)
                 )
             }
@@ -152,7 +152,7 @@ class NinchatQuestionnaireListAdapter(
 
     override fun onAddItem(positionStart: Int, itemCount: Int) {
         notifyItemRangeInserted(positionStart, itemCount)
-        notifyItemRangeChanged(0, positionStart + 1)
+       // notifyItemRangeChanged(0, positionStart + 1)
     }
 
     override fun onItemRemoved(positionStart: Int, itemCount: Int) {
@@ -164,7 +164,7 @@ class NinchatQuestionnaireListAdapter(
     }
 
     fun showThankYou(isComplete: Boolean = false) {
-        presenter.showThankYouText(isComplete)
+        presenter.addThankYouView(isComplete)
     }
 
     fun showNextQuestionnaire(onNextQuestionnaire: OnNextQuestionnaire) {
