@@ -19,10 +19,12 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONObject
+import kotlin.math.max
 
 class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnairePresenter, QuestionnaireActivityCallback {
     private val presenter = NinchatQuestionnairePresenter(viewCallback = this)
     private lateinit var currentAdapter: NinchatQuestionnaireListAdapter
+    private lateinit var mLayoutManager: LinearLayoutManager
 
     override val layoutRes: Int
         get() = R.layout.activity_ninchat_questionnaire
@@ -30,6 +32,7 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
     override fun onCreate(savedInstanceState: Bundle?) {
         EventBus.getDefault().register(this)
         super.onCreate(savedInstanceState)
+        mLayoutManager = LinearLayoutManager(applicationContext)
         presenter.renderCurrentView(intent)
     }
 
@@ -57,7 +60,7 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
         val spaceLeft = applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_items_margin_left)
         val spaceRight = applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_items_margin_right)
         (questionnaire_form_rview as RecyclerView).apply {
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = mLayoutManager
             addItemDecoration(NinchatQuestionnaireItemDecoration(spaceInPixelTop, spaceLeft, spaceRight))
             adapter = currentAdapter
         }
@@ -110,6 +113,11 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
         setResult(RESULT_OK, intent)
         finish()
     }
+
+    override fun scrollTo(position: Int) {
+        val heightOffset = applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_item_bot_height)
+        mLayoutManager.scrollToPositionWithOffset( position, heightOffset)
+    }
 }
 
 interface QuestionnaireActivityCallback {
@@ -117,4 +125,5 @@ interface QuestionnaireActivityCallback {
     fun onComplete(answerList: List<JSONObject>)
     fun onDataSetChange()
     fun onFinishQuestionnaire(openQueue: Boolean)
+    fun scrollTo(position: Int)
 }

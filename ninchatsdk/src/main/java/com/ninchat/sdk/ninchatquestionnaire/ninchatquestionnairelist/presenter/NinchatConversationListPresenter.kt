@@ -23,6 +23,7 @@ class NinchatConversationListPresenter(
                 val previousItemCount = model.selectedElement.lastOrNull()?.second ?: 0
                 val itemCount = loadNextByElement(elementName = it)
                 viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount, previousItemCount = previousItemCount)
+                rootActivityCallback.scrollTo(position = positionStart)
             }
             addBotWritingView()
         } ?: rootActivityCallback.onComplete(answerList = model.answerList)
@@ -34,6 +35,7 @@ class NinchatConversationListPresenter(
         val currentElement = NinchatQuestionnaireJsonUtil.getBotElement(botName = model.getBotName(), botImgUrl = model.getBotAvatar())
         val itemCount = model.addElement(jsonObject = currentElement)
         viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount, previousItemCount = previousItemCount)
+        rootActivityCallback.scrollTo(position = positionStart)
     }
 
     override fun get(at: Int): JSONObject = model.answerList.getOrNull(at) ?: JSONObject()
@@ -58,6 +60,7 @@ class NinchatConversationListPresenter(
                 val currentElement = NinchatQuestionnaireJsonUtil.getThankYouElement(thankYouString = it)
                 val itemCount = model.addElement(jsonObject = currentElement)
                 viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount, previousItemCount = previousItemCount)
+                rootActivityCallback.scrollTo(position = positionStart)
             }
             addBotWritingView()
         } ?: rootActivityCallback.onFinishQuestionnaire(openQueue = false)
@@ -105,6 +108,7 @@ class NinchatConversationListPresenter(
                 val previousItemCount = model.selectedElement.lastOrNull()?.second ?: 0
                 val itemCount = loadNextByElement(elementName = nextTargetName)
                 viewCallback.onAddItem(positionStart = positionStart, itemCount = itemCount, previousItemCount = previousItemCount)
+                rootActivityCallback.scrollTo(position = positionStart)
             }
             addBotWritingView()
         } ?: rootActivityCallback.onComplete(answerList = model.answerList)
