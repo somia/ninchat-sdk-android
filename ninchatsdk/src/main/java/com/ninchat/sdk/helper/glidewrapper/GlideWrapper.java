@@ -7,6 +7,8 @@ import com.ninchat.sdk.helper.NinchatImageGetter;
 import android.content.Context;
 import android.widget.ImageView;
 
+import androidx.annotation.DrawableRes;
+
 public class GlideWrapper {
     public static void loadImage(Context context, String fileUrl, ImageView imageView) {
         GlideApp.with(context)
@@ -15,10 +17,19 @@ public class GlideWrapper {
                 .into(imageView);
     }
 
-    public static void loadImageAsCircle(Context context, String fileUrl, ImageView imageView) {
+    public static void loadImage(Context context, String fileUrl, ImageView imageView, @DrawableRes int id, int width, int height) {
         GlideApp.with(context)
                 .load(fileUrl)
                 .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .placeholder(id)
+                .override(width, height)
+                .into(imageView);
+    }
+
+    public static void loadImageAsCircle(Context context, String fileUrl, ImageView imageView) {
+        GlideApp.with(context)
+                .load(fileUrl)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .circleCrop()
                 .into(imageView);
     }

@@ -39,6 +39,7 @@ import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
+import com.ninchat.sdk.helper.glidewrapper.GlideWrapper;
 import com.ninchat.sdk.managers.IOrientationManager;
 import com.ninchat.sdk.managers.OrientationManager;
 import com.ninchat.sdk.models.NinchatUser;
@@ -299,10 +300,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
                         avatar = sessionManager.ninchatState.getSiteConfig().getAgentAvatar();
                     }
                     if (!TextUtils.isEmpty(avatar)) {
-                        GlideApp.with(userImage.getContext())
-                                .load(avatar)
-                                .circleCrop()
-                                .into(userImage);
+                        GlideWrapper.loadImageAsCircle(userImage.getContext(), avatar, userImage);
                     }
                     final TextView userName = dialog.findViewById(R.id.ninchat_video_call_consent_dialog_user_name);
                     userName.setText(user.getName());

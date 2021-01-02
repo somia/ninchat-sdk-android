@@ -203,6 +203,12 @@ class NinchatSessionManagerHelper {
                     currentSession.sessionError(e)
                     return
                 }
+                val thumbnailUrl = try {
+                    params.getString("thumbnail_url")
+                } catch (e: Exception) {
+                    currentSession.sessionError(e)
+                    return
+                }
                 val urlExpiry = try {
                     params.getInt("url_expiry")
                 } catch (e: Exception) {
@@ -225,6 +231,7 @@ class NinchatSessionManagerHelper {
                 }
                 val file = currentSession.ninchatState?.getFile(fileId)
                 file?.url = url
+                file?.thumbnailUrl = thumbnailUrl
                 file?.urlExpiry = Date(urlExpiry)
                 file?.aspectRatio = aspectRatio
                 file?.fileWidth = width
