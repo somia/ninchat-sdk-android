@@ -35,14 +35,8 @@ class NinchatBotWriting(
     }
 
     override fun onUpdateView(label: String?, imgUrl: String?, enabled: Boolean) {
-        itemView.ninchat_chat_message_bot_text.text = label
         itemView.isEnabled = enabled
-        // is already loaded
-        if (presenter.isLoaded()) {
-            itemView.ninchat_chat_message_bot_writing_root.visibility = View.GONE
-            return
-        }
-        // update the bot avatar image if it has an image URL
+        itemView.ninchat_chat_message_bot_text.text = label
         imgUrl?.let {
             try {
                 GlideWrapper.loadImageAsCircle(itemView.context, it, itemView.ninchat_chat_message_bot_avatar)
@@ -50,7 +44,11 @@ class NinchatBotWriting(
                 itemView.ninchat_chat_message_bot_avatar.setImageResource(R.drawable.ninchat_chat_avatar_left)
             }
         }
-
+        // is already loaded
+        if (presenter.isLoaded()) {
+            itemView.ninchat_chat_message_bot_writing_root.visibility = View.GONE
+            return
+        }
         itemView.ninchat_chat_message_bot_writing_root.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         itemView.ninchat_chat_message_bot_writing.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator)
         val animationDrawable = (itemView.ninchat_chat_message_bot_writing.background) as AnimationDrawable

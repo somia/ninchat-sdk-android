@@ -12,11 +12,17 @@ class NinchatReviewModel {
     var currentRating: Int = NinchatSession.Analytics.Rating.NO_ANSWER
 
     fun getBotName(): String? {
-        return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getQuestionnaireName()
+        return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getQuestionnaireName()?.let {
+            if (it in listOf("null", "false", "")) null
+            else it
+        }
     }
 
     fun getBotAvatar(): String? {
-        return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getQuestionnaireAvatar()
+        return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getQuestionnaireAvatar()?.let {
+            if (it in listOf("null", "false", "")) null
+            else it
+        }
     }
 
     /**
@@ -35,7 +41,7 @@ class NinchatReviewModel {
         data.put("data", value)
         return data
     }
-    
+
     fun getFeedbackTitleText(): String? {
         return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getFeedbackTitleText()
     }
