@@ -36,17 +36,17 @@ class NinchatTextViewHolder(
         if (text.isNotBlank()) {
             itemView.text_view_content.text = text
         }
-        itemView.isEnabled = enabled
         itemView.text_view_content.setTextColor(ContextCompat.getColor(itemView.context, textColor))
+        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
+        itemView.isEnabled = enabled
     }
 
     override fun onUpdateFormView(label: String?, enabled: Boolean) {
         val text = Misc.toRichText(label, itemView.text_view_content)
-        val background = R.drawable.ninchat_chat_questionnaire_background
         if (text.isNotBlank()) {
             itemView.text_view_content.text = text
         }
-        itemView.background = ContextCompat.getDrawable(itemView.context, background)
+        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         itemView.isEnabled = enabled
     }
 }

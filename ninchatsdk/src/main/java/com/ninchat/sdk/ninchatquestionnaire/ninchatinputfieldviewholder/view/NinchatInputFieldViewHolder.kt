@@ -69,8 +69,6 @@ class NinchatInputFieldViewHolder(
     }
 
     override fun onUpdateFromView(label: String, enabled: Boolean) {
-        val background = R.drawable.ninchat_chat_questionnaire_background
-        itemView.background = ContextCompat.getDrawable(itemView.context, background)
         renderCommonView(isMultiline = presenter.isMultiline(), label = label, enabled = enabled)
     }
 
@@ -93,6 +91,7 @@ class NinchatInputFieldViewHolder(
     }
 
     private fun renderCommonView(isMultiline: Boolean, label: String, enabled: Boolean) {
+        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         itemView.isEnabled = enabled
         // set label
         val mLabel = if (isMultiline) itemView.multiline_text_label else itemView.simple_text_label

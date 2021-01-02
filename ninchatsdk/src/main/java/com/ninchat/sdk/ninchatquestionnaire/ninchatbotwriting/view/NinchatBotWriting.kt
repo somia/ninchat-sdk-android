@@ -3,6 +3,7 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.view
 import android.graphics.drawable.AnimationDrawable
 import android.os.Handler
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
 import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
@@ -50,6 +51,7 @@ class NinchatBotWriting(
             }
         }
 
+        itemView.ninchat_chat_message_bot_writing_root.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         itemView.ninchat_chat_message_bot_writing.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator)
         val animationDrawable = (itemView.ninchat_chat_message_bot_writing.background) as AnimationDrawable
         animationDrawable.start()

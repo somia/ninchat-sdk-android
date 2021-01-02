@@ -43,8 +43,6 @@ class NinchatCheckboxViewHolder(
 
 
     override fun onUpdateFromView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean) {
-        val background = R.drawable.ninchat_chat_questionnaire_background
-        itemView.background = ContextCompat.getDrawable(itemView.context, background)
         renderCommonView(label = label, isChecked = isChecked, hasError = hasError, enabled = enabled)
     }
 
@@ -59,6 +57,7 @@ class NinchatCheckboxViewHolder(
     }
 
     private fun renderCommonView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean) {
+        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         itemView.isEnabled = enabled
         itemView.ninchat_checkbox.isEnabled = enabled
         itemView.ninchat_checkbox.text = label

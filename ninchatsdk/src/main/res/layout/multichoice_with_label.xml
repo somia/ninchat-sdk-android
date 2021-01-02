@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
-    android:background="@drawable/ninchat_chat_bubble_left_repeated">
+    android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom">
 
     <TextView
         android:theme="@style/NinchatTheme.Questionnaire.Label"

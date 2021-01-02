@@ -3,8 +3,7 @@
     android:id="@+id/checkbox_simple"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@drawable/ninchat_chat_bubble_left_repeated">
+    android:orientation="vertical">
 
     <CheckBox
         android:id="@+id/ninchat_checkbox"

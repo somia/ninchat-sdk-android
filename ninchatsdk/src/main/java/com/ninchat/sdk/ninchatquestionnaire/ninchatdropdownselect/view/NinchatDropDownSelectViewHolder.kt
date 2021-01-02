@@ -52,7 +52,6 @@ class NinchatDropDownSelectViewHolder(
 
     override fun onUpdateFromView(label: String, options: List<String>, enabled: Boolean) {
         renderCommonView(label = label, options = options, enabled = enabled)
-        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
     }
 
     override fun onUpdateConversationView(label: String, options: List<String>, enabled: Boolean) {
@@ -86,6 +85,7 @@ class NinchatDropDownSelectViewHolder(
     }
 
     private fun renderCommonView(label: String?, options: List<String>, enabled: Boolean) {
+        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         itemView.isEnabled = enabled
         itemView.dropdown_text_label.isEnabled = enabled
         itemView.ninchat_dropdown_list.isEnabled = enabled

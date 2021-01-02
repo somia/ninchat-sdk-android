@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="top|left"><!-- android:gravity="top|left" android:drawable="@drawable/ninchat_chat_bubble_left_caret">-->
+        <bitmap android:src="@drawable/ninchat_chat_bubble_left_caret"
+            android:gravity="center" />
+    </item>
     <item android:top="7dp">
         <shape android:shape="rectangle">
             <corners
-                android:radius="@dimen/ninchat_chat_activity_message_bubble_corner_radius" />
+                android:radius="@dimen/ninchat_chat_activity_message_bubble_corner_radius"
+                android:topLeftRadius="0dp"
+                />
             <solid android:color="#FFFFFF" />
         </shape>
     </item>
