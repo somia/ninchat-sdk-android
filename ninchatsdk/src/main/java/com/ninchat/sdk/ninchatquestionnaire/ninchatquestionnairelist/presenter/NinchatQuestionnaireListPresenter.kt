@@ -22,7 +22,8 @@ open class NinchatQuestionnaireListPresenter(
     )
 
     override fun onUpdate(value: String?, sublistPosition: Int, hasError: Boolean, position: Int) {
-        model.answerList.getOrNull(position)?.apply {
+        val at = mapPosition(position = position)
+        model.answerList.getOrNull(at)?.apply {
             putOpt("result", value)
             putOpt("hasError", hasError)
             putOpt("position", sublistPosition)
@@ -30,20 +31,23 @@ open class NinchatQuestionnaireListPresenter(
     }
 
     override fun onUpdate(value: String?, position: Int) {
-        model.answerList.getOrNull(position)?.apply {
+        val at = mapPosition(position = position)
+        model.answerList.getOrNull(at)?.apply {
             putOpt("result", value)
         }
     }
 
     override fun onUpdate(value: Boolean, hasError: Boolean, position: Int) {
-        model.answerList.getOrNull(position)?.apply {
+        val at = mapPosition(position = position)
+        model.answerList.getOrNull(at)?.apply {
             putOpt("result", value)
             putOpt("hasError", hasError)
         }
     }
 
     override fun onUpdate(value: String?, hasError: Boolean, position: Int) {
-        model.answerList.getOrNull(position)?.apply {
+        val at = mapPosition(position = position)
+        model.answerList.getOrNull(at)?.apply {
             putOpt("result", value)
             putOpt("hasError", hasError)
         }
@@ -85,4 +89,5 @@ open class NinchatQuestionnaireListPresenter(
     open fun isLast(at: Int): Boolean = false
     open fun size(): Int = 0
     open fun get(at: Int): JSONObject = JSONObject()
+    open fun mapPosition(position: Int): Int = position
 }

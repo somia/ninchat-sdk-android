@@ -68,4 +68,21 @@ class NinchatFormListPresenter(
             rootActivityCallback.onDataSetChange()
         } ?: rootActivityCallback.onComplete(answerList = model.answerList)
     }
+
+    override fun mapPosition(position: Int): Int {
+        // real position in the answer list from the relative flat data structure
+        /*
+        3 5 9 12 14
+        0 0 0 0  0
+        1 1 1 1  1
+        2   2 2
+              3
+
+        0 1 2 3 4 5 6 7 8 9 10 11  12 13
+        0 1 2 0 1 0 1 2 0 1 2  3   0   1
+
+        pos = totalSize - lastElementSize + relativePosition
+        */
+        return model.answerList.size - (model.selectedElement.lastOrNull()?.second ?: 0) + position
+    }
 }

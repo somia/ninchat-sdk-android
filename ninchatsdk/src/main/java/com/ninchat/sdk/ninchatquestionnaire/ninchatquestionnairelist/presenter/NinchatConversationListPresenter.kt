@@ -113,6 +113,10 @@ class NinchatConversationListPresenter(
             addBotWritingView()
         } ?: rootActivityCallback.onComplete(answerList = model.answerList)
     }
+
+    override fun mapPosition(position: Int): Int {
+        return super.mapPosition(position)
+    }
 }
 
 interface INinchatConversationListPresenter {
