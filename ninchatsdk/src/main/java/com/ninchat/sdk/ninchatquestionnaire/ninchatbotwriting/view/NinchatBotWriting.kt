@@ -5,11 +5,13 @@ import android.os.Handler
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
+import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.INinchatBotWritingViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.NinchatBotWritingViewPresenter
 import kotlinx.android.synthetic.main.bot_item_conversation_view.view.*
 import kotlinx.android.synthetic.main.bot_writing_indicator.view.*
 import org.json.JSONObject
+
 
 class NinchatBotWriting(
         itemView: View,
@@ -38,6 +40,14 @@ class NinchatBotWriting(
         if (presenter.isLoaded()) {
             itemView.ninchat_chat_message_bot_writing_root.visibility = View.GONE
             return
+        }
+        // update the bot avatar image if it has an image URL
+        imgUrl?.let {
+            try {
+                GlideWrapper.loadImageAsCircle(itemView.context, it, itemView.ninchat_chat_message_bot_avatar)
+            } catch (e: Exception) {
+                itemView.ninchat_chat_message_bot_avatar.setImageResource(R.drawable.ninchat_chat_avatar_left)
+            }
         }
 
         itemView.ninchat_chat_message_bot_writing.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator)
