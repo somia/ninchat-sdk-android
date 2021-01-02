@@ -12,9 +12,15 @@ data class NinchatBotWritingViewModel(
 ) {
 
     fun parse(jsonObject: JSONObject?) {
-        this.label = jsonObject?.optString("label")
-        this.imgUrl = jsonObject?.optString("imgUrl")
-        this.loaded = jsonObject?.optBoolean("loaded")
+        this.label = jsonObject?.optString("label")?.let {
+            if (it in listOf("null", "false", "")) null
+            else it
+        }
+        this.imgUrl = jsonObject?.optString("imgUrl")?.let {
+            if (it in listOf("null", "false", "")) null
+            else it
+        }
+        this.loaded = jsonObject?.optBoolean("loaded", false)
     }
 
     fun update(jsonObject: JSONObject?, enabled: Boolean) {

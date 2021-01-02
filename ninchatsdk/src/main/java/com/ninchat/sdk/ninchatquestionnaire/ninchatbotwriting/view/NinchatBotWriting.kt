@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.INinchatBotWritingViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.NinchatBotWritingViewPresenter
-import com.ninchat.sdk.utils.misc.Misc
 import kotlinx.android.synthetic.main.bot_item_conversation_view.view.*
 import kotlinx.android.synthetic.main.bot_writing_indicator.view.*
 import org.json.JSONObject
@@ -33,10 +32,7 @@ class NinchatBotWriting(
     }
 
     override fun onUpdateView(label: String?, imgUrl: String?, enabled: Boolean) {
-        val text = Misc.toRichText(label, itemView.ninchat_chat_message_bot_text)
-        if (text.isNotBlank()) {
-            itemView.ninchat_chat_message_bot_text.text = text
-        }
+        itemView.ninchat_chat_message_bot_text.text = label
         itemView.isEnabled = enabled
         // is already loaded
         if (presenter.isLoaded()) {
