@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.presenter.INinchatButtonViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.presenter.NinchatButtonViewPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.presenter.OnClickListener
 import kotlinx.android.synthetic.main.control_buttons.view.*
 import org.json.JSONObject
 
@@ -21,6 +22,10 @@ class NinchatButtonViewHolder(
             position = position,
             enabled = enabled
     )
+    private val onClickListener = OnClickListener(intervalInMs = 2000,
+            onBack = { presenter.onBackButtonClicked() },
+            onNext = { presenter.onNextButtonClicked() }
+    )
 
     fun update(jsonObject: JSONObject?, enabled: Boolean) {
         presenter.updateModel(jsonObject = jsonObject, enabled = enabled)
@@ -33,16 +38,16 @@ class NinchatButtonViewHolder(
         // update background of the button
         itemView.run {
             ninchat_image_button_previous?.setOnClickListener {
-                presenter.onBackButtonClicked()
+                onClickListener.onBackButtonClicked()
             }
             ninchat_button_previous?.setOnClickListener {
-                presenter.onBackButtonClicked()
+                onClickListener.onBackButtonClicked()
             }
             ninchat_image_button_next?.setOnClickListener {
-                presenter.onNextButtonClicked()
+                onClickListener.onNextButtonClicked()
             }
             ninchat_button_next?.setOnClickListener {
-                presenter.onNextButtonClicked()
+                onClickListener.onNextButtonClicked()
             }
         }
     }
