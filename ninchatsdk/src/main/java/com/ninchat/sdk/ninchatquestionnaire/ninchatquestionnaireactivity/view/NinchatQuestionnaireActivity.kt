@@ -50,9 +50,10 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
         super.finish()
     }
 
-    override fun renderQuestionnaireList(questionnaireList: List<JSONObject>, queueId: String?, isFormLike: Boolean) {
+    override fun renderQuestionnaireList(questionnaireList: List<JSONObject>, preAnswers: List<Pair<String, Any>>, queueId: String?, isFormLike: Boolean) {
         currentAdapter = NinchatQuestionnaireListAdapter(
                 questionnaireList = questionnaireList,
+                preAnswers = preAnswers,
                 isFormLike = isFormLike,
                 rootActivityCallback = this
         )
@@ -116,7 +117,7 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
 
     override fun scrollTo(position: Int) {
         val heightOffset = applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_item_bot_height)
-        mLayoutManager.scrollToPositionWithOffset( position, heightOffset)
+        mLayoutManager.scrollToPositionWithOffset(position, heightOffset)
     }
 }
 

@@ -23,10 +23,14 @@ class NinchatQuestionnairePresenter(
 
     fun renderCurrentView(intent: Intent?) {
         model.update(intent)
-        viewCallback.renderQuestionnaireList(model.questionnaireList, model.queueId, model.isFormLike)
+        viewCallback.renderQuestionnaireList(
+                questionnaireList = model.questionnaireList,
+                preAnswers = model.preAnswers(),
+                queueId = model.queueId,
+                isFormLike = model.isFormLike)
     }
 
-    fun handleDataSetChange(mRecyclerView: RecyclerView?, adapter: NinchatQuestionnaireListAdapter ) {
+    fun handleDataSetChange(mRecyclerView: RecyclerView?, adapter: NinchatQuestionnaireListAdapter) {
         mRecyclerView?.let {
             it.adapter = null
             it.adapter = adapter
@@ -106,7 +110,7 @@ class NinchatQuestionnairePresenter(
 }
 
 interface INinchatQuestionnairePresenter {
-    fun renderQuestionnaireList(questionnaireList: List<JSONObject>, queueId: String?, isFormLike: Boolean)
+    fun renderQuestionnaireList(questionnaireList: List<JSONObject>, preAnswers: List<Pair<String, Any>>, queueId: String?, isFormLike: Boolean)
     fun onCompleteQuestionnaire()
     fun onAudienceRegisterError()
 }

@@ -4,6 +4,7 @@ import android.content.Intent
 import com.ninchat.client.Props
 import com.ninchat.client.Strings
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.ninchataudiencemetadata.NinchatAudienceMetadata
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
@@ -16,7 +17,7 @@ data class NinchatQuestionnaireModel(
         var isFormLike: Boolean = true,
         var questionnaireList: List<JSONObject> = listOf(),
         var answers: NinchatQuestionnaireAnswers? = null,
-        var fromComplete: Boolean = false
+        var fromComplete: Boolean = false,
 ) {
 
     fun update(intent: Intent?) {
@@ -30,6 +31,7 @@ data class NinchatQuestionnaireModel(
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPreAudienceQuestionnaire()
         else
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPostAudienceQuestionnaire()
+
         questionnaireList = NinchatQuestionnaireNormalizer.unifyQuestionnaireList(questionnaireArr = questionnaireArr)
         isFormLike = if (questionnaireType == NinchatQuestionnaireConstants.preAudienceQuestionnaire) {
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPreAudienceQuestionnaireStyle() != "conversation"
@@ -43,12 +45,16 @@ data class NinchatQuestionnaireModel(
                 ?: NinchatAudienceMetadata()
     }
 
+    fun preAnswers(): List<Pair<String, Any>> {
+        return NinchatPropsParser.getPreAnswersFromProps(audienceMetadata().get())
+    }
+
     fun isQueueClosed(): Boolean {
         // todo ( pallab ) currently if queue not found then we consider it as open queue
         val queue = NinchatSessionManager.getInstance()?.ninchatState?.queues?.find { it.id == queueId }
         return queue?.let {
             return it.isClosed
-        }?: false
+        } ?: false
     }
 
     fun getAnswersAsProps(): Props {

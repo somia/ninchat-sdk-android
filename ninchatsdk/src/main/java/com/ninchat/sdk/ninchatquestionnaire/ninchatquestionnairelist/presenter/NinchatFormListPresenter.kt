@@ -7,8 +7,9 @@ import org.json.JSONObject
 
 class NinchatFormListPresenter(
         questionnaireList: List<JSONObject>,
+        preAnswers: List<Pair<String,Any> >,
         var rootActivityCallback: QuestionnaireActivityCallback,
-) : NinchatQuestionnaireListPresenter (questionnaireList = questionnaireList) {
+) : NinchatQuestionnaireListPresenter (questionnaireList = questionnaireList, preAnswers = preAnswers) {
 
 
     init {

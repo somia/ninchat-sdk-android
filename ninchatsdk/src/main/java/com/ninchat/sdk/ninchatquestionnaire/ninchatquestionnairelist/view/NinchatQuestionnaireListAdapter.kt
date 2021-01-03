@@ -21,14 +21,17 @@ import org.json.JSONObject
 
 class NinchatQuestionnaireListAdapter(
         questionnaireList: List<JSONObject>,
+        preAnswers: List<Pair<String,Any> >,
         isFormLike: Boolean,
         rootActivityCallback: QuestionnaireActivityCallback,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), INinchatConversationListPresenter {
     val presenter = if (isFormLike) NinchatFormListPresenter(
             questionnaireList = questionnaireList,
+            preAnswers = preAnswers,
             rootActivityCallback = rootActivityCallback
     ) else NinchatConversationListPresenter(
             questionnaireList = questionnaireList,
+            preAnswers = preAnswers,
             rootActivityCallback = rootActivityCallback,
             viewCallback = this
     )
@@ -125,7 +128,7 @@ class NinchatQuestionnaireListAdapter(
                 )
             }
             else -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.text_field_with_label, parent, false)
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.text_view, parent, false)
                 NinchatTextViewHolder(
                         itemView = view,
                         jsonObject = currentElement,

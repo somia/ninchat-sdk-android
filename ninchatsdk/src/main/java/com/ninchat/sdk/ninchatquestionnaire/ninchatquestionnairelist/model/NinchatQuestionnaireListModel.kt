@@ -12,6 +12,15 @@ data class NinchatQuestionnaireListModel(
         var selectedElement: ArrayList<Pair<String, Int>> = arrayListOf(),
 ) {
 
+    fun withPreAnswers(preAnswers: List<Pair<String, Any>> = listOf()) {
+        val alreadyAnsweredList = preAnswers.map {
+            JSONObject()
+                    .putOpt("name", it.first)
+                    .putOpt("result", it.second)
+        }
+        answerList = answerList.plus(alreadyAnsweredList)
+    }
+
     fun getBotName(): String? {
         return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getQuestionnaireName()
     }

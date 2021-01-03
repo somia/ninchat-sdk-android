@@ -7,9 +7,10 @@ import org.json.JSONObject
 
 class NinchatConversationListPresenter(
         questionnaireList: List<JSONObject>,
+        preAnswers: List<Pair<String,Any> >,
         var rootActivityCallback: QuestionnaireActivityCallback,
         val viewCallback: INinchatConversationListPresenter,
-) : NinchatQuestionnaireListPresenter(questionnaireList = questionnaireList) {
+) : NinchatQuestionnaireListPresenter(questionnaireList = questionnaireList, preAnswers = preAnswers) {
     init {
         // try to get the first element
         val nextElement = getNextElement(currentIndex = 0, 100)

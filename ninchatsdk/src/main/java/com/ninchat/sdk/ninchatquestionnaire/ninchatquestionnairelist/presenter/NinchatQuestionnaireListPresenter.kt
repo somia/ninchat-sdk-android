@@ -12,6 +12,7 @@ import org.json.JSONObject
 
 open class NinchatQuestionnaireListPresenter(
         questionnaireList: List<JSONObject>,
+        preAnswers: List<Pair<String,Any> >,
 ) : InputFieldUpdateListener, ButtonListUpdateListener, DropDownSelectUpdateListener, CheckboxUpdateListener {
 
     var botViewCallback: ((Int) -> Unit)? = null
@@ -19,7 +20,9 @@ open class NinchatQuestionnaireListPresenter(
             questionnaireList = questionnaireList,
             answerList = listOf(),
             selectedElement = arrayListOf()
-    )
+    ).apply {
+        withPreAnswers(preAnswers = preAnswers)
+    }
 
     override fun onUpdate(value: String?, sublistPosition: Int, hasError: Boolean, position: Int) {
         val at = mapPosition(position = position)
