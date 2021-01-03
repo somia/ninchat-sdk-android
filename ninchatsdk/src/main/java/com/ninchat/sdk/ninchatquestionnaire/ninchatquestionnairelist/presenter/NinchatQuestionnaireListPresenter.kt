@@ -12,7 +12,7 @@ import org.json.JSONObject
 
 open class NinchatQuestionnaireListPresenter(
         questionnaireList: List<JSONObject>,
-        preAnswers: List<Pair<String,Any> >,
+        preAnswers: List<Pair<String, Any>>,
 ) : InputFieldUpdateListener, ButtonListUpdateListener, DropDownSelectUpdateListener, CheckboxUpdateListener {
 
     var botViewCallback: ((Int) -> Unit)? = null
@@ -63,7 +63,7 @@ open class NinchatQuestionnaireListPresenter(
         return when {
             NinchatQuestionnaireType.isLogic(currentElement) -> {
                 // is this logic a match for all any existing answer ?
-                val matches = NinchatQuestionnaireJsonUtil.matchAnswerList(logicElement = currentElement, answerList = model.answerList)
+                val matches = NinchatQuestionnaireJsonUtil.matchAnswerList(logicElement = currentElement, answerList = model.answerList, preAnswerList = model.preAnswers)
                 if (matches) {
                     model.updateTagsAndQueueId(currentElement)
                     currentElement?.optJSONObject("logic")?.optString("target")
@@ -86,6 +86,15 @@ open class NinchatQuestionnaireListPresenter(
         return model.addElement(jsonObject = nextElement)
     }
 
+    fun getAnswerList(): List<JSONObject> {
+        val uniquePreAnswers = model.preAnswers.filter { currentAnswer ->
+            val name = currentAnswer.optString("name")
+            model.answerList.any {
+                name == it.optString("name")
+            }.not()
+        }
+        return model.answerList.plus(uniquePreAnswers)
+    }
 
     open fun showNext(onNextQuestionnaire: OnNextQuestionnaire?) {}
     open fun addThankYouView(isComplete: Boolean) {}

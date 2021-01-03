@@ -17,7 +17,7 @@ class NinchatFormListPresenter(
         val nextElement = getNextElement(currentIndex = 0, 100)
         nextElement?.let {
             loadNextByElement(elementName = it)
-        } ?: rootActivityCallback.onComplete(answerList = model.answerList)
+        } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
     }
 
     override fun get(at: Int): JSONObject = model.answerList.takeLast(model.selectedElement.lastOrNull()?.second
@@ -57,17 +57,17 @@ class NinchatFormListPresenter(
         val index = model.getIndex(elementName = model.selectedElement.lastOrNull()?.first)
         val nextTargetName = this.getNextElement(currentIndex = index + 1, 1000)
         if (nextTargetName == "_complete") {
-            rootActivityCallback.onComplete(answerList = model.answerList)
+            rootActivityCallback.onComplete(answerList = getAnswerList())
             return
         }
         if (nextTargetName == "_register") {
-            rootActivityCallback.onRegistered(answerList = model.answerList)
+            rootActivityCallback.onRegistered(answerList = getAnswerList())
             return
         }
         nextTargetName?.let {
             loadNextByElement(elementName = nextTargetName)
             rootActivityCallback.onDataSetChange()
-        } ?: rootActivityCallback.onComplete(answerList = model.answerList)
+        } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
     }
 
     override fun mapPosition(position: Int): Int {

@@ -85,9 +85,9 @@ data class NinchatQuestionnaireAnswers(
         var queueId: String? = null,
 ) {
 
-    fun parse(questionnaireList: List<JSONObject> = listOf()) {
-        answerList = NinchatQuestionnaireJsonUtil.getQuestionnaireAnswers(answerList = questionnaireList)
-        tagList = NinchatQuestionnaireJsonUtil.getQuestionnaireTags(answerList = questionnaireList)
-        queueId = NinchatQuestionnaireJsonUtil.getQuestionnaireQueue(answerList = questionnaireList)
+    fun parse(answerList: List<JSONObject> = listOf()) {
+        this.answerList = NinchatQuestionnaireJsonUtil.getQuestionnaireAnswers(answerList = answerList)
+        tagList = NinchatQuestionnaireJsonUtil.getQuestionnaireTags(answerList = answerList)
+        queueId = NinchatQuestionnaireJsonUtil.getQuestionnaireQueue(answerList = answerList)
     }
 }

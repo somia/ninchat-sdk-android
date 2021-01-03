@@ -165,13 +165,20 @@ class NinchatQuestionnaireJsonUtil {
             }
         }
 
-        fun matchedLogicAll(logicList: JSONArray?, answerList: List<JSONObject>): Boolean {
+        internal fun matchedLogicAll(logicList: JSONArray?, answerList: List<JSONObject>): Boolean {
             return fromJSONArray<JSONObject>(logicList).all {
                 val currentLogic = it as JSONObject
                 var found = false
                 currentLogic.keys().forEach { currentKey: String ->
                     val pattern = currentLogic.optString(currentKey)
-                    found = found or answerList.any { currentAnswer: JSONObject ->
+                    found = found or answerList.asReversed()
+                            .filter { currentAnswer ->
+                                currentKey == currentAnswer.optString("name")
+                            }
+                            .distinctBy { currentAnswer ->
+                                currentAnswer.optString("name")
+                            }
+                            .any { currentAnswer: JSONObject ->
                         val result = currentAnswer.optString("result")
                         matchPattern(currentInput = result, pattern = pattern)
                     }
@@ -180,25 +187,38 @@ class NinchatQuestionnaireJsonUtil {
             }
         }
 
-        fun matchedLogicAny(logicList: JSONArray?, answerList: List<JSONObject>): Boolean {
+        internal fun matchedLogicAny(logicList: JSONArray?, answerList: List<JSONObject>): Boolean {
             return fromJSONArray<JSONObject>(logicList).any {
                 val currentLogic = it as JSONObject
                 var found = false
                 currentLogic.keys().forEach { currentKey: String ->
                     val pattern = currentLogic.optString(currentKey)
-                    found = found or answerList.any { currentAnswer: JSONObject ->
-                        val result = currentAnswer.optString("result")
-                        matchPattern(currentInput = result, pattern = pattern)
-                    }
+                    found = found or answerList.asReversed()
+                            .filter { currentAnswer ->
+                                currentKey == currentAnswer.optString("name")
+                            }
+                            .distinctBy { currentAnswer ->
+                                currentAnswer.optString("name")
+                            }.any { currentAnswer: JSONObject ->
+                                val result = currentAnswer.optString("result")
+                                matchPattern(currentInput = result, pattern = pattern)
+                            }
                 }
                 found
             }
         }
 
-        fun matchAnswerList(logicElement: JSONObject?, answerList: List<JSONObject>): Boolean {
+        fun matchAnswerList(logicElement: JSONObject?, answerList: List<JSONObject>, preAnswerList: List<JSONObject>): Boolean {
             val currentLogic = logicElement?.optJSONObject("logic")
             val hasAndLogic = hasLogic(logicElement = currentLogic, isAnd = true)
             val hasOrLogic = hasLogic(logicElement = currentLogic, isAnd = false)
+            val notOverridePreAnswers = preAnswerList.filter {
+                val name = it.optString("name")
+                answerList.any { currentAnswer ->
+                    val answeredName = currentAnswer.optString("name")
+                    name == answeredName
+                }.not()
+            }
             return when {
                 // if does not have both and or or logic then it a direct match
                 !hasAndLogic && !hasOrLogic -> {
@@ -207,6 +227,11 @@ class NinchatQuestionnaireJsonUtil {
                 matchedLogicAll(logicList = currentLogic?.optJSONArray("and"), answerList = answerList) ->
                     true
                 matchedLogicAny(logicList = currentLogic?.optJSONArray("or"), answerList = answerList) ->
+                    true
+                // match pre-answer list
+                matchedLogicAll(logicList = currentLogic?.optJSONArray("and"), answerList = notOverridePreAnswers) ->
+                    true
+                matchedLogicAny(logicList = currentLogic?.optJSONArray("or"), answerList = notOverridePreAnswers) ->
                     true
                 else -> {
                     false

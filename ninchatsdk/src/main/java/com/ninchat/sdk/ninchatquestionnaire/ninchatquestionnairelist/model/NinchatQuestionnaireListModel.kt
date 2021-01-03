@@ -8,17 +8,17 @@ import org.json.JSONObject
 
 data class NinchatQuestionnaireListModel(
         var questionnaireList: List<JSONObject> = listOf(),
+        var preAnswers: List<JSONObject> = listOf(),
         var answerList: List<JSONObject> = listOf(),
         var selectedElement: ArrayList<Pair<String, Int>> = arrayListOf(),
 ) {
 
     fun withPreAnswers(preAnswers: List<Pair<String, Any>> = listOf()) {
-        val alreadyAnsweredList = preAnswers.map {
+        this.preAnswers = preAnswers.map {
             JSONObject()
                     .putOpt("name", it.first)
                     .putOpt("result", it.second)
         }
-        answerList = answerList.plus(alreadyAnsweredList)
     }
 
     fun getBotName(): String? {

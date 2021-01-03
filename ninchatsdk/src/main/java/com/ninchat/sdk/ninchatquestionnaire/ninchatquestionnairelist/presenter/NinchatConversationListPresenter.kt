@@ -27,7 +27,7 @@ class NinchatConversationListPresenter(
                 rootActivityCallback.scrollTo(position = positionStart)
             }
             addBotWritingView()
-        } ?: rootActivityCallback.onComplete(answerList = model.answerList)
+        } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
     }
 
     private fun addBotWritingView() {
@@ -92,11 +92,11 @@ class NinchatConversationListPresenter(
         val index = model.getIndex(elementName = model.selectedElement.lastOrNull()?.first)
         val nextTargetName = this.getNextElement(currentIndex = index + 1, 1000)
         if (nextTargetName == "_complete") {
-            rootActivityCallback.onComplete(answerList = model.answerList)
+            rootActivityCallback.onComplete(answerList = getAnswerList())
             return
         }
         if (nextTargetName == "_register") {
-            rootActivityCallback.onRegistered(answerList = model.answerList)
+            rootActivityCallback.onRegistered(answerList = getAnswerList())
             return
         }
         nextTargetName?.let {
@@ -112,7 +112,7 @@ class NinchatConversationListPresenter(
                 rootActivityCallback.scrollTo(position = positionStart)
             }
             addBotWritingView()
-        } ?: rootActivityCallback.onComplete(answerList = model.answerList)
+        } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
     }
 
     override fun mapPosition(position: Int): Int {

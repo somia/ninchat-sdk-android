@@ -47,7 +47,7 @@ class NinchatQuestionnairePresenter(
 
     fun updateAnswers(answerList: List<JSONObject>) {
         model.answers = NinchatQuestionnaireAnswers().apply {
-            parse(questionnaireList = answerList)
+            parse(answerList = answerList)
         }
         // update queue from answers
         if (model.answers?.queueId.isNullOrEmpty().not()) {
