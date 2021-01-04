@@ -11,10 +11,10 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
 import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity
+import com.ninchat.sdk.utils.misc.Misc.Companion.HAS_CHANNEL
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Assert
@@ -149,7 +149,7 @@ class NinchatQueueActivityTest {
 
         // attach queue information
         NinchatSessionManager.getInstance().ninchatState.queues = arrayListOf(currentQueue)
-        NinchatSessionManager.getInstance().ninchatState.currentSessionState = (1 shl NinchatQuestionnaireTypeUtil.HAS_CHANNEL)
+        NinchatSessionManager.getInstance().ninchatState.currentSessionState = (1 shl HAS_CHANNEL)
         NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
 
         activityScenario = ActivityScenario.launch(intent)

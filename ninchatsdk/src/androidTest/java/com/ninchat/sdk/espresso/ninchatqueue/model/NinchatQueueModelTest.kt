@@ -4,7 +4,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import org.junit.Assert
 import org.junit.Test
@@ -82,7 +81,6 @@ class NinchatQueueModelTest {
         // attach queue information
         NinchatSessionManager.getInstance().ninchatState.queues = arrayListOf(currentQueue)
         NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
-        NinchatSessionManager.getInstance().ninchatState.ninchatQuestionnaire = NinchatQuestionnaireHolder(NinchatSessionManager.getInstance())
 
         val ninchatQueueModel = NinchatQueueModel()
         ninchatQueueModel.queueId = currentQueue.id
@@ -103,7 +101,6 @@ class NinchatQueueModelTest {
         // attach queue information
         NinchatSessionManager.getInstance().ninchatState.queues = arrayListOf(currentQueue)
         NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
-        NinchatSessionManager.getInstance().ninchatState.ninchatQuestionnaire = NinchatQuestionnaireHolder(NinchatSessionManager.getInstance())
 
         val ninchatQueueModel = NinchatQueueModel()
         ninchatQueueModel.queueId = currentQueue.id

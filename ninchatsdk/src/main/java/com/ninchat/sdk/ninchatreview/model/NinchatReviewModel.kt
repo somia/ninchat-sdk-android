@@ -29,9 +29,7 @@ class NinchatReviewModel {
      * Return whether this is a conversation like or questionnaire like view
      */
     fun isConversationLikeQuestionnaire(): Boolean {
-        return true
-        /*return NinchatSessionManager.getInstance()?.ninchatState?.ninchatQuestionnaire?.conversationLikePostAudienceQuestionnaire()
-                ?: false*/
+        return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPostAudienceQuestionnaireStyle() == "conversation"
     }
 
     fun getRatingPayload(): JSONObject {
