@@ -1,10 +1,10 @@
-package com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter
+package com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter
 
-class OnChangeListener(
-        private val intervalInMs: Long = 250,
+class OnToggleListener(
+        private val intervalInMs: Long = 1000,
 ) {
     var lastClickedTimeInMs = 0L
-    fun onChange(callback: () -> Unit) {
+    fun onButtonToggle(callback: () -> Unit) {
         val now = System.currentTimeMillis()
         if (now - lastClickedTimeInMs >= intervalInMs) {
             lastClickedTimeInMs = now

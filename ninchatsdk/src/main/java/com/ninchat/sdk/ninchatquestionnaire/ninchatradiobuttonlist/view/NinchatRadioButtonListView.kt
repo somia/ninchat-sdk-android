@@ -11,6 +11,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.view.NinchatRadio
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.ButtonListUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.INinchatRadioButtonListPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.NinchatRadioButtonListPresenter
+import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.OnToggleListener
 import kotlinx.android.synthetic.main.multichoice_with_label.view.*
 import org.json.JSONObject
 
@@ -33,6 +34,8 @@ class NinchatRadioButtonListView(
     ).apply {
         renderCurrentView(jsonObject = jsonObject, enabled = enabled)
     }
+
+    private val toggleLister = OnToggleListener(intervalInMs = 200)
 
     fun update(jsonObject: JSONObject?, enabled: Boolean) {
         presenter.updateCurrentView(jsonObject = jsonObject, enabled = enabled)
@@ -103,13 +106,16 @@ class NinchatRadioButtonListView(
         }
 
         override fun onOptionToggled(isSelected: Boolean, listPosition: Int) {
-            val previousIndex = presenter.handleOptionToggled(
-                    isSelected = isSelected,
-                    listPosition = listPosition)
-            // if there is a last selected position
-            if (previousIndex != -1) {
-                notifyItemChanged(previousIndex)
-            }
+            toggleLister.onButtonToggle(callback = {
+                val previousIndex = presenter.handleOptionToggled(
+                        isSelected = isSelected,
+                        listPosition = listPosition)
+                // if there is a last selected position
+                if (previousIndex != -1) {
+                    notifyItemChanged(previousIndex)
+                }
+            })
+
         }
     }
 }

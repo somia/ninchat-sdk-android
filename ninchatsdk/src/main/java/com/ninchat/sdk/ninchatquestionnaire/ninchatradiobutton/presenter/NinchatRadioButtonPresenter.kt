@@ -14,7 +14,17 @@ class NinchatRadioButtonPresenter(
         parse(jsonObject = jsonObject)
     }
 
-    fun renderCurrentView(isSelected: Boolean, enabled: Boolean) {
+    fun renderCurrentView(enabled: Boolean) {
+        model.update(isSelected = model.isSelected, enabled = enabled)
+        // if nothing is selected then do not call
+        viewCallback.renderView(
+                label = model.label ?: "",
+                isSelected = model.isSelected,
+                enabled = model.enabled
+        )
+    }
+
+    fun updateCurrentView(isSelected: Boolean, enabled: Boolean) {
         model.update(isSelected = isSelected, enabled = enabled)
         // if nothing is selected then do not call
         viewCallback.renderView(
@@ -39,6 +49,7 @@ class NinchatRadioButtonPresenter(
 
 interface INinchatRadioButtonPresenter {
     fun renderView(label: String, isSelected: Boolean, enabled: Boolean)
+    fun updateView(label: String, isSelected: Boolean, enabled: Boolean)
     fun onSelected()
     fun onUnSelected()
 }

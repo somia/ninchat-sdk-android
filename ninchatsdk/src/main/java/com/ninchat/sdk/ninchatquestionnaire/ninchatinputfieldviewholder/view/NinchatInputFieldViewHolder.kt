@@ -42,12 +42,7 @@ class NinchatInputFieldViewHolder(
 
     private fun attachUserActionHandler() {
         val mEditText = if (presenter.isMultiline()) itemView.multiline_text_area else itemView.simple_text_field
-        val onChangeListener = OnChangeListener(
-                intervalInMs = 100,
-                callback = {
-                    presenter.onTextChange(it?.toString())
-                }
-        )
+        val onChangeListener = OnChangeListener(intervalInMs = 100)
 
         mEditText?.let {
             it.addTextChangedListener(object : TextWatcher {
@@ -58,7 +53,7 @@ class NinchatInputFieldViewHolder(
                 }
 
                 override fun afterTextChanged(text: Editable?) {
-                    onChangeListener.onChange(text = text)
+                    onChangeListener.onChange { presenter.onTextChange(text?.toString()) }
                 }
             })
             it.onFocusChangeListener = OnFocusChangeListener { v: View?, hasFocus: Boolean ->

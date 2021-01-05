@@ -22,10 +22,7 @@ class NinchatButtonViewHolder(
             position = position,
             enabled = enabled
     )
-    private val onClickListener = OnClickListener(intervalInMs = 2000,
-            onBack = { presenter.onBackButtonClicked() },
-            onNext = { presenter.onNextButtonClicked() }
-    )
+    private val onClickListener = OnClickListener(intervalInMs = 2000)
 
     fun update(jsonObject: JSONObject?, enabled: Boolean) {
         presenter.updateModel(jsonObject = jsonObject, enabled = enabled)
@@ -38,22 +35,22 @@ class NinchatButtonViewHolder(
         // update background of the button
         itemView.run {
             ninchat_image_button_previous?.setOnClickListener {
-                onClickListener.onBackButtonClicked()
+                onClickListener.onClickListener { presenter.onBackButtonClicked() }
             }
             ninchat_button_previous?.setOnClickListener {
-                onClickListener.onBackButtonClicked()
+                onClickListener.onClickListener { presenter.onBackButtonClicked() }
             }
             ninchat_image_button_next?.setOnClickListener {
-                onClickListener.onNextButtonClicked()
+                onClickListener.onClickListener { presenter.onNextButtonClicked() }
             }
             ninchat_button_next?.setOnClickListener {
-                onClickListener.onNextButtonClicked()
+                onClickListener.onClickListener { presenter.onNextButtonClicked() }
             }
         }
     }
 
     override fun onBackButtonUpdated(visible: Boolean, text: String?, imageButton: Boolean, clicked: Boolean, enabled: Boolean) {
-        val background = if(enabled) if (clicked) R.drawable.ninchat_chat_secondary_onclicked_button else R.drawable.ninchat_chat_secondary_button else  R.drawable.ninchat_chat_disable_button
+        val background = if (enabled) if (clicked) R.drawable.ninchat_chat_secondary_onclicked_button else R.drawable.ninchat_chat_secondary_button else R.drawable.ninchat_chat_disable_button
         itemView.run {
             isEnabled = enabled
             if (imageButton) {
@@ -70,7 +67,7 @@ class NinchatButtonViewHolder(
     }
 
     override fun onNextNextUpdated(visible: Boolean, text: String?, imageButton: Boolean, clicked: Boolean, enabled: Boolean) {
-        val background = if(enabled) if (clicked) R.drawable.ninchat_chat_primary_oncliked_button else R.drawable.ninchat_chat_primary_button else R.drawable.ninchat_chat_disable_button
+        val background = if (enabled) if (clicked) R.drawable.ninchat_chat_primary_oncliked_button else R.drawable.ninchat_chat_primary_button else R.drawable.ninchat_chat_disable_button
         itemView.run {
             isEnabled = enabled
             if (imageButton) {
