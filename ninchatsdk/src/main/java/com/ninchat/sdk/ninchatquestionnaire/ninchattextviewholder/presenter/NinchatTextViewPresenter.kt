@@ -21,6 +21,15 @@ class NinchatTextViewPresenter(
     fun renderCurrentView(enabled: Boolean) {
         model.enabled = enabled
         if (model.isFormLikeQuestionnaire) {
+            iPresenter.onRenderFormView(label = model.label, enabled = model.enabled)
+        } else {
+            iPresenter.onRenderConversationVIew(label = model.label, enabled = model.enabled)
+        }
+    }
+
+    fun updateCurrentView(enabled: Boolean) {
+        model.enabled = enabled
+        if (model.isFormLikeQuestionnaire) {
             iPresenter.onUpdateFormView(label = model.label, enabled = model.enabled)
         } else {
             iPresenter.onUpdateConversationView(label = model.label, enabled = model.enabled)
@@ -30,5 +39,7 @@ class NinchatTextViewPresenter(
 
 interface INinchatTextViewPresenter {
     fun onUpdateFormView(label: String?, enabled: Boolean)
+    fun onRenderFormView(label: String?, enabled: Boolean)
     fun onUpdateConversationView(label: String?, enabled: Boolean)
+    fun onRenderConversationVIew(label: String?, enabled: Boolean)
 }

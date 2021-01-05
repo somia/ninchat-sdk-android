@@ -15,7 +15,7 @@ class NinchatTextViewHolder(
         jsonObject: JSONObject?,
         isFormLikeQuestionnaire: Boolean = true,
         position: Int,
-        enabled: Boolean
+        enabled: Boolean,
 ) : RecyclerView.ViewHolder(itemView), INinchatTextViewPresenter {
 
     private val presenter = NinchatTextViewPresenter(
@@ -24,15 +24,22 @@ class NinchatTextViewHolder(
             iPresenter = this,
             enabled = enabled,
             position = position
-    )
+    ).apply {
+        renderCurrentView(enabled = true)
+    }
 
     fun update(jsonObject: JSONObject?, enabled: Boolean) {
-        presenter.renderCurrentView(enabled = enabled)
+        presenter.updateCurrentView(enabled = enabled)
     }
 
     override fun onUpdateConversationView(label: String?, enabled: Boolean) {
+        itemView.text_view_content.setTextColor(ContextCompat.getColor(itemView.context, if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled))
+        itemView.isEnabled = enabled
+    }
+
+    override fun onRenderConversationVIew(label: String?, enabled: Boolean) {
         val text = Misc.toRichText(label, itemView.text_view_content)
-        val textColor = if(enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled
+        val textColor = if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled
         if (text.isNotBlank()) {
             itemView.text_view_content.text = text
         }
@@ -42,6 +49,10 @@ class NinchatTextViewHolder(
     }
 
     override fun onUpdateFormView(label: String?, enabled: Boolean) {
+        itemView.isEnabled = enabled
+    }
+
+    override fun onRenderFormView(label: String?, enabled: Boolean) {
         val text = Misc.toRichText(label, itemView.text_view_content)
         if (text.isNotBlank()) {
             itemView.text_view_content.text = text
