@@ -13,7 +13,7 @@ class NinchatInputFieldViewPresenter(
         val viewCallback: INinchatInputFieldViewPresenter,
         val updateCallback: InputFieldUpdateListener,
         position: Int,
-        enabled: Boolean
+        enabled: Boolean,
 ) : INinchatInputFieldViewHolder {
     private var model = NinchatInputFieldViewModel(
             isMultiline = isMultiline,
@@ -27,7 +27,7 @@ class NinchatInputFieldViewPresenter(
 
     fun renderCurrentView(jsonObject: JSONObject?, enabled: Boolean) {
         jsonObject?.let { model.update(jsonObject = jsonObject, enabled = enabled) }
-        
+
         if (model.isFormLikeQuestionnaire) {
             viewCallback.onUpdateFromView(
                     label = model.label ?: "",
@@ -56,7 +56,9 @@ class NinchatInputFieldViewPresenter(
     fun getInputValue(): String? = model.value
 
     override fun onTextChange(text: String?) {
+        val previousValue = model.value
         model.value = NinchatQuestionnaireNormalizer.sanitizeString(text)
+        //if (previousValue != text)
         model.hasError = NinchatQuestionnaireJsonUtil.matchPattern(text, model.pattern) == false
         // check if there is any error
         viewCallback.onUpdateText(
@@ -83,6 +85,6 @@ interface INinchatInputFieldViewPresenter {
 }
 
 
-interface InputFieldUpdateListener{
+interface InputFieldUpdateListener {
     fun onUpdate(value: String?, hasError: Boolean, position: Int)
 }

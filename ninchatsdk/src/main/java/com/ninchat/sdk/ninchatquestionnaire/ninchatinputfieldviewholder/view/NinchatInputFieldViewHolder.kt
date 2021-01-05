@@ -37,7 +37,6 @@ class NinchatInputFieldViewHolder(
 
     fun update(jsonObject: JSONObject?, enabled: Boolean) {
         presenter.renderCurrentView(jsonObject = jsonObject, enabled = enabled)
-        attachUserActionHandler()
     }
 
     private fun attachUserActionHandler() {
@@ -109,12 +108,14 @@ class NinchatInputFieldViewHolder(
 
         val mEditText = if (presenter.isMultiline()) itemView.multiline_text_area else itemView.simple_text_field
         mEditText?.let {
+        //    it.text.clear()
             if (presenter.getInputValue().isNullOrBlank().not()) {
                 it.setText(presenter.getInputValue())
             }
             it.isEnabled = enabled
             it.setTextColor(ContextCompat.getColor(itemView.context, textColor))
         }
+        attachUserActionHandler()
     }
 
     private fun setInputType() {
