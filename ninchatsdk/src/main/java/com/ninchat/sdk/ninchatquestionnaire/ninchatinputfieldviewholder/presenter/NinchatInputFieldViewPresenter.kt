@@ -56,7 +56,7 @@ class NinchatInputFieldViewPresenter(
     fun getInputValue(): String? = model.value
 
     override fun onTextChange(text: String?) {
-        val previousValue = model.value
+        if (!model.hasFocus) return
         model.value = NinchatQuestionnaireNormalizer.sanitizeString(text)
         //if (previousValue != text)
         model.hasError = NinchatQuestionnaireJsonUtil.matchPattern(text, model.pattern) == false
