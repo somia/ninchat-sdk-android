@@ -3,6 +3,7 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter
 import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireType
+import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.BotWritingCompleteListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.CheckboxUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.DropDownSelectUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.InputFieldUpdateListener
@@ -13,9 +14,8 @@ import org.json.JSONObject
 open class NinchatQuestionnaireListPresenter(
         questionnaireList: List<JSONObject>,
         preAnswers: List<Pair<String, Any>>,
-) : InputFieldUpdateListener, ButtonListUpdateListener, DropDownSelectUpdateListener, CheckboxUpdateListener {
+) : InputFieldUpdateListener, ButtonListUpdateListener, DropDownSelectUpdateListener, CheckboxUpdateListener, BotWritingCompleteListener {
 
-    var botViewCallback: ((Int) -> Unit)? = null
     var model = NinchatQuestionnaireListModel(
             questionnaireList = questionnaireList,
             answerList = listOf(),
@@ -80,11 +80,12 @@ open class NinchatQuestionnaireListPresenter(
         }
     }
 
-    protected fun loadNextByElement(elementName: String?): Int {
+    protected fun loadNextByElementName(elementName: String?): Int {
         val index = model.getIndex(elementName = elementName)
         val nextElement = model.questionnaireList.getOrNull(index)
         return model.addElement(jsonObject = nextElement)
     }
+
 
     fun getAnswerList(): List<JSONObject> {
         val uniquePreAnswers = model.preAnswers.filter { currentAnswer ->
@@ -96,6 +97,14 @@ open class NinchatQuestionnaireListPresenter(
         return model.answerList.plus(uniquePreAnswers)
     }
 
+    override fun onCompleteLoading(target: String?, thankYouText: String?, loaded: Boolean, position: Int) {
+        val at = mapPosition(position = position)
+        model.answerList.getOrNull(at)?.apply {
+            putOpt("loaded", true)
+        }
+    }
+
+    open fun init() {}
     open fun showNext(onNextQuestionnaire: OnNextQuestionnaire?) {}
     open fun addThankYouView(isComplete: Boolean) {}
     open fun isLast(at: Int): Boolean = false

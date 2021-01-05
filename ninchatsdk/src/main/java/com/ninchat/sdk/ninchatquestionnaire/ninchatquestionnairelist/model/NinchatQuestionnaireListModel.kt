@@ -78,6 +78,9 @@ data class NinchatQuestionnaireListModel(
         }
     }
 
+    fun resetAnswers(from: Int): List<JSONObject> {
+        return NinchatQuestionnaireJsonUtil.resetElements(answerList = answerList, from = from)
+    }
     fun audienceRegisterText(): String? =
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getAudienceRegisteredText()
 

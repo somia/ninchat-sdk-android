@@ -10,13 +10,12 @@ class NinchatFormListPresenter(
         preAnswers: List<Pair<String,Any> >,
         var rootActivityCallback: QuestionnaireActivityCallback,
 ) : NinchatQuestionnaireListPresenter (questionnaireList = questionnaireList, preAnswers = preAnswers) {
-
-
-    init {
+    
+    override fun init() {
         // try to get the first element
         val nextElement = getNextElement(currentIndex = 0, 100)
         nextElement?.let {
-            loadNextByElement(elementName = it)
+            loadNextByElementName(elementName = it)
         } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
     }
 
@@ -43,7 +42,8 @@ class NinchatFormListPresenter(
             return
         }
         if (onNextQuestionnaire?.moveType == OnNextQuestionnaire.back) {
-            model.removeLast()
+            val previousItemCount = model.selectedElement.lastOrNull()?.second ?: 0
+            model.answerList = model.resetAnswers(from = model.answerList.size - previousItemCount - 1)
             rootActivityCallback.onDataSetChange()
             return
         }
@@ -65,7 +65,7 @@ class NinchatFormListPresenter(
             return
         }
         nextTargetName?.let {
-            loadNextByElement(elementName = nextTargetName)
+            loadNextByElementName(elementName = nextTargetName)
             rootActivityCallback.onDataSetChange()
         } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
     }

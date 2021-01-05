@@ -1,5 +1,6 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -18,29 +19,43 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.N
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.view.NinchatRadioButtonListView
 import com.ninchat.sdk.ninchatquestionnaire.ninchattextviewholder.view.NinchatTextViewHolder
 import org.json.JSONObject
+import kotlin.math.max
 
 class NinchatQuestionnaireListAdapter(
         questionnaireList: List<JSONObject>,
-        preAnswers: List<Pair<String,Any> >,
+        preAnswers: List<Pair<String, Any>>,
         isFormLike: Boolean,
         rootActivityCallback: QuestionnaireActivityCallback,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), INinchatConversationListPresenter {
-    val presenter = if (isFormLike) NinchatFormListPresenter(
-            questionnaireList = questionnaireList,
-            preAnswers = preAnswers,
-            rootActivityCallback = rootActivityCallback
-    ) else NinchatConversationListPresenter(
-            questionnaireList = questionnaireList,
-            preAnswers = preAnswers,
-            rootActivityCallback = rootActivityCallback,
-            viewCallback = this
-    )
+
+    val presenter = if (isFormLike) {
+        NinchatFormListPresenter(
+                questionnaireList = questionnaireList,
+                preAnswers = preAnswers,
+                rootActivityCallback = rootActivityCallback
+        )
+    } else {
+        NinchatConversationListPresenter(
+                questionnaireList = questionnaireList,
+                preAnswers = preAnswers,
+                rootActivityCallback = rootActivityCallback,
+                viewCallback = this
+        )
+    }
+
+    init {
+        presenter.init()
+    }
 
     override fun getItemViewType(position: Int): Int = position
+    override fun getItemId(position: Int): Long {
+        return 1L * position
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): RecyclerView.ViewHolder {
         val currentElement = presenter.get(position)
-        val view = when {
+        Log.e("onCreateViewHolder", "$position $itemCount")
+        return when {
             NinchatQuestionnaireType.isText(currentElement) -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.text_view, parent, false)
                 NinchatTextViewHolder(
@@ -123,7 +138,7 @@ class NinchatQuestionnaireListAdapter(
                         itemView = view,
                         jsonObject = currentElement,
                         position = position,
-                        updateCallback = presenter.botViewCallback,
+                        updateCallback = presenter,
                         enabled = presenter.isLast(position)
                 )
             }
@@ -139,11 +154,11 @@ class NinchatQuestionnaireListAdapter(
             }
 
         }
-        return view
     }
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         val currentElement = presenter.get(position)
+        Log.e("onBindViewHolder", "$position $itemCount")
         when (viewHolder) {
             is NinchatTextViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
             is NinchatInputFieldViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
@@ -157,18 +172,27 @@ class NinchatQuestionnaireListAdapter(
 
     override fun getItemCount(): Int = presenter.size()
 
-    override fun onAddItem(positionStart: Int, itemCount: Int, previousItemCount: Int) {
-        notifyItemRangeInserted(positionStart, itemCount)
-        // notify item updated
-        notifyItemRangeChanged(positionStart - previousItemCount, previousItemCount)
+    override fun onAddItem(positionStart: Int, lastItemCount: Int) {
+        val position = max(positionStart, 0)
+        val totalCount = max(itemCount - position, 1)
+        Log.e("onAddItem", "pos, insert, total $position $totalCount $itemCount")
+        notifyItemRangeInserted(positionStart, totalCount)
+        // also update the last items
+        onItemUpdate(positionStart = position - lastItemCount, totalItemCount = lastItemCount)
     }
 
-    override fun onItemRemoved(positionStart: Int, itemCount: Int) {
-        notifyItemRangeRemoved(positionStart, itemCount)
+    override fun onItemRemoved(positionStart: Int, totalItemCount: Int, lastItemCount: Int) {
+        val position = max(positionStart, 0)
+        Log.e("onItemRemoved", "pos delete total $position $totalItemCount $itemCount")
+        notifyItemRangeRemoved(position, totalItemCount)
+        // also update the last items
+        onItemUpdate(positionStart = position - lastItemCount, totalItemCount = lastItemCount)
     }
 
-    override fun onItemUpdate(positionStart: Int, itemCount: Int) {
-        notifyItemRangeChanged(positionStart, itemCount)
+    override fun onItemUpdate(positionStart: Int, totalItemCount: Int) {
+        val position = max(positionStart, 0)
+        Log.e("onItemUpdate", "pos, update, total $position $totalItemCount $itemCount")
+        notifyItemRangeChanged(position, totalItemCount)
     }
 
     fun showThankYou(isComplete: Boolean = false) {
