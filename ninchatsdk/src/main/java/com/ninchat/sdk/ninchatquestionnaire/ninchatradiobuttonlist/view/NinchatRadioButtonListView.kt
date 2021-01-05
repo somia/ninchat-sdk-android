@@ -30,20 +30,30 @@ class NinchatRadioButtonListView(
             updateCallback = updateCallback,
             position = position,
             enabled = enabled
-    )
+    ).apply {
+        renderCurrentView(jsonObject = jsonObject, enabled = enabled)
+    }
 
     fun update(jsonObject: JSONObject?, enabled: Boolean) {
-        presenter.renderCurrentView(jsonObject = jsonObject, enabled = enabled)
+        presenter.updateCurrentView(jsonObject = jsonObject, enabled = enabled)
+    }
+
+    override fun onRenderFormView(label: String, hasError: Boolean, enabled: Boolean) {
+        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
+        renderCommon(label = label, hasError = hasError, enabled = enabled)
+    }
+
+    override fun onRenderConversationView(label: String, hasError: Boolean, enabled: Boolean) {
+        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
+        renderCommon(label = label, hasError = hasError, enabled = enabled)
     }
 
     override fun onUpdateFormView(label: String, hasError: Boolean, enabled: Boolean) {
-        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
-        renderCommon(label = label, hasError = hasError, enabled = enabled)
+        updateCommon(label = label, hasError = hasError, enabled = enabled)
     }
 
     override fun onUpdateConversationView(label: String, hasError: Boolean, enabled: Boolean) {
-        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
-        renderCommon(label = label, hasError = hasError, enabled = enabled)
+        updateCommon(label = label, hasError = hasError, enabled = enabled)
     }
 
     private fun renderCommon(label: String, hasError: Boolean, enabled: Boolean) {
@@ -51,6 +61,16 @@ class NinchatRadioButtonListView(
         itemView.radio_option_label.text = label
         itemView.ninchat_chat_radio_options.layoutManager = LinearLayoutManager(itemView.context)
         itemView.ninchat_chat_radio_options.adapter = NinchatRadioButtonListViewAdapter()
+        if (hasError) {
+            itemView.radio_option_label.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background));
+        } else {
+            itemView.radio_option_label.setTextColor(ContextCompat.getColor(itemView.context, if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled))
+        }
+    }
+
+    private fun updateCommon(label: String, hasError: Boolean, enabled: Boolean) {
+        itemView.isEnabled = enabled
+        (itemView.ninchat_chat_radio_options.adapter as NinchatRadioButtonListViewAdapter).notifyDataSetChanged()
         if (hasError) {
             itemView.radio_option_label.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background));
         } else {

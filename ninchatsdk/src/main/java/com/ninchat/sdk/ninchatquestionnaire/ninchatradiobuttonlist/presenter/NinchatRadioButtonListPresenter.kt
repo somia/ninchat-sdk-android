@@ -22,6 +22,19 @@ class NinchatRadioButtonListPresenter(
 
     fun renderCurrentView(jsonObject: JSONObject? = null, enabled: Boolean) {
         jsonObject?.let {
+            model.update(jsonObject = it, enabled = enabled)
+        }
+        if (model.isFormLikeQuestionnaire) {
+            viewCallback.onRenderFormView(label = model.label
+                    ?: "", hasError = model.hasError, enabled = model.enabled)
+        } else {
+            viewCallback.onRenderConversationView(label = model.label
+                    ?: "", hasError = model.hasError, enabled = model.enabled)
+        }
+    }
+
+    fun updateCurrentView(jsonObject: JSONObject? = null, enabled: Boolean) {
+        jsonObject?.let {
             model.update(jsonObject = jsonObject, enabled = enabled)
         }
         if (model.isFormLikeQuestionnaire) {
@@ -66,6 +79,8 @@ class NinchatRadioButtonListPresenter(
 }
 
 interface INinchatRadioButtonListPresenter {
+    fun onRenderFormView(label: String, hasError: Boolean, enabled: Boolean)
+    fun onRenderConversationView(label: String, hasError: Boolean, enabled: Boolean)
     fun onUpdateFormView(label: String, hasError: Boolean, enabled: Boolean)
     fun onUpdateConversationView(label: String, hasError: Boolean, enabled: Boolean)
 }
