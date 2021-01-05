@@ -85,20 +85,23 @@ class NinchatQuestionnaireJsonUtil {
             }""".trimIndent())
         }
 
-        fun getBotElement(botName: String?, botImgUrl: String?): JSONObject {
-            return JSONObject("""{
+        fun getBotElement(botName: String?, botImgUrl: String?, targetElement: String?, thankYouText: String?): JSONObject {
+            val element = JSONObject("""{
                 "name": "botViewElement",
                 "element": "botElement",
                 "label": "$botName",
                 "imgUrl": "$botImgUrl",
-                "elements": [{
-                    "name": "botViewElement",
-                    "element": "botElement",
-                    "label": "$botName",
-                    "imgUrl": "$botImgUrl",
-                    "loaded": false
-                }]
-            }""".trimIndent())
+                "target": "$targetElement",
+                "thankYouText": "$thankYouText"    
+            }""".trimMargin()).apply {
+                putOpt("loaded", false)
+            }
+
+            return element.apply {
+                putOpt("elements", JSONArray().apply {
+                    put(JSONObject(element.toString(2)))
+                })
+            }
         }
 
         fun getInputType(json: JSONObject?): Int {
@@ -179,9 +182,9 @@ class NinchatQuestionnaireJsonUtil {
                                 currentAnswer.optString("name")
                             }
                             .any { currentAnswer: JSONObject ->
-                        val result = currentAnswer.optString("result")
-                        matchPattern(currentInput = result, pattern = pattern)
-                    }
+                                val result = currentAnswer.optString("result")
+                                matchPattern(currentInput = result, pattern = pattern)
+                            }
                 }
                 found
             }
@@ -314,6 +317,24 @@ class NinchatQuestionnaireJsonUtil {
                     .map {
                         Pair<String, String>(it.optString("name"), it.optString("result"))
                     }
+        }
+
+        fun resetElements(answerList: List<JSONObject>, from: Int): List<JSONObject> {
+            return answerList.mapIndexed { index, jsonObject ->
+                if (index >= from) {
+                    jsonObject.remove("position")
+                    jsonObject.remove("hasError")
+                    jsonObject.remove("tags")
+                    jsonObject.remove("queueId")
+                    if (NinchatQuestionnaireType.isCheckBox(jsonObject = jsonObject)) {
+                        jsonObject.putOpt("result", false)
+                    } else {
+                        jsonObject.remove("result")
+
+                    }
+                }
+                jsonObject
+            }
         }
 
         fun getQuestionnaireTags(answerList: List<JSONObject>): List<String> {

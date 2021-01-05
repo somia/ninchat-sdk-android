@@ -7,7 +7,7 @@ class NinchatBotWritingViewPresenter(
         jsonObject: JSONObject?,
         position: Int,
         enabled: Boolean,
-        val updateCallback: ((Int) -> Unit)?,
+        val updateCallback: BotWritingCompleteListener,
         val presenter: INinchatBotWritingViewPresenter,
 ) {
     private var model = NinchatBotWritingViewModel(position = position, enabled = enabled).apply {
@@ -23,10 +23,12 @@ class NinchatBotWritingViewPresenter(
     }
 
     fun onAnimationComplete() {
-        if (model.loaded == true) return
-        updateCallback?.let {
-            it(model.position)
-        }
+        updateCallback.onCompleteLoading(
+                target = model.target,
+                thankYouText = model.thankYouText,
+                loaded = model.loaded ?: false,
+                position = model.position,
+        )
     }
 
     fun isLoaded(): Boolean = model.loaded == true
@@ -34,4 +36,8 @@ class NinchatBotWritingViewPresenter(
 
 interface INinchatBotWritingViewPresenter {
     fun onUpdateView(label: String?, imgUrl: String?, enabled: Boolean)
+}
+
+interface BotWritingCompleteListener {
+    fun onCompleteLoading(target: String?, thankYouText: String?, loaded: Boolean, position: Int)
 }

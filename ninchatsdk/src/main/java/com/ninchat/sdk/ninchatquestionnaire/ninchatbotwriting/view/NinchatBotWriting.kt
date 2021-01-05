@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
 import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
+import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.BotWritingCompleteListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.INinchatBotWritingViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.NinchatBotWritingViewPresenter
 import kotlinx.android.synthetic.main.bot_item_conversation_view.view.*
@@ -18,7 +19,7 @@ class NinchatBotWriting(
         itemView: View,
         jsonObject: JSONObject?,
         position: Int,
-        updateCallback: ((Int) -> Unit)?,
+        updateCallback: BotWritingCompleteListener,
         enabled: Boolean,
 ) : RecyclerView.ViewHolder(itemView), INinchatBotWritingViewPresenter {
     private val presenter = NinchatBotWritingViewPresenter(
@@ -49,6 +50,7 @@ class NinchatBotWriting(
             itemView.ninchat_chat_message_bot_writing_root.visibility = View.GONE
             return
         }
+        itemView.ninchat_chat_message_bot_writing_root.visibility = View.VISIBLE
         itemView.ninchat_chat_message_bot_writing_root.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         itemView.ninchat_chat_message_bot_writing.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator)
         val animationDrawable = (itemView.ninchat_chat_message_bot_writing.background) as AnimationDrawable
