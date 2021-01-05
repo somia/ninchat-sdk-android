@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom">
+    android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/dropdown_text_label"

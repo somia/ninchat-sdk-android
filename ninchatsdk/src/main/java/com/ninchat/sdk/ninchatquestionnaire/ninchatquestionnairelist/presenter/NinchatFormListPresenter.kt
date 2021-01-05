@@ -42,8 +42,11 @@ class NinchatFormListPresenter(
             return
         }
         if (onNextQuestionnaire?.moveType == OnNextQuestionnaire.back) {
-            val previousItemCount = model.selectedElement.lastOrNull()?.second ?: 0
-            model.answerList = model.resetAnswers(from = model.answerList.size - previousItemCount - 1)
+            // Remove last questionnaire element, and associate bot view element
+            model.removeLast()
+            val lastItemCount = model.selectedElement.lastOrNull()?.second ?: 0
+            // reset answers element
+            model.answerList = model.resetAnswers(from = model.answerList.size - lastItemCount - 1)
             rootActivityCallback.onDataSetChange()
             return
         }

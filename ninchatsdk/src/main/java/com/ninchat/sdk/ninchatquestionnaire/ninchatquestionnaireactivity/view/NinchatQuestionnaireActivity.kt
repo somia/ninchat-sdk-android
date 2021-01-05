@@ -19,7 +19,6 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONObject
-import kotlin.math.max
 
 class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnairePresenter, QuestionnaireActivityCallback {
     private val presenter = NinchatQuestionnairePresenter(viewCallback = this)
