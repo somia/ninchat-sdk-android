@@ -23,6 +23,9 @@ data class NinchatDropDownSelectViewModel(
                 fromJSONArray<JSONObject>(jsonObject?.optJSONArray("options"))
                         .map { (it as JSONObject).optString("label") })
         this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label)
+        this.label = this.label?.let {
+            if (jsonObject?.optBoolean("required", false) == true) "$it *" else it
+        }
         this.value = jsonObject?.optString(NinchatQuestionnaireConstants.result)
         this.hasError = jsonObject?.optBoolean(NinchatQuestionnaireConstants.hasError) ?: false
         this.fireEvent = jsonObject?.optBoolean(NinchatQuestionnaireConstants.fireEvent) ?: false

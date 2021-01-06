@@ -16,7 +16,10 @@ data class NinchatCheckboxViewModel(
 
     fun parse(jsonObject: JSONObject?) {
         this.isChecked = jsonObject?.optBoolean(NinchatQuestionnaireConstants.result) ?: false
-        this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label) + if (jsonObject?.optBoolean(NinchatQuestionnaireConstants.required) == true) " *" else ""
+        this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label)
+        this.label = this.label?.let {
+            if (jsonObject?.optBoolean("required", false) == true) "$it *" else it
+        }
         this.hasError = jsonObject?.optBoolean(NinchatQuestionnaireConstants.hasError) ?: false
         this.fireEvent = jsonObject?.optBoolean(NinchatQuestionnaireConstants.fireEvent) ?: false
         // may be translate

@@ -18,6 +18,9 @@ data class NinchatInputFieldViewModel(
 ) {
     fun parse(jsonObject: JSONObject?) {
         this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label)
+        this.label = this.label?.let {
+            if (jsonObject?.optBoolean("required", false) == true) "$it *" else it
+        }
         this.value = jsonObject?.optString(NinchatQuestionnaireConstants.result)
         this.hasError = jsonObject?.optBoolean(NinchatQuestionnaireConstants.hasError) ?: false
         this.inputType = NinchatQuestionnaireJsonUtil.getInputType(jsonObject)

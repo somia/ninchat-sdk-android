@@ -10,6 +10,9 @@ data class NinchatRadioButtonModel(
 ) {
     fun parse(jsonObject: JSONObject?, hasError: Boolean = false, isSelected: Boolean = false) {
         this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label)
+        this.label = this.label?.let {
+            if (jsonObject?.optBoolean("required", false) == true) "$it *" else it
+        }
         this.isSelected = isSelected
     }
 

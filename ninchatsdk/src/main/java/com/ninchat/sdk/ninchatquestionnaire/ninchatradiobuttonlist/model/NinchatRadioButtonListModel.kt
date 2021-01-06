@@ -13,11 +13,14 @@ data class NinchatRadioButtonListModel(
         var listPosition: Int = -1,
         var fireEvent: Boolean = false,
         val position: Int,
-        var enabled: Boolean
+        var enabled: Boolean,
 ) {
 
     fun parse(jsonObject: JSONObject?) {
-        this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label)
+        this.label = (jsonObject?.optString(NinchatQuestionnaireConstants.label) ?: "")
+        this.label = this.label?.let {
+            if (jsonObject?.optBoolean("required", false) == true) "$it *" else it
+        }
         this.value = jsonObject?.optString(NinchatQuestionnaireConstants.result)
         this.listPosition = jsonObject?.optInt(NinchatQuestionnaireConstants.position) ?: -1
         this.hasError = jsonObject?.optBoolean(NinchatQuestionnaireConstants.hasError) ?: false
