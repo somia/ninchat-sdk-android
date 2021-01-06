@@ -84,6 +84,7 @@ class NinchatDropDownSelectViewHolder(
     }
 
     override fun onUnSelected(position: Int, hasError: Boolean, enabled: Boolean) {
+        itemView.ninchat_dropdown_list?.setSelection(position)
         itemView.dropdown_select_layout.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_dropdown_border_not_selected)
         itemView.ninchat_dropdown_list_icon?.setColorFilter(ContextCompat.getColor(itemView.context, R.color.ninchat_color_dropdown_unselected_text))
         itemView.ninchat_dropdown_list.selectedView?.let {

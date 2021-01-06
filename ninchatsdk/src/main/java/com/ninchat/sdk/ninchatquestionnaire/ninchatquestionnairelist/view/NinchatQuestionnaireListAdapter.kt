@@ -1,7 +1,5 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view
 
-import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +18,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.N
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.view.NinchatRadioButtonListView
 import com.ninchat.sdk.ninchatquestionnaire.ninchattextviewholder.view.NinchatTextViewHolder
 import org.json.JSONObject
+import java.util.*
 import kotlin.math.max
 
 class NinchatQuestionnaireListAdapter(
@@ -48,14 +47,17 @@ class NinchatQuestionnaireListAdapter(
         presenter.init()
     }
 
-    override fun getItemViewType(position: Int): Int = position
-    override fun getItemId(position: Int): Long {
-        return 1L * presenter.get(position).optString("name", "~").hashCode() * position
+    override fun getItemViewType(position: Int): Int {
+        return presenter.get(position).optInt("uuid")
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, position: Int): RecyclerView.ViewHolder {
+    override fun getItemId(position: Int): Long {
+        return 1L * presenter.get(position).optInt("uuid", UUID.randomUUID().hashCode())
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, uuid: Int): RecyclerView.ViewHolder {
+        val position = presenter.getIndexByUuid(uuid = uuid)
         val currentElement = presenter.get(position)
-        Log.e("onCreateViewHolder", "$position $itemCount")
         return when {
             NinchatQuestionnaireType.isText(currentElement) -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.text_view, parent, false)
@@ -159,7 +161,6 @@ class NinchatQuestionnaireListAdapter(
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         val currentElement = presenter.get(position)
-        Log.e("onBindViewHolder", "$position $itemCount")
         when (viewHolder) {
             is NinchatTextViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
             is NinchatInputFieldViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))

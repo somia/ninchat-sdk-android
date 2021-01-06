@@ -5,6 +5,8 @@ import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNavigator
 import com.ninchat.sdk.ninchatquestionnaire.helper.fromJSONArray
 import org.json.JSONObject
+import java.util.*
+import kotlin.collections.ArrayList
 
 data class NinchatQuestionnaireListModel(
         var questionnaireList: List<JSONObject> = listOf(),
@@ -31,7 +33,11 @@ data class NinchatQuestionnaireListModel(
 
     fun addElement(jsonObject: JSONObject?): Int {
         return jsonObject?.let { currentElement ->
-            val nextElementList = fromJSONArray<JSONObject>(currentElement.optJSONArray("elements")).map { NinchatQuestionnaireJsonUtil.slowCopy(it as JSONObject) }
+            val nextElementList = fromJSONArray<JSONObject>(currentElement.optJSONArray("elements")).map {
+                NinchatQuestionnaireJsonUtil.slowCopy(it as JSONObject).apply {
+                    putOpt("uuid", UUID.randomUUID().hashCode())
+                }
+            }
             answerList = answerList.plus(nextElementList)
             // add it in the selected element
             selectedElement.add(Pair(currentElement.optString("name"), nextElementList.size))
@@ -81,6 +87,7 @@ data class NinchatQuestionnaireListModel(
     fun resetAnswers(from: Int): List<JSONObject> {
         return NinchatQuestionnaireJsonUtil.resetElements(answerList = answerList, from = from)
     }
+
     fun audienceRegisterText(): String? =
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getAudienceRegisteredText()
 

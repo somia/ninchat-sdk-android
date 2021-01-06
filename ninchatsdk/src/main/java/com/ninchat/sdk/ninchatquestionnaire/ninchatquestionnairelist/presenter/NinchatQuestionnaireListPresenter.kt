@@ -116,5 +116,9 @@ open class NinchatQuestionnaireListPresenter(
     open fun isLast(at: Int): Boolean = false
     open fun size(): Int = 0
     open fun get(at: Int): JSONObject = JSONObject()
+    open fun getIndexByUuid(uuid: Int): Int = model.answerList.indexOfFirst {
+        it.optInt("uuid") == uuid
+    }
+
     open fun mapPosition(position: Int): Int = position
 }
