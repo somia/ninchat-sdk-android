@@ -102,8 +102,8 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
         presenter.mayeBeCompleteQuestionnaire()
     }
 
-    override fun onDataSetChange() {
-        presenter.handleDataSetChange(questionnaire_form_rview as RecyclerView, myAdapter = currentAdapter)
+    override fun onDataSetChange(withError: Boolean) {
+        presenter.handleDataSetChange(questionnaire_form_rview as RecyclerView, myAdapter = currentAdapter, withError = withError)
     }
 
     override fun onFinishQuestionnaire(openQueue: Boolean) {
@@ -124,7 +124,7 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
 interface QuestionnaireActivityCallback {
     fun onRegistered(answerList: List<JSONObject>)
     fun onComplete(answerList: List<JSONObject>)
-    fun onDataSetChange()
+    fun onDataSetChange(withError: Boolean)
     fun onFinishQuestionnaire(openQueue: Boolean)
     fun scrollTo(position: Int)
 }

@@ -30,7 +30,12 @@ class NinchatQuestionnairePresenter(
                 isFormLike = model.isFormLike)
     }
 
-    fun handleDataSetChange(mRecyclerView: RecyclerView?, myAdapter: NinchatQuestionnaireListAdapter) {
+    fun handleDataSetChange(mRecyclerView: RecyclerView?, myAdapter: NinchatQuestionnaireListAdapter, withError: Boolean) {
+        if (withError) {
+            // if it was triggered by error then only call notify dataset change since list is still same
+            myAdapter.notifyDataSetChanged()
+            return
+        }
         mRecyclerView?.apply {
             adapter = null
             this.adapter = myAdapter

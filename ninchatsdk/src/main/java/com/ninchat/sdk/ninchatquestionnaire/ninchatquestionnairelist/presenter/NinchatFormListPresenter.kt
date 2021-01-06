@@ -31,7 +31,7 @@ class NinchatFormListPresenter(
         thankYouText?.let {
             val currentElement = NinchatQuestionnaireJsonUtil.getThankYouElement(thankYouString = it)
             model.addElement(jsonObject = currentElement)
-            rootActivityCallback.onDataSetChange()
+            rootActivityCallback.onDataSetChange(withError = false)
         } ?: rootActivityCallback.onFinishQuestionnaire(openQueue = false)
     }
 
@@ -47,13 +47,13 @@ class NinchatFormListPresenter(
             val lastItemCount = model.selectedElement.lastOrNull()?.second ?: 0
             // reset answers element
             model.answerList = model.resetAnswers(from = model.answerList.size - lastItemCount - 1)
-            rootActivityCallback.onDataSetChange()
+            rootActivityCallback.onDataSetChange(withError = false)
             return
         }
         // if the last answer has some error
         if (model.hasError()) {
             model.updateError()
-            rootActivityCallback.onDataSetChange()
+            rootActivityCallback.onDataSetChange(withError = true)
             return
         }
 
@@ -69,7 +69,7 @@ class NinchatFormListPresenter(
         }
         nextTargetName?.let {
             loadNextByElementName(elementName = nextTargetName)
-            rootActivityCallback.onDataSetChange()
+            rootActivityCallback.onDataSetChange(withError = false)
         } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
     }
 
