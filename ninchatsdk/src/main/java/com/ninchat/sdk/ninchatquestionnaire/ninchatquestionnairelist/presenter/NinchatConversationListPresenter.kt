@@ -85,8 +85,10 @@ class NinchatConversationListPresenter(
             rootActivityCallback.onRegistered(answerList = getAnswerList())
             return
         }
-        // otherwise simply load next element by target name
-        addBotWritingView(nextTarget = nextTargetName, thankYouText = null)
+        // otherwise simply load next element by target name or if there is no target then treat as _complete
+        nextTargetName?.let {
+            addBotWritingView(nextTarget = nextTargetName, thankYouText = null)
+        } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
     }
 
     // override bot loading view
