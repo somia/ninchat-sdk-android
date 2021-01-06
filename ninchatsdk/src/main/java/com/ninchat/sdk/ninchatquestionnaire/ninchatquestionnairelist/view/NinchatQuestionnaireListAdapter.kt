@@ -1,5 +1,6 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view
 
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -49,7 +50,7 @@ class NinchatQuestionnaireListAdapter(
 
     override fun getItemViewType(position: Int): Int = position
     override fun getItemId(position: Int): Long {
-        return 1L * position
+        return 1L * presenter.get(position).optString("name", "~").hashCode() * position
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): RecyclerView.ViewHolder {
@@ -174,8 +175,7 @@ class NinchatQuestionnaireListAdapter(
 
     override fun onAddItem(positionStart: Int, lastItemCount: Int) {
         val position = max(positionStart, 0)
-        val totalCount = max(itemCount - position, 1)
-        Log.e("onAddItem", "pos, insert, total $position $totalCount $itemCount")
+        val totalCount = max(presenter.size() - position, 1)
         notifyItemRangeInserted(positionStart, totalCount)
         // also update the last items
         onItemUpdate(positionStart = position - lastItemCount, totalItemCount = lastItemCount)
@@ -183,7 +183,6 @@ class NinchatQuestionnaireListAdapter(
 
     override fun onItemRemoved(positionStart: Int, totalItemCount: Int, lastItemCount: Int) {
         val position = max(positionStart, 0)
-        Log.e("onItemRemoved", "pos delete total $position $totalItemCount $itemCount")
         notifyItemRangeRemoved(position, totalItemCount)
         // also update the last items
         onItemUpdate(positionStart = position - lastItemCount, totalItemCount = lastItemCount)
@@ -191,7 +190,6 @@ class NinchatQuestionnaireListAdapter(
 
     override fun onItemUpdate(positionStart: Int, totalItemCount: Int) {
         val position = max(positionStart, 0)
-        Log.e("onItemUpdate", "pos, update, total $position $totalItemCount $itemCount")
         notifyItemRangeChanged(position, totalItemCount)
     }
 

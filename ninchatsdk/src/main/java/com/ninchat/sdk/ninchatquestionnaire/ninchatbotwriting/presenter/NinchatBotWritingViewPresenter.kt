@@ -36,6 +36,9 @@ class NinchatBotWritingViewPresenter(
     }
 
     fun isLoaded(): Boolean = model.loaded == true
+    fun setLoaded() {
+        model.loaded = true
+    }
 }
 
 interface INinchatBotWritingViewPresenter {

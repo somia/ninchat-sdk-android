@@ -51,11 +51,16 @@ class NinchatBotWriting(
                 itemView.ninchat_chat_message_bot_avatar.setImageResource(R.drawable.ninchat_chat_avatar_left)
             }
         }
+    }
+
+    override fun onUpdateView(label: String?, imgUrl: String?, enabled: Boolean) {
+        itemView.isEnabled = enabled
         // is already loaded
         if (presenter.isLoaded()) {
             itemView.ninchat_chat_message_bot_writing_root.visibility = View.GONE
             return
         }
+        // presenter.setLoaded()
         itemView.ninchat_chat_message_bot_writing_root.visibility = View.VISIBLE
         itemView.ninchat_chat_message_bot_writing_root.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         itemView.ninchat_chat_message_bot_writing.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator)
@@ -67,10 +72,6 @@ class NinchatBotWriting(
             itemView.ninchat_chat_message_bot_writing_root.visibility = View.GONE
             presenter.onAnimationComplete()
         }, 1500)
-    }
-
-    override fun onUpdateView(label: String?, imgUrl: String?, enabled: Boolean) {
-        itemView.isEnabled = enabled
     }
 
 }

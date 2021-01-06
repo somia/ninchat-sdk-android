@@ -61,9 +61,9 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
         val spaceLeft = applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_items_margin_left)
         val spaceRight = applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_items_margin_right)
         (questionnaire_form_rview as RecyclerView).apply {
-            layoutManager = mLayoutManager
+            this.layoutManager = mLayoutManager
+            this.adapter = currentAdapter
             addItemDecoration(NinchatQuestionnaireItemDecoration(spaceInPixelTop, spaceLeft, spaceRight))
-            adapter = currentAdapter
         }
     }
 
@@ -103,7 +103,7 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
     }
 
     override fun onDataSetChange() {
-        presenter.handleDataSetChange(questionnaire_form_rview as RecyclerView, adapter = currentAdapter)
+        presenter.handleDataSetChange(questionnaire_form_rview as RecyclerView, myAdapter = currentAdapter)
     }
 
     override fun onFinishQuestionnaire(openQueue: Boolean) {

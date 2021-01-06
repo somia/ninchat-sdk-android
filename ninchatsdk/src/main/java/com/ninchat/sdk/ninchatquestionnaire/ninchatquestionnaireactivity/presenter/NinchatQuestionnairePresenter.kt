@@ -30,10 +30,10 @@ class NinchatQuestionnairePresenter(
                 isFormLike = model.isFormLike)
     }
 
-    fun handleDataSetChange(mRecyclerView: RecyclerView?, adapter: NinchatQuestionnaireListAdapter) {
-        mRecyclerView?.let {
-            it.adapter = null
-            it.adapter = adapter
+    fun handleDataSetChange(mRecyclerView: RecyclerView?, myAdapter: NinchatQuestionnaireListAdapter) {
+        mRecyclerView?.apply {
+            adapter = null
+            this.adapter = myAdapter
         }
     }
 
