@@ -11,7 +11,7 @@ class NinchatCheckboxViewPresenter(
         val iPresent: INinchatCheckboxViewPresenter,
         val updateCallback: CheckboxUpdateListener,
         position: Int,
-        enabled: Boolean
+        enabled: Boolean,
 ) {
     private var model = NinchatCheckboxViewModel(
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
@@ -23,6 +23,29 @@ class NinchatCheckboxViewPresenter(
 
 
     fun renderCurrentView(jsonObject: JSONObject? = null, enabled: Boolean) {
+        jsonObject?.let {
+            model.update(jsonObject = jsonObject, enabled = enabled)
+        }
+        if (model.isFormLikeQuestionnaire) {
+            // render form like
+            iPresent.onRenderFromView(
+                    label = model.label,
+                    isChecked = model.isChecked,
+                    hasError = model.hasError,
+                    enabled = enabled
+            )
+            return
+        }
+        // render conversation like
+        iPresent.onRenderConversationView(
+                label = model.label,
+                isChecked = model.isChecked,
+                hasError = model.hasError,
+                enabled = enabled
+        )
+    }
+
+    fun updateCurrentView(jsonObject: JSONObject? = null, enabled: Boolean) {
         jsonObject?.let {
             model.update(jsonObject = jsonObject, enabled = enabled)
         }
@@ -63,11 +86,13 @@ class NinchatCheckboxViewPresenter(
 }
 
 interface INinchatCheckboxViewPresenter {
+    fun onRenderFromView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean)
+    fun onRenderConversationView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean)
     fun onUpdateFromView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean)
     fun onUpdateConversationView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean)
     fun onCheckBoxToggled(isChecked: Boolean, hasError: Boolean)
 }
 
-interface CheckboxUpdateListener{
+interface CheckboxUpdateListener {
     fun onUpdate(value: Boolean, hasError: Boolean, position: Int)
 }

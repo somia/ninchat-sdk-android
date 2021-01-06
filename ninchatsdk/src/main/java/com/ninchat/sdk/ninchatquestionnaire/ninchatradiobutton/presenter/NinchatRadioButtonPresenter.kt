@@ -27,7 +27,7 @@ class NinchatRadioButtonPresenter(
     fun updateCurrentView(isSelected: Boolean, enabled: Boolean) {
         model.update(isSelected = isSelected, enabled = enabled)
         // if nothing is selected then do not call
-        viewCallback.renderView(
+        viewCallback.updateView(
                 label = model.label ?: "",
                 isSelected = model.isSelected,
                 enabled = model.enabled

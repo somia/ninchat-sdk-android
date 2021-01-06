@@ -24,8 +24,10 @@ class NinchatTextViewHolder(
             iPresenter = this,
             enabled = enabled,
             position = position
-    ).apply {
-        renderCurrentView(enabled = enabled)
+    )
+
+    init {
+        presenter.renderCurrentView(enabled = enabled)
     }
 
     fun update(jsonObject: JSONObject?, enabled: Boolean) {

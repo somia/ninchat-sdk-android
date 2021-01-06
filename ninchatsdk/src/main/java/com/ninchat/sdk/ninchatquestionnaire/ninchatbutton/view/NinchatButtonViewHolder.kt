@@ -22,13 +22,17 @@ class NinchatButtonViewHolder(
             position = position,
             enabled = enabled
     )
+
+    init {
+        presenter.renderCurrentView()
+        attachUserActionHandler()
+    }
+
     private val onClickListener = OnClickListener(intervalInMs = 2000)
 
     fun update(jsonObject: JSONObject?, enabled: Boolean) {
         presenter.updateModel(jsonObject = jsonObject, enabled = enabled)
-        presenter.renderCurrentView()
-
-        attachUserActionHandler()
+        presenter.updateCurrentView()
     }
 
     private fun attachUserActionHandler() {

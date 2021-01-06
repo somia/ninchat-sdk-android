@@ -22,11 +22,11 @@ class NinchatRadioButtonView(
             jsonObject = jsonObject,
             enabled = enabled,
             viewCallback = this)
-            .apply {
-                renderCurrentView(enabled = enabled)
-            }.also {
-                attachUserActionHandler()
-            }
+
+    init {
+        presenter.renderCurrentView(enabled = enabled)
+        attachUserActionHandler()
+    }
 
     fun update(isSelected: Boolean, enabled: Boolean) {
         presenter.updateCurrentView(isSelected = isSelected, enabled = enabled)

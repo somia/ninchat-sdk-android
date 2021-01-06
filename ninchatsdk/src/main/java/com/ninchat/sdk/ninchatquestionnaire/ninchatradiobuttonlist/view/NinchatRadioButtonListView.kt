@@ -31,8 +31,10 @@ class NinchatRadioButtonListView(
             updateCallback = updateCallback,
             position = position,
             enabled = enabled
-    ).apply {
-        renderCurrentView(jsonObject = jsonObject, enabled = enabled)
+    )
+
+    init {
+        presenter.renderCurrentView(jsonObject = jsonObject, enabled = enabled)
     }
 
     private val toggleLister = OnToggleListener(intervalInMs = 500)

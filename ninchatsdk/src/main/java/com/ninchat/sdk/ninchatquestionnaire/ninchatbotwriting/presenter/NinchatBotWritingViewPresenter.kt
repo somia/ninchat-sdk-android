@@ -19,6 +19,10 @@ class NinchatBotWritingViewPresenter(
     }
 
     fun renderCurrentView() {
+        presenter.onRenderView(label = model.label, imgUrl = model.imgUrl, enabled = model.enabled)
+    }
+
+    fun updateCurrentView() {
         presenter.onUpdateView(label = model.label, imgUrl = model.imgUrl, enabled = model.enabled)
     }
 
@@ -35,6 +39,7 @@ class NinchatBotWritingViewPresenter(
 }
 
 interface INinchatBotWritingViewPresenter {
+    fun onRenderView(label: String?, imgUrl: String?, enabled: Boolean)
     fun onUpdateView(label: String?, imgUrl: String?, enabled: Boolean)
 }
 

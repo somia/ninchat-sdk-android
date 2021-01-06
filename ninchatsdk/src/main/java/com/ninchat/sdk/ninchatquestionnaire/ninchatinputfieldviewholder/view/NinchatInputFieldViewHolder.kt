@@ -35,15 +35,19 @@ class NinchatInputFieldViewHolder(
             enabled = enabled
     )
 
-    fun update(jsonObject: JSONObject?, enabled: Boolean) {
+    init {
         presenter.renderCurrentView(jsonObject = jsonObject, enabled = enabled)
         attachUserActionHandler()
     }
 
+    val onChangeListener = OnChangeListener(intervalInMs = 100)
+
+    fun update(jsonObject: JSONObject?, enabled: Boolean) {
+        presenter.updateCurrentView(jsonObject = jsonObject, enabled = enabled)
+    }
+
     private fun attachUserActionHandler() {
         val mEditText = if (presenter.isMultiline()) itemView.multiline_text_area else itemView.simple_text_field
-        val onChangeListener = OnChangeListener(intervalInMs = 100)
-
         mEditText?.let {
             it.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -63,12 +67,20 @@ class NinchatInputFieldViewHolder(
 
     }
 
-    override fun onUpdateFromView(label: String, enabled: Boolean) {
+    override fun onRenderFromView(label: String, enabled: Boolean) {
         renderCommonView(isMultiline = presenter.isMultiline(), label = label, enabled = enabled)
     }
 
-    override fun onUpdateConversationView(label: String, enabled: Boolean) {
+    override fun onRenderConversationView(label: String, enabled: Boolean) {
         renderCommonView(isMultiline = presenter.isMultiline(), label = label, enabled = enabled)
+    }
+
+    override fun onUpdateFromView(label: String, enabled: Boolean) {
+        updateCommonView(isMultiline = presenter.isMultiline(), label = label, enabled = enabled)
+    }
+
+    override fun onUpdateConversationView(label: String, enabled: Boolean) {
+        updateCommonView(isMultiline = presenter.isMultiline(), label = label, enabled = enabled)
     }
 
     override fun onUpdateText(value: String, hasError: Boolean) {
@@ -110,6 +122,20 @@ class NinchatInputFieldViewHolder(
             }
             it.isEnabled = enabled
             it.setTextColor(ContextCompat.getColor(itemView.context, textColor))
+        }
+    }
+
+    private fun updateCommonView(isMultiline: Boolean, label: String, enabled: Boolean) {
+        itemView.isEnabled = enabled
+        // set color of the label
+        val mEditText = if (presenter.isMultiline()) itemView.multiline_text_area else itemView.simple_text_field
+        mEditText?.let {
+            it.text.clear()
+            if (presenter.getInputValue().isNullOrBlank().not()) {
+                it.setText(presenter.getInputValue())
+            }
+            it.isEnabled = enabled
+            it.setTextColor(ContextCompat.getColor(itemView.context, if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled))
         }
     }
 

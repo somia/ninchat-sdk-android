@@ -30,12 +30,18 @@ class NinchatBotWriting(
             presenter = this
     )
 
-    fun update(jsonObject: JSONObject?, enabled: Boolean) {
-        presenter.updateModel(jsonObject = jsonObject, enabled = enabled)
+    init {
         presenter.renderCurrentView()
     }
 
-    override fun onUpdateView(label: String?, imgUrl: String?, enabled: Boolean) {
+    fun update(jsonObject: JSONObject?, enabled: Boolean) {
+        presenter.apply {
+            updateModel(jsonObject = jsonObject, enabled = enabled)
+            updateCurrentView()
+        }
+    }
+
+    override fun onRenderView(label: String?, imgUrl: String?, enabled: Boolean) {
         itemView.isEnabled = enabled
         itemView.ninchat_chat_message_bot_text.text = label
         imgUrl?.let {
@@ -61,6 +67,10 @@ class NinchatBotWriting(
             itemView.ninchat_chat_message_bot_writing_root.visibility = View.GONE
             presenter.onAnimationComplete()
         }, 1500)
+    }
+
+    override fun onUpdateView(label: String?, imgUrl: String?, enabled: Boolean) {
+        itemView.isEnabled = enabled
     }
 
 }

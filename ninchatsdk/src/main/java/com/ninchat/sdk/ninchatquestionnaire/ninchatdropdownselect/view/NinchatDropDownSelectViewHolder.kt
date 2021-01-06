@@ -35,9 +35,13 @@ class NinchatDropDownSelectViewHolder(
             enabled = enabled
     )
 
-    fun update(jsonObject: JSONObject?, enabled: Boolean) {
-        presenter.renderCurrentView(jsonObject, enabled = enabled)
+    init {
+        presenter.renderCurrentView(jsonObject = jsonObject, enabled = enabled)
         attachUserActionHandler()
+    }
+
+    fun update(jsonObject: JSONObject?, enabled: Boolean) {
+        presenter.updateCurrentView(jsonObject, enabled = enabled)
     }
 
     private fun attachUserActionHandler() {
@@ -50,12 +54,20 @@ class NinchatDropDownSelectViewHolder(
         }
     }
 
-    override fun onUpdateFromView(label: String, options: List<String>, enabled: Boolean) {
+    override fun onRenderFromView(label: String, options: List<String>, enabled: Boolean) {
         renderCommonView(label = label, options = options, enabled = enabled)
     }
 
-    override fun onUpdateConversationView(label: String, options: List<String>, enabled: Boolean) {
+    override fun onRenderConversationView(label: String, options: List<String>, enabled: Boolean) {
         renderCommonView(label = label, options = options, enabled = enabled)
+    }
+
+    override fun onUpdateFromView(label: String, options: List<String>, enabled: Boolean) {
+        updateCommonView(label = label, options = options, enabled = enabled)
+    }
+
+    override fun onUpdateConversationView(label: String, options: List<String>, enabled: Boolean) {
+        updateCommonView(label = label, options = options, enabled = enabled)
     }
 
     override fun onSelected(position: Int, hasError: Boolean, enabled: Boolean) {
@@ -96,6 +108,18 @@ class NinchatDropDownSelectViewHolder(
             addAll(options)
         }
         itemView.ninchat_dropdown_list.adapter = dataAdapter
+    }
+
+    private fun updateCommonView(label: String?, options: List<String>, enabled: Boolean) {
+        itemView.isEnabled = enabled
+        itemView.dropdown_text_label.isEnabled = enabled
+        itemView.ninchat_dropdown_list.isEnabled = enabled
+        itemView.dropdown_text_label.setTextColor(ContextCompat.getColor(itemView.context, if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled))
+        // render adapter view
+        /*val dataAdapter = ArrayAdapter<String>(itemView.context, R.layout.dropdown_item_text_view).apply {
+            addAll(options)
+        }
+        itemView.ninchat_dropdown_list.adapter = dataAdapter*/
     }
 
     private fun renderErrorView(position: Int = 0) {

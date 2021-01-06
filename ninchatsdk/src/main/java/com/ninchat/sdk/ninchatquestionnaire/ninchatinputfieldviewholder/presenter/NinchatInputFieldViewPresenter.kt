@@ -29,6 +29,31 @@ class NinchatInputFieldViewPresenter(
         jsonObject?.let { model.update(jsonObject = jsonObject, enabled = enabled) }
 
         if (model.isFormLikeQuestionnaire) {
+            viewCallback.onRenderFromView(
+                    label = model.label ?: "",
+                    enabled = model.enabled
+            )
+        } else {
+            viewCallback.onRenderConversationView(
+                    label = model.label ?: "",
+                    enabled = model.enabled
+            )
+        }
+        // update text change
+        viewCallback.onUpdateText(
+                value = model.value ?: "",
+                hasError = model.hasError
+        )
+        // update focus
+        if (!model.hasError) {
+            viewCallback.onUpdateFocus(hasFocus = model.hasFocus)
+        }
+    }
+
+    fun updateCurrentView(jsonObject: JSONObject?, enabled: Boolean) {
+        jsonObject?.let { model.update(jsonObject = jsonObject, enabled = enabled) }
+
+        if (model.isFormLikeQuestionnaire) {
             viewCallback.onUpdateFromView(
                     label = model.label ?: "",
                     enabled = model.enabled
@@ -48,7 +73,6 @@ class NinchatInputFieldViewPresenter(
         if (!model.hasError) {
             viewCallback.onUpdateFocus(hasFocus = model.hasFocus)
         }
-
     }
 
     fun getInputType(): Int = model.inputType
@@ -78,6 +102,8 @@ class NinchatInputFieldViewPresenter(
 }
 
 interface INinchatInputFieldViewPresenter {
+    fun onRenderFromView(label: String, enabled: Boolean)
+    fun onRenderConversationView(label: String, enabled: Boolean)
     fun onUpdateFromView(label: String, enabled: Boolean)
     fun onUpdateConversationView(label: String, enabled: Boolean)
     fun onUpdateText(value: String, hasError: Boolean)

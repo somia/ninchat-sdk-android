@@ -34,7 +34,22 @@ class NinchatButtonViewPresenter(
                 clicked = model.nextButtonClicked,
                 enabled = model.enabled
         )
+    }
 
+    fun updateCurrentView() {
+        handleBackButton(visibleImageButton = model.showPreviousImageButton,
+                visibleTextButton = model.showPreviousTextButton,
+                text = model.previousButtonLabel,
+                clicked = model.previousButtonClicked,
+                enabled = model.enabled
+        )
+
+        handleNextButton(visibleImageButton = model.showNextImageButton,
+                visibleTextButton = model.showNextTextButton,
+                text = model.nextButtonLabel,
+                clicked = model.nextButtonClicked,
+                enabled = model.enabled
+        )
     }
 
     override fun onBackButtonClicked() {

@@ -27,6 +27,21 @@ class NinchatDropDownSelectViewPresenter(
             model.update(jsonObject = jsonObject, enabled = enabled)
         }
         if (model.isFormLikeQuestionnaire) {
+            viewCallback.onRenderFromView(label = model.label
+                    ?: "", options = model.optionList, enabled = enabled)
+        } else {
+            viewCallback.onRenderConversationView(label = model.label
+                    ?: "", options = model.optionList, enabled = enabled)
+        }
+        // cal on item selection change
+        onItemSelectionChange(model.selectedIndex)
+    }
+
+    fun updateCurrentView(jsonObject: JSONObject? = null, enabled: Boolean) {
+        jsonObject?.let {
+            model.update(jsonObject = jsonObject, enabled = enabled)
+        }
+        if (model.isFormLikeQuestionnaire) {
             viewCallback.onUpdateFromView(label = model.label
                     ?: "", options = model.optionList, enabled = enabled)
         } else {
@@ -65,6 +80,8 @@ class NinchatDropDownSelectViewPresenter(
 }
 
 interface INinchatDropDownSelectViewPresenter {
+    fun onRenderFromView(label: String, options: List<String>, enabled: Boolean)
+    fun onRenderConversationView(label: String, options: List<String>, enabled: Boolean)
     fun onUpdateFromView(label: String, options: List<String>, enabled: Boolean)
     fun onUpdateConversationView(label: String, options: List<String>, enabled: Boolean)
     fun onSelected(position: Int, hasError: Boolean, enabled: Boolean)
