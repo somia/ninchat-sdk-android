@@ -65,11 +65,13 @@ class NinchatDropDownSelectViewPresenter(
                     position = position,
                     hasError = model.hasError, model.enabled)
         }
-        model.value = if (value == "Select") "" else value
-        model.selectedIndex = position
-        updateCallback.onUpdate(value = model.value, position = model.position)
-        if (position != 0) {
-            mayBeFireEvent()
+        model.value = if (value == "Select") null else value
+        if (model.selectedIndex != position) {
+            model.selectedIndex = position
+            updateCallback.onUpdate(value = model.value, position = model.position)
+            if (position != 0) {
+                mayBeFireEvent()
+            }
         }
     }
 
