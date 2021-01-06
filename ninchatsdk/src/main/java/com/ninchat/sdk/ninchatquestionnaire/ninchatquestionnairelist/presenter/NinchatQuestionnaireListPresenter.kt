@@ -27,7 +27,9 @@ open class NinchatQuestionnaireListPresenter(
     override fun onUpdate(value: String?, sublistPosition: Int, hasError: Boolean, position: Int) {
         val at = mapPosition(position = position)
         model.answerList.getOrNull(at)?.apply {
-            putOpt("result", value)
+            value?.let {
+                putOpt("result", value)
+            } ?: remove("result")
             putOpt("hasError", hasError)
             putOpt("position", sublistPosition)
         }
@@ -36,7 +38,9 @@ open class NinchatQuestionnaireListPresenter(
     override fun onUpdate(value: String?, position: Int) {
         val at = mapPosition(position = position)
         model.answerList.getOrNull(at)?.apply {
-            putOpt("result", value)
+            value?.let {
+                putOpt("result", value)
+            } ?: remove("result")
         }
     }
 
@@ -51,7 +55,9 @@ open class NinchatQuestionnaireListPresenter(
     override fun onUpdate(value: String?, hasError: Boolean, position: Int) {
         val at = mapPosition(position = position)
         model.answerList.getOrNull(at)?.apply {
-            putOpt("result", value)
+            value?.let {
+                putOpt("result", value)
+            } ?: remove("result")
             putOpt("hasError", hasError)
         }
     }

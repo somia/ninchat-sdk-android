@@ -109,6 +109,8 @@ class NinchatRadioButtonListView(
 
         override fun onOptionToggled(isSelected: Boolean, listPosition: Int) {
             toggleLister.onButtonToggle(callback = {
+                // update view
+                itemView.radio_option_label.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_text_normal))
                 val previousIndex = presenter.handleOptionToggled(
                         isSelected = isSelected,
                         listPosition = listPosition)
