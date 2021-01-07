@@ -68,14 +68,14 @@ class NinchatCheckboxViewPresenter(
         )
     }
 
-    fun handleCheckBoxToggled(isChecked: Boolean) {
-        model.isChecked = isChecked
+    fun handleCheckBoxToggled() {
+        model.isChecked = !model.isChecked
         model.hasError = false
         iPresent.onCheckBoxToggled(
                 isChecked = model.isChecked,
                 hasError = model.hasError)
         updateCallback.onUpdate(value = model.isChecked, hasError = model.hasError, position = model.position)
-        if (!isChecked) return
+        if (!model.isChecked) return
         mayBeFireEvent()
     }
 

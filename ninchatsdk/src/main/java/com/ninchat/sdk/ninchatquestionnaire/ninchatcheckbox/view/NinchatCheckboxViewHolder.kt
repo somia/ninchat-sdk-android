@@ -7,7 +7,9 @@ import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.CheckboxUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.INinchatCheckboxViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.NinchatCheckboxViewPresenter
+import com.ninchat.sdk.utils.misc.Misc
 import kotlinx.android.synthetic.main.checkbox_simple.view.*
+import kotlinx.android.synthetic.main.text_view.view.*
 import org.json.JSONObject
 
 class NinchatCheckboxViewHolder(
@@ -39,8 +41,8 @@ class NinchatCheckboxViewHolder(
 
     private fun attachUserActionHandler() {
         itemView.run {
-            ninchat_checkbox.setOnCheckedChangeListener { _, isChecked ->
-                presenter.handleCheckBoxToggled(isChecked)
+            setOnClickListener { _ ->
+                presenter.handleCheckBoxToggled()
             }
         }
     }
@@ -63,18 +65,17 @@ class NinchatCheckboxViewHolder(
     }
 
     override fun onCheckBoxToggled(isChecked: Boolean, hasError: Boolean) {
-        itemView.ninchat_checkbox.isChecked = isChecked
-        itemView.ninchat_checkbox.setTextColor(ContextCompat.getColor(itemView.context,
+        itemView.ninchat_checkbox_label.setTextColor(ContextCompat.getColor(itemView.context,
                 if (isChecked) R.color.ninchat_color_checkbox_selected else R.color.ninchat_color_checkbox_unselected));
+        itemView.ninchat_checkbox_image.setImageDrawable(if (isChecked) ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_checkbox_selected) else ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_checkbox_unselected))
     }
 
     private fun renderCommonView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean) {
         itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         itemView.isEnabled = enabled
-        itemView.ninchat_checkbox.isEnabled = enabled
-        itemView.ninchat_checkbox.text = label
-        itemView.ninchat_checkbox.isChecked = isChecked
-        itemView.ninchat_checkbox.setTextColor(ContextCompat.getColor(itemView.context,
+        itemView.ninchat_checkbox_label.isEnabled = enabled
+        itemView.ninchat_checkbox_label.text = Misc.toRichText(label, itemView.text_view_content)
+        itemView.ninchat_checkbox_label.setTextColor(ContextCompat.getColor(itemView.context,
                 when {
                     hasError -> R.color.ninchat_color_error_background
                     isChecked -> R.color.ninchat_color_checkbox_selected
@@ -83,16 +84,19 @@ class NinchatCheckboxViewHolder(
                         R.color.ninchat_color_checkbox_unselected
                 }))
 
+        itemView.ninchat_checkbox_image.isEnabled = enabled
+        itemView.ninchat_checkbox_image.setImageDrawable(if (isChecked) ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_checkbox_selected) else ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_checkbox_unselected))
+
         if (hasError) {
-            itemView.ninchat_checkbox.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background));
+            itemView.ninchat_checkbox_label.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background));
         }
     }
 
     private fun updateCommonView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean) {
+        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         itemView.isEnabled = enabled
-        itemView.ninchat_checkbox.isEnabled = enabled
-        itemView.ninchat_checkbox.isChecked = isChecked
-        itemView.ninchat_checkbox.setTextColor(ContextCompat.getColor(itemView.context,
+        itemView.ninchat_checkbox_label.isEnabled = enabled
+        itemView.ninchat_checkbox_label.setTextColor(ContextCompat.getColor(itemView.context,
                 when {
                     hasError -> R.color.ninchat_color_error_background
                     isChecked -> R.color.ninchat_color_checkbox_selected
@@ -101,8 +105,10 @@ class NinchatCheckboxViewHolder(
                         R.color.ninchat_color_checkbox_unselected
                 }))
 
+        itemView.ninchat_checkbox_image.isEnabled = enabled
+        itemView.ninchat_checkbox_image.setImageDrawable(if (isChecked) ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_checkbox_selected) else ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_checkbox_unselected))
         if (hasError) {
-            itemView.ninchat_checkbox.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background));
+            itemView.ninchat_checkbox_label.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background));
         }
     }
 
