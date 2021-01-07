@@ -108,17 +108,15 @@ class NinchatConversationListPresenter(
         super.onCompleteLoading(target = target, thankYouText, loaded = loaded, position = position)
     }
 
-    override fun get(at: Int): JSONObject = model.answerList.getOrNull(at) ?: JSONObject()
-
-    override fun size() = model.answerList.size
-
     override fun isLast(at: Int): Boolean {
         val lastElementCount = model.selectedElement.lastOrNull()?.second ?: 0
         return at + lastElementCount >= model.answerList.size
     }
 
-    override fun mapPosition(position: Int): Int {
-        return super.mapPosition(position)
+    override fun size() = model.answerList.size
+
+    override fun getByMuskedPosition(index: Int): JSONObject {
+        return model.answerList.getOrNull(index) ?: JSONObject()
     }
 }
 

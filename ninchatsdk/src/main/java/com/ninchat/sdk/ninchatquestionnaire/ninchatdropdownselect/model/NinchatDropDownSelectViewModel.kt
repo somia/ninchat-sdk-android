@@ -11,9 +11,11 @@ data class NinchatDropDownSelectViewModel(
         var label: String? = "",
         var hasError: Boolean = false,
         var fireEvent: Boolean = false,
+        // which option is now selected
         var selectedIndex: Int = 0,
         var value: String? = "",
         var optionList: List<String> = listOf(),
+        // position of the element in the answer list
         val position: Int,
         var enabled: Boolean
 ) {

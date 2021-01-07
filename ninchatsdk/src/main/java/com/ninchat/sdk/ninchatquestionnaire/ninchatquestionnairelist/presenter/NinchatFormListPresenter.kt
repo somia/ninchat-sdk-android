@@ -7,10 +7,10 @@ import org.json.JSONObject
 
 class NinchatFormListPresenter(
         questionnaireList: List<JSONObject>,
-        preAnswers: List<Pair<String,Any> >,
+        preAnswers: List<Pair<String, Any>>,
         var rootActivityCallback: QuestionnaireActivityCallback,
-) : NinchatQuestionnaireListPresenter (questionnaireList = questionnaireList, preAnswers = preAnswers) {
-    
+) : NinchatQuestionnaireListPresenter(questionnaireList = questionnaireList, preAnswers = preAnswers) {
+
     override fun init() {
         // try to get the first element
         val nextElement = getNextElement(currentIndex = 0, 100)
@@ -18,13 +18,6 @@ class NinchatFormListPresenter(
             loadNextByElementName(elementName = it)
         } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
     }
-
-    override fun get(at: Int): JSONObject = model.answerList.takeLast(model.selectedElement.lastOrNull()?.second
-            ?: 0).getOrNull(at) ?: JSONObject()
-
-    override fun size(): Int = model.selectedElement.lastOrNull()?.second ?: 0
-
-    override fun isLast(at: Int): Boolean = true
 
     override fun addThankYouView(isComplete: Boolean) {
         val thankYouText = if (isComplete) model.audienceRegisterCloseText() else model.audienceRegisterText()
@@ -73,20 +66,12 @@ class NinchatFormListPresenter(
         } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
     }
 
-    override fun mapPosition(position: Int): Int {
-        // real position in the answer list from the relative flat data structure
-        /*
-        3 5 9 12 14
-        0 0 0 0  0
-        1 1 1 1  1
-        2   2 2
-              3
+    override fun isLast(at: Int): Boolean = true
 
-        0 1 2 3 4 5 6 7 8 9 10 11  12 13
-        0 1 2 0 1 0 1 2 0 1 2  3   0   1
+    override fun size(): Int = model.selectedElement.lastOrNull()?.second ?: 0
 
-        pos = totalSize - lastElementSize + relativePosition
-        */
-        return model.answerList.size - (model.selectedElement.lastOrNull()?.second ?: 0) + position
-    }
+    // For form like questionnaire always show the last n elements only
+    override fun getByMuskedPosition(index: Int): JSONObject = model.answerList.takeLast(model.selectedElement.lastOrNull()?.second
+            ?: 0).getOrNull(index) ?: JSONObject()
+
 }

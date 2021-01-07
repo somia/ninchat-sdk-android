@@ -28,13 +28,11 @@ class NinchatDropDownSelectViewPresenter(
         }
         if (model.isFormLikeQuestionnaire) {
             viewCallback.onRenderFromView(label = model.label
-                    ?: "", options = model.optionList, enabled = enabled)
+                    ?: "", options = model.optionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
         } else {
             viewCallback.onRenderConversationView(label = model.label
-                    ?: "", options = model.optionList, enabled = enabled)
+                    ?: "", options = model.optionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
         }
-        // cal on item selection change
-        onItemSelectionChange(model.selectedIndex)
     }
 
     fun updateCurrentView(jsonObject: JSONObject? = null, enabled: Boolean) {
@@ -43,32 +41,22 @@ class NinchatDropDownSelectViewPresenter(
         }
         if (model.isFormLikeQuestionnaire) {
             viewCallback.onUpdateFromView(label = model.label
-                    ?: "", options = model.optionList, enabled = enabled)
+                    ?: "", options = model.optionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
         } else {
             viewCallback.onUpdateConversationView(label = model.label
-                    ?: "", options = model.optionList, enabled = enabled)
+                    ?: "", options = model.optionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
         }
-        // cal on item selection change
-        onItemSelectionChange(model.selectedIndex)
     }
 
     override fun onItemSelectionChange(position: Int) {
         val value = model.optionList.getOrNull(position)
-        // first position is "Selected" and should be consider as not selected
-        if (position == 0) {
-            viewCallback.onUnSelected(
-                    position = position,
-                    hasError = model.hasError, enabled = model.enabled)
-        } else {
-            model.hasError = false
-            viewCallback.onSelected(
-                    position = position,
-                    hasError = model.hasError, model.enabled)
-        }
         model.value = if (value == "Select") null else value
+        model.hasError = if (value == "Select") model.hasError else false
+        // first position is "Selected" and should be consider as not selected
+        viewCallback.onSelectionChange( selectedIndex = position, isSelected = position != 0, hasError = model.hasError, enabled = model.enabled)
         if (model.selectedIndex != position) {
             model.selectedIndex = position
-            updateCallback.onUpdate(value = model.value, position = model.position)
+            updateCallback.onUpdate(value = model.value, position = model.position, hasError = model.hasError)
             if (position != 0) {
                 mayBeFireEvent()
             }
@@ -82,15 +70,16 @@ class NinchatDropDownSelectViewPresenter(
 }
 
 interface INinchatDropDownSelectViewPresenter {
-    fun onRenderFromView(label: String, options: List<String>, enabled: Boolean)
-    fun onRenderConversationView(label: String, options: List<String>, enabled: Boolean)
-    fun onUpdateFromView(label: String, options: List<String>, enabled: Boolean)
-    fun onUpdateConversationView(label: String, options: List<String>, enabled: Boolean)
-    fun onSelected(position: Int, hasError: Boolean, enabled: Boolean)
-    fun onUnSelected(position: Int, hasError: Boolean, enabled: Boolean)
+    fun onRenderFromView(label: String, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int)
+    fun onRenderConversationView(label: String, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int)
+
+    fun onUpdateFromView(label: String, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int)
+    fun onUpdateConversationView(label: String, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int)
+
+    fun onSelectionChange(selectedIndex: Int, isSelected: Boolean, hasError: Boolean, enabled: Boolean)
 }
 
 
 interface DropDownSelectUpdateListener {
-    fun onUpdate(value: String?, position: Int)
+    fun onUpdate(value: String?, position: Int, hasError: Boolean)
 }

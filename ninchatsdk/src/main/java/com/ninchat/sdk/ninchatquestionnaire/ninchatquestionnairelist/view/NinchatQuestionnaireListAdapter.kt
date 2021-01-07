@@ -48,16 +48,16 @@ class NinchatQuestionnaireListAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return presenter.get(position).optInt("uuid")
+        return presenter.getByMuskedPosition(position).optInt("uuid")
     }
 
     override fun getItemId(position: Int): Long {
-        return 1L * presenter.get(position).optInt("uuid", UUID.randomUUID().hashCode())
+        return 1L * presenter.getByMuskedPosition(position).optInt("uuid", UUID.randomUUID().hashCode())
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, uuid: Int): RecyclerView.ViewHolder {
         val position = presenter.getIndexByUuid(uuid = uuid)
-        val currentElement = presenter.get(position)
+        val currentElement = presenter.getByIndexPosition(position)
         return when {
             NinchatQuestionnaireType.isText(currentElement) -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.text_view, parent, false)
@@ -160,7 +160,7 @@ class NinchatQuestionnaireListAdapter(
     }
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
-        val currentElement = presenter.get(position)
+        val currentElement = presenter.getByMuskedPosition(position)
         when (viewHolder) {
             is NinchatTextViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
             is NinchatInputFieldViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))

@@ -25,8 +25,7 @@ open class NinchatQuestionnaireListPresenter(
     }
 
     override fun onUpdate(value: String?, sublistPosition: Int, hasError: Boolean, position: Int) {
-        val at = mapPosition(position = position)
-        model.answerList.getOrNull(at)?.apply {
+        model.answerList.getOrNull(position)?.apply {
             value?.let {
                 putOpt("result", value)
             } ?: remove("result")
@@ -35,26 +34,24 @@ open class NinchatQuestionnaireListPresenter(
         }
     }
 
-    override fun onUpdate(value: String?, position: Int) {
-        val at = mapPosition(position = position)
-        model.answerList.getOrNull(at)?.apply {
+    override fun onUpdate(value: String?, position: Int, hasError: Boolean) {
+        model.answerList.getOrNull(position)?.apply {
             value?.let {
                 putOpt("result", value)
             } ?: remove("result")
+            putOpt("hasError", hasError)
         }
     }
 
     override fun onUpdate(value: Boolean, hasError: Boolean, position: Int) {
-        val at = mapPosition(position = position)
-        model.answerList.getOrNull(at)?.apply {
+        model.answerList.getOrNull(position)?.apply {
             putOpt("result", value)
             putOpt("hasError", hasError)
         }
     }
 
     override fun onUpdate(value: String?, hasError: Boolean, position: Int) {
-        val at = mapPosition(position = position)
-        model.answerList.getOrNull(at)?.apply {
+        model.answerList.getOrNull(position)?.apply {
             value?.let {
                 putOpt("result", value)
             } ?: remove("result")
@@ -104,21 +101,40 @@ open class NinchatQuestionnaireListPresenter(
     }
 
     override fun onCompleteLoading(target: String?, thankYouText: String?, loaded: Boolean, position: Int) {
-        val at = mapPosition(position = position)
-        model.answerList.getOrNull(at)?.apply {
+        model.answerList.getOrNull(position)?.apply {
             putOpt("loaded", true)
         }
     }
 
-    open fun init() {}
-    open fun showNext(onNextQuestionnaire: OnNextQuestionnaire?) {}
-    open fun addThankYouView(isComplete: Boolean) {}
-    open fun isLast(at: Int): Boolean = false
-    open fun size(): Int = 0
-    open fun get(at: Int): JSONObject = JSONObject()
+    open fun init() {
+        TODO("implement me")
+    }
+
+    open fun addThankYouView(isComplete: Boolean) {
+        TODO("implement me")
+    }
+
+    open fun showNext(onNextQuestionnaire: OnNextQuestionnaire?) {
+        TODO("implement me")
+    }
+
+    open fun isLast(at: Int): Boolean {
+        TODO("implement me")
+    }
+
+    open fun size(): Int {
+        TODO("implement me")
+    }
+
     open fun getIndexByUuid(uuid: Int): Int = model.answerList.indexOfFirst {
         it.optInt("uuid") == uuid
     }
 
-    open fun mapPosition(position: Int): Int = position
+    open fun getByIndexPosition(index: Int): JSONObject =
+            model.answerList.getOrNull(index)
+                    ?: JSONObject()
+
+    open fun getByMuskedPosition(index: Int): JSONObject {
+        TODO("implement me")
+    }
 }
