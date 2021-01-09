@@ -7,17 +7,9 @@
     android:focusableInTouchMode ="true"
     android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom">
 
-    <TextView
-        android:theme="@style/NinchatTheme.Questionnaire.Label"
-        android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
-        android:id="@+id/ninchat_checkbox_list_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:text="Element label"/>
-
     <androidx.recyclerview.widget.RecyclerView
         android:background="@color/ninchat_color_transparent"
-        android:id="@+id/ninchat_chat_radio_options"
+        android:id="@+id/ninchat_chat_checkbox_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:orientation="vertical"
