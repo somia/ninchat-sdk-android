@@ -1,35 +1,26 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.model
 
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
 import org.json.JSONObject
 
-data class NinchatCheckboxViewModel(
-        var isFormLikeQuestionnaire: Boolean,
-        var isChecked: Boolean = false,
+
+data class NinchatCheckboxModel(
+        var enabled: Boolean = false,
         var label: String? = "",
+        var result: Boolean = false,
+        var name: String? = "",
         var hasError: Boolean = false,
-        var fireEvent: Boolean = false,
-        val position: Int,
-        var enabled: Boolean
+        var fireEvent: Boolean? = false,
 ) {
-
     fun parse(jsonObject: JSONObject?) {
-        this.isChecked = jsonObject?.optBoolean(NinchatQuestionnaireConstants.result) ?: false
-        this.label = jsonObject?.optString(NinchatQuestionnaireConstants.label)
-        this.label = this.label?.let {
-            if (jsonObject?.optBoolean("required", false) == true) "$it *" else it
+        label = jsonObject?.optString("label")?.let {
+            if (jsonObject.optBoolean("required", false)) "$it *" else it
         }
-        this.hasError = jsonObject?.optBoolean(NinchatQuestionnaireConstants.hasError) ?: false
-        this.fireEvent = jsonObject?.optBoolean(NinchatQuestionnaireConstants.fireEvent) ?: false
-        // may be translate
-        this.translate()
-    }
-
-    fun update(jsonObject: JSONObject?, enabled: Boolean) {
-        this.enabled = enabled
-        this.isChecked = jsonObject?.optBoolean("result", false)?: false
-        this.hasError = jsonObject?.optBoolean("hasError", false)?: false
+        result = jsonObject?.optBoolean("result") ?: false
+        name = jsonObject?.optString("name")
+        hasError = jsonObject?.optBoolean("hasError") ?: false
+        fireEvent = jsonObject?.optBoolean("fireEvent") ?: false
+        translate()
     }
 
     private fun translate() {

@@ -55,8 +55,9 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
                 preAnswers = preAnswers,
                 isFormLike = isFormLike,
                 rootActivityCallback = this
-        )
-        currentAdapter.setHasStableIds(true)
+        ).apply {
+            setHasStableIds(true)
+        }
         val spaceInPixelTop = applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_items_margin_top)
         val spaceLeft = applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_items_margin_left)
         val spaceRight = applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_items_margin_right)

@@ -8,7 +8,7 @@ import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireType
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.view.NinchatBotWriting
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.view.NinchatButtonViewHolder
-import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.view.NinchatCheckboxViewHolder
+import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckboxlist.view.NinchatCheckBoxListView
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.view.NinchatDropDownSelectViewHolder
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.view.NinchatInputFieldViewHolder
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.QuestionnaireActivityCallback
@@ -116,12 +116,11 @@ class NinchatQuestionnaireListAdapter(
                 )
             }
             NinchatQuestionnaireType.isCheckBox(currentElement) -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.checkbox_simple, parent, false)
-                NinchatCheckboxViewHolder(
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.checkbox_compound, parent, false)
+                NinchatCheckBoxListView(
                         itemView = view,
                         jsonObject = currentElement,
                         isFormLikeQuestionnaire = false,
-                        updateCallback = presenter,
                         position = position,
                         enabled = presenter.isLast(position)
                 )
@@ -166,7 +165,7 @@ class NinchatQuestionnaireListAdapter(
             is NinchatInputFieldViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
             is NinchatRadioButtonListView -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
             is NinchatDropDownSelectViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
-            is NinchatCheckboxViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
+            is NinchatCheckBoxListView -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
             is NinchatBotWriting -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
             is NinchatButtonViewHolder -> viewHolder.update(jsonObject = currentElement, enabled = presenter.isLast(position))
         }

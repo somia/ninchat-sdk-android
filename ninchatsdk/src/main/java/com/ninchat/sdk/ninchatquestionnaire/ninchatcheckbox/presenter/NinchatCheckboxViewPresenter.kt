@@ -1,96 +1,40 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter
 
-import com.ninchat.sdk.events.OnNextQuestionnaire
-import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.model.NinchatCheckboxViewModel
-import org.greenrobot.eventbus.EventBus
+import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.model.NinchatCheckboxModel
 import org.json.JSONObject
 
 class NinchatCheckboxViewPresenter(
         jsonObject: JSONObject?,
-        isFormLikeQuestionnaire: Boolean = true,
-        val iPresent: INinchatCheckboxViewPresenter,
-        val updateCallback: CheckboxUpdateListener,
-        position: Int,
+        val presenter: INinchatCheckboxViewPresenter,
         enabled: Boolean,
 ) {
-    private var model = NinchatCheckboxViewModel(
-            isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-            position = position,
-            enabled = enabled,
-    ).apply {
+    private var model = NinchatCheckboxModel(enabled = enabled).apply {
         parse(jsonObject = jsonObject)
     }
 
-
-    fun renderCurrentView(jsonObject: JSONObject? = null, enabled: Boolean) {
-        jsonObject?.let {
-            model.update(jsonObject = jsonObject, enabled = enabled)
-        }
-        if (model.isFormLikeQuestionnaire) {
-            // render form like
-            iPresent.onRenderFromView(
-                    label = model.label,
-                    isChecked = model.isChecked,
-                    hasError = model.hasError,
-                    enabled = enabled
-            )
-            return
-        }
-        // render conversation like
-        iPresent.onRenderConversationView(
+    fun renderView() {
+        presenter.onRenderView(
                 label = model.label,
-                isChecked = model.isChecked,
+                isChecked = model.result,
                 hasError = model.hasError,
-                enabled = enabled
+                enabled = model.enabled,
         )
     }
 
-    fun updateCurrentView(jsonObject: JSONObject? = null, enabled: Boolean) {
-        jsonObject?.let {
-            model.update(jsonObject = jsonObject, enabled = enabled)
-        }
-        if (model.isFormLikeQuestionnaire) {
-            // render form like
-            iPresent.onUpdateFromView(
-                    label = model.label,
-                    isChecked = model.isChecked,
-                    hasError = model.hasError,
-                    enabled = enabled
-            )
-            return
-        }
-        // render conversation like
-        iPresent.onUpdateConversationView(
-                label = model.label,
-                isChecked = model.isChecked,
+    fun updateView(jsonObject: JSONObject?) {
+        model.parse(jsonObject = jsonObject)
+        presenter.onUpdateView(
+                isChecked = model.result,
                 hasError = model.hasError,
-                enabled = enabled
+                enabled = model.enabled,
         )
     }
 
-    fun handleCheckBoxToggled() {
-        model.isChecked = !model.isChecked
-        model.hasError = false
-        iPresent.onCheckBoxToggled(
-                isChecked = model.isChecked,
-                hasError = model.hasError)
-        updateCallback.onUpdate(value = model.isChecked, hasError = model.hasError, position = model.position)
-        if (!model.isChecked) return
-        mayBeFireEvent()
-    }
-
-    private fun mayBeFireEvent() {
-        if (!model.fireEvent) return
-        EventBus.getDefault().post(OnNextQuestionnaire(OnNextQuestionnaire.other))
-    }
 }
 
 interface INinchatCheckboxViewPresenter {
-    fun onRenderFromView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean)
-    fun onRenderConversationView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean)
-    fun onUpdateFromView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean)
-    fun onUpdateConversationView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean)
-    fun onCheckBoxToggled(isChecked: Boolean, hasError: Boolean)
+    fun onRenderView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean)
+    fun onUpdateView(isChecked: Boolean, hasError: Boolean, enabled: Boolean)
 }
 
 interface CheckboxUpdateListener {

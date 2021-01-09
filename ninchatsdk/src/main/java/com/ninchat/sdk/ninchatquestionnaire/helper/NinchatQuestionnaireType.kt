@@ -26,7 +26,6 @@ class NinchatQuestionnaireType {
         fun isCheckBox(jsonObject: JSONObject): Boolean =
                 "checkbox" == jsonObject.optString("element")
 
-
         fun isButton(jsonObject: JSONObject): Boolean =
                 "buttons" == jsonObject.optString("element")
 

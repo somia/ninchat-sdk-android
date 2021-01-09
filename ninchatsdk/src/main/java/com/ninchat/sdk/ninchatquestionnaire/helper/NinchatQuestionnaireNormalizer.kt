@@ -110,19 +110,41 @@ class NinchatQuestionnaireNormalizer {
             }
         }
 
+        internal fun getCheckboxGroupElement(elementList: List<JSONObject>): List<JSONObject> {
+            // get first checkbox element index
+            val index = elementList.indexOfFirst { NinchatQuestionnaireType.isCheckBox(jsonObject = it) }
+            if (index == -1) return elementList
+
+            // Pick all consecutive checkbox element
+            val checkBoxElementList = elementList
+                    .subList(fromIndex = index, toIndex = elementList.size - 1)
+                    .takeWhile { NinchatQuestionnaireType.isCheckBox(jsonObject = it) }
+                    .map {
+                        // default value as false
+                        it.putOpt("result", false)
+                    }
+            // Make a group element from checkbox consecutive checkbox element
+            val checkboxGroupElement = NinchatQuestionnaireJsonUtil.getCheckboxElements(elementList = checkBoxElementList, index = index)
+            return elementList.mapIndexedNotNull { currentIndex, jsonObject ->
+                when {
+                    // replace matched checkbox element with group checkbox element
+                    currentIndex == index -> checkboxGroupElement
+                    currentIndex > index && currentIndex < index + checkBoxElementList.size -> null
+                    else ->
+                        jsonObject
+                }
+            }
+        }
+
         internal fun updateCheckBoxElements(questionnaireList: List<JSONObject>): List<JSONObject> {
             return questionnaireList.map { currentElement ->
                 val elementList = currentElement.optJSONArray("elements")
                 if (NinchatQuestionnaireType.isLogic(currentElement) || elementList == null) currentElement
                 else {
-                    fromJSONArray<JSONObject>(elementList).forEach {
-                        val checkBoxElement = it as JSONObject
-                        if (NinchatQuestionnaireType.isCheckBox(checkBoxElement)) {
-                            checkBoxElement.putOpt("result", false)
-                        }
-                    }
-                    currentElement
+                    val elementList = getCheckboxGroupElement(elementList = fromJSONArray<JSONObject>(elementList).map { it as JSONObject })
+                    currentElement.putOpt("elements", toJSONArray(questionnaireList = elementList))
                 }
+                currentElement
             }
         }
 

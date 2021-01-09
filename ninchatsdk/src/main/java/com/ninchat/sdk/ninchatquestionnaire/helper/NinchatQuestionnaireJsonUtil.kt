@@ -144,6 +144,18 @@ class NinchatQuestionnaireJsonUtil {
             return JSONArray(optionList)
         }
 
+        fun getCheckboxElements(elementList: List<JSONObject>, index: Int): JSONObject {
+            val name = if (elementList.size == 1) elementList.first().optString("name") else "customCheckbox - $index"
+            val jsonObject = JSONObject("""{
+                "name": "$name",
+                "type": "group",
+                "element": "checkbox"
+            }""".trimMargin()).apply {
+                putOpt("options", toJSONArray(questionnaireList = elementList))
+            }
+            return jsonObject
+        }
+
         fun hasLogic(logicElement: JSONObject?, isAnd: Boolean): Boolean {
             // get all and or or logic list
             fromJSONArray<JSONObject>(logicElement?.optJSONArray(if (isAnd) "and" else "or")).forEach {

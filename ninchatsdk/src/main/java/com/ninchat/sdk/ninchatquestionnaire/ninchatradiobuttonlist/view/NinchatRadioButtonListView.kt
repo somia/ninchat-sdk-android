@@ -64,8 +64,10 @@ class NinchatRadioButtonListView(
     private fun renderCommon(label: String, hasError: Boolean, enabled: Boolean) {
         itemView.isEnabled = enabled
         itemView.radio_option_label.text = label
-        itemView.ninchat_chat_radio_options.layoutManager = LinearLayoutManager(itemView.context)
-        itemView.ninchat_chat_radio_options.adapter = NinchatRadioButtonListViewAdapter()
+        itemView.ninchat_chat_radio_options.apply {
+            layoutManager = LinearLayoutManager(itemView.context)
+            adapter = NinchatRadioButtonListViewAdapter()
+        }
         if (hasError) {
             itemView.radio_option_label.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background));
         } else {
