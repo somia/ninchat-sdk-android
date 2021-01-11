@@ -39,8 +39,8 @@ class NinchatCheckboxViewHolder(
         }
     }
 
-    fun update(jsonObject: JSONObject?) {
-        presenter.updateView(jsonObject = jsonObject)
+    fun update(jsonObject: JSONObject?, enabled: Boolean) {
+        presenter.updateView(jsonObject = jsonObject, enabled = enabled)
     }
 
     override fun onRenderView(label: String?, isChecked: Boolean, hasError: Boolean, enabled: Boolean) {
@@ -55,7 +55,8 @@ class NinchatCheckboxViewHolder(
                 when {
                     hasError -> R.color.ninchat_color_error_background
                     isChecked -> R.color.ninchat_color_checkbox_selected
-                    enabled -> R.color.ninchat_color_text_disabled
+                    enabled -> R.color.ninchat_color_text_normal
+                    !enabled -> R.color.ninchat_color_text_disabled
                     else ->
                         R.color.ninchat_color_checkbox_unselected
                 }))
@@ -72,7 +73,8 @@ class NinchatCheckboxViewHolder(
                 when {
                     hasError -> R.color.ninchat_color_error_background
                     isChecked -> R.color.ninchat_color_checkbox_selected
-                    enabled -> R.color.ninchat_color_text_disabled
+                    enabled -> R.color.ninchat_color_text_normal
+                    !enabled -> R.color.ninchat_color_text_disabled
                     else ->
                         R.color.ninchat_color_checkbox_unselected
                 }))

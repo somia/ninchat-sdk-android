@@ -77,7 +77,7 @@ class NinchatCheckBoxListView(
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val jsonObject = presenter.get(position = position)
-            (holder as NinchatCheckboxViewHolder).update(jsonObject = jsonObject)
+            (holder as NinchatCheckboxViewHolder).update(jsonObject = jsonObject, enabled = presenter.isEnabled())
         }
 
         override fun getItemCount(): Int {

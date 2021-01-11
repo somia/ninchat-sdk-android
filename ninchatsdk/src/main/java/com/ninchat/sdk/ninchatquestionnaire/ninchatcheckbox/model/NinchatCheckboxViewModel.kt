@@ -5,7 +5,7 @@ import org.json.JSONObject
 
 
 data class NinchatCheckboxModel(
-        var enabled: Boolean = false,
+        var enabled: Boolean = true,
         var label: String? = "",
         var result: Boolean = false,
         var name: String? = "",

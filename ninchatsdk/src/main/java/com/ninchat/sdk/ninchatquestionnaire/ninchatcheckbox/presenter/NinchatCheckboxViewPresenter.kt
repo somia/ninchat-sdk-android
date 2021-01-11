@@ -23,8 +23,9 @@ class NinchatCheckboxViewPresenter(
         )
     }
 
-    fun updateView(jsonObject: JSONObject?) {
+    fun updateView(jsonObject: JSONObject?, enabled: Boolean) {
         model.parse(jsonObject = jsonObject)
+        model.enabled = enabled
         presenter.onUpdateView(
                 isChecked = model.result,
                 hasError = model.hasError,
