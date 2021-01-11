@@ -9,6 +9,7 @@ import com.ninchat.sdk.ninchataudiencemetadata.NinchatAudienceMetadata
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireNormalizer
+import org.json.JSONArray
 import org.json.JSONObject
 
 data class NinchatQuestionnaireModel(
@@ -68,6 +69,19 @@ data class NinchatQuestionnaireModel(
             val tags = Strings()
             answers?.tagList?.forEach { tags.append(it) }
             answerProps.setStringArray("tags", tags)
+        }
+        return answerProps
+    }
+
+    fun getAnswersAsJson(): JSONObject {
+        val answerProps = JSONObject()
+        if (answers?.answerList.isNullOrEmpty().not()) {
+            answers?.answerList?.forEach {
+                answerProps.putOpt(it.first, it.second)
+            }
+        }
+        if (answers?.tagList.isNullOrEmpty().not()) {
+            answerProps.putOpt("tags", JSONArray(answers?.tagList))
         }
         return answerProps
     }

@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
 import com.ninchat.sdk.events.OnNextQuestionnaire
+import com.ninchat.sdk.events.OnPostAudienceQuestionnaire
 import com.ninchat.sdk.events.OnSubmitQuestionnaireAnswers
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
@@ -76,6 +78,12 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
         onFinishQuestionnaire(openQueue = false)
     }
 
+    override fun onCompletePostAudienceQuestionnaire() {
+        presenter.handlePostAudienceQuestionnaire {
+            onFinishQuestionnaire(openQueue = false)
+        }
+    }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     @JvmName("OnSubmitQuestionnaireAnswers")
     fun onSubmitQuestionnaireAnswers(result: OnSubmitQuestionnaireAnswers) {
@@ -85,6 +93,13 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
         }
         // else show thank you text
         presenter.showThankYouText(currentAdapter, isComplete = presenter.isComplete())
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    @JvmName("OnPostAudienceQuestionnaire")
+    fun onSubmitPostQuestionnaireAnswers(result: OnPostAudienceQuestionnaire) {
+        // else show thank you text
+        onCompletePostAudienceQuestionnaire()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -100,7 +115,10 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
 
     override fun onComplete(answerList: List<JSONObject>) {
         presenter.updateAnswers(answerList = answerList)
-        presenter.mayeBeCompleteQuestionnaire()
+        if (presenter.isPostAudienceQuestionnaire())
+            presenter.mayBeSendPostAudienceQuestionnaire()
+        else
+            presenter.mayeBeCompleteQuestionnaire()
     }
 
     override fun onDataSetChange(withError: Boolean) {

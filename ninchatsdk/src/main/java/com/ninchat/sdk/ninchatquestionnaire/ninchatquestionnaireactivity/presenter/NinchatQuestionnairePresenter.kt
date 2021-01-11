@@ -2,11 +2,16 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presen
 
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.client.Props
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.events.OnNextQuestionnaire
+import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
+import com.ninchat.sdk.networkdispatchers.NinchatPartChannel
 import com.ninchat.sdk.networkdispatchers.NinchatRegisterAudience
+import com.ninchat.sdk.networkdispatchers.NinchatSendPostAudienceQuestionnaire
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireAnswers
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity
@@ -25,7 +30,7 @@ class NinchatQuestionnairePresenter(
         model.update(intent)
         viewCallback.renderQuestionnaireList(
                 questionnaireList = model.questionnaireList,
-                preAnswers = model.preAnswers(),
+                preAnswers = if (model.questionnaireType == NinchatQuestionnaireConstants.preAudienceQuestionnaire) model.preAnswers() else listOf(),
                 queueId = model.queueId,
                 isFormLike = model.isFormLike)
     }
@@ -94,14 +99,56 @@ class NinchatQuestionnairePresenter(
                 if (id == -1L) {
                     viewCallback.onAudienceRegisterError()
                 } else {
-                    NinchatSessionManager.getInstance()?.ninchatState?.actionId
+                    NinchatSessionManager.getInstance()?.ninchatState?.actionId = id
                 }
+            }
+        }
+    }
+
+    fun mayBeSendPostAudienceQuestionnaire() {
+        val questionnaireAnswers = model.getAnswersAsJson()
+        val payload = JSONObject().apply {
+            putOpt("data", JSONObject().apply {
+                putOpt("post_answers", questionnaireAnswers)
+            })
+            putOpt("time", System.currentTimeMillis())
+        }
+        NinchatSessionManager.getInstance()?.session?.let {
+            // even if the error occurred,
+            NinchatScopeHandler.getIOScope().launch(CoroutineExceptionHandler(handler = { _, _ -> viewCallback.onCompletePostAudienceQuestionnaire() })) {
+                val id = NinchatSendPostAudienceQuestionnaire.execute(
+                        currentSession = it,
+                        channelId = NinchatSessionManager.getInstance().ninchatState?.channelId,
+                        message = payload.toString(2)
+                )
+                if (id == -1L) {
+                    viewCallback.onCompletePostAudienceQuestionnaire()
+                } else {
+                    NinchatSessionManager.getInstance()?.ninchatState?.actionId = id
+                }
+            }
+        }
+    }
+
+    fun handlePostAudienceQuestionnaire(callback: () -> Unit) {
+        NinchatSessionManager.getInstance()?.session?.let {
+            NinchatScopeHandler.getIOScope().launch(CoroutineExceptionHandler(handler = { _, _ -> callback() })) {
+                NinchatPartChannel.execute(
+                        currentSession = it,
+                        channelId = NinchatSessionManager.getInstance().ninchatState?.channelId)
+
+                NinchatDeleteUser.execute(currentSession = it)
+                Handler().postDelayed({
+                    it.close()
+                    callback()
+                }, 500)
             }
         }
     }
 
     fun isComplete(): Boolean = model.fromComplete
     fun queueId(): String? = model.queueId
+    fun isPostAudienceQuestionnaire(): Boolean = model.questionnaireType == NinchatQuestionnaireConstants.postAudienceQuestionnaire
 
     companion object {
         val REQUEST_CODE = NinchatQuestionnairePresenter::class.java.hashCode() and 0xffff
@@ -118,4 +165,5 @@ interface INinchatQuestionnairePresenter {
     fun renderQuestionnaireList(questionnaireList: List<JSONObject>, preAnswers: List<Pair<String, Any>>, queueId: String?, isFormLike: Boolean)
     fun onCompleteQuestionnaire()
     fun onAudienceRegisterError()
+    fun onCompletePostAudienceQuestionnaire()
 }
