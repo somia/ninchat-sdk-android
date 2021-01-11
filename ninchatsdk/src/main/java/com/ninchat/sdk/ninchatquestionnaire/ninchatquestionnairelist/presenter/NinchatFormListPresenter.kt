@@ -51,7 +51,7 @@ class NinchatFormListPresenter(
         }
 
         val index = model.getIndex(elementName = model.selectedElement.lastOrNull()?.first)
-        val nextTargetName = this.getNextElement(currentIndex = index + 1, 1000)
+        val nextTargetName = getNextElement(currentIndex = index + 1, 1000)
         if (nextTargetName == "_complete") {
             rootActivityCallback.onComplete(answerList = getAnswerList())
             return

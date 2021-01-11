@@ -34,6 +34,7 @@ class NinchatCheckboxViewPresenter(
 
     fun onCheckBoxToggled() {
         model.result = !model.result
+        model.hasError = false
         presenter.onToggleView(
                 isChecked = model.result,
                 hasError = model.hasError,

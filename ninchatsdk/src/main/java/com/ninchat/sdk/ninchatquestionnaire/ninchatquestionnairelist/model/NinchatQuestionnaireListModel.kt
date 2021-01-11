@@ -52,10 +52,6 @@ data class NinchatQuestionnaireListModel(
         } ?: 0
     }
 
-    fun updateError() {
-        answerList = NinchatQuestionnaireJsonUtil.updateError(answerList = answerList,
-                selectedElement = selectedElement.lastOrNull() ?: Pair("", 0))
-    }
 
     fun updateTagsAndQueueId(logicElement: JSONObject?) {
         val tags = logicElement?.optJSONArray("tags")
@@ -77,11 +73,13 @@ data class NinchatQuestionnaireListModel(
                 elementName = elementName ?: "~")
     }
 
+    fun updateError() {
+        answerList = NinchatQuestionnaireJsonUtil.updateError(answerList = answerList,
+                selectedElement = selectedElement.lastOrNull())
+    }
+
     fun hasError(): Boolean {
-        return answerList.takeLast(selectedElement.lastOrNull()?.second ?: 0).any {
-            // is required but there is no result
-            !NinchatQuestionnaireJsonUtil.requiredOk(json = it) || !NinchatQuestionnaireJsonUtil.matchPattern(json = it)
-        }
+        return NinchatQuestionnaireJsonUtil.hasError(answerList = answerList, selectedElement = selectedElement.lastOrNull())
     }
 
     fun resetAnswers(from: Int): List<JSONObject> {

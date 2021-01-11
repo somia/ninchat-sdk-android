@@ -55,6 +55,7 @@ class NinchatCheckBoxListView(
 
     override fun onUpdateView(optionsList: List<JSONObject>, enabled: Boolean, isFormView: Boolean) {
         itemView.isEnabled = enabled
+        itemView.ninchat_chat_checkbox_options?.adapter?.notifyDataSetChanged()
     }
 
     inner class NinchatCheckboxListViewAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

@@ -181,12 +181,23 @@ class NinchatQuestionnaireJsonUtil {
         }
 
         internal fun matchedLogicAll(logicList: JSONArray?, answerList: List<JSONObject>): Boolean {
-            return fromJSONArray<JSONObject>(logicList).all {
-                val currentLogic = it as JSONObject
+            return fromJSONArray<JSONObject>(logicList).all { logic ->
+                val currentLogic = logic as JSONObject
                 var found = false
                 currentLogic.keys().forEach { currentKey: String ->
                     val pattern = currentLogic.optString(currentKey)
-                    found = found or answerList.asReversed()
+                    found = found or answerList
+                            .map { currentElement ->
+                                when {
+                                    NinchatQuestionnaireType.isCheckBox(currentElement) -> {
+                                        fromJSONArray<JSONObject>(currentElement.optJSONArray("options"))
+                                                .map { element -> element as JSONObject }
+                                    }
+                                    else -> listOf(currentElement)
+                                }
+                            }
+                            .flatten()
+                            .asReversed()
                             .filter { currentAnswer ->
                                 currentKey == currentAnswer.optString("name")
                             }
@@ -203,12 +214,23 @@ class NinchatQuestionnaireJsonUtil {
         }
 
         internal fun matchedLogicAny(logicList: JSONArray?, answerList: List<JSONObject>): Boolean {
-            return fromJSONArray<JSONObject>(logicList).any {
-                val currentLogic = it as JSONObject
+            return fromJSONArray<JSONObject>(logicList).any { logic ->
+                val currentLogic = logic as JSONObject
                 var found = false
                 currentLogic.keys().forEach { currentKey: String ->
                     val pattern = currentLogic.optString(currentKey)
-                    found = found or answerList.asReversed()
+                    found = found or answerList
+                            .map { currentElement ->
+                                when {
+                                    NinchatQuestionnaireType.isCheckBox(currentElement) -> {
+                                        fromJSONArray<JSONObject>(currentElement.optJSONArray("options"))
+                                                .map { element -> element as JSONObject }
+                                    }
+                                    else -> listOf(currentElement)
+                                }
+                            }
+                            .flatten()
+                            .asReversed()
                             .filter { currentAnswer ->
                                 currentKey == currentAnswer.optString("name")
                             }
@@ -292,19 +314,41 @@ class NinchatQuestionnaireJsonUtil {
             }
         }
 
-        fun hasError(answerList: List<JSONObject>, selectedElement: Pair<String, Int>): Boolean {
-            return answerList.takeLast(selectedElement.second).any {
-                // is required but there is no result
-                !requiredOk(json = it) || !matchPattern(json = it)
-            }
+        fun hasError(answerList: List<JSONObject>, selectedElement: Pair<String, Int>?): Boolean {
+            return answerList.takeLast(selectedElement?.second ?: 0)
+                    .map { currentElement ->
+                        when {
+                            NinchatQuestionnaireType.isCheckBox(currentElement) -> {
+                                fromJSONArray<JSONObject>(currentElement.optJSONArray("options"))
+                                        .map { element -> element as JSONObject }
+                            }
+                            else -> listOf(currentElement)
+                        }
+                    }
+                    .flatten()
+                    .any { currentElement ->
+                        // is required but there is no result
+                        !requiredOk(json = currentElement) || !matchPattern(json = currentElement)
+                    }
         }
 
-        fun updateError(answerList: List<JSONObject>, selectedElement: Pair<String, Int>): List<JSONObject> {
-            answerList.takeLast(selectedElement.second).forEach {
-                // is required but there is no result
-                if (!requiredOk(json = it) || !matchPattern(json = it)) {
-                    it.putOpt("hasError", true)
+        fun updateError(answerList: List<JSONObject>, selectedElement: Pair<String, Int>?): List<JSONObject> {
+            answerList.takeLast(selectedElement?.second ?: 0).forEach { currentElement ->
+                if (NinchatQuestionnaireType.isCheckBox(jsonObject = currentElement)) {
+                    fromJSONArray<JSONObject>(questionnaireList = currentElement.optJSONArray("options"))
+                            .map { it as JSONObject }
+                            .forEach {
+                                if (!requiredOk(json = it) || !matchPattern(json = it)) {
+                                    it.putOpt("hasError", true)
+                                }
+                            }
+                } else {
+                    // is required but there is no result
+                    if (!requiredOk(json = currentElement) || !matchPattern(json = currentElement)) {
+                        currentElement.putOpt("hasError", true)
+                    }
                 }
+
             }
             return answerList
         }
@@ -313,7 +357,18 @@ class NinchatQuestionnaireJsonUtil {
                 JSONObject(json.toString(2))
 
         fun getQuestionnaireAnswers(answerList: List<JSONObject>): List<Pair<String, String>> {
-            return answerList.asReversed()
+            return answerList
+                    .map { currentElement ->
+                        when {
+                            NinchatQuestionnaireType.isCheckBox(currentElement) -> {
+                                fromJSONArray<JSONObject>(currentElement.optJSONArray("options"))
+                                        .map { element -> element as JSONObject }
+                            }
+                            else -> listOf(currentElement)
+                        }
+                    }
+                    .flatten()
+                    .asReversed()
                     .distinctBy {
                         it.optString("name")
                     }
@@ -339,7 +394,11 @@ class NinchatQuestionnaireJsonUtil {
                     jsonObject.remove("tags")
                     jsonObject.remove("queueId")
                     if (NinchatQuestionnaireType.isCheckBox(jsonObject = jsonObject)) {
-                        jsonObject.putOpt("result", false)
+                        fromJSONArray<JSONObject>(questionnaireList = jsonObject.optJSONArray("options"))
+                                .map { it as JSONObject }
+                                .forEach {
+                                    it.putOpt("result", false)
+                                }
                     } else {
                         jsonObject.remove("result")
 
