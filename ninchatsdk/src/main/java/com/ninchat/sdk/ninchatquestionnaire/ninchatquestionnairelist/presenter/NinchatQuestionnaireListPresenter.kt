@@ -71,7 +71,7 @@ open class NinchatQuestionnaireListPresenter(
                 // is this logic a match for all any existing answer ?
                 val matches = NinchatQuestionnaireJsonUtil.matchAnswerList(logicElement = currentElement, answerList = model.answerList, preAnswerList = model.preAnswers)
                 if (matches) {
-                    model.updateTagsAndQueueId(currentElement)
+                    model.updateTagsAndQueueId(logicElement = currentElement?.optJSONObject("logic"))
                     currentElement?.optJSONObject("logic")?.optString("target")
                 } else
                     this.getNextElement(currentIndex = currentIndex + 1, sentinel = sentinel - 1)

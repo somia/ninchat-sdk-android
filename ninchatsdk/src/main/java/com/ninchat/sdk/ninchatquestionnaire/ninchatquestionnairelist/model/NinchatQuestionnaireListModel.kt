@@ -55,14 +55,18 @@ data class NinchatQuestionnaireListModel(
 
     fun updateTagsAndQueueId(logicElement: JSONObject?) {
         val tags = logicElement?.optJSONArray("tags")
-        val queueId = logicElement?.optString("queue", logicElement.optString("queueId"))
+        val queueId = logicElement?.optString("queue", logicElement.optString("queueId", null))
 
         answerList.lastOrNull()?.apply {
             queueId?.let {
-                putOpt("queueId", it)
+                if (it.isNotBlank()) {
+                    putOpt("queueId", queueId)
+                }
             }
+
             tags?.let {
-                putOpt("tags", it)
+                if (it.length() > 0)
+                    putOpt("tags", it)
             }
         }
     }
