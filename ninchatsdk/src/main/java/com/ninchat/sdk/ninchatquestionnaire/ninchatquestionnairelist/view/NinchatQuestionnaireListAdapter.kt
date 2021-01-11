@@ -122,6 +122,7 @@ class NinchatQuestionnaireListAdapter(
                         jsonObject = currentElement,
                         isFormLikeQuestionnaire = false,
                         position = position,
+                        updateCallback = presenter,
                         enabled = presenter.isLast(position)
                 )
             }

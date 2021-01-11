@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration
+import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.CheckboxUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.view.NinchatCheckboxViewHolder
+import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckboxlist.presenter.CheckboxListUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckboxlist.presenter.INinchatCheckboxListPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckboxlist.presenter.NinchatCheckBoxListPresenter
 import kotlinx.android.synthetic.main.checkbox_compound.view.*
@@ -20,6 +22,7 @@ class NinchatCheckBoxListView(
         isFormLikeQuestionnaire: Boolean,
         position: Int,
         enabled: Boolean,
+        updateCallback: CheckboxListUpdateListener
 ) : RecyclerView.ViewHolder(itemView), INinchatCheckboxListPresenter {
 
     private val presenter = NinchatCheckBoxListPresenter(
@@ -27,13 +30,13 @@ class NinchatCheckBoxListView(
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
             position = position,
             enabled = enabled,
+            updateCallback = updateCallback,
             viewCallback = this
     )
 
     init {
         presenter.renderCurrentView(jsonObject = jsonObject, enabled = enabled)
     }
-
 
     fun update(jsonObject: JSONObject?, enabled: Boolean) {
         presenter.updateCurrentView(jsonObject = jsonObject, enabled = enabled)
@@ -65,6 +68,8 @@ class NinchatCheckBoxListView(
             return NinchatCheckboxViewHolder(
                     itemView = LayoutInflater.from(parent.context).inflate(R.layout.checkbox_simple, parent, false),
                     jsonObject = jsonObject,
+                    position = position,
+                    checkboxToggleListener = presenter,
                     enabled = presenter.isEnabled()
             )
         }

@@ -9,13 +9,12 @@ data class NinchatCheckboxModel(
         var label: String? = "",
         var result: Boolean = false,
         var name: String? = "",
+        val position: Int,
         var hasError: Boolean = false,
-        var fireEvent: Boolean? = false,
+        var fireEvent: Boolean = false,
 ) {
     fun parse(jsonObject: JSONObject?) {
-        label = jsonObject?.optString("label")?.let {
-            if (jsonObject.optBoolean("required", false)) "$it *" else it
-        }
+        label = jsonObject?.optString("label")
         result = jsonObject?.optBoolean("result") ?: false
         name = jsonObject?.optString("name")
         hasError = jsonObject?.optBoolean("hasError") ?: false

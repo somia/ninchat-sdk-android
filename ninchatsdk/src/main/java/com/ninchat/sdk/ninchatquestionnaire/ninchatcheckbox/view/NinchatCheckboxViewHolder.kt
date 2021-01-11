@@ -15,17 +15,28 @@ import org.json.JSONObject
 class NinchatCheckboxViewHolder(
         itemView: View,
         jsonObject: JSONObject?,
+        position: Int,
+        checkboxToggleListener: CheckboxUpdateListener,
         enabled: Boolean,
 ) : RecyclerView.ViewHolder(itemView), INinchatCheckboxViewPresenter {
 
     private val presenter = NinchatCheckboxViewPresenter(
             jsonObject = jsonObject,
             presenter = this,
+            position = position,
+            checkboxToggleListener = checkboxToggleListener,
             enabled = enabled
     )
 
     init {
         presenter.renderView()
+        attachHandler()
+    }
+
+    private fun attachHandler() {
+        itemView.setOnClickListener {
+            presenter.onCheckBoxToggled()
+        }
     }
 
     fun update(jsonObject: JSONObject?) {
@@ -54,6 +65,19 @@ class NinchatCheckboxViewHolder(
         if (hasError) {
             itemView.ninchat_checkbox_label.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background));
         }
+    }
+
+    override fun onToggleView(isChecked: Boolean, hasError: Boolean, enabled: Boolean) {
+        itemView.ninchat_checkbox_label.setTextColor(ContextCompat.getColor(itemView.context,
+                when {
+                    hasError -> R.color.ninchat_color_error_background
+                    isChecked -> R.color.ninchat_color_checkbox_selected
+                    enabled -> R.color.ninchat_color_text_disabled
+                    else ->
+                        R.color.ninchat_color_checkbox_unselected
+                }))
+        itemView.ninchat_checkbox_image.isEnabled = enabled
+        itemView.ninchat_checkbox_image.setImageDrawable(if (isChecked) ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_checkbox_selected) else ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_checkbox_unselected))
     }
 
 

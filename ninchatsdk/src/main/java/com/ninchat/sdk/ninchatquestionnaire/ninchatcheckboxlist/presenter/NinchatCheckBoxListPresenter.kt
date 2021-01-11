@@ -1,15 +1,19 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatcheckboxlist.presenter
 
+import com.ninchat.sdk.events.OnNextQuestionnaire
+import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.CheckboxUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckboxlist.model.NinchatCheckBoxListModel
+import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
 class NinchatCheckBoxListPresenter(
         jsonObject: JSONObject? = null,
         isFormLikeQuestionnaire: Boolean,
         val viewCallback: INinchatCheckboxListPresenter,
+        val updateCallback: CheckboxListUpdateListener,
         position: Int,
         enabled: Boolean,
-) {
+) : CheckboxUpdateListener {
     private val model = NinchatCheckBoxListModel(
             isFormLikeQuestionnaire = isFormLikeQuestionnaire,
             position = position,
@@ -39,6 +43,13 @@ class NinchatCheckBoxListPresenter(
     fun get(position: Int): JSONObject = model.optionList.getOrNull(position) ?: JSONObject()
     fun isEnabled(): Boolean = model.enabled
     fun size(): Int = model.optionList.size
+    override fun onUpdate(value: Boolean, hasError: Boolean, fireEvent: Boolean, position: Int) {
+        updateCallback.onUpdate(value = value, sublistPosition = position, hasError = hasError, position = model.position)
+        // if can fire a event and value is selected
+        if (fireEvent && value) {
+            EventBus.getDefault().post(OnNextQuestionnaire(OnNextQuestionnaire.other));
+        }
+    }
 }
 
 interface INinchatCheckboxListPresenter {
@@ -47,5 +58,5 @@ interface INinchatCheckboxListPresenter {
 }
 
 interface CheckboxListUpdateListener {
-    fun onUpdate(value: String?, sublistPosition: Int, hasError: Boolean, position: Int)
+    fun onUpdate(value: Boolean, sublistPosition: Int, hasError: Boolean, position: Int)
 }

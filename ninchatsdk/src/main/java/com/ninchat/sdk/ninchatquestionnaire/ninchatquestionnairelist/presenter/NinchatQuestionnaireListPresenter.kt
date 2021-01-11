@@ -5,6 +5,7 @@ import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireType
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.BotWritingCompleteListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.CheckboxUpdateListener
+import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckboxlist.presenter.CheckboxListUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.DropDownSelectUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.InputFieldUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model.NinchatQuestionnaireListModel
@@ -14,7 +15,7 @@ import org.json.JSONObject
 open class NinchatQuestionnaireListPresenter(
         questionnaireList: List<JSONObject>,
         preAnswers: List<Pair<String, Any>>,
-) : InputFieldUpdateListener, ButtonListUpdateListener, DropDownSelectUpdateListener, CheckboxUpdateListener, BotWritingCompleteListener {
+) : InputFieldUpdateListener, ButtonListUpdateListener, DropDownSelectUpdateListener, CheckboxListUpdateListener, BotWritingCompleteListener {
 
     var model = NinchatQuestionnaireListModel(
             questionnaireList = questionnaireList,
@@ -43,10 +44,12 @@ open class NinchatQuestionnaireListPresenter(
         }
     }
 
-    override fun onUpdate(value: Boolean, hasError: Boolean, position: Int) {
+    override fun onUpdate(value: Boolean, sublistPosition: Int, hasError: Boolean, position: Int) {
         model.answerList.getOrNull(position)?.apply {
-            putOpt("result", value)
-            putOpt("hasError", hasError)
+            optJSONArray("options")?.optJSONObject(sublistPosition)?.apply {
+                putOpt("result", value)
+                putOpt("hasError", hasError)
+            }
         }
     }
 
