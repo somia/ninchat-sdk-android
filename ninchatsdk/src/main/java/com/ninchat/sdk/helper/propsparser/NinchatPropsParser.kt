@@ -169,12 +169,28 @@ class NinchatPropsParser {
             }
         }
 
+        @JvmStatic
+        fun getPreAnswersFromProps(props: Props?): List<Pair<String, Any>> {
+            val parser = NinchatPropVisitor()
+            val preAnswers = try {
+                props?.getObject("pre_answers")
+            } catch (_: Exception) {
+                null
+            }
+            preAnswers?.accept(parser)
+            return parser.properties.mapNotNull {
+                if (it.key != "tags") {
+                    Pair(it.key, it.value)
+                } else null
+            }
+        }
+
         fun getAudienceMetadata(props: Props?): String? {
             return props?.marshalJSON()
         }
 
         fun toAudienceMetadata(audienceMetadata: String?): Props? {
-            if(audienceMetadata.isNullOrEmpty()) return null
+            if (audienceMetadata.isNullOrEmpty()) return null
             val props = Props()
             props.unmarshalJSON(audienceMetadata)
             return props

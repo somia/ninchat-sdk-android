@@ -26,10 +26,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatChatActivity;
+import com.ninchat.sdk.helper.glidewrapper.GlideWrapper;
 import com.ninchat.sdk.ninchatmedia.presenter.NinchatMediaPresenter;
 import com.ninchat.sdk.ninchatmedia.view.NinchatMediaActivity;
 import com.ninchat.sdk.ninchatmedia.model.NinchatFile;
@@ -78,10 +80,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         sessionManager.ninchatState.getSiteConfig().getUserAvatar();
             }
             if (!TextUtils.isEmpty(userAvatar)) {
-                GlideApp.with(itemView.getContext())
-                        .load(userAvatar)
-                        .circleCrop()
-                        .into(avatar);
+                GlideWrapper.loadImageAsCircle(itemView.getContext(), userAvatar, avatar);
             }
             final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
             final boolean showAvatars = ninchatMessage.isRemoteMessage() ?
@@ -132,11 +131,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 image.getLayoutParams().height = (int) (height * density);
                 image.setBackgroundResource(isContinuedMessage ? repeatedMessageBackground : firstMessageBackground);
                 image.setVisibility(View.VISIBLE);
-                GlideApp.with(image.getContext())
-                        .load(file.getUrl())
-                        .placeholder(R.color.ninchat_colorPrimaryDark)
-                        .override(width, height)
-                        .into(image);
+                GlideWrapper.loadImage(image.getContext(), file.getThumbnailUrl(), image, R.color.ninchat_colorPrimaryDark, width, height);
                 if (file.isVideo()) {
                     playIcon.setVisibility(View.VISIBLE);
                 }

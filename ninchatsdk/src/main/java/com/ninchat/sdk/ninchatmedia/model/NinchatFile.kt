@@ -7,6 +7,7 @@ import java.util.*
 
 data class NinchatFile(val messageId: String?, val id: String, val name: String?, private val size: Int, private val type: String, val timestamp: Long, val sender: String?, val isRemote: Boolean) {
     var url: String? = null
+    var thumbnailUrl: String? = null
     var urlExpiry: Date? = null
     var aspectRatio = 0f
     var fileWidth: Long = 0

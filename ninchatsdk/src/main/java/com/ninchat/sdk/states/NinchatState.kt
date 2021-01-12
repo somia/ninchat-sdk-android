@@ -5,7 +5,6 @@ import com.ninchat.client.Props
 import com.ninchat.sdk.BuildConfig
 import com.ninchat.sdk.helper.siteconfigparser.NinchatSiteConfig
 import com.ninchat.sdk.models.*
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder
 import com.ninchat.sdk.ninchataudiencemetadata.NinchatAudienceMetadata
 import com.ninchat.sdk.ninchatmedia.model.NinchatFile
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
@@ -30,7 +29,6 @@ class NinchatState {
     var openQueueList: List<String>? = null
 
     var siteConfig: NinchatSiteConfig = NinchatSiteConfig()
-    var ninchatQuestionnaire: NinchatQuestionnaireHolder? = null
     var configurationKey: String? = null
 
     var preferredEnvironments: ArrayList<String>? = null
@@ -76,6 +74,15 @@ class NinchatState {
     }
 
 
+    fun hasQuestionnaire(isPreAudienceQuestionnaire: Boolean): Boolean {
+        val questionnaireList = if (isPreAudienceQuestionnaire)
+            siteConfig.getPreAudienceQuestionnaire()
+        else
+            siteConfig.getPostAudienceQuestionnaire()
+        return questionnaireList?.let { it.length() > 0 } ?: false
+    }
+
+
     var members = hashMapOf<String, NinchatUser>()
     fun getMember(userId: String?): NinchatUser? {
         return members[userId]
@@ -87,8 +94,9 @@ class NinchatState {
 
     var queues = arrayListOf<NinchatQueue>()
     fun addQueue(ninchatQueue: NinchatQueue) {
-          queues.add(ninchatQueue)
+        queues.add(ninchatQueue)
     }
+
 
     fun dispose() {
         userId = null
@@ -102,7 +110,6 @@ class NinchatState {
         sessionCredentials = null
         openQueueList = null
         siteConfig = NinchatSiteConfig()
-        ninchatQuestionnaire = null
         preferredEnvironments = null
         configurationKey = null
         actionId = -1

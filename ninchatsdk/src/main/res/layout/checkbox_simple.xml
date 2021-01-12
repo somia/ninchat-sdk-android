@@ -3,16 +3,24 @@
     android:id="@+id/checkbox_simple"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@drawable/ninchat_chat_bubble_left_repeated">
+    android:orientation="horizontal">
 
-    <CheckBox
-        android:id="@+id/ninchat_checkbox"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/ninchat_checkbox_image"
+        android:layout_gravity="center"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:checked="false"
-        android:paddingStart="10dp"
-        android:text="Checkbox label"
-        android:theme="@style/NinchatTheme.Checkbox" />
+        android:layout_weight="0.1"
+        android:src="@drawable/ninchat_chat_checkbox_selected"/>
+
+    <TextView
+        android:id="@+id/ninchat_checkbox_label"
+        android:layout_marginStart="10dp"
+        android:layout_gravity="center"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.9"
+        android:textColor="@color/ninchat_color_text_normal"
+        android:text="A compound text box label "/>
+
 </LinearLayout>

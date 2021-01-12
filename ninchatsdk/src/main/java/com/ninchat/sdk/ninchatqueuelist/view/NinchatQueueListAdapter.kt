@@ -18,7 +18,6 @@ class NinchatQueueListAdapter(
 
     override fun getItemViewType(position: Int): Int = position
 
-
     override fun onCreateViewHolder(parent: ViewGroup, position: Int): RecyclerView.ViewHolder {
         val view = when {
             ninchatQueueList.isClosedQueue(position) -> {

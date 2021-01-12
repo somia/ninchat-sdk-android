@@ -12,19 +12,24 @@ class NinchatReviewModel {
     var currentRating: Int = NinchatSession.Analytics.Rating.NO_ANSWER
 
     fun getBotName(): String? {
-        return NinchatSessionManager.getInstance()?.ninchatState?.ninchatQuestionnaire?.botQuestionnaireName
+        return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getQuestionnaireName()?.let {
+            if (it in listOf("null", "false", "")) null
+            else it
+        }
     }
 
     fun getBotAvatar(): String? {
-        return NinchatSessionManager.getInstance()?.ninchatState?.ninchatQuestionnaire?.botQuestionnaireAvatar
+        return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getQuestionnaireAvatar()?.let {
+            if (it in listOf("null", "false", "")) null
+            else it
+        }
     }
 
     /**
      * Return whether this is a conversation like or questionnaire like view
      */
     fun isConversationLikeQuestionnaire(): Boolean {
-        return NinchatSessionManager.getInstance()?.ninchatState?.ninchatQuestionnaire?.conversationLikePostAudienceQuestionnaire()
-                ?: false
+        return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getPostAudienceQuestionnaireStyle() == "conversation"
     }
 
     fun getRatingPayload(): JSONObject {
@@ -34,7 +39,7 @@ class NinchatReviewModel {
         data.put("data", value)
         return data
     }
-    
+
     fun getFeedbackTitleText(): String? {
         return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getFeedbackTitleText()
     }

@@ -19,6 +19,8 @@ import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.android.synthetic.main.activity_ninchat_review.view.*
 import kotlinx.android.synthetic.main.bot_writing_indicator.view.*
 import kotlinx.android.synthetic.main.review_rating_bot_view.view.*
+import kotlinx.android.synthetic.main.review_rating_bot_view.view.ninchat_chat_message_bot_avatar
+import kotlinx.android.synthetic.main.review_rating_bot_view.view.ninchat_chat_message_bot_text
 import kotlinx.android.synthetic.main.review_rating_icon_items.view.*
 import kotlinx.android.synthetic.main.review_rating_text_view.view.*
 import kotlinx.coroutines.launch
@@ -52,7 +54,7 @@ class NinchatReviewPresenter(
             botView.ninchat_bot_rating_text_root_view.visibility = View.VISIBLE
             botView.ninchat_bot_ratings_icon_items_root_view.visibility = View.VISIBLE
 
-            botView.ninchat_bot_rating_text_root_view.background = ContextCompat.getDrawable(botView.context, R.drawable.ninchat_chat_bubble_left_repeated)
+            botView.ninchat_bot_rating_text_root_view.background = ContextCompat.getDrawable(botView.context, R.drawable.ninchat_chat_questionnaire_background)
 
             // render text now
             renderText(view = botView, rootActivity = rootActivity)
@@ -70,21 +72,21 @@ class NinchatReviewPresenter(
 
         //2: set background
         rootActivity.background = ContextCompat.getDrawable(view.context, R.drawable.ninchat_chat_background_tiled)
+        view.ninchat_chat_message_bot_writing_review_root.background = ContextCompat.getDrawable(view.context, R.drawable.ninchat_chat_questionnaire_background)
 
         //3: set bot details
         view.ninchat_chat_message_bot_text.text = ninchatReviewModel.getBotName()
-        view.ninchat_chat_message_bot_avatar.setImageResource(R.drawable.ninchat_chat_avatar_left)
-        if (!ninchatReviewModel.getBotAvatar().isNullOrEmpty()) {
+        ninchatReviewModel.getBotAvatar()?.let {
             try {
-                GlideWrapper.loadImageAsCircle(view.context, ninchatReviewModel.getBotAvatar(), view.ninchat_chat_message_bot_avatar)
-            } catch (err: Exception) {
-                // pass
+                GlideWrapper.loadImageAsCircle(view.context, it, view.ninchat_chat_message_bot_avatar)
+            } catch (e: Exception) {
+                view.ninchat_chat_message_bot_avatar.setImageResource(R.drawable.ninchat_chat_avatar_left)
             }
         }
 
         //4: start dummy animation
         view.ninchat_chat_message_bot_writing.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator)
-        val animationDrawable = (view.ninchat_chat_message_bot_writing.background as AnimationDrawable)
+        val animationDrawable = (view.ninchat_chat_message_bot_writing.background) as AnimationDrawable
         animationDrawable.start()
 
         //5: stop animation after 1.5 second

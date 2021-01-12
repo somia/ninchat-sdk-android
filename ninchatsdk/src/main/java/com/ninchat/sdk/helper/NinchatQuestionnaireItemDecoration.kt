@@ -5,10 +5,16 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 
-class NinchatQuestionnaireItemDecoration(private val spaceTop: Int, private val spaceLeft: Int, private val spaceRight: Int) : ItemDecoration() {
+class NinchatQuestionnaireItemDecoration(
+        private val spaceTop: Int,
+        private val spaceLeft: Int,
+        private val spaceRight: Int,
+        private val spaceBottom: Int = 0,
+) : ItemDecoration() {
     override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         outRect.top = spaceTop
         outRect.left = spaceLeft
         outRect.right = spaceRight
+        outRect.bottom = spaceBottom
     }
 }

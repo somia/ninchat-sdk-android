@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:focusableInTouchMode ="true"
+    android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:background="@color/ninchat_color_transparent"
+        android:id="@+id/ninchat_chat_checkbox_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:orientation="vertical"
+        tools:listitem="@layout/checkbox_simple"
+        tools:itemCount="3"/>
+</LinearLayout>
+

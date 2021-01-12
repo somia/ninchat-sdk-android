@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="visible">
+
+    <ImageView
+        android:id="@+id/ninchat_chat_message_bot_avatar"
+        android:layout_width="@dimen/ninchat_chat_activity_avatar_size"
+        android:layout_height="@dimen/ninchat_chat_activity_avatar_size"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="@dimen/ninchat_chat_activity_avatar_margin"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ninchat_chat_avatar_left" />
+
+    <TextView
+        android:id="@+id/ninchat_chat_message_bot_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_toEndOf="@id/ninchat_chat_message_bot_avatar"
+        android:gravity="center|left"
+        android:minHeight="@dimen/ninchat_chat_activity_message_title_height"
+        android:textColor="@color/ninchat_color_chat_name"
+        tools:text="LightbotAgent" />
+
+    <LinearLayout
+        android:id="@+id/ninchat_chat_message_bot_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ninchat_chat_message_bot_text"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/ninchat_chat_message_bot_writing_root"
+            layout="@layout/bot_writing_indicator" />
+
+    </LinearLayout>
+
+</RelativeLayout>
