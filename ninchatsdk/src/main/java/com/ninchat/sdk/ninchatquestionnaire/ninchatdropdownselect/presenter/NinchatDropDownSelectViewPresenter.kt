@@ -28,10 +28,10 @@ class NinchatDropDownSelectViewPresenter(
         }
         if (model.isFormLikeQuestionnaire) {
             viewCallback.onRenderFromView(label = model.label
-                    ?: "", options = model.optionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
+                    ?: "", options = model.translatedOptionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
         } else {
             viewCallback.onRenderConversationView(label = model.label
-                    ?: "", options = model.optionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
+                    ?: "", options = model.translatedOptionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
         }
     }
 
@@ -41,10 +41,10 @@ class NinchatDropDownSelectViewPresenter(
         }
         if (model.isFormLikeQuestionnaire) {
             viewCallback.onUpdateFromView(label = model.label
-                    ?: "", options = model.optionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
+                    ?: "", options = model.translatedOptionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
         } else {
             viewCallback.onUpdateConversationView(label = model.label
-                    ?: "", options = model.optionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
+                    ?: "", options = model.translatedOptionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
         }
     }
 

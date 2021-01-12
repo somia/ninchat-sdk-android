@@ -15,6 +15,7 @@ data class NinchatDropDownSelectViewModel(
         var selectedIndex: Int = 0,
         var value: String? = "",
         var optionList: List<String> = listOf(),
+        var translatedOptionList: List<String> = listOf(),
         // position of the element in the answer list
         val position: Int,
         var enabled: Boolean
@@ -44,7 +45,7 @@ data class NinchatDropDownSelectViewModel(
     }
 
     private fun translate() {
-        this.optionList = this.optionList.map {
+        this.translatedOptionList = this.optionList.map {
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getTranslation(it) ?: it
         }
     }
