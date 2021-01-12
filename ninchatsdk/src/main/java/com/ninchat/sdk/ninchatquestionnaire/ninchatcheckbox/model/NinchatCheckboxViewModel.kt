@@ -23,7 +23,6 @@ data class NinchatCheckboxModel(
     }
 
     private fun translate() {
-        // translate back and next button label
         label = label?.let {
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getTranslation(it)
                     ?: label
