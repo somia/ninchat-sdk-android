@@ -24,6 +24,8 @@
         android:gravity="top"
         android:inputType="textMultiLine|textCapSentences"
         android:minHeight="80dp"
+        android:selectAllOnFocus="false"
+        android:imeOptions="actionDone"
         android:maxLines="4"
         tools:hint="Enter text" />
 
