@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/ninchat_chat_bubble_left_repeated"
     android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
     android:orientation="vertical">
 
@@ -15,6 +14,21 @@
         android:layout_height="wrap_content"
         tools:text="Element label"/>
 
-    <include layout="@layout/text_area"/>
+    <EditText
+        android:id="@+id/multiline_text_area"
+        android:theme="@style/NinchatTheme.Questionnaire.InputText.Cursor"
+        style="@style/NinchatTheme.Questionnaire.InputText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints="..."
+        android:gravity="top"
+        android:inputType="textMultiLine|textCapSentences"
+        android:minHeight="80dp"
+        android:selectAllOnFocus="false"
+        android:imeOptions="actionDone"
+        android:maxLines="4"
+        tools:hint="Enter text" />
+
+
 </LinearLayout>
 

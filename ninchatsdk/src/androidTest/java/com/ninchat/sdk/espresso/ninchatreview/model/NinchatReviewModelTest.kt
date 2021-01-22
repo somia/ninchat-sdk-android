@@ -3,7 +3,6 @@ package com.ninchat.sdk.espresso.ninchatreview.model
 import androidx.test.platform.app.InstrumentationRegistry
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel
 import org.junit.Assert
 import org.junit.Test
@@ -63,7 +62,6 @@ class NinchatReviewModelTest {
     fun `should_parse_bot_name_and_bot_avater`() {
         NinchatSession.Builder(appContext, configurationKey).create()
         NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
-        NinchatSessionManager.getInstance().ninchatState.ninchatQuestionnaire = NinchatQuestionnaireHolder(NinchatSessionManager.getInstance())
 
         val ninchatReviewModel = NinchatReviewModel()
         Assert.assertEquals("Botti", ninchatReviewModel.getBotName())
@@ -82,7 +80,6 @@ class NinchatReviewModelTest {
     fun `conversation_like_questionnaire_should_return_true`() {
         NinchatSession.Builder(appContext, configurationKey).create()
         NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
-        NinchatSessionManager.getInstance().ninchatState.ninchatQuestionnaire = NinchatQuestionnaireHolder(NinchatSessionManager.getInstance())
 
         val ninchatReviewModel = NinchatReviewModel()
         Assert.assertEquals(true, ninchatReviewModel.isConversationLikeQuestionnaire())
@@ -92,10 +89,8 @@ class NinchatReviewModelTest {
     fun `should_be_able_to_parse_review_related_text_from_site_config`() {
         NinchatSession.Builder(appContext, configurationKey).create()
         NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
-        NinchatSessionManager.getInstance().ninchatState.ninchatQuestionnaire = NinchatQuestionnaireHolder(NinchatSessionManager.getInstance())
 
         val ninchatReviewModel = NinchatReviewModel()
-        Assert.assertEquals("Thank you for the conversation!", ninchatReviewModel.getThanksYouText())
         Assert.assertEquals("<strong>Miten asiointisi onnistui?</strong>", ninchatReviewModel.getFeedbackTitleText())
         Assert.assertEquals("Hyvin", ninchatReviewModel.getFeedbackPositiveText())
         Assert.assertEquals("Ok", ninchatReviewModel.getFeedbackNeutralText())

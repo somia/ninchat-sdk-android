@@ -12,11 +12,10 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.ninchatquestionnaire.view.NinchatQuestionnaireActivity
-import com.ninchat.sdk.helper.questionnaire.NinchatQuestionnaireTypeUtil
 import com.ninchat.sdk.ninchatactivity.model.NinchatActivityModel
 import com.ninchat.sdk.ninchatactivity.view.NinchatActivity
-import com.ninchat.sdk.ninchatquestionnaire.presenter.NinchatQuestionnairePresenter
+import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.NinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
 import com.ninchat.sdk.utils.misc.Misc.Companion.toRichText
@@ -52,13 +51,14 @@ class NinchatActivityPresenter(
     fun shouldOpenPreAudienceQuestionnaireActivity(): Boolean {
         return NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
             return !ninchatSessionManager.ninchatSessionHolder.isResumedSession() &&
-                    ninchatSessionManager.ninchatState?.ninchatQuestionnaire?.hasPreAudienceQuestionnaire() ?: false
+                    ninchatSessionManager.ninchatState?.hasQuestionnaire(isPreAudienceQuestionnaire = true) ?: false
         } ?: false
     }
 
     fun shouldOpenPostAudienceQuestionnaireActivity(): Boolean {
         return NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
-            return ninchatSessionManager.ninchatState?.ninchatQuestionnaire?.hasPostAudienceQuestionnaire() ?: false
+            return ninchatSessionManager.ninchatState?.hasQuestionnaire(isPreAudienceQuestionnaire = false)
+                    ?: false
         } ?: false
     }
 
@@ -129,14 +129,14 @@ class NinchatActivityPresenter(
     fun openPostAudienceQuestionnaireActivity(activity: Activity?, queueId: String?) {
         activity?.startActivityForResult(
                 NinchatQuestionnairePresenter.getLaunchIntent(activity, queueId,
-                        NinchatQuestionnaireTypeUtil.POST_AUDIENCE_QUESTIONNAIRE),
+                        NinchatQuestionnaireConstants.postAudienceQuestionnaire),
                 NinchatQuestionnairePresenter.REQUEST_CODE)
     }
 
     fun openPreAudienceQuestionnaireActivity(activity: Activity?, queueId: String?) {
         activity?.startActivityForResult(
                 NinchatQuestionnairePresenter.getLaunchIntent(activity, queueId,
-                        NinchatQuestionnaireTypeUtil.PRE_AUDIENCE_QUESTIONNAIRE),
+                        NinchatQuestionnaireConstants.preAudienceQuestionnaire),
                 NinchatQuestionnairePresenter.REQUEST_CODE)
     }
 

@@ -7,7 +7,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.ninchatqueuelist.presenter.NinchatQueueListPresenter
 import org.junit.Assert
@@ -121,7 +120,6 @@ class NinchatQueueListPresenterTest {
 
         NinchatSession.Builder(appContext, configurationKey).create()
         NinchatSessionManager.getInstance().ninchatState.siteConfig.setConfigString(siteConfig)
-        NinchatSessionManager.getInstance().ninchatState.ninchatQuestionnaire = NinchatQuestionnaireHolder(NinchatSessionManager.getInstance())
 
         Assert.assertEquals(true, ninchatQueueListPresenter.requireOpenQuestionnaireActivity())
     }

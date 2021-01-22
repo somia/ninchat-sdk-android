@@ -4,13 +4,11 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bot_writing_indicator"
-    android:background="@drawable/ninchat_chat_bubble_left_repeated"
     android:layout_marginTop="@dimen/ninchat_questionnaire_item_margin_start"
     android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
     android:orientation="vertical">
 
     <ImageView
-        android:background="@drawable/ninchat_chat_bubble_left_repeated"
         android:id="@+id/ninchat_chat_message_bot_writing"
         android:layout_width="@dimen/ninchat_chat_activity_message_writing_indicator_width"
         android:layout_height="@dimen/ninchat_chat_activity_message_writing_indicator_height"

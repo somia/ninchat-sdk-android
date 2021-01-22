@@ -18,7 +18,6 @@ import com.ninchat.sdk.helper.session.NinchatSessionManagerHelper;
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue;
 import com.ninchat.sdk.models.NinchatSessionCredentials;
 import com.ninchat.sdk.models.NinchatUser;
-import com.ninchat.sdk.models.questionnaire.NinchatQuestionnaireHolder;
 import com.ninchat.sdk.networkdispatchers.NinchatFetchConfiguration;
 import com.ninchat.sdk.networkdispatchers.NinchatOpenSession;
 import com.ninchat.sdk.helper.session.NinchatSessionHolder;
@@ -126,7 +125,6 @@ public final class NinchatSessionManager {
     public void setConfiguration(final String config) {
         Log.v(TAG, "Got configuration: " + config);
         ninchatState.getSiteConfig().setConfigString(config, ninchatState.getPreferredEnvironments());
-        ninchatState.setNinchatQuestionnaire(new NinchatQuestionnaireHolder(this));
         Log.i(TAG, "Configuration fetched successfully!");
         final Context context = contextWeakReference.get();
         if (context != null) {

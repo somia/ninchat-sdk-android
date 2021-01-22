@@ -157,8 +157,10 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             final ImageView spinner = videoContainer.findViewById(R.id.video_call_spinner);
             final Animation animation = spinner.getAnimation();
-            animation.cancel();
-            animation.reset();
+            if(animation != null){
+                animation.cancel();
+                animation.reset();
+            }
             spinner.setVisibility(View.GONE);
         }
     }
