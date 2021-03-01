@@ -191,6 +191,26 @@ private val eventListener: NinchatSDKEventListener = object : NinchatSDKEventLis
 
 
 
+#### Initiate a session with custom/dynamic user name
+
+If we want to set a dynamic user name to a client,  we can pass the user name using NinchatConfiguration. Here is how we can create a NinchatConfiguration with a dynamic user name
+
+```kotlin
+val ninchatConfiguration = NinchatConfiguration.Builder()
+    .setUserName("Test Android client")
+    .create()
+```
+
+Then, we can pass this to the given session using
+
+```kotlin
+val builder = NinchatSession.Builder(applicationContext, getString(R.string.ninchat_configuration_key))
+    .setConfiguration(ninchatConfiguration)
+    .setEventListener(eventListener)
+val ninchatSession = builder.create()
+```
+
+
 #### Notes related to secure metadata 
 
 If you are using secure metadata in your application, and for some reason the secure metadata has expired or already in used; Ninchat SDK will throw a relevant error event. *In this case, you have to reinitialize Ninchat session with new secure token*. You can leverage `onEvent` callback to catch secure metadata related error. Along with that, you will receive all Ninchat SDK related low-level events in `onEvent` callback. 
