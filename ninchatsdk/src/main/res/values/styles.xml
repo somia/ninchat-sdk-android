@@ -56,6 +56,7 @@
         <item name="android:height">@dimen/ninchat_send_button_height</item>
         <item name="android:layout_height">@dimen/ninchat_send_button_height</item>
         <item name="android:background">@drawable/ninchat_textarea_submit_button</item>
+        <item name="android:textColor">@color/ninchat_color_textarea_submit_text</item>
         <item name="android:paddingStart">@dimen/ninchat_chat_activity_send_text_padding</item>
         <item name="android:paddingEnd">@dimen/ninchat_chat_activity_send_text_padding</item>
     </style>
