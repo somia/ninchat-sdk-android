@@ -9,13 +9,14 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 
 class WritingIndicator() {
-    private val inactiveTimeoutInMs = (15L * 1000)
+    private val inactiveTimeoutInMs = (30L * 1000)
     private var intervalInMs = 1L * 1000
     private lateinit var updateTextTask: Runnable
     private lateinit var handler: Handler
     private var lastWritingInMs = 0L
     private var lastMessageLength = 0
     private var wasWriting = false
+    private var dirty = false // special flag that handles "server stops writing indication" ( since we don't catch server fired stop writing message. require for resume writing indication )
 
     @JvmName("initiate")
     fun initiate() {
@@ -27,24 +28,32 @@ class WritingIndicator() {
             notifyBackend(isWriting = isWriting)
             handler.postDelayed(updateTextTask, intervalInMs)
         }
+        dirty = false
         handler = Handler()
         handler.post(updateTextTask)
     }
 
     @JvmName("updateLastWritingTime")
     fun updateLastWritingTime(messageLength: Int) {
+        // is it after 30 second ?
+        val now = System.currentTimeMillis()
         lastMessageLength = messageLength
-        lastWritingInMs = System.currentTimeMillis()
+        dirty = now - lastWritingInMs > inactiveTimeoutInMs
+        lastWritingInMs = now
     }
 
     @JvmName("dispose")
     fun dispose() {
         handler.removeCallbacks(updateTextTask)
+        dirty = false
+        wasWriting = false
     }
 
     private fun notifyBackend(isWriting: Boolean) {
-        if (isWriting == wasWriting) return
+        // if there is no state change and it is not dirty
+        if (isWriting == wasWriting && !dirty) return
         wasWriting = isWriting
+        dirty = false
         NinchatSessionManager.getInstance()?.let { sessionManager ->
             NinchatScopeHandler.getIOScope().launch(CoroutineExceptionHandler(handler = { _, e ->
                 Log.d("WritingIndicator", e.message ?: "")
