@@ -16,7 +16,6 @@ class WritingIndicator() {
     private var lastWritingInMs = 0L
     private var lastMessageLength = 0
     private var wasWriting = false
-    private var dirty = false // special flag that handles "server stops writing indication" ( since we don't catch server fired stop writing message. require for resume writing indication )
 
     @JvmName("initiate")
     fun initiate() {
@@ -28,7 +27,6 @@ class WritingIndicator() {
             notifyBackend(isWriting = isWriting)
             handler.postDelayed(updateTextTask, intervalInMs)
         }
-        dirty = false
         handler = Handler()
         handler.post(updateTextTask)
     }
@@ -38,22 +36,19 @@ class WritingIndicator() {
         // is it after 30 second ?
         val now = System.currentTimeMillis()
         lastMessageLength = messageLength
-        dirty = now - lastWritingInMs > inactiveTimeoutInMs
         lastWritingInMs = now
     }
 
     @JvmName("dispose")
     fun dispose() {
         handler.removeCallbacks(updateTextTask)
-        dirty = false
         wasWriting = false
     }
 
     private fun notifyBackend(isWriting: Boolean) {
         // if there is no state change and it is not dirty
-        if (isWriting == wasWriting && !dirty) return
+        if (isWriting == wasWriting) return
         wasWriting = isWriting
-        dirty = false
         NinchatSessionManager.getInstance()?.let { sessionManager ->
             NinchatScopeHandler.getIOScope().launch(CoroutineExceptionHandler(handler = { _, e ->
                 Log.d("WritingIndicator", e.message ?: "")
