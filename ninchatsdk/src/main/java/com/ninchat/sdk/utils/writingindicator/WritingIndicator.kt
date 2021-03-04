@@ -33,10 +33,8 @@ class WritingIndicator() {
 
     @JvmName("updateLastWritingTime")
     fun updateLastWritingTime(messageLength: Int) {
-        // is it after 30 second ?
-        val now = System.currentTimeMillis()
         lastMessageLength = messageLength
-        lastWritingInMs = now
+        lastWritingInMs =  System.currentTimeMillis()
     }
 
     @JvmName("dispose")
