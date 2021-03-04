@@ -444,6 +444,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         } catch (final JSONException e) {
             sessionManager.sessionError(e);
         }
+        writingIndicator.notifyBackend(false);
         messageView.setText(null);
     }
 

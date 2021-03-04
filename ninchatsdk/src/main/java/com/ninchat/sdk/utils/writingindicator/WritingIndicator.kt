@@ -45,7 +45,8 @@ class WritingIndicator() {
         wasWriting = false
     }
 
-    private fun notifyBackend(isWriting: Boolean) {
+    @JvmName("notifyBackend")
+    fun notifyBackend(isWriting: Boolean) {
         // if there is no state change and it is not dirty
         if (isWriting == wasWriting) return
         wasWriting = isWriting
