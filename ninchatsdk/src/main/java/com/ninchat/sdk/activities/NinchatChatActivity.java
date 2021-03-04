@@ -35,7 +35,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
@@ -47,9 +46,9 @@ import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
 import com.ninchat.sdk.networkdispatchers.NinchatPartChannel;
 import com.ninchat.sdk.networkdispatchers.NinchatSendFile;
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
-import com.ninchat.sdk.networkdispatchers.NinchatUpdateMember;
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel;
 import com.ninchat.sdk.ninchatreview.presenter.NinchatReviewPresenter;
+import com.ninchat.sdk.utils.writingindicator.WritingIndicator;
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
 import com.ninchat.sdk.utils.misc.Broadcast;
 import com.ninchat.sdk.utils.misc.Misc;
@@ -76,6 +75,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     private boolean historyLoaded = false;
     private boolean toggleFullScreen = false;
     private int rootViewHeight = 0;
+    private WritingIndicator writingIndicator = new WritingIndicator();
 
     private NinchatMessageAdapter messageAdapter = NinchatSessionManager.getInstance() != null ? NinchatSessionManager.getInstance().getMessageAdapter() : new NinchatMessageAdapter();
 
@@ -444,12 +444,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         } catch (final JSONException e) {
             sessionManager.sessionError(e);
         }
-
-        writingMessageSent = false;
         messageView.setText(null);
     }
-
-    private boolean writingMessageSent = false;
 
     private TextWatcher textWatcher = new TextWatcher() {
         @Override
@@ -460,30 +456,12 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         public void onTextChanged(CharSequence s, int start, int before, int count) {
         }
 
+        /**
+         * @param s
+         */
         @Override
         public void afterTextChanged(Editable s) {
-            NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
-            if (s.length() != 0 && !writingMessageSent) {
-                NinchatUpdateMember.executeAsync(
-                        NinchatScopeHandler.getIOScope(),
-                        sessionManager.getSession(),
-                        sessionManager.ninchatState.getChannelId(),
-                        sessionManager.ninchatState.getUserId(),
-                        true,
-                        aLong -> null
-                );
-                writingMessageSent = true;
-            } else if (s.length() == 0) {
-                NinchatUpdateMember.executeAsync(
-                        NinchatScopeHandler.getIOScope(),
-                        sessionManager.getSession(),
-                        sessionManager.ninchatState.getChannelId(),
-                        sessionManager.ninchatState.getUserId(),
-                        false,
-                        aLong -> null
-                );
-                writingMessageSent = false;
-            }
+            writingIndicator.updateLastWritingTime(s.length());
         }
     };
 
@@ -522,11 +500,11 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         final String enterMessageText = sessionManager.ninchatState.getSiteConfig().getEnterMessageText();
         message.setHint(enterMessageText);
         message.addTextChangedListener(textWatcher);
+        writingIndicator.initiate();
         final Button closeButton = findViewById(R.id.ninchat_chat_close);
         final String closeText = sessionManager.ninchatState.getSiteConfig().getChatCloseText();
         closeButton.setText(closeText);
-        final String sendButtonText = sessionManager.ninchatState.getSiteConfig().getSendButtonText(
-        );
+        final String sendButtonText = sessionManager.ninchatState.getSiteConfig().getSendButtonText();
         final Button sendButton = findViewById(R.id.send_button);
         final RelativeLayout sendIcon = findViewById(R.id.send_button_icon);
         if (sendButtonText != null) {
@@ -608,6 +586,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         localBroadcastManager.unregisterReceiver(transferReceiver);
         localBroadcastManager.unregisterReceiver(webRTCMessageReceiver);
 
+        if (writingIndicator != null) {
+            writingIndicator.dispose();
+        }
         if (orientationManager != null) {
             orientationManager.disable();
         }
