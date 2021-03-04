@@ -456,9 +456,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         public void onTextChanged(CharSequence s, int start, int before, int count) {
         }
 
-        /**
-         * @param s
-         */
         @Override
         public void afterTextChanged(Editable s) {
             writingIndicator.updateLastWritingTime(s.length());
