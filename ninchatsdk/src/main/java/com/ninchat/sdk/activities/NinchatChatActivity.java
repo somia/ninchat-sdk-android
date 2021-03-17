@@ -20,7 +20,6 @@ import android.provider.OpenableColumns;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
@@ -48,6 +47,7 @@ import com.ninchat.sdk.networkdispatchers.NinchatSendFile;
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel;
 import com.ninchat.sdk.ninchatreview.presenter.NinchatReviewPresenter;
+import com.ninchat.sdk.utils.misc.NinchatLinearLayoutManager;
 import com.ninchat.sdk.utils.writingindicator.WritingIndicator;
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
 import com.ninchat.sdk.utils.misc.Broadcast;
@@ -77,7 +77,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     private int rootViewHeight = 0;
     private WritingIndicator writingIndicator = new WritingIndicator();
 
-    private NinchatMessageAdapter messageAdapter = NinchatSessionManager.getInstance() != null ? NinchatSessionManager.getInstance().getMessageAdapter() : new NinchatMessageAdapter();
+    private NinchatMessageAdapter messageAdapter;
 
     @Override
     protected int getLayoutRes() {
@@ -469,7 +469,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         if (getResources().getBoolean(R.bool.ninchat_chat_background_not_tiled)) {
             findViewById(R.id.ninchat_chat_root).setBackgroundResource(R.drawable.ninchat_chat_background);
         }
-
         NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         // If the app is killed in the background sessionManager is not initialized the SDK must
         // be exited and the NinchatSession needs to be initialzed again
@@ -492,7 +491,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         localBroadcastManager.registerReceiver(transferReceiver, new IntentFilter(Broadcast.AUDIENCE_ENQUEUED));
         localBroadcastManager.registerReceiver(webRTCMessageReceiver, new IntentFilter(Broadcast.WEBRTC_MESSAGE));
         final RecyclerView messages = findViewById(R.id.message_list);
-        messages.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        final NinchatLinearLayoutManager linearLayoutManager = new NinchatLinearLayoutManager(getApplicationContext());
+        messageAdapter = sessionManager.getMessageAdapter();
+        messages.setLayoutManager(linearLayoutManager);
         messages.setAdapter(messageAdapter);
         final EditText message = findViewById(R.id.message);
         final String enterMessageText = sessionManager.ninchatState.getSiteConfig().getEnterMessageText();
@@ -552,17 +553,16 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         super.onResume();
         // Refresh the message list, just in case
         NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
-        messageAdapter = sessionManager != null ? sessionManager.getMessageAdapter() : new NinchatMessageAdapter();
+        if (sessionManager == null) return;
+
+        messageAdapter = sessionManager.getMessageAdapter();
         messageAdapter.notifyDataSetChanged();
-        if (webRTCView != null && sessionManager != null) {
+        if (webRTCView != null) {
             webRTCView.onResume();
         }
-
         // Don't load first messages if chat is closed, we want to load the latest messages only
         if (getIntent().getExtras() == null || !(getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Parameter.CHAT_IS_CLOSED))) {
-            if (sessionManager != null) {
-                sessionManager.loadChannelHistory(messageAdapter.getLastMessageId(false));
-            }
+            sessionManager.loadChannelHistory(messageAdapter.getLastMessageId(false));
         }
     }
 
