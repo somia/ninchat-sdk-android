@@ -48,7 +48,7 @@
     <color name="ninchat_color_ui_compose_select_unselected_text">@color/ninchat_color_hint</color>
     <color name="ninchat_color_ui_compose_select_selected_text">@android:color/white</color>
     <color name="ninchat_color_radio_item_selected_text">@color/ninchat_colorAccent</color>
-    <color name="ninchat_color_radio_item_unselected_text">@color/ninchat_color_textarea_text</color>
+    <color name="ninchat_color_radio_item_unselected_text">@color/ninchat_color_hint</color>
 
     <color name="ninchat_color_dropdown_selected_text">@color/ninchat_colorAccent</color>
     <color name="ninchat_color_dropdown_unselected_text">@color/ninchat_color_hint</color>
