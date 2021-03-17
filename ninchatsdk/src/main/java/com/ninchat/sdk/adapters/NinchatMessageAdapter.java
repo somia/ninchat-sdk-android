@@ -551,7 +551,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     @Override
     public int getItemCount() {
-        return messageIds.size() + 1; // There is a synthetic item at the end.
+        return messageIds.size() + 10; // There is a synthetic item at the end.
     }
 
     @NonNull
