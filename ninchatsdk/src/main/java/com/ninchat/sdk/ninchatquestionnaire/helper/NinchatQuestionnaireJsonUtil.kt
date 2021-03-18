@@ -183,10 +183,10 @@ class NinchatQuestionnaireJsonUtil {
         internal fun matchedLogicAll(logicList: JSONArray?, answerList: List<JSONObject>): Boolean {
             return fromJSONArray<JSONObject>(logicList).all { logic ->
                 val currentLogic = logic as JSONObject
-                var found = false
+                var found = true
                 currentLogic.keys().forEach { currentKey: String ->
                     val pattern = currentLogic.optString(currentKey)
-                    found = found or answerList
+                    val matchFound = answerList
                             .map { currentElement ->
                                 when {
                                     NinchatQuestionnaireType.isCheckBox(currentElement) -> {
@@ -208,6 +208,7 @@ class NinchatQuestionnaireJsonUtil {
                                 val result = currentAnswer.optString("result")
                                 matchPattern(currentInput = result, pattern = pattern)
                             }
+                    found = found and matchFound
                 }
                 found
             }
@@ -261,14 +262,14 @@ class NinchatQuestionnaireJsonUtil {
                 !hasAndLogic && !hasOrLogic -> {
                     true
                 }
-                matchedLogicAll(logicList = currentLogic?.optJSONArray("and"), answerList = answerList) ->
+                hasAndLogic && matchedLogicAll(logicList = currentLogic?.optJSONArray("and"), answerList = answerList) ->
                     true
-                matchedLogicAny(logicList = currentLogic?.optJSONArray("or"), answerList = answerList) ->
+                hasOrLogic && matchedLogicAny(logicList = currentLogic?.optJSONArray("or"), answerList = answerList) ->
                     true
                 // match pre-answer list
-                matchedLogicAll(logicList = currentLogic?.optJSONArray("and"), answerList = notOverridePreAnswers) ->
+                hasAndLogic && matchedLogicAll(logicList = currentLogic?.optJSONArray("and"), answerList = notOverridePreAnswers) ->
                     true
-                matchedLogicAny(logicList = currentLogic?.optJSONArray("or"), answerList = notOverridePreAnswers) ->
+                hasOrLogic && matchedLogicAny(logicList = currentLogic?.optJSONArray("or"), answerList = notOverridePreAnswers) ->
                     true
                 else -> {
                     false
