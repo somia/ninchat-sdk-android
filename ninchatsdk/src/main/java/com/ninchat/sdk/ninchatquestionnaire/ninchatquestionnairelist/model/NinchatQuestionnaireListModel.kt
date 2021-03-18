@@ -58,6 +58,8 @@ data class NinchatQuestionnaireListModel(
         val queueId = logicElement?.optString("queue", logicElement.optString("queueId", null))
 
         answerList.lastOrNull()?.apply {
+            remove("queueId")
+            remove("tags")
             queueId?.let {
                 if (it.isNotBlank()) {
                     putOpt("queueId", queueId)
