@@ -133,6 +133,7 @@ class NinchatInputFieldViewHolder(
             it.text.clear()
             if (presenter.getInputValue().isNullOrBlank().not()) {
                 it.setText(presenter.getInputValue())
+                it.setSelection(presenter.getInputValue()?.length?:0)
             }
             it.isEnabled = enabled
             it.setTextColor(ContextCompat.getColor(itemView.context, if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled))
