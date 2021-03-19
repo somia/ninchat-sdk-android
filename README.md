@@ -12,7 +12,7 @@ Add the following maven repository to the project dependency repositories:
 
 Then you need to add the following dependency to the project dependencies:
 
-    implementation 'com.ninchat:sdk:0.8.4'
+    implementation 'com.ninchat:sdk:0.8.6'
 
 ## Usage
 
@@ -191,6 +191,26 @@ private val eventListener: NinchatSDKEventListener = object : NinchatSDKEventLis
 
 
 
+#### Initiate a session with custom/dynamic user name
+
+If we want to set a dynamic user name to a client,  we can pass the user name using NinchatConfiguration. Here is how we can create a NinchatConfiguration with a dynamic user name
+
+```kotlin
+val ninchatConfiguration = NinchatConfiguration.Builder()
+    .setUserName("Test Android client")
+    .create()
+```
+
+Then, we can pass this to the given session using
+
+```kotlin
+val builder = NinchatSession.Builder(applicationContext, getString(R.string.ninchat_configuration_key))
+    .setConfiguration(ninchatConfiguration)
+    .setEventListener(eventListener)
+val ninchatSession = builder.create()
+```
+
+
 #### Notes related to secure metadata 
 
 If you are using secure metadata in your application, and for some reason the secure metadata has expired or already in used; Ninchat SDK will throw a relevant error event. *In this case, you have to reinitialize Ninchat session with new secure token*. You can leverage `onEvent` callback to catch secure metadata related error. Along with that, you will receive all Ninchat SDK related low-level events in `onEvent` callback. 
@@ -280,6 +300,7 @@ In addition, the application can override colors used in the SDK. The colors nee
 | ninchat_color_chat_bubble_left_text | Text in others' chat messages |
 | ninchat_color_chat_bubble_right_text | Text in my chat messages |
 | ninchat_color_textarea_text | Chat input text |
+| ninchat_color_textarea_text_hint | Chat input text hint |
 | ninchat_color_textarea_submit_text | Message submit button title |
 | ninchat_color_chat_bubble_left_link | Link color in others' messages |
 | ninchat_color_chat_bubble_right_link | Link color in my messages |

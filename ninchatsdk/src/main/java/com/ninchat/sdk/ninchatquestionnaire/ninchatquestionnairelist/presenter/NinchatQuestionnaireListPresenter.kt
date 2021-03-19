@@ -72,7 +72,15 @@ open class NinchatQuestionnaireListPresenter(
                 val matches = NinchatQuestionnaireJsonUtil.matchAnswerList(logicElement = currentElement, answerList = model.answerList, preAnswerList = model.preAnswers)
                 if (matches) {
                     model.updateTagsAndQueueId(logicElement = currentElement?.optJSONObject("logic"))
-                    currentElement?.optJSONObject("logic")?.optString("target")
+                    val nextTargetElement = currentElement?.optJSONObject("logic")?.optString("target")
+                    when {
+                        // is a _complete or _register element
+                        nextTargetElement in listOf("_register", "_complete") -> nextTargetElement
+                        // matched target is found in the questionnaire
+                        model.getIndex(elementName = nextTargetElement) != -1 -> nextTargetElement
+                        // there is no matched element for the target. simple try to load next element
+                        else -> this.getNextElement(currentIndex = currentIndex + 1, sentinel = sentinel - 1)
+                    }
                 } else
                     this.getNextElement(currentIndex = currentIndex + 1, sentinel = sentinel - 1)
             }

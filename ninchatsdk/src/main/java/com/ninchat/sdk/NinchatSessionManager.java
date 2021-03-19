@@ -114,6 +114,7 @@ public final class NinchatSessionManager {
     }
 
     public NinchatMessageAdapter getMessageAdapter() {
+        if (messageAdapter == null) reInitializeMessageAdapter(this);
         return messageAdapter;
     }
 
