@@ -62,7 +62,7 @@ class NinchatConversationListPresenter(
             val totalRemoveCount = model.removeLast() + model.removeLast()
             val lastItemCount = model.selectedElement.lastOrNull()?.second ?: 0
             // reset answers element
-            model.answerList = model.resetAnswers(from = model.answerList.size - lastItemCount - 1)
+            // model.answerList = model.resetAnswers(from = model.answerList.size - lastItemCount - 1)
             viewCallback.onItemRemoved(positionStart = positionStart - totalRemoveCount, totalItemCount = totalRemoveCount, lastItemCount = lastItemCount)
             return
         }

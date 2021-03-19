@@ -300,6 +300,7 @@ In addition, the application can override colors used in the SDK. The colors nee
 | ninchat_color_chat_bubble_left_text | Text in others' chat messages |
 | ninchat_color_chat_bubble_right_text | Text in my chat messages |
 | ninchat_color_textarea_text | Chat input text |
+| ninchat_color_textarea_text_hint | Chat input text hint |
 | ninchat_color_textarea_submit_text | Message submit button title |
 | ninchat_color_chat_bubble_left_link | Link color in others' messages |
 | ninchat_color_chat_bubble_right_link | Link color in my messages |

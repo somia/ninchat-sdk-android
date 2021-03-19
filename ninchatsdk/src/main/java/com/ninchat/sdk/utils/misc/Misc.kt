@@ -1,11 +1,15 @@
 package com.ninchat.sdk.utils.misc
 
+import android.content.Context
 import android.os.Build
 import android.text.Html
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.BuildConfig
 import com.ninchat.sdk.helper.NinchatImageGetter
 
@@ -15,7 +19,7 @@ class Misc {
         const val IN_QUEUE = 2
         const val HAS_CHANNEL = 3
         const val NONE = 4
-        
+
         @JvmStatic
         fun center(text: String?): String {
             return text?.let {
@@ -67,5 +71,19 @@ class Parameter {
     companion object {
         const val QUEUE_ID = "queueId"
         const val CHAT_IS_CLOSED = "isClosed"
+    }
+}
+
+class NinchatLinearLayoutManager(context: Context) : LinearLayoutManager(context) {
+    override fun supportsPredictiveItemAnimations(): Boolean {
+        return false
+    }
+
+    override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
+        try {
+            super.onLayoutChildren(recycler, state)
+        } catch (err: Error) {
+            Log.e("NinchatLM", "${err.message}")
+        }
     }
 }

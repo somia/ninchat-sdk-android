@@ -34,7 +34,8 @@
     <color name="ninchat_color_chat_bubble_right_text">@android:color/white</color>
     <color name="ninchat_color_chat_bubble_right_link">@color/ninchat_colorAccent</color>
 
-    <color name="ninchat_color_textarea_text">@color/ninchat_color_hint</color>
+    <color name="ninchat_color_textarea_text">@color/ninchat_color_text_normal</color>
+    <color name="ninchat_color_textarea_text_hint">@color/ninchat_color_hint</color>
     <color name="ninchat_color_textarea_submit_text">@color/ninchat_colorAccent</color>
 
     <color name="ninchat_color_modal_background">@android:color/white</color>
@@ -48,7 +49,7 @@
     <color name="ninchat_color_ui_compose_select_unselected_text">@color/ninchat_color_hint</color>
     <color name="ninchat_color_ui_compose_select_selected_text">@android:color/white</color>
     <color name="ninchat_color_radio_item_selected_text">@color/ninchat_colorAccent</color>
-    <color name="ninchat_color_radio_item_unselected_text">@color/ninchat_color_textarea_text</color>
+    <color name="ninchat_color_radio_item_unselected_text">@color/ninchat_color_hint</color>
 
     <color name="ninchat_color_dropdown_selected_text">@color/ninchat_colorAccent</color>
     <color name="ninchat_color_dropdown_unselected_text">@color/ninchat_color_hint</color>

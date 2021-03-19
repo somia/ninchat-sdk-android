@@ -39,7 +39,7 @@ class NinchatFormListPresenter(
             model.removeLast()
             val lastItemCount = model.selectedElement.lastOrNull()?.second ?: 0
             // reset answers element
-            model.answerList = model.resetAnswers(from = model.answerList.size - lastItemCount - 1)
+            // model.answerList = model.resetAnswers(from = model.answerList.size - lastItemCount - 1)
             rootActivityCallback.onDataSetChange(withError = false)
             return
         }
