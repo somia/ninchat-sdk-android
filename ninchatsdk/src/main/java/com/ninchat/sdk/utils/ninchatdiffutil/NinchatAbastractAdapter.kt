@@ -2,9 +2,9 @@ package com.ninchat.sdk.utils.ninchatdiffutil
 
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.*
 import kotlin.collections.ArrayDeque
 
 abstract class NinchatAbastractAdapter<T, VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
@@ -32,10 +32,11 @@ abstract class NinchatAbastractAdapter<T, VH : RecyclerView.ViewHolder> : Recycl
     // This method does the heavy lifting of
     // pushing the work to the background thread
     private fun updateItemsInternal(diff: DiffUtil.Callback, newItems: List<T>) {
+
         Single.create<DiffUtil.DiffResult> { it.onSuccess(DiffUtil.calculateDiff(diff)) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe({ applyDiffResult(diff, newItems, it) }, { TODO() })
+                .subscribe({ applyDiffResult(diff, newItems, it) }, {})
     }
 
     // This method does the work of actually updating
