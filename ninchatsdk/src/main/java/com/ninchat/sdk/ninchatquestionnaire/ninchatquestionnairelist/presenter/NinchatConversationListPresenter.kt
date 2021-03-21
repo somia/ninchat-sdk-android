@@ -1,15 +1,18 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter
 
+import androidx.recyclerview.widget.DiffUtil
 import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.QuestionnaireActivityCallback
+import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.NinchatQuestionnaireListAdapter
+import com.ninchat.sdk.utils.ninchatdiffutil.NinchatSimpleDiffUtil
 import org.json.JSONObject
 
 class NinchatConversationListPresenter(
         questionnaireList: List<JSONObject>,
         preAnswers: List<Pair<String, Any>>,
+        val mAdapter: NinchatQuestionnaireListAdapter,
         var rootActivityCallback: QuestionnaireActivityCallback,
-        val viewCallback: INinchatConversationListPresenter,
 ) : NinchatQuestionnaireListPresenter(questionnaireList = questionnaireList, preAnswers = preAnswers) {
 
     override fun init() {
@@ -23,18 +26,32 @@ class NinchatConversationListPresenter(
 
     private fun loadNextByTarget(targetName: String?) {
         val positionStart = size()
-        val previousItemCount = model.selectedElement.lastOrNull()?.second ?: 0
+       /* val previousItemCount = model.selectedElement.lastOrNull()?.second ?: 0
         loadNextByElementName(elementName = targetName)
-        viewCallback.onAddItem(positionStart = positionStart, lastItemCount = previousItemCount)
+        viewCallback.onAddItem(positionStart = positionStart, lastItemCount = previousItemCount)*/
+
+        val previousList = model.answerList
+        loadNextByElementName(elementName = targetName)
+        NinchatSimpleDiffUtil.compute()
+        val diff = NinchatSimpleDiffUtil(previousList, model.answerList)
+        val diffResult = DiffUtil.calculateDiff(diff)
+        diffResult.dispatchUpdatesTo(mAdapter)
         rootActivityCallback.scrollTo(position = positionStart)
     }
 
     private fun loadNextByElement(elementName: JSONObject? = null) {
         val positionStart = size()
-        val previousItemCount = model.selectedElement.lastOrNull()?.second ?: 0
+       /* val previousItemCount = model.selectedElement.lastOrNull()?.second ?: 0
         // add next element
         model.addElement(jsonObject = elementName)
         viewCallback.onAddItem(positionStart = positionStart, lastItemCount = previousItemCount)
+        rootActivityCallback.scrollTo(position = positionStart)
+*/
+        val previousList = model.answerList
+        model.addElement(jsonObject = elementName)
+        val diff = NinchatSimpleDiffUtil(previousList, model.answerList)
+        val diffResult = DiffUtil.calculateDiff(diff)
+        diffResult.dispatchUpdatesTo(mAdapter)
         rootActivityCallback.scrollTo(position = positionStart)
     }
 
@@ -59,19 +76,31 @@ class NinchatConversationListPresenter(
         if (onNextQuestionnaire?.moveType == OnNextQuestionnaire.back) {
             val positionStart = size()
             // Remove last questionnaire element, and associate bot view element
-            val totalRemoveCount = model.removeLast() + model.removeLast()
+           /* val totalRemoveCount = model.removeLast() + model.removeLast()
             val lastItemCount = model.selectedElement.lastOrNull()?.second ?: 0
             // reset answers element
             // model.answerList = model.resetAnswers(from = model.answerList.size - lastItemCount - 1)
-            viewCallback.onItemRemoved(positionStart = positionStart - totalRemoveCount, totalItemCount = totalRemoveCount, lastItemCount = lastItemCount)
+            viewCallback.onItemRemoved(positionStart = positionStart - totalRemoveCount, totalItemCount = totalRemoveCount, lastItemCount = lastItemCount)*/
+
+            val previousList = model.answerList
+            model.removeLast() + model.removeLast()
+            val diff = NinchatSimpleDiffUtil(previousList, model.answerList)
+            val diffResult = DiffUtil.calculateDiff(diff)
+            diffResult.dispatchUpdatesTo(mAdapter)
             return
         }
         // if the last answer has some error
         if (model.hasError()) {
-            val positionStart = size() - 1
+            /*val positionStart = size() - 1
             val itemCount = model.selectedElement.lastOrNull()?.second ?: 0
             model.updateError()
-            viewCallback.onItemUpdate(positionStart = positionStart - itemCount, totalItemCount = itemCount)
+            viewCallback.onItemUpdate(positionStart = positionStart - itemCount, totalItemCount = itemCount)*/
+
+            val previousList = model.answerList
+            model.updateError()
+            val diff = NinchatSimpleDiffUtil(previousList, model.answerList)
+            val diffResult = DiffUtil.calculateDiff(diff)
+            diffResult.dispatchUpdatesTo(mAdapter)
             return
         }
 
@@ -118,10 +147,4 @@ class NinchatConversationListPresenter(
     override fun getByMuskedPosition(index: Int): JSONObject {
         return model.answerList.getOrNull(index) ?: JSONObject()
     }
-}
-
-interface INinchatConversationListPresenter {
-    fun onAddItem(positionStart: Int, lastItemCount: Int)
-    fun onItemRemoved(positionStart: Int, totalItemCount: Int, lastItemCount: Int)
-    fun onItemUpdate(positionStart: Int, totalItemCount: Int)
 }

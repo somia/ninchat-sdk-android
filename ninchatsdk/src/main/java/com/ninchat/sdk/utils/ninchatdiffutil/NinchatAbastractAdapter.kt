@@ -32,8 +32,9 @@ abstract class NinchatAbastractAdapter<T, VH : RecyclerView.ViewHolder> : Recycl
     // This method does the heavy lifting of
     // pushing the work to the background thread
     private fun updateItemsInternal(diff: DiffUtil.Callback, newItems: List<T>) {
-
-        Single.create<DiffUtil.DiffResult> { it.onSuccess(DiffUtil.calculateDiff(diff)) }
+        Single.create<DiffUtil.DiffResult> {
+                    it.onSuccess(DiffUtil.calculateDiff(diff))
+                }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe({ applyDiffResult(diff, newItems, it) }, {})
