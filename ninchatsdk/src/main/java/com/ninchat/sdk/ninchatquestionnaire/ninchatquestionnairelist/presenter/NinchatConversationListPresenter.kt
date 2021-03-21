@@ -111,7 +111,7 @@ class NinchatConversationListPresenter(
         return at + lastElementCount >= model.answerList.size
     }
 
-    override fun size() = model.answerList.size
+    override fun size() = questionnaireDiffUtil.size()
 
     override fun getByMuskedPosition(index: Int): JSONObject {
         return model.answerList.getOrNull(index) ?: JSONObject()
