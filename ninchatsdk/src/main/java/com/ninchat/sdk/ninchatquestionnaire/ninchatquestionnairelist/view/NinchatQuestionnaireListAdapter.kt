@@ -17,7 +17,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.N
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.view.NinchatRadioButtonListView
 import com.ninchat.sdk.ninchatquestionnaire.ninchattextviewholder.view.NinchatTextViewHolder
 import org.json.JSONObject
-import java.util.*
+import java.util.UUID
 
 class NinchatQuestionnaireListAdapter(
         questionnaireList: List<JSONObject>,
