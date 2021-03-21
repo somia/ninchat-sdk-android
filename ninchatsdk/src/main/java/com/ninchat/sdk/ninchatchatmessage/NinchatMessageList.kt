@@ -10,7 +10,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 
 const val WRITING_MESSAGE_ID_PREFIX = "zzzzzwriting"
 
-class NinchatMessageList(private val mAdapter: NinchatMessageAdapter) {
+class NinchatMessageList(private val mAdapter: INinchatMessageList) {
     private var messageIds: List<String> = emptyList()
     private var messageMap: MutableMap<String, NinchatMessage> = mutableMapOf()
     private val pendingMessageList: ArrayDeque<NinchatPendingMessage> = ArrayDeque()
@@ -84,7 +84,7 @@ class NinchatMessageList(private val mAdapter: NinchatMessageAdapter) {
         // assign to new list
         messageIds = newList
         // Call diff callback
-        diffResult.dispatchUpdatesTo(mAdapter)
+        mAdapter.callback(diffResult = diffResult, position = size())
         // handle from pending message
         handleIncomingMessage()
     }
@@ -203,4 +203,8 @@ class NinchatMessageList(private val mAdapter: NinchatMessageAdapter) {
         }
 
     }
+}
+
+interface INinchatMessageList {
+    fun callback(diffResult: DiffUtil.DiffResult, position: Int)
 }

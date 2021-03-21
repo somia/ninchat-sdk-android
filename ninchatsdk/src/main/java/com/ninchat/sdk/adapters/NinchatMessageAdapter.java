@@ -2,15 +2,15 @@ package com.ninchat.sdk.adapters;
 
 import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
-import android.os.Handler;
-import android.os.Looper;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -31,6 +31,7 @@ import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.activities.NinchatChatActivity;
 import com.ninchat.sdk.helper.glidewrapper.GlideWrapper;
+import com.ninchat.sdk.ninchatchatmessage.INinchatMessageList;
 import com.ninchat.sdk.ninchatchatmessage.NinchatMessageList;
 import com.ninchat.sdk.ninchatmedia.presenter.NinchatMediaPresenter;
 import com.ninchat.sdk.ninchatmedia.model.NinchatFile;
@@ -41,24 +42,19 @@ import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
 import com.ninchat.sdk.utils.misc.Misc;
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
-import java.util.Map;
 
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
  */
-public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMessageAdapter.NinchatMessageViewHolder> {
+public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMessageAdapter.NinchatMessageViewHolder> implements INinchatMessageList {
 
     public class NinchatMessageViewHolder extends RecyclerView.ViewHolder {
 
@@ -323,44 +319,23 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         R.drawable.ninchat_chat_bubble_right,
                         R.drawable.ninchat_chat_bubble_right_repeated);
             }
+            final RecyclerView recyclerView = recyclerViewWeakReference.get();
+            if (recyclerView != null) {
+                ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(true);
+            }
         }
 
         public void optionToggled(final NinchatMessage message, final int position) {
             final RecyclerView recyclerView = recyclerViewWeakReference.get();
+            if (recyclerView != null) {
+                ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+            }
             message.toggleOption(position);
             if (recyclerView == null || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
                 notifyItemChanged(getAdapterPosition());
-            } else {
-                scrollListener.setData(getAdapterPosition(), true, false);
             }
         }
     }
-
-    protected class ScrollListener extends RecyclerView.OnScrollListener {
-
-        private boolean updateData = false;
-        private int index;
-        private boolean updated;
-        private boolean removed;
-
-        protected void setData(final int index, final boolean updated, final boolean removed) {
-            updateData = true;
-            this.index = index;
-            this.updated = updated;
-            this.removed = removed;
-        }
-
-        @Override
-        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-            if (recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE && updateData) {
-                // messagesUpdated(index, updated, removed);
-                updateData = false;
-            }
-            super.onScrollStateChanged(recyclerView, newState);
-        }
-    }
-
-    protected ScrollListener scrollListener = new ScrollListener();
 
     protected static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("HH:mm", new Locale("fi-FI"));
 
@@ -422,14 +397,12 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
-        recyclerView.addOnScrollListener(scrollListener);
         this.recyclerViewWeakReference = new WeakReference<>(recyclerView);
     }
 
     @Override
     public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
-        recyclerView.removeOnScrollListener(scrollListener);
         this.recyclerViewWeakReference = new WeakReference<>(null);
     }
 
@@ -445,7 +418,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     @Override
     public int getItemCount() {
-        return ninchatMessageList.size() ;
+        return ninchatMessageList.size();
     }
 
     @NonNull
@@ -472,5 +445,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             }
             holder.bind(message, isContinuedMessage);
         }
+    }
+
+    @Override
+    public void callback(@NotNull DiffUtil.DiffResult diffResult, int position) {
+        diffResult.dispatchUpdatesTo(this);
+        scrollToBottom(true);
     }
 }
