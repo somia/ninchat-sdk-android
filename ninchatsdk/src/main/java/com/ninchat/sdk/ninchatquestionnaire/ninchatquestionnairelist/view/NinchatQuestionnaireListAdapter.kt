@@ -12,21 +12,19 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckboxlist.view.NinchatChec
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.view.NinchatDropDownSelectViewHolder
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.view.NinchatInputFieldViewHolder
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.QuestionnaireActivityCallback
-import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.INinchatConversationListPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.NinchatConversationListPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.NinchatFormListPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.view.NinchatRadioButtonListView
 import com.ninchat.sdk.ninchatquestionnaire.ninchattextviewholder.view.NinchatTextViewHolder
 import org.json.JSONObject
 import java.util.*
-import kotlin.math.max
 
 class NinchatQuestionnaireListAdapter(
         questionnaireList: List<JSONObject>,
         preAnswers: List<Pair<String, Any>>,
         isFormLike: Boolean,
         rootActivityCallback: QuestionnaireActivityCallback,
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), INinchatConversationListPresenter {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     val presenter = if (isFormLike) {
         NinchatFormListPresenter(
@@ -39,7 +37,7 @@ class NinchatQuestionnaireListAdapter(
                 questionnaireList = questionnaireList,
                 preAnswers = preAnswers,
                 rootActivityCallback = rootActivityCallback,
-                viewCallback = this
+                mAdapter = this
         )
     }
 
@@ -173,26 +171,6 @@ class NinchatQuestionnaireListAdapter(
     }
 
     override fun getItemCount(): Int = presenter.size()
-
-    override fun onAddItem(positionStart: Int, lastItemCount: Int) {
-        val position = max(positionStart, 0)
-        val totalCount = max(presenter.size() - position, 1)
-        notifyItemRangeInserted(positionStart, totalCount)
-        // also update the last items
-        onItemUpdate(positionStart = position - lastItemCount, totalItemCount = lastItemCount)
-    }
-
-    override fun onItemRemoved(positionStart: Int, totalItemCount: Int, lastItemCount: Int) {
-        val position = max(positionStart, 0)
-        notifyItemRangeRemoved(position, totalItemCount)
-        // also update the last items
-        onItemUpdate(positionStart = position - lastItemCount, totalItemCount = lastItemCount)
-    }
-
-    override fun onItemUpdate(positionStart: Int, totalItemCount: Int) {
-        val position = max(positionStart, 0)
-        notifyItemRangeChanged(position, totalItemCount)
-    }
 
     fun showThankYou(isComplete: Boolean = false) {
         presenter.addThankYouView(isComplete)

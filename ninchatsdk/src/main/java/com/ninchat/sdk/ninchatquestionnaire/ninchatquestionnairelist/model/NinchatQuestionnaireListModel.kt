@@ -52,7 +52,6 @@ data class NinchatQuestionnaireListModel(
         } ?: 0
     }
 
-
     fun updateTagsAndQueueId(logicElement: JSONObject?) {
         val tags = logicElement?.optJSONArray("tags")
         val queueId = logicElement?.optString("queue", logicElement.optString("queueId", null))
