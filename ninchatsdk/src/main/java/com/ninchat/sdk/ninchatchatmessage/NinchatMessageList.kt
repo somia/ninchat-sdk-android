@@ -2,91 +2,103 @@ package com.ninchat.sdk.ninchatchatmessage
 
 import android.util.Log
 import androidx.recyclerview.widget.DiffUtil
-import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.models.NinchatMessage
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.*
 import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
+import java.util.concurrent.TimeUnit
+
 
 const val WRITING_MESSAGE_ID_PREFIX = "zzzzzwriting"
+
+fun <T> bufferDebounce(
+        time: Long, unit: TimeUnit?): ObservableTransformer<T, List<T>> {
+    return ObservableTransformer { o: Observable<T> ->
+        o.publish { v: Observable<T> ->
+            v.buffer(v.debounce(time, unit)
+                    .takeUntil(v.ignoreElements().toObservable<Any>())
+            )
+        }
+    }
+}
 
 class NinchatMessageList(private val mAdapter: INinchatMessageList) {
     private var messageIds: List<String> = emptyList()
     private var messageMap: MutableMap<String, NinchatMessage> = mutableMapOf()
-    private val pendingMessageList: ArrayDeque<NinchatPendingMessage> = ArrayDeque()
+    private val subject: PublishSubject<NinchatPendingMessage> = PublishSubject.create()
 
-    private fun handleIncomingMessage() {
-        if (pendingMessageList.isEmpty()) return
-        // get the first element
-        val pendingMessage = pendingMessageList.first()
-        when (pendingMessage.messageType) {
-            NinchatMessage.Type.WRITING -> {
-                if (messageIds.contains(pendingMessage.sender)) {
-                    pendingMessageList.removeFirst()
-                    handleIncomingMessage()
-                    return
+    init {
+        subject.compose(bufferDebounce(200, TimeUnit.MILLISECONDS))
+                .subscribeOn(Schedulers.io())
+                .subscribe({
+                    handleBufferedMessage(pendingMessageList = it)
+                }, { err -> Log.e("NinchatMessageList", "${err.message}") })
+    }
+
+    private fun handleBufferedMessage(pendingMessageList: List<NinchatPendingMessage> = emptyList()) {
+        val newList = messageIds.toMutableList()
+        for (pendingMessage in pendingMessageList) {
+            when (pendingMessage.messageType) {
+                NinchatMessage.Type.WRITING -> {
+                    if (newList.contains(pendingMessage.sender)) {
+                        continue
+                    }
+                    newList.add(pendingMessage.sender)
+                    messageMap[pendingMessage.sender] = pendingMessage.message!!
                 }
-                val newList = messageIds.plus(pendingMessage.sender)
-                messageMap[pendingMessage.sender] = pendingMessage.message!!
-                diffUtilAsync(newList = newList)
-            }
-            NinchatMessage.Type.REMOVE_WRITING -> {
-                if (!messageIds.contains(pendingMessage.sender)) {
-                    pendingMessageList.removeFirst()
-                    handleIncomingMessage()
-                    return
+                NinchatMessage.Type.REMOVE_WRITING -> {
+                    val at = newList.indexOf(pendingMessage.sender)
+                    if (at == -1) {
+                        continue
+                    }
+                    // remove the message from `messageIds` and  `messageMap`
+                    newList.removeAt(at)
+                    messageMap.remove(pendingMessage.sender)
                 }
-                // remove the message from `messageIds` and  `messageMap`
-                val newList = messageIds.filter { it != pendingMessage.sender }
-                messageMap.remove(pendingMessage.sender)
-                diffUtilAsync(newList = newList)
-            }
-            NinchatMessage.Type.MESSAGE -> {
-                if (messageIds.contains(pendingMessage.sender)) {
-                    pendingMessageList.removeFirst()
-                    handleIncomingMessage()
-                    return
-                }
-                val writingId = "$WRITING_MESSAGE_ID_PREFIX ${pendingMessage.message!!.senderId}"
-                val newList = messageIds
+                NinchatMessage.Type.MESSAGE -> {
+                    if (newList.contains(pendingMessage.sender)) {
+                        continue
+                    }
+                    val writingId = "$WRITING_MESSAGE_ID_PREFIX ${pendingMessage.message!!.senderId}"
+                    newList.apply {
                         // remove writing if there is any
-                        .filter { it != writingId }
+                        val at = newList.indexOf(writingId)
+                        if (at > -1)
+                            removeAt(at)
                         // add message id
-                        .plus(pendingMessage.sender)
-                messageMap.apply {
-                    // remote writing id
-                    remove(writingId)
-                    // add message id
-                    put(pendingMessage.sender, pendingMessage.message)
+                        add(pendingMessage.sender)
+                    }
+                    messageMap.apply {
+                        // remote writing id
+                        remove(writingId)
+                        // add message id
+                        put(pendingMessage.sender, pendingMessage.message)
+                    }
                 }
-                diffUtilAsync(newList = newList)
-            }
-            NinchatMessage.Type.META -> {
-                val newList = messageIds.plus(pendingMessage.sender)
-                messageMap[pendingMessage.sender] = pendingMessage.message!!
-                diffUtilAsync(newList = newList)
-            }
-            NinchatMessage.Type.END -> {
-                // get end message id from here since it require calling messageIds
-                val endMessageId = getLastMessageId(true) + "zzzzz"
-                val newList = messageIds.plus(endMessageId)
-                messageMap[endMessageId] = pendingMessage.message!!
-                diffUtilAsync(newList = newList)
-            }
-            else -> {
-                Log.d("NinchatMessageList", "Unknown message ${pendingMessage.messageType}")
+                NinchatMessage.Type.META -> {
+                    newList.add(pendingMessage.sender)
+                    messageMap[pendingMessage.sender] = pendingMessage.message!!
+                }
+                NinchatMessage.Type.END -> {
+                    // get end message id from here since it require calling messageIds
+                    val endMessageId = getLastMessageId(true) + "zzzzz"
+                    newList.add(endMessageId)
+                    messageMap[endMessageId] = pendingMessage.message!!
+                }
+                else -> {
+                    Log.d("NinchatMessageList", "Unknown message ${pendingMessage.messageType}")
+                }
             }
         }
+        diffUtilAsync(newList = newList)
     }
 
     private fun applyDiffUtil(newList: List<String> = emptyList(), diffResult: DiffUtil.DiffResult) {
-        pendingMessageList.removeFirst()
         // assign to new list
         messageIds = newList
         // Call diff callback
         mAdapter.callback(diffResult = diffResult, position = size())
-        // handle from pending message
-        handleIncomingMessage()
     }
 
     private fun diffUtilAsync(newList: List<String> = emptyList()) {
@@ -107,48 +119,38 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
     }
 
     fun addWriting(sender: String) {
-        pendingMessageList.addLast(NinchatPendingMessage(
+        subject.onNext(NinchatPendingMessage(
                 messageType = NinchatMessage.Type.WRITING,
                 sender = "$WRITING_MESSAGE_ID_PREFIX $sender",
                 message = NinchatMessage(NinchatMessage.Type.WRITING, sender, System.currentTimeMillis())))
-        if (pendingMessageList.size > 1) return
-        handleIncomingMessage()
     }
 
     fun removeWriting(sender: String) {
-        pendingMessageList.addLast(NinchatPendingMessage(
+        subject.onNext(NinchatPendingMessage(
                 messageType = NinchatMessage.Type.REMOVE_WRITING,
                 sender = "$WRITING_MESSAGE_ID_PREFIX $sender",
         ))
-        if (pendingMessageList.size > 1) return
-        handleIncomingMessage()
     }
 
     fun add(messageId: String, message: NinchatMessage) {
-        pendingMessageList.addLast(NinchatPendingMessage(
+        subject.onNext(NinchatPendingMessage(
                 messageType = NinchatMessage.Type.MESSAGE,
                 sender = messageId,
                 message = message))
-        if (pendingMessageList.size > 1) return
-        handleIncomingMessage()
     }
 
     fun addMetaMessage(messageId: String, message: String) {
-        pendingMessageList.addLast(NinchatPendingMessage(
+        subject.onNext(NinchatPendingMessage(
                 messageType = NinchatMessage.Type.META,
                 sender = messageId,
                 message = NinchatMessage(NinchatMessage.Type.META, message, System.currentTimeMillis())))
-        if (pendingMessageList.size > 1) return
-        handleIncomingMessage()
     }
 
     fun addEndMessage() {
-        pendingMessageList.addLast(NinchatPendingMessage(
+        subject.onNext(NinchatPendingMessage(
                 messageType = NinchatMessage.Type.END,
                 sender = "",
                 message = NinchatMessage(NinchatMessage.Type.END, System.currentTimeMillis())))
-        if (pendingMessageList.size > 1) return
-        handleIncomingMessage()
     }
 
     fun clear() {
