@@ -375,11 +375,13 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
     public void scrollToBottom(boolean requireSmooth) {
         final RecyclerView recyclerView = recyclerViewWeakReference.get();
         if (recyclerView != null) {
-            if (requireSmooth) {
-                recyclerView.smoothScrollToPosition(ninchatMessageList.size());
-            } else {
-                recyclerView.scrollToPosition(ninchatMessageList.size());
-            }
+            recyclerView.post(() -> {
+                if (requireSmooth) {
+                    recyclerView.smoothScrollToPosition(ninchatMessageList.size());
+                } else {
+                    recyclerView.scrollToPosition(ninchatMessageList.size());
+                }
+            });
         }
     }
 
