@@ -5,9 +5,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 
 object NinchatScopeHandler {
-    val scope = CoroutineScope(Job() + Dispatchers.IO)
     @JvmStatic
     fun getIOScope(): CoroutineScope {
-        return scope
+        return CoroutineScope(Job() + Dispatchers.IO)
     }
 }
