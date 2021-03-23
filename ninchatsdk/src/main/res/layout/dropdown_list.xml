@@ -16,6 +16,7 @@
         android:gravity="center"
         android:overlapAnchor="false"
         android:spinnerMode="dropdown"
+        android:dropDownWidth="match_parent"
         android:theme="@style/NinchatTheme.Dropdown.Spinner" />
 
     <ImageView
