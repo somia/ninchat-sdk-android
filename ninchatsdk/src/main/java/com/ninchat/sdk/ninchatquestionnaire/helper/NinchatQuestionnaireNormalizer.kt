@@ -116,7 +116,7 @@ class NinchatQuestionnaireNormalizer {
 
             // Pick all consecutive checkbox element
             val checkBoxElementList = elementList
-                    .subList(fromIndex = index, toIndex = elementList.size - 1)
+                    .subList(fromIndex = index, toIndex = elementList.size)
                     .takeWhile { NinchatQuestionnaireType.isCheckBox(jsonObject = it) }
                     .map {
                         // default value as false
