@@ -72,8 +72,8 @@ class NinchatQuestionnaireNormalizer {
                 } else {
                     val hasBackButton = NinchatQuestionnaireType.isButton(json = currentElement.optJSONObject("buttons"), isBack = true)
                     val hasNextButton = NinchatQuestionnaireType.isButton(json = currentElement.optJSONObject("buttons"), isBack = false)
-                    if (hasBackButton || hasNextButton || index == 0 /* or first element */) {
-                        // next button always true hard coded
+                    if (hasBackButton || hasNextButton || !currentElement.has("buttons") /* or does not have "buttons" element */) {
+                        // next button hard coded for mentioned scenarios
                         val tempElement = NinchatQuestionnaireJsonUtil.getButtonElement(json = currentElement, hideBack = index == 0)
                         elementList.put(tempElement)
                     } else {
@@ -83,8 +83,9 @@ class NinchatQuestionnaireNormalizer {
                                 NinchatQuestionnaireType.isInput(tempElement) ||
                                 NinchatQuestionnaireType.isCheckBox(tempElement) ||
                                 NinchatQuestionnaireType.isTextArea(tempElement)) {
-                            val tempBtnElement = NinchatQuestionnaireJsonUtil.getButtonElement(json = currentElement, hideBack = index == 0)
-                            elementList.put(tempBtnElement)
+                            /*val tempBtnElement = NinchatQuestionnaireJsonUtil.getButtonElement(json = currentElement, hideBack = index == 0)
+                            elementList.put(tempBtnElement)*/
+                            // pass
                         } else {
                             tempElement?.putOpt("fireEvent", true)
                         }
