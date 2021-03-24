@@ -51,6 +51,9 @@ class NinchatDropDownSelectViewHolder(
 
             override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
+        itemView.ninchat_dropdown_list_icon.setOnClickListener {
+            itemView.ninchat_dropdown_list.performClick()
+        }
     }
 
     override fun onRenderFromView(label: String, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int) {
