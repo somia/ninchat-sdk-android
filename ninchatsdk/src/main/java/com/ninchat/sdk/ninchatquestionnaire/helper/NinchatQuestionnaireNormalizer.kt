@@ -72,19 +72,18 @@ class NinchatQuestionnaireNormalizer {
                 } else {
                     val hasBackButton = NinchatQuestionnaireType.isButton(json = currentElement.optJSONObject("buttons"), isBack = true)
                     val hasNextButton = NinchatQuestionnaireType.isButton(json = currentElement.optJSONObject("buttons"), isBack = false)
-                    if (hasBackButton || hasNextButton || index == 0 /* or first element */) {
-                        // next button always true hard coded
+                    if (hasBackButton || hasNextButton || !currentElement.has("buttons") /* or does not have "buttons" element */) {
+                        // next button hard coded for mentioned scenarios
                         val tempElement = NinchatQuestionnaireJsonUtil.getButtonElement(json = currentElement, hideBack = index == 0)
                         elementList.put(tempElement)
                     } else {
-                        // add event fire capability to last element if it is not an text, input, or
+                        // add event fire capability to last element if it is not an text, input, checkbox, or text area
                         val tempElement = elementList.optJSONObject(elementList.length() - 1)
                         if (NinchatQuestionnaireType.isText(tempElement) ||
                                 NinchatQuestionnaireType.isInput(tempElement) ||
                                 NinchatQuestionnaireType.isCheckBox(tempElement) ||
                                 NinchatQuestionnaireType.isTextArea(tempElement)) {
-                            val tempBtnElement = NinchatQuestionnaireJsonUtil.getButtonElement(json = currentElement, hideBack = index == 0)
-                            elementList.put(tempBtnElement)
+                            // pass
                         } else {
                             tempElement?.putOpt("fireEvent", true)
                         }
@@ -117,7 +116,7 @@ class NinchatQuestionnaireNormalizer {
 
             // Pick all consecutive checkbox element
             val checkBoxElementList = elementList
-                    .subList(fromIndex = index, toIndex = elementList.size - 1)
+                    .subList(fromIndex = index, toIndex = elementList.size)
                     .takeWhile { NinchatQuestionnaireType.isCheckBox(jsonObject = it) }
                     .map {
                         // default value as false
