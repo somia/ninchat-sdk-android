@@ -33,7 +33,7 @@ class NinchatRadioButtonView(
     }
 
     private fun attachUserActionHandler() {
-        itemView.single_radio_item.setOnClickListener { _: View ->
+        itemView.single_radio_item.setOnClickListener {
             presenter.onToggleSelection()
         }
     }
@@ -64,14 +64,10 @@ class NinchatRadioButtonView(
     }
 
     override fun onSelected() {
-        itemView.single_radio_item.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_radio_item_selected_text))
-        itemView.single_radio_item.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_radio_select_button)
         optionToggleCallback.onOptionToggled(isSelected = true, listPosition = layoutPosition)
     }
 
     override fun onUnSelected() {
-        itemView.single_radio_item.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_radio_item_unselected_text))
-        itemView.single_radio_item.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_ui_compose_select_button)
         optionToggleCallback.onOptionToggled(isSelected = false, listPosition = layoutPosition)
     }
 

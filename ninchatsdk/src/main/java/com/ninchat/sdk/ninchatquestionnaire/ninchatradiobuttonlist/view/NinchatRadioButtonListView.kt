@@ -37,7 +37,7 @@ class NinchatRadioButtonListView(
         presenter.renderCurrentView(jsonObject = jsonObject, enabled = enabled)
     }
 
-    private val toggleLister = OnToggleListener(intervalInMs = 500)
+    private val toggleLister = OnToggleListener(intervalInMs = 200)
 
     fun update(jsonObject: JSONObject?, enabled: Boolean) {
         presenter.updateCurrentView(jsonObject = jsonObject, enabled = enabled)
@@ -120,6 +120,7 @@ class NinchatRadioButtonListView(
                 if (previousIndex != -1) {
                     notifyItemChanged(previousIndex)
                 }
+                notifyItemChanged(listPosition)
             })
 
         }
