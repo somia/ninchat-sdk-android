@@ -40,8 +40,6 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
                 public void onClick(View v) {
                     if (sendAction) {
                         try {
-                            // if this option is already selected then do nothing
-                            if (option.isSelected()) return;
                             final JSONObject payload = new JSONObject();
                             payload.put("action", "click");
                             payload.put("target", option.toJSON());
@@ -53,14 +51,11 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
                                     payload.toString(),
                                     aLong -> null
                             );
-                            // unselect all existing options
-                            for (int i = 0; i < options.size(); i += 1) {
-                                if (i == position) continue;
-                                if (options.get(i).isSelected()) options.get(i).toggle();
-                            }
                         } catch (final JSONException e) {
                             Log.e(NinchatMessageAdapter.class.getSimpleName(), "Error when sending multichoice answer!", e);
                         }
+                        // if already selected then just do not re render
+                        if (option.isSelected()) return;
                     }
                     final NinchatMessageAdapter.NinchatMessageViewHolder viewHolder = viewHolderWeakReference.get();
                     if (viewHolder != null) {
