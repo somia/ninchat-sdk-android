@@ -180,7 +180,8 @@ class NinchatSessionManagerHelper {
                 }
                 val currentQueue = currentSession.getQueue(queueId)
                 currentQueue?.apply {
-                    position = queuePosition
+                    // only update the queue position if it is non zero
+                    if(queuePosition > 0 ) position = queuePosition
                     isClosed = closed
                 }
                 return queueId
