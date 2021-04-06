@@ -75,10 +75,6 @@ class Parameter {
 }
 
 class NinchatLinearLayoutManager(context: Context) : LinearLayoutManager(context) {
-    override fun supportsPredictiveItemAnimations(): Boolean {
-        return false
-    }
-
     override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
         try {
             super.onLayoutChildren(recycler, state)
