@@ -20,6 +20,7 @@ public final class NinchatMessage {
         META,
         MESSAGE,
         WRITING,
+        REMOVE_WRITING,
         END,
         PADDING,
         MULTICHOICE

@@ -40,31 +40,26 @@ public final class NinchatMultiChoiceAdapter extends RecyclerView.Adapter<Nincha
                 public void onClick(View v) {
                     if (sendAction) {
                         try {
-                            option.toggle();
-                            try {
-                                final JSONObject payload = new JSONObject();
-                                payload.put("action", "click");
-                                payload.put("target", option.toJSON());
-                                NinchatSendMessage.executeAsync(
-                                        NinchatScopeHandler.getIOScope(),
-                                        NinchatSessionManager.getInstance().getSession(),
-                                        NinchatSessionManager.getInstance().ninchatState.getChannelId(),
-                                        NinchatMessageTypes.UI_ACTION,
-                                        payload.toString(),
-                                        aLong -> null
-                                );
-                            } catch (final JSONException e) {
-                                Log.e(NinchatMessageAdapter.class.getSimpleName(), "Error when sending multichoice answer!", e);
-                            }
-                            option.toggle();
-                        } catch (final Exception e) {
-                            // Ignore
+                            final JSONObject payload = new JSONObject();
+                            payload.put("action", "click");
+                            payload.put("target", option.toJSON());
+                            NinchatSendMessage.executeAsync(
+                                    NinchatScopeHandler.getIOScope(),
+                                    NinchatSessionManager.getInstance().getSession(),
+                                    NinchatSessionManager.getInstance().ninchatState.getChannelId(),
+                                    NinchatMessageTypes.UI_ACTION,
+                                    payload.toString(),
+                                    aLong -> null
+                            );
+                        } catch (final JSONException e) {
+                            Log.e(NinchatMessageAdapter.class.getSimpleName(), "Error when sending multichoice answer!", e);
                         }
-                    } else {
-                        final NinchatMessageAdapter.NinchatMessageViewHolder viewHolder = viewHolderWeakReference.get();
-                        if (viewHolder != null) {
-                            viewHolder.optionToggled(message, position);
-                        }
+                        // if already selected then just do not re render
+                        if (option.isSelected()) return;
+                    }
+                    final NinchatMessageAdapter.NinchatMessageViewHolder viewHolder = viewHolderWeakReference.get();
+                    if (viewHolder != null) {
+                        viewHolder.optionToggled(message, position);
                     }
                 }
             });

@@ -14,6 +14,7 @@ import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.activities.NinchatChatActivity
 import com.ninchat.sdk.helper.session.NinchatSessionManagerHelper
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
+import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity
 import com.ninchat.sdk.utils.misc.Broadcast
@@ -52,9 +53,19 @@ class NinchatQueuePresenter(
 
     fun updateQueueId(intent: Intent?) {
         // update queue id
-        intent?.getStringExtra(NinchatQueueModel.QUEUE_ID)?.let {
-            ninchatQueueModel.queueId = it
+        val queueId = intent?.getStringExtra(NinchatQueueModel.QUEUE_ID)
+        if(ninchatQueueModel.queueId == queueId)return
+        ninchatQueueModel.queueId = queueId
+        if (!ninchatQueueModel.isAlreadyInQueueList()) {
+            // if not already in queue then try to describe the queue
+            NinchatScopeHandler.getIOScope().launch {
+                NinchatDescribeQueue.execute(
+                        currentSession = NinchatSessionManager.getInstance()?.session,
+                        queueId = queueId
+                )
+            }
         }
+
     }
 
     fun showQueueAnimation(view: ImageView?) {
