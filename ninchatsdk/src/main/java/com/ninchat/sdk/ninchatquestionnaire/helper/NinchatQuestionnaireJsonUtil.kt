@@ -123,11 +123,20 @@ class NinchatQuestionnaireJsonUtil {
             val hasBackButton = if (hideBack) false else NinchatQuestionnaireType.isButton(json = json?.optJSONObject(NinchatQuestionnaireConstants.buttons), isBack = true)
             val hasNextButton = NinchatQuestionnaireType.isButton(json = json?.optJSONObject(NinchatQuestionnaireConstants.buttons), isBack = false)
 
+            val getButtonText = fun(hasButton: Boolean, isBack: Boolean): String {
+                if (!hasButton) return "false"
+                val text = json?.optJSONObject(NinchatQuestionnaireConstants.buttons)?.optString(if (isBack) "back" else "next")
+                return when {
+                    text.isNullOrBlank() -> "true"
+                    else -> text
+                }
+            }
+
             val buttonMap = mapOf(
                     NinchatQuestionnaireConstants.element to NinchatQuestionnaireConstants.buttons,
                     NinchatQuestionnaireConstants.fireEvent to true,
-                    NinchatQuestionnaireConstants.back to if (hasBackButton) json?.optJSONObject(NinchatQuestionnaireConstants.buttons)?.optString("back") else false,
-                    NinchatQuestionnaireConstants.next to if (hasNextButton) json?.optJSONObject(NinchatQuestionnaireConstants.buttons)?.optString("next") else true,
+                    NinchatQuestionnaireConstants.back to getButtonText(hasBackButton, true),
+                    NinchatQuestionnaireConstants.next to getButtonText(hasNextButton, false)
             )
             return JSONObject(buttonMap)
         }
