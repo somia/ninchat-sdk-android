@@ -77,15 +77,17 @@ class NinchatQuestionnaireNormalizer {
                         val tempElement = NinchatQuestionnaireJsonUtil.getButtonElement(json = currentElement, hideBack = index == 0)
                         elementList.put(tempElement)
                     } else {
-                        // add event fire capability to last element if it is not an text, input, checkbox, or text area
-                        val tempElement = elementList.optJSONObject(elementList.length() - 1)
-                        if (NinchatQuestionnaireType.isText(tempElement) ||
-                                NinchatQuestionnaireType.isInput(tempElement) ||
-                                NinchatQuestionnaireType.isCheckBox(tempElement) ||
-                                NinchatQuestionnaireType.isTextArea(tempElement)) {
-                            // pass
-                        } else {
-                            tempElement?.putOpt("fireEvent", true)
+                        //otherwise add event fire capability to each element if it is an navigation like element
+                        fromJSONArray<JSONObject>(elementList).map {
+                            if (
+                                NinchatQuestionnaireType.isButton(it as JSONObject) ||
+                                NinchatQuestionnaireType.isCheckBox(it) ||
+                                NinchatQuestionnaireType.isRadio(it) ||
+                                NinchatQuestionnaireType.isSelect(it) ||
+                                NinchatQuestionnaireType.isLikeRT(it) )
+                                {
+                                    it.putOpt("fireEvent", true)
+                            }
                         }
                     }
                     currentElement
