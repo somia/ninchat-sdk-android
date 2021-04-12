@@ -38,9 +38,8 @@ class NinchatQuestionnaireType {
         fun isButton(json: JSONObject?, isBack: Boolean = false): Boolean {
             val key = if (isBack) NinchatQuestionnaireConstants.back else NinchatQuestionnaireConstants.next
             return json?.let {
-                it.optString(key) !in listOf("false", "")
-            } ?: false
-
+                it.optString(key,"true") !in listOf("false", "")
+            } ?: true
         }
 
         fun isSimpleFormLikeQuestionnaire(questionnaires: JSONArray?): Boolean {
