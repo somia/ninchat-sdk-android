@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -466,9 +467,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getResources().getBoolean(R.bool.ninchat_chat_background_not_tiled)) {
-            findViewById(R.id.ninchat_chat_root).setBackgroundResource(R.drawable.ninchat_chat_background);
-        }
         NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         // If the app is killed in the background sessionManager is not initialized the SDK must
         // be exited and the NinchatSession needs to be initialzed again
@@ -477,6 +475,14 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
             finish();
             this.overridePendingTransition(0, 0);
             return;
+        }
+
+        if (getResources().getBoolean(R.bool.ninchat_chat_background_not_tiled)) {
+            findViewById(R.id.ninchat_chat_root).setBackgroundResource(sessionManager.getNinchatChatBackground());
+        } else {
+            Drawable background = Misc.getNinchatChatBackground(getApplicationContext(), sessionManager.getNinchatChatBackground());
+            if (background != null)
+                findViewById(R.id.ninchat_chat_root).setBackground(background);
         }
 
         // start with orientation toggled false
