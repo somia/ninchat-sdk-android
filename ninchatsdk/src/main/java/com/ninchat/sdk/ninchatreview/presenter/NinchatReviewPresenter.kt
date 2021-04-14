@@ -71,7 +71,10 @@ class NinchatReviewPresenter(
         view.ninchat_bot_ratings_icon_items_root_view.visibility = View.GONE
 
         //2: set background
-        rootActivity.background = ContextCompat.getDrawable(view.context, R.drawable.ninchat_chat_background_tiled)
+        val drawableBackground = NinchatSessionManager.getInstance()?.ninchatChatBackground?.let {
+            Misc.getNinchatChatBackground(view.context, it)
+        } ?: ContextCompat.getDrawable(view.context, R.drawable.ninchat_chat_background_tiled)
+        rootActivity.background = drawableBackground
         view.ninchat_chat_message_bot_writing_review_root.background = ContextCompat.getDrawable(view.context, R.drawable.ninchat_chat_questionnaire_background)
 
         //3: set bot details

@@ -11,16 +11,27 @@ class NinchatConfiguration private constructor() {
     var userName: String? = null
         private set
 
+    var ninchatChatBackground: Int = -1
+        private set
+
     class Builder {
         private var userName: String? = null
+        private var ninchatChatBackground: Int = -1
         fun setUserName(userName: String?): Builder {
             this.userName = userName
+            return this
+        }
+
+        fun setNinchatChatBackground(id: Int): Builder {
+            this.ninchatChatBackground = id
             return this
         }
 
         fun create(): NinchatConfiguration {
             val configurationManager = NinchatConfiguration()
             configurationManager.userName = userName
+            configurationManager.ninchatChatBackground = ninchatChatBackground
+
             return configurationManager
         }
     }

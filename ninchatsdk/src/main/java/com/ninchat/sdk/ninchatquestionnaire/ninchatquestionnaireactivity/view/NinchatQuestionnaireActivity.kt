@@ -3,6 +3,8 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.RelativeLayout
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.NinchatSessionManager
@@ -16,6 +18,8 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.N
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.INinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.NinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.NinchatQuestionnaireListAdapter
+import com.ninchat.sdk.utils.misc.Misc
+import com.ninchat.sdk.utils.misc.Misc.Companion.getNinchatChatBackground
 import kotlinx.android.synthetic.main.activity_ninchat_questionnaire.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -33,6 +37,10 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
     override fun onCreate(savedInstanceState: Bundle?) {
         EventBus.getDefault().register(this)
         super.onCreate(savedInstanceState)
+        val drawableBackground = NinchatSessionManager.getInstance()?.ninchatChatBackground?.let {
+            Misc.getNinchatChatBackground(applicationContext, it)
+        } ?: ContextCompat.getDrawable(applicationContext, R.drawable.ninchat_chat_background_tiled)
+        ninchat_audience_questionnaire_root.background = drawableBackground
         mLayoutManager = LinearLayoutManager(applicationContext)
         presenter.renderCurrentView(intent)
     }
