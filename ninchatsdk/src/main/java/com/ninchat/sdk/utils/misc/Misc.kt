@@ -1,6 +1,10 @@
 package com.ninchat.sdk.utils.misc
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Shader
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.Html
 import android.text.Spanned
@@ -8,9 +12,11 @@ import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.BuildConfig
+import com.ninchat.sdk.R
 import com.ninchat.sdk.helper.NinchatImageGetter
 
 class Misc {
@@ -19,7 +25,7 @@ class Misc {
         const val IN_QUEUE = 2
         const val HAS_CHANNEL = 3
         const val NONE = 4
-        
+
         @JvmStatic
         fun center(text: String?): String {
             return text?.let {
@@ -48,6 +54,21 @@ class Misc {
             val extension = name?.replace(".*\\.".toRegex(), "")
             return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
                     ?: return "application/octet-stream"
+        }
+
+        @JvmStatic
+        fun getNinchatChatBackground(context: Context, backgroundImage: Int): Drawable? {
+            return ResourcesCompat.getDrawable(context.resources, backgroundImage, null)?.let {
+                try {
+                    return (it as BitmapDrawable).apply {
+                        mutate()
+                        setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+                    }
+                } catch (err: Exception) {
+                    Log.e("NinchatSDK", err.message ?: "Error getting ninchat background")
+                    null
+                }
+            }
         }
     }
 }

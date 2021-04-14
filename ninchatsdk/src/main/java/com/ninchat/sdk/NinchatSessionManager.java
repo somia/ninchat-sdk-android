@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.ninchat.client.Props;
@@ -273,6 +274,13 @@ public final class NinchatSessionManager {
             return this.ninchatConfiguration.getUserName();
         }
         return ninchatState.getSiteConfig().getUserName();
+    }
+
+    public int getNinchatChatBackground() {
+        if (this.ninchatConfiguration != null && this.ninchatConfiguration.getNinchatChatBackground() != -1) {
+            return this.ninchatConfiguration.getNinchatChatBackground();
+        }
+        return R.drawable.ninchat_chat_background;
     }
 
     // Get username or agentname if it is set in configuration
