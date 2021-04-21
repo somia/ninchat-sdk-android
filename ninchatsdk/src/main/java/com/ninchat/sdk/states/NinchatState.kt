@@ -93,6 +93,10 @@ class NinchatState {
     }
 
     var queues = arrayListOf<NinchatQueue>()
+    fun getQueues(): List<NinchatQueue> {
+        return queues.map { it }
+    }
+
     fun addQueue(ninchatQueue: NinchatQueue) {
         queues.add(ninchatQueue)
     }

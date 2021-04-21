@@ -601,7 +601,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        webRTCView.onPause();
+        if (videoContainer == null) return;
+        if (webRTCView != null)
+            webRTCView.onPause();
         final ViewGroup.LayoutParams layoutParams = videoContainer.getLayoutParams();
         final ImageView image = findViewById(R.id.fullscreen_on_off);
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -620,8 +622,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         pipLayoutParams.width = getResources().getDimensionPixelSize(R.dimen.ninchat_chat_activity_pip_video_width);
         pip.setLayoutParams(pipLayoutParams);
 
-        webRTCView.onResume();
-        messageAdapter.scrollToBottom(true);
+        if (webRTCView != null)
+            webRTCView.onResume();
+        if (messageAdapter != null)
+            messageAdapter.scrollToBottom(true);
     }
 
     // Reinitialize webRTC on hangup for possible new connection
