@@ -11,8 +11,8 @@ import kotlinx.coroutines.launch
 class WritingIndicator() {
     private val inactiveTimeoutInMs = (30L * 1000)
     private var intervalInMs = 1L * 1000
-    private lateinit var updateTextTask: Runnable
-    private lateinit var handler: Handler
+    private var updateTextTask: Runnable? = null
+    private var handler: Handler? = null
     private var lastWritingInMs = 0L
     private var lastMessageLength = 0
     private var wasWriting = false
@@ -25,21 +25,21 @@ class WritingIndicator() {
             val timeElapseInMs = now - lastWritingInMs
             val isWriting = (lastMessageLength > 0 && timeElapseInMs < inactiveTimeoutInMs)
             notifyBackend(isWriting = isWriting)
-            handler.postDelayed(updateTextTask, intervalInMs)
+            handler?.postDelayed(updateTextTask, intervalInMs)
         }
         handler = Handler()
-        handler.post(updateTextTask)
+        handler?.post(updateTextTask)
     }
 
     @JvmName("updateLastWritingTime")
     fun updateLastWritingTime(messageLength: Int) {
         lastMessageLength = messageLength
-        lastWritingInMs =  System.currentTimeMillis()
+        lastWritingInMs = System.currentTimeMillis()
     }
 
     @JvmName("dispose")
     fun dispose() {
-        handler.removeCallbacks(updateTextTask)
+        handler?.removeCallbacks(updateTextTask)
         wasWriting = false
     }
 
