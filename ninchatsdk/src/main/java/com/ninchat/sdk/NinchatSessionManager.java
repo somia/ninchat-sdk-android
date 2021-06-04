@@ -181,7 +181,7 @@ public final class NinchatSessionManager {
 
     public NinchatQueueListAdapter getNinchatQueueListAdapter(final Activity activity) {
         if (ninchatQueueListAdapter == null) {
-            ninchatQueueListAdapter = new NinchatQueueListAdapter(activity, ninchatState.getQueues());
+            ninchatQueueListAdapter = new NinchatQueueListAdapter(activity, ninchatState.getQueueList());
         }
         return ninchatQueueListAdapter;
     }
@@ -216,7 +216,7 @@ public final class NinchatSessionManager {
 
 
     public NinchatQueue getQueue(final String queueId) {
-        for (NinchatQueue queue : ninchatState.getQueues()) {
+        for (NinchatQueue queue : ninchatState.getQueueList()) {
             if (queue.getId().equals(queueId)) {
                 return queue;
             }

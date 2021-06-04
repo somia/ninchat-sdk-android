@@ -28,7 +28,7 @@ import org.json.JSONException
 
 
 class NinchatReviewPresenter(
-        val ninchatReviewModel: NinchatReviewModel,
+    val ninchatReviewModel: NinchatReviewModel,
 ) {
 
     fun getResultIntent(): Intent {
@@ -54,7 +54,10 @@ class NinchatReviewPresenter(
             botView.ninchat_bot_rating_text_root_view.visibility = View.VISIBLE
             botView.ninchat_bot_ratings_icon_items_root_view.visibility = View.VISIBLE
 
-            botView.ninchat_bot_rating_text_root_view.background = ContextCompat.getDrawable(botView.context, R.drawable.ninchat_chat_questionnaire_background)
+            botView.ninchat_bot_rating_text_root_view.background = ContextCompat.getDrawable(
+                botView.context,
+                R.drawable.ninchat_chat_questionnaire_background
+            )
 
             // render text now
             renderText(view = botView, rootActivity = rootActivity)
@@ -75,13 +78,20 @@ class NinchatReviewPresenter(
             Misc.getNinchatChatBackground(view.context, it)
         } ?: ContextCompat.getDrawable(view.context, R.drawable.ninchat_chat_background_tiled)
         rootActivity.background = drawableBackground
-        view.ninchat_chat_message_bot_writing_review_root.background = ContextCompat.getDrawable(view.context, R.drawable.ninchat_chat_questionnaire_background)
+        view.ninchat_chat_message_bot_writing_review_root.background = ContextCompat.getDrawable(
+            view.context,
+            R.drawable.ninchat_chat_questionnaire_background
+        )
 
         //3: set bot details
         view.ninchat_chat_message_bot_text.text = ninchatReviewModel.getBotName()
         ninchatReviewModel.getBotAvatar()?.let {
             try {
-                GlideWrapper.loadImageAsCircle(view.context, it, view.ninchat_chat_message_bot_avatar)
+                GlideWrapper.loadImageAsCircle(
+                    view.context,
+                    it,
+                    view.ninchat_chat_message_bot_avatar
+                )
             } catch (e: Exception) {
                 view.ninchat_chat_message_bot_avatar.setImageResource(R.drawable.ninchat_chat_avatar_left)
             }
@@ -89,7 +99,8 @@ class NinchatReviewPresenter(
 
         //4: start dummy animation
         view.ninchat_chat_message_bot_writing.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator)
-        val animationDrawable = (view.ninchat_chat_message_bot_writing.background) as AnimationDrawable
+        val animationDrawable =
+            (view.ninchat_chat_message_bot_writing.background) as AnimationDrawable
         animationDrawable.start()
 
         //5: stop animation after 1.5 second
@@ -101,7 +112,8 @@ class NinchatReviewPresenter(
     }
 
     private fun renderText(view: View, rootActivity: View) {
-        view.ninchat_review_title.text = Misc.toRichText(ninchatReviewModel.getFeedbackTitleText(), view.ninchat_review_title)
+        view.ninchat_review_title.text =
+            Misc.toRichText(ninchatReviewModel.getFeedbackTitleText(), view.ninchat_review_title)
         view.ninchat_review_positive.text = ninchatReviewModel.getFeedbackPositiveText()
         view.ninchat_review_neutral.text = ninchatReviewModel.getFeedbackNeutralText()
         view.ninchat_review_negative.text = ninchatReviewModel.getFeedbackNegativeText()
@@ -112,9 +124,14 @@ class NinchatReviewPresenter(
         view.visibility = if (visible) View.VISIBLE else View.GONE
     }
 
+    private fun skippedReview() {
+        NinchatSessionManager.getInstance()?.ninchatState?.skippedReview = true
+    }
+
     fun maybeSendRating(rating: Int) {
         // set ratings
         ninchatReviewModel.currentRating = rating
+        if (rating == NinchatSession.Analytics.Rating.NO_ANSWER) skippedReview()
 
         // check if it is a no answer or rating
         if (rating != NinchatSession.Analytics.Rating.NO_ANSWER) {
@@ -123,9 +140,9 @@ class NinchatReviewPresenter(
                 NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
                     NinchatScopeHandler.getIOScope().launch {
                         NinchatSendRatings.execute(
-                                currentSession = ninchatSessionManager.session,
-                                channelId = ninchatSessionManager.ninchatState?.channelId,
-                                message = messagePayload.toString(2)
+                            currentSession = ninchatSessionManager.session,
+                            channelId = ninchatSessionManager.ninchatState?.channelId,
+                            message = messagePayload.toString(2)
                         )
                     }
                 }

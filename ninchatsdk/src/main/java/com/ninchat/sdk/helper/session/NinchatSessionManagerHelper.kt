@@ -294,7 +294,7 @@ class NinchatSessionManagerHelper {
                     currentSession.ninchatQueueListAdapter?.addQueue(it)
                 }
                 currentSession.contextWeakReference?.get()?.let { mContext ->
-                    if (currentSession.ninchatState?.queues?.size ?: 0 > 0) {
+                    if (currentSession.ninchatState?.getQueueList()?.size ?: 0 > 0) {
                         LocalBroadcastManager.getInstance(mContext).sendBroadcast(Intent(NinchatSession.Broadcast.QUEUES_UPDATED))
                     }
                 }

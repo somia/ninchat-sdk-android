@@ -14,7 +14,7 @@ class NinchatQueueModel {
     }
 
     fun isClosedQueue(): Boolean {
-        val currentQueue = NinchatSessionManager.getInstance()?.ninchatState?.queues?.find { currentQueue -> currentQueue.id == queueId }
+        val currentQueue = NinchatSessionManager.getInstance()?.ninchatState?.getQueueList()?.find { currentQueue -> currentQueue.id == queueId }
         val isInQueue = NinchatSessionManager.getInstance().ninchatSessionHolder?.isInQueue()
                 ?: false
         return when {
@@ -30,7 +30,7 @@ class NinchatQueueModel {
     }
 
     fun getQueueCloseText(): String? {
-        val currentQueue = NinchatSessionManager.getInstance()?.ninchatState?.queues?.find { currentQueue -> currentQueue.id == queueId }
+        val currentQueue = NinchatSessionManager.getInstance()?.ninchatState?.getQueueList()?.find { currentQueue -> currentQueue.id == queueId }
         val text = NinchatSessionManager.getInstance().ninchatState?.siteConfig?.getQueueName(
                 name = currentQueue?.name ?: "",
                 closed = true
@@ -47,7 +47,7 @@ class NinchatQueueModel {
     }
 
     fun isAlreadyInQueueList(): Boolean {
-        return NinchatSessionManager.getInstance()?.ninchatState?.queues?.any { currentQueue -> currentQueue.id == queueId }
+        return NinchatSessionManager.getInstance()?.ninchatState?.getQueueList()?.any { currentQueue -> currentQueue.id == queueId }
                 ?: false
     }
 
