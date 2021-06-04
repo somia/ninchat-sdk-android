@@ -111,7 +111,7 @@ class NinchatSessionManagerHelper {
                             ?: ""
                     )
                 // if there is no queue position
-                if (position == -1L || position == Long.MAX_VALUE) {
+                if (position == 0L || position == -1L || position == Long.MAX_VALUE) {
                     return null
                 }
                 val queueStatus: String? =
