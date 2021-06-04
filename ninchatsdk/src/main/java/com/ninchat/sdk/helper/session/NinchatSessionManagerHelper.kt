@@ -28,26 +28,33 @@ import java.util.*
 
 class NinchatSessionManagerHelper {
     companion object {
-        internal val getServers = fun(serverList: Objects?, isTurn: Boolean): ArrayList<NinchatWebRTCServerInfo>? {
-            return serverList?.let {
-                val retval = arrayListOf<NinchatWebRTCServerInfo>()
-                for (i in 0 until it.length()) {
-                    val stunServerProps = it[i]
-                    val urls = stunServerProps.getStringArray("urls")
-                    for (j in 0 until urls.length()) {
-                        if (isTurn) {
-                            val username: String = stunServerProps.getString("username")
-                            val credential: String = stunServerProps.getString("credential")
-                            retval.add(NinchatWebRTCServerInfo(urls.get(j), username, credential));
-                        } else {
-                            retval.add(NinchatWebRTCServerInfo(urls[j]))
-                        }
+        internal val getServers =
+            fun(serverList: Objects?, isTurn: Boolean): ArrayList<NinchatWebRTCServerInfo>? {
+                return serverList?.let {
+                    val retval = arrayListOf<NinchatWebRTCServerInfo>()
+                    for (i in 0 until it.length()) {
+                        val stunServerProps = it[i]
+                        val urls = stunServerProps.getStringArray("urls")
+                        for (j in 0 until urls.length()) {
+                            if (isTurn) {
+                                val username: String = stunServerProps.getString("username")
+                                val credential: String = stunServerProps.getString("credential")
+                                retval.add(
+                                    NinchatWebRTCServerInfo(
+                                        urls.get(j),
+                                        username,
+                                        credential
+                                    )
+                                );
+                            } else {
+                                retval.add(NinchatWebRTCServerInfo(urls[j]))
+                            }
 
+                        }
                     }
+                    return retval
                 }
-                return retval
             }
-        }
 
         /**
          * Try to join queue
@@ -60,11 +67,12 @@ class NinchatSessionManagerHelper {
                 if (currentSession.ninchatSessionHolder?.isResumedSession() == true) {
                     currentSession.audienceEnqueued(queueId)
                     if (currentSession.ninchatSessionHolder?.hasChannel() == true) {
-                        val currentChannelId = getChannelIdFromUserChannel(currentSession.ninchatState?.userChannels)
+                        val currentChannelId =
+                            getChannelIdFromUserChannel(currentSession.ninchatState?.userChannels)
                         getIOScope().launch {
                             val actionId = NinchatDescribeChannel.execute(
-                                    currentSession = currentSession.session,
-                                    channelId = currentChannelId
+                                currentSession = currentSession.session,
+                                channelId = currentChannelId
                             )
                             currentSession.ninchatState.actionId = actionId
                         }
@@ -78,9 +86,9 @@ class NinchatSessionManagerHelper {
                 // if none of above. try to join queue by calling request audience
                 getIOScope().launch {
                     NinchatRequestAudience.execute(
-                            currentSession = currentSession.session,
-                            queueId = queueId,
-                            audienceMetadata = currentSession.ninchatState?.audienceMetadata?.get()
+                        currentSession = currentSession.session,
+                        queueId = queueId,
+                        audienceMetadata = currentSession.ninchatState?.audienceMetadata?.get()
                     )
                 }
 
@@ -93,16 +101,21 @@ class NinchatSessionManagerHelper {
             return sessionManager?.let { currentSession ->
                 val selectedQueue: NinchatQueue? = currentSession.getQueue(queueId)
                 val position = selectedQueue?.position
-                        ?: NinchatPropsParser.getQueuePositionByQueueId(props = sessionManager.ninchatState.userQueues, queueId = queueId
-                                ?: "")
+                    ?: NinchatPropsParser.getQueuePositionByQueueId(
+                        props = sessionManager.ninchatState.userQueues, queueId = queueId
+                            ?: ""
+                    )
                 val name = selectedQueue?.name
-                        ?: NinchatPropsParser.getQueueNameByQueueId(props = sessionManager.ninchatState.userQueues, queueId = queueId
-                                ?: "")
+                    ?: NinchatPropsParser.getQueueNameByQueueId(
+                        props = sessionManager.ninchatState.userQueues, queueId = queueId
+                            ?: ""
+                    )
                 // if there is no queue position
-                if (position == -1L) {
+                if (position == -1L || position == Long.MAX_VALUE) {
                     return null
                 }
-                val queueStatus: String? = currentSession.ninchatState?.siteConfig?.getQueueStatus(name, position)
+                val queueStatus: String? =
+                    currentSession.ninchatState?.siteConfig?.getQueueStatus(name, position)
                 queueStatus
             }
         }
@@ -125,7 +138,7 @@ class NinchatSessionManagerHelper {
                 }
                 try {
                     currentSession.ninchatState?.stunServers = getServers(stunServers, false)
-                            ?: arrayListOf()
+                        ?: arrayListOf()
                 } catch (e: Exception) {
                     currentSession.sessionError(e)
                     return
@@ -133,15 +146,20 @@ class NinchatSessionManagerHelper {
 
                 try {
                     currentSession.ninchatState?.turnServers = getServers(turnServers, true)
-                            ?: arrayListOf()
+                        ?: arrayListOf()
                 } catch (e: Exception) {
                     currentSession.sessionError(e)
                     return
                 }
 
                 currentSession.contextWeakReference?.get()?.let { context ->
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(Intent(Broadcast.WEBRTC_MESSAGE)
-                            .putExtra(Broadcast.WEBRTC_MESSAGE_TYPE, NinchatMessageTypes.WEBRTC_SERVERS_PARSED))
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(
+                        Intent(Broadcast.WEBRTC_MESSAGE)
+                            .putExtra(
+                                Broadcast.WEBRTC_MESSAGE_TYPE,
+                                NinchatMessageTypes.WEBRTC_SERVERS_PARSED
+                            )
+                    )
                 }
             }
         }
@@ -181,8 +199,11 @@ class NinchatSessionManagerHelper {
                 val currentQueue = currentSession.getQueue(queueId)
                 currentQueue?.apply {
                     // only update the queue position if it is non zero
-                    if(queuePosition > 0 ) position = queuePosition
-                    isClosed = closed
+                    if (queuePosition > 0) position = queuePosition
+                    // if not already in queue, only then update queue close state
+                    if ((position == Long.MAX_VALUE || position == 0L)) {
+                        isClosed = closed
+                    }
                 }
                 return queueId
             }
@@ -239,8 +260,16 @@ class NinchatSessionManagerHelper {
                 file?.fileHeight = height
                 file?.isDownloadableFile = width == -1L || height == -1L
                 file?.let { currentFile ->
-                    currentSession.messageAdapter?.add(currentFile.messageId,
-                            NinchatMessage(null, fileId, currentFile.sender, currentFile.timestamp, currentFile.isRemote))
+                    currentSession.messageAdapter?.add(
+                        currentFile.messageId,
+                        NinchatMessage(
+                            null,
+                            fileId,
+                            currentFile.sender,
+                            currentFile.timestamp,
+                            currentFile.isRemote
+                        )
+                    )
                 }
             }
         }
@@ -268,8 +297,8 @@ class NinchatSessionManagerHelper {
                 val channelMembers = NinchatPropsParser.getUsersFromChannel(params)
                 channelMembers.map {
                     currentSession.ninchatState.addMember(
-                            it.first,
-                            it.second
+                        it.first,
+                        it.second
                     );
                 }
                 Handler(Looper.getMainLooper()).post {
@@ -289,27 +318,36 @@ class NinchatSessionManagerHelper {
             sessionManager?.let { currentSession ->
                 currentSession.ninchatState?.queues?.clear()
                 currentSession.messageAdapter?.clear()
-                getOpenQueueList(params, currentSession.ninchatState?.siteConfig?.getAudienceQueues()).map {
+                getOpenQueueList(
+                    params,
+                    currentSession.ninchatState?.siteConfig?.getAudienceQueues()
+                ).map {
                     currentSession.ninchatState?.addQueue(it)
                     currentSession.ninchatQueueListAdapter?.addQueue(it)
                 }
                 currentSession.contextWeakReference?.get()?.let { mContext ->
                     if (currentSession.ninchatState?.getQueueList()?.size ?: 0 > 0) {
-                        LocalBroadcastManager.getInstance(mContext).sendBroadcast(Intent(NinchatSession.Broadcast.QUEUES_UPDATED))
+                        LocalBroadcastManager.getInstance(mContext)
+                            .sendBroadcast(Intent(NinchatSession.Broadcast.QUEUES_UPDATED))
                     }
                 }
                 currentSession.activityWeakReference?.get()?.let { mActivity ->
                     mActivity.startActivityForResult(
-                            NinchatActivityPresenter.getLaunchIntent(mActivity,
-                                    currentSession.ninchatState?.queueId), currentSession.ninchatState?.requestCode
-                            ?: 0)
+                        NinchatActivityPresenter.getLaunchIntent(
+                            mActivity,
+                            currentSession.ninchatState?.queueId
+                        ), currentSession.ninchatState?.requestCode
+                            ?: 0
+                    )
                 }
                 currentSession.eventListenerWeakReference?.get()?.onSessionStarted()
-                NinchatScopeHandler.getIOScope().launch {
-                    NinchatDescribeQueue.execute(
+                currentSession.ninchatState?.queueId?.let {
+                    NinchatScopeHandler.getIOScope().launch {
+                        NinchatDescribeQueue.execute(
                             currentSession = currentSession.session,
                             queueId = currentSession.ninchatState?.queueId
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -373,7 +411,8 @@ class NinchatSessionManagerHelper {
                 }
                 ninchatSessionManager.contextWeakReference?.get()?.let { mContext ->
                     if (closed || suspended) {
-                        LocalBroadcastManager.getInstance(mContext).sendBroadcast(Intent(Broadcast.CHANNEL_CLOSED))
+                        LocalBroadcastManager.getInstance(mContext)
+                            .sendBroadcast(Intent(Broadcast.CHANNEL_CLOSED))
                     }
                 }
             }
