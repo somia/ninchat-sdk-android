@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/ninchat_title_bar_height"
-    android:background="@color/ninchat_color_modal_background"
+    android:background="@drawable/ninchat_titlebar_background"
     android:gravity="center"
     android:orientation="horizontal">
 
     <ImageView
-        android:id="@+id/ninchat_chat_message_bot_avatar"
+        android:id="@+id/ninchat_chat_titlebar_avatar_img"
         android:layout_width="@dimen/ninchat_chat_activity_avatar_size"
         android:layout_height="@dimen/ninchat_chat_activity_avatar_size"
         android:layout_marginEnd="@dimen/ninchat_chat_activity_avatar_margin"
@@ -16,16 +16,29 @@
         android:src="@drawable/ninchat_chat_avatar_placeholder" />
 
     <TextView
-        android:id="@+id/ninchat_media_name"
+        android:id="@+id/ninchat_chat_titlebar_avatar_text_placeholder"
+        style="@style/NinchatTheme.TitlebarPlaceholder"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/ninchat_chat_activity_text_margin"
         android:layout_weight="0.6"
         android:autoLink="none"
         android:ellipsize="end"
         android:maxLines="2"
+        android:textColor="@color/ninchat_color_modal_text" />
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/ninchat_chat_titlebar_avatar_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/ninchat_chat_activity_text_margin"
-        android:textColor="@color/ninchat_color_modal_text"
-        android:text="Title bar" />
+        android:layout_weight="0.6"
+        android:autoLink="none"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="Agent name placeholder"
+        android:textColor="@color/ninchat_color_modal_text" />
 
     <View
         android:id="@+id/view_padding"
@@ -39,7 +52,7 @@
         style="@style/NinchatTheme.Button.Close.Chat"
         android:layout_width="@dimen/ninchat_close_button_width"
         android:layout_height="@dimen/ninchat_close_button_height"
-        android:text="Close"
-        android:onClick="onCloseChat" />
+        android:onClick="onCloseChat"
+        android:text="Close" />
 
 </LinearLayout>
