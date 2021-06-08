@@ -55,7 +55,7 @@ class NinchatSiteConfig {
                     if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
                         found = true
                         value = siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, true)
-                                ?: false
+                            ?: false
                     }
                 }
             }
@@ -69,7 +69,8 @@ class NinchatSiteConfig {
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
                     if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optString(key, "null")
+                        value =
+                            siteConfig?.optJSONObject(currentEnvironment)?.optString(key, "null")
                         // workaround value can be null which when parsing will be interpreted as "null" string in Java with quote
                         if ("null" == value || "false" == value) {
                             value = null
@@ -93,121 +94,129 @@ class NinchatSiteConfig {
     }
 
     fun getAudienceAutoQueue(): String? =
-            getString("audienceAutoQueue")
+        getString("audienceAutoQueue")
 
     fun getRealmId(): String? =
-            getString("audienceRealmId")
+        getString("audienceRealmId")
 
     fun getWelcomeText(): String =
-            getString("welcome") ?: "welcome"
+        getString("welcome") ?: "welcome"
 
     fun getNoQueuesText(): String =
-            getString("noQueuesText") ?: ""
+        getString("noQueuesText") ?: ""
 
     fun getCloseWindowText(): String =
-            getTranslation("Close window")
+        getTranslation("Close window")
 
     fun getUserName(): String? =
-            getString("userName")
+        getString("userName")
 
     fun getAgentName(): String? =
-            getString("agentName")
+        getString("agentName")
 
     fun getSendButtonText(): String? =
-            getString("sendButtonText")
+        getString("sendButtonText")
 
     fun getSubmitButtonText(): String =
-            getTranslation("Submit")
+        getTranslation("Submit")
 
     fun isAttachmentsEnabled(): Boolean =
-            getBoolean("supportFiles") ?: false
+        getBoolean("supportFiles") ?: false
 
     fun isVideoEnabled(): Boolean =
-            getBoolean("supportVideo") ?: false
+        getBoolean("supportVideo") ?: false
 
     fun showUserAvatar(): Boolean =
-            getBoolean("userAvatar") ?: false
+        getBoolean("userAvatar") ?: false
 
     fun showAgentAvatar(): Boolean =
-            getBoolean("agentAvatar") ?: false
+        getBoolean("agentAvatar") ?: false
 
     fun getAgentAvatar(): String? =
-            getString("agentAvatar")
+        getString("agentAvatar")
 
     fun getUserAvatar(): String? =
-            getString("userAvatar")
+        getString("userAvatar")
 
     fun getConversationEndedText(): String =
-            getTranslation("Conversation ended")
+        getTranslation("Conversation ended")
 
     fun getChatCloseText(): String =
-            getTranslation("Close chat")
+        getTranslation("Close chat")
 
     fun getChatCloseConfirmationText(): String =
-            getString("closeConfirmText") ?: ""
+        getString("closeConfirmText") ?: ""
 
     fun getContinueChatText(): String =
-            getTranslation("Continue chat")
+        getTranslation("Continue chat")
 
     fun getEnterMessageText(): String =
-            getTranslation("Enter your message")
+        getTranslation("Enter your message")
 
     fun getVideoChatTitleText(): String =
-            getTranslation("You are invited to a video chat")
+        getTranslation("You are invited to a video chat")
 
     fun getVideoChatDescriptionText(): String =
-            getTranslation("wants to video chat with you")
+        getTranslation("wants to video chat with you")
 
     fun getVideoCallAcceptText(): String =
-            getTranslation("Accept")
+        getTranslation("Accept")
 
     fun getVideoCallDeclineText(): String =
-            getTranslation("Decline")
+        getTranslation("Decline")
 
     fun getVideoCallMetaMessageText(): String =
-            getTranslation("You are invited to a video chat")
+        getTranslation("You are invited to a video chat")
 
     fun getVideoCallAcceptedText(): String =
-            getTranslation("Video chat answered")
+        getTranslation("Video chat answered")
 
     fun getVideoCallRejectedText(): String =
-            getTranslation("Video chat declined")
+        getTranslation("Video chat declined")
 
     fun getMOTDText(): String =
-            getString("motd") ?: ""
+        getString("motd") ?: ""
 
     fun getInQueueMessageText(): String? =
-            getString("inQueueText")
+        getString("inQueueText")
 
     fun showRating(): Boolean =
-            getBoolean("audienceRating") ?: false
+        getBoolean("audienceRating") ?: false
 
     fun getFeedbackTitleText(): String =
-            getTranslation("How was our customer service?")
+        getTranslation("How was our customer service?")
 
     fun getFeedbackPositiveText(): String =
-            getTranslation("Good")
+        getTranslation("Good")
 
     fun getFeedbackNeutralText(): String =
-            getTranslation("Okay")
+        getTranslation("Okay")
 
     fun getFeedbackNegativeText(): String =
-            getTranslation("Poor")
+        getTranslation("Poor")
 
     fun getFeedbackSkipText(): String =
-            getTranslation("Skip")
+        getTranslation("Skip")
 
     fun getQueueName(name: String, closed: Boolean = false): String {
         return if (closed) {
-            replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}} (closed)"), name);
+            replacePlaceholder(
+                getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}} (closed)"),
+                name
+            );
         } else {
-            replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
+            replacePlaceholder(
+                getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"),
+                name
+            );
         }
     }
 
     fun getChatStarted(name: String?): String =
-            replacePlaceholder(getTranslation("Audience in queue {{queue}} accepted."), name
-                    ?: "");
+        replacePlaceholder(
+            getTranslation("Audience in queue {{queue}} accepted."), name
+                ?: ""
+        );
 
     fun getQueueStatus(name: String?, position: Long = 0): String {
         val key = if (position == 1L) {
@@ -226,39 +235,48 @@ class NinchatSiteConfig {
 
 
     fun getQuestionnaireName(): String? =
-            getString("questionnaireName")
+        getString("questionnaireName")
 
     fun getQuestionnaireAvatar(): String? =
-            getString("questionnaireAvatar")
+        getString("questionnaireAvatar")
 
     fun getAudienceRegisteredText(): String? =
-            getString("audienceRegisteredText")
+        getString("audienceRegisteredText")
 
     fun getAudienceRegisteredClosedText(): String? =
-            getString("audienceRegisteredClosedText")
+        getString("audienceRegisteredClosedText")
 
     fun getPreAudienceQuestionnaire(): JSONArray? =
-            getArray("preAudienceQuestionnaire")
+        getArray("preAudienceQuestionnaire")
 
     fun getPostAudienceQuestionnaire(): JSONArray? =
-            getArray("postAudienceQuestionnaire")
+        getArray("postAudienceQuestionnaire")
 
     fun getPreAudienceQuestionnaireStyle(): String =
-            getString("preAudienceQuestionnaireStyle")
-                    ?: "form" // default style is form
+        getString("preAudienceQuestionnaireStyle")
+            ?: "form" // default style is form
 
     fun getPostAudienceQuestionnaireStyle(): String =
-            getString("postAudienceQuestionnaireStyle")
-                    ?: "form" // default style is form
+        getString("postAudienceQuestionnaireStyle")
+            ?: "form" // default style is form
 
+    fun getHideTitleBar(): Boolean =
+        getBoolean("hideTitlebar")
+            ?: true // default is true ( should hide titlebar if nothing is present )
+
+    fun getTitlebarCloseText(): String =
+        getTranslation("Close")
 
     internal fun getTranslation(translationKey: String = "translations", key: String): String? {
         var value: String? = null
         siteConfig?.let {
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
-                    if (siteConfig?.optJSONObject(currentEnvironment)?.optJSONObject(translationKey)?.has(key) == true) {
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optJSONObject(translationKey)?.optString(key)
+                    if (siteConfig?.optJSONObject(currentEnvironment)?.optJSONObject(translationKey)
+                            ?.has(key) == true
+                    ) {
+                        value = siteConfig?.optJSONObject(currentEnvironment)
+                            ?.optJSONObject(translationKey)?.optString(key)
                     }
                 }
             }
@@ -268,7 +286,7 @@ class NinchatSiteConfig {
 
     // todo (pallab) move to translator package
     fun getTranslation(key: String = ""): String =
-            getTranslation("translations", key) ?: key
+        getTranslation("translations", key) ?: key
 
     // todo (pallab) move to translator or general util/helper package
     fun replacePlaceholder(origin: String?, replacement: String): String {
