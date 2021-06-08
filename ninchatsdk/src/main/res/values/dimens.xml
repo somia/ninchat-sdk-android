@@ -7,7 +7,7 @@
     <dimen name="ninchat_button_vertical_margin">7dp</dimen>
     <dimen name="ninchat_dialog_button_height">45dp</dimen>
     <dimen name="ninchat_close_button_height">45dp</dimen>
-    <dimen name="ninchat_close_button_width">-2</dimen>
+    <dimen name="ninchat_close_button_width">-2dp</dimen>
     <dimen name="ninchat_send_button_height">35dp</dimen>
     <dimen name="ninchat_multichoice_button_corner_radius">20dp</dimen>
     <dimen name="ninchat_multichoice_padding">5dp</dimen>
