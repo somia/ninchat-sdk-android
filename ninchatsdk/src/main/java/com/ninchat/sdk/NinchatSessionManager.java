@@ -189,12 +189,12 @@ public final class NinchatSessionManager {
 
     public NinchatUser getMember(final String userId) {
         if (ninchatState.getUserId() != null && ninchatState.getUserId().equals(userId)) {
-            return new NinchatUser(getUserName(), getUserName(), null, true);
+            return new NinchatUser(getUserName(), getUserName(), null, true, "");
         }
         return ninchatState.getMember(userId);
     }
 
-    public boolean isGuestMemeber() {
+    public boolean isGuestMember() {
         final NinchatUser currentUser = ninchatState.getMember(ninchatState.getUserId());
         if (currentUser == null) {
             return false;
