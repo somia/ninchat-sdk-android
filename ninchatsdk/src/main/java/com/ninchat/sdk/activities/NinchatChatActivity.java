@@ -114,7 +114,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
                         aLong -> null
                 );
                 // delete the user if current user is a guest
-                if (NinchatSessionManager.getInstance().isGuestMemeber()) {
+                if (NinchatSessionManager.getInstance().isGuestMember()) {
                     NinchatDeleteUser.executeAsync(
                             NinchatScopeHandler.getIOScope(),
                             sessionManager.getSession(),
