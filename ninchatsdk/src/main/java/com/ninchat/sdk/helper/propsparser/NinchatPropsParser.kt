@@ -168,7 +168,8 @@ class NinchatPropsParser {
                 val realName = userAttr?.getString("realname")
                 val avatar = userAttr?.getString("iconurl")
                 val guest = userAttr?.getBool("guest") ?: false
-                Pair(it.key, NinchatUser(displayName, realName, avatar, guest))
+                val jobTitle = userAttr?.getObject("info")?.getString("job_title")
+                Pair(it.key, NinchatUser(displayName, realName, avatar, guest, jobTitle))
             }
         }
 
