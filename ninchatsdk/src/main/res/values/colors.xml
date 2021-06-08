@@ -58,6 +58,6 @@
     <color name="ninchat_color_checkbox_selected">@color/ninchat_colorAccent</color>
     <color name="ninchat_color_checkbox_unselected">@color/ninchat_color_hint</color>
 
-    <color name="ninchat_color_titlebar_placeholder">#FFFFFF</color>
+    <color name="ninchat_color_titlebar_placeholder">#E9E9E9</color>
     <color name="ninchat_color_modal_border">#DBDDE1</color>
 </resources>
