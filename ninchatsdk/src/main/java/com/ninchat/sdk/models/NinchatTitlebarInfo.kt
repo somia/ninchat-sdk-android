@@ -14,7 +14,7 @@ data class NinchatTitlebarInfo(
     val closeButtonText: String? = null
 )
 
-// Chat, ratting view
+// Chat, rating view
 fun getTitlebarInfoForChatAndRatings(): NinchatTitlebarInfo? {
     return NinchatSessionManager.getInstance()?.let { session ->
         val user = session.ninchatState?.members?.entries?.find { !it.value.isGuest }?.value
