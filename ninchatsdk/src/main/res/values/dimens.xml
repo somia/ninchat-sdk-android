@@ -107,7 +107,7 @@
 
     <!-- Titlebar -->
     <dimen name="ninchat_title_bar_height">70dp</dimen>
-    <dimen name="ninchat_title_bar_height_agent_name_margin">15dp</dimen>
+    <dimen name="ninchat_chat_activity_text_margin">15dp</dimen>
 
 
 </resources>

@@ -40,6 +40,7 @@
 
     <color name="ninchat_color_modal_background">@android:color/white</color>
     <color name="ninchat_color_modal_title_text">@color/ninchat_colorPrimary</color>
+    <color name="ninchat_color_modal_text">@color/ninchat_colorAccent</color>
 
     <color name="ninchat_color_rating_positive_text">@color/ninchat_colorPrimary</color>
     <color name="ninchat_color_rating_neutral_text">@color/ninchat_colorPrimary</color>
