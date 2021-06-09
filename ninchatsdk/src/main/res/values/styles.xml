@@ -109,5 +109,11 @@
     <style name="NinchatTheme.Radio.UnSelected" parent="NinchatTheme.MultiChoice" >
         <item name="android:textColor">@color/ninchat_color_radio_item_unselected_text</item>
     </style>
+    <style name="NinchatTheme.TitlebarPlaceholder">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/ninchat_titlebar_text_placeholder</item>
+        <item name="android:gravity">left</item>
+    </style>
 
 </resources>
