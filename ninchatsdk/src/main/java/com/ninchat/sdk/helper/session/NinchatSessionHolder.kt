@@ -139,6 +139,7 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
     }
 
     fun dispose() {
+        currentSession?.close()
         NinchatSessionManager.getInstance()?.context?.let {
             LocalBroadcastManager.getInstance(it).sendBroadcast(Intent(Broadcast.CLOSE_NINCHAT_ACTIVITY))
         }
