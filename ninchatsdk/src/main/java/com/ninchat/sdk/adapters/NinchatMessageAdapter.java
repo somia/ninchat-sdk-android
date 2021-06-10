@@ -79,8 +79,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             }
             final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
             final boolean showAvatars = ninchatMessage.isRemoteMessage() ?
-                    sessionManager.ninchatState.getSiteConfig().showAgentAvatar() :
-                    sessionManager.ninchatState.getSiteConfig().showUserAvatar();
+                    sessionManager.ninchatState.getSiteConfig().showAgentAvatar(false) :
+                    sessionManager.ninchatState.getSiteConfig().showUserAvatar(false);
             if (!showAvatars) {
                 avatar.setVisibility(View.GONE);
             } else if (hideAvatar) {
