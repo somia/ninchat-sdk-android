@@ -46,7 +46,7 @@ class NinchatSiteConfig {
         return value
     }
 
-    fun getBoolean(key: String): Boolean? {
+    fun getBoolean(key: String, fallback: Boolean = false): Boolean? {
         var value = false
         var found = false;
         siteConfig?.let {
@@ -54,7 +54,7 @@ class NinchatSiteConfig {
                 for (currentEnvironment in it) {
                     if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
                         found = true
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, true)
+                        value = siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, fallback)
                             ?: false
                     }
                 }
@@ -126,11 +126,11 @@ class NinchatSiteConfig {
     fun isVideoEnabled(): Boolean =
         getBoolean("supportVideo") ?: false
 
-    fun showUserAvatar(): Boolean =
-        getBoolean("userAvatar") ?: false
+    fun showUserAvatar(fallback: Boolean = false): Boolean =
+        getBoolean("userAvatar", fallback = fallback) ?: false
 
-    fun showAgentAvatar(): Boolean =
-        getBoolean("agentAvatar") ?: false
+    fun showAgentAvatar(fallback: Boolean = false): Boolean =
+        getBoolean("agentAvatar", fallback = fallback) ?: false
 
     fun getAgentAvatar(): String? =
         getString("agentAvatar")
@@ -261,7 +261,7 @@ class NinchatSiteConfig {
             ?: "form" // default style is form
 
     fun getHideTitleBar(): Boolean =
-        getBoolean("hideTitlebar")
+        getBoolean("hideTitlebar", fallback = false)
             ?: true // default is true ( should hide titlebar if nothing is present )
 
     fun getTitlebarCloseText(): String =
