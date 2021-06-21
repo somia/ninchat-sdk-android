@@ -7,7 +7,7 @@ import com.ninchat.sdk.NinchatSessionManager
  * https://github.com/somia/mobile/issues/343
  */
 
-data class NinchatTitlebarInfo(
+data class NinchatTitleBarInfo(
     val userAvatar: String? = null,
     val name: String? = null,
     val jobTitle: String? = null,
@@ -16,7 +16,7 @@ data class NinchatTitlebarInfo(
 )
 
 // Chat, rating view
-fun getTitlebarInfoForChatAndRatings(): NinchatTitlebarInfo? {
+fun getTitleBarInfoForChatAndRatings(): NinchatTitleBarInfo? {
     return NinchatSessionManager.getInstance()?.let { session ->
         val user = session.ninchatState?.members?.entries?.find { !it.value.isGuest }?.value
         val userAvatar = user?.avatar
@@ -24,7 +24,7 @@ fun getTitlebarInfoForChatAndRatings(): NinchatTitlebarInfo? {
         val jobTitle = user?.jobTitle
         val closeButtonText = session.ninchatState?.siteConfig?.getTitlebarCloseText()
         val showAvatar = session.ninchatState.siteConfig.showAgentAvatar(fallback = true)
-        NinchatTitlebarInfo(
+        NinchatTitleBarInfo(
             userAvatar=userAvatar,
             name = name,
             jobTitle = jobTitle,
@@ -35,24 +35,23 @@ fun getTitlebarInfoForChatAndRatings(): NinchatTitlebarInfo? {
 
 }
 
-fun getTitlebarInfoForQuestionnaire(): NinchatTitlebarInfo? {
+fun getTitleBarInfoForQuestionnaire(): NinchatTitleBarInfo? {
     return NinchatSessionManager.getInstance()?.let { session ->
         val name = session.ninchatState?.siteConfig?.getQuestionnaireName()
         val avatar = session.ninchatState?.siteConfig?.getQuestionnaireAvatar()
         val closeButtonText = session.ninchatState?.siteConfig?.getTitlebarCloseText()
         val showAvatar = session.ninchatState.siteConfig.showAgentAvatar(fallback = true)
-        NinchatTitlebarInfo(name = name, userAvatar = avatar, closeButtonText = closeButtonText, showAvatar = showAvatar)
+        NinchatTitleBarInfo(name = name, userAvatar = avatar, closeButtonText = closeButtonText, showAvatar = showAvatar)
     }
 }
 
-fun getTitlebarInfoForQueue(): NinchatTitlebarInfo? {
+fun getTitleBarInfoForQueue(): NinchatTitleBarInfo? {
     return NinchatSessionManager.getInstance()?.let { session ->
         val closeButtonText = session.ninchatState?.siteConfig?.getTitlebarCloseText()
-        val showAvatar = session.ninchatState.siteConfig.showAgentAvatar(fallback = true)
-        NinchatTitlebarInfo(closeButtonText = closeButtonText, showAvatar = showAvatar)
+        NinchatTitleBarInfo(closeButtonText = closeButtonText, showAvatar = true)
     }
 }
 
-fun shouldHideTitlebar(): Boolean {
+fun shouldHideTitleBar(): Boolean {
     return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getHideTitleBar() ?: true
 }
