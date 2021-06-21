@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
 import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
+import com.ninchat.sdk.models.shouldHideTitleBar
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.BotWritingCompleteListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.INinchatBotWritingViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.NinchatBotWritingViewPresenter
@@ -44,7 +45,11 @@ class NinchatBotWriting(
     override fun onRenderView(label: String?, imgUrl: String?, enabled: Boolean) {
         itemView.isEnabled = enabled
         itemView.ninchat_chat_message_bot_text.text = label
+        if(!shouldHideTitleBar())
+            return
+
         imgUrl?.let {
+            itemView.ninchat_chat_message_bot_avatar.visibility = View.VISIBLE
             try {
                 GlideWrapper.loadImageAsCircle(itemView.context, it, itemView.ninchat_chat_message_bot_avatar)
             } catch (e: Exception) {

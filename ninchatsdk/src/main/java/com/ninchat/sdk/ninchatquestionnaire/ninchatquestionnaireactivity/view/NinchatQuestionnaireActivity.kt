@@ -3,7 +3,6 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.RelativeLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +18,6 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.present
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.NinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.NinchatQuestionnaireListAdapter
 import com.ninchat.sdk.utils.misc.Misc
-import com.ninchat.sdk.utils.misc.Misc.Companion.getNinchatChatBackground
 import kotlinx.android.synthetic.main.activity_ninchat_questionnaire.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -75,6 +73,11 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
             this.layoutManager = mLayoutManager
             this.adapter = currentAdapter
             addItemDecoration(NinchatQuestionnaireItemDecoration(spaceInPixelTop, spaceLeft, spaceRight))
+        }
+        ninchat_titlebar?.let {
+            presenter.mayBeAttachTitlebar(it, callback = {
+                onFinishQuestionnaire(openQueue = false)
+            })
         }
     }
 
