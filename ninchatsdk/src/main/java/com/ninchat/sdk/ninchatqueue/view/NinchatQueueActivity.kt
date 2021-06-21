@@ -20,9 +20,10 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
 
     // ninchat queue presenter
     private val ninchatQueuePresenter = NinchatQueuePresenter(
-            ninchatQueueModel = NinchatQueueModel(),
-            callback = this,
-            mContext = this)
+        ninchatQueueModel = NinchatQueueModel(),
+        callback = this,
+        mContext = this
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,10 +46,17 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
         }
         //3: update queue view
         ninchatQueuePresenter.updateQueueView(ninchat_queue_activity)
-        //4: subscriber broadcaster
+
+        //4: add actions
+        ninchatQueuePresenter.mayBeAttachTitlebar(ninchat_queue_activity, callback = {
+            this.onClose(ninchat_queue_activity)
+        })
+
+        //5: subscriber broadcaster
         ninchatQueuePresenter.subscribeBroadcaster()
-        //5: try to join the queue
+        //6: try to join the queue
         ninchatQueuePresenter.mayBeJoinQueue()
+
     }
 
     override fun onDestroy() {
@@ -68,6 +76,9 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
             }
             ninchatQueuePresenter.updateQueueId(intent = data)
             ninchatQueuePresenter.updateQueueView(ninchat_queue_activity)
+            ninchatQueuePresenter.mayBeAttachTitlebar(ninchat_queue_activity, callback = {
+                this.onClose(ninchat_queue_activity)
+            })
         }
     }
 
@@ -78,11 +89,15 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
     }
 
     override fun onChannelJoined(isClosed: Boolean) {
-        val intent = NinchatQueuePresenter.getLaunchIntentForChatActivity(applicationContext, isClosed)
+        val intent =
+            NinchatQueuePresenter.getLaunchIntentForChatActivity(applicationContext, isClosed)
         startActivityForResult(intent, NinchatChatActivity.REQUEST_CODE)
     }
 
     override fun onQueueUpdate() {
         ninchatQueuePresenter.updateQueueView(ninchat_queue_activity)
+        ninchatQueuePresenter.mayBeAttachTitlebar(ninchat_queue_activity, callback = {
+            this.onClose(ninchat_queue_activity)
+        })
     }
 }

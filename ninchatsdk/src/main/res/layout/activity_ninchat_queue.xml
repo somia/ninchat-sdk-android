@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ninchat_queue_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/ninchat_queue_activity"
     android:background="@color/ninchat_color_background_bottom"
-    tools:context=".ninchatqueue.view.NinchatQueueActivity"
-    android:fadeScrollbars="false">
+    android:fadeScrollbars="false"
+    tools:context=".ninchatqueue.view.NinchatQueueActivity">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include
+            android:visibility="gone"
+            android:id="@+id/ninchat_titlebar"
+            layout="@layout/ninchat_titlebar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <LinearLayout
             android:id="@+id/ninchat_queue_activity_top_matter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/ninchat_color_background_top"
             android:orientation="vertical"
             android:paddingTop="@dimen/ninchat_queue_activity_top_matter_top_margin"
-            android:paddingBottom="@dimen/ninchat_queue_activity_top_matter_bottom_margin"
-            android:background="@color/ninchat_color_background_top">
+            android:paddingBottom="@dimen/ninchat_queue_activity_top_matter_bottom_margin">
 
             <ImageView
                 android:id="@+id/ninchat_queue_activity_progress"
@@ -34,12 +41,12 @@
                 android:id="@+id/ninchat_queue_activity_queue_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:layout_marginTop="@dimen/ninchat_queue_activity_queue_status_margin"
                 android:layout_marginStart="@dimen/ninchat_queue_activity_queue_status_margin"
+                android:layout_marginTop="@dimen/ninchat_queue_activity_queue_status_margin"
                 android:layout_marginEnd="@dimen/ninchat_queue_activity_queue_status_margin"
-                tools:text="Queue status"
-                android:textColor="@color/ninchat_color_text_top" />
+                android:gravity="center_horizontal"
+                android:textColor="@color/ninchat_color_text_top"
+                tools:text="Queue status" />
 
         </LinearLayout>
 
@@ -52,22 +59,22 @@
                 android:id="@+id/ninchat_queue_activity_queue_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
                 android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
                 android:gravity="center_horizontal"
                 android:textColor="@color/ninchat_color_text_bottom"
                 tools:text="In queue message" />
 
             <Button
                 android:id="@+id/ninchat_queue_activity_close_button"
+                style="@style/NinchatTheme.Button.Close.Chat"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/NinchatTheme.Button.Close.Chat"
-                android:layout_marginTop="@dimen/ninchat_queue_activity_bottom_matter_button_margin"
                 android:layout_below="@id/ninchat_queue_activity_queue_message"
                 android:layout_centerHorizontal="true"
-                tools:text="Close chat"
-                android:onClick="onClose"/>
+                android:layout_marginTop="@dimen/ninchat_queue_activity_bottom_matter_button_margin"
+                android:onClick="onClose"
+                tools:text="Close chat" />
 
         </RelativeLayout>
 

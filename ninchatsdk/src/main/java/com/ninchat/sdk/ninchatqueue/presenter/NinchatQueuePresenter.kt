@@ -11,6 +11,7 @@ import android.view.animation.RotateAnimation
 import android.widget.ImageView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatChatActivity
 import com.ninchat.sdk.helper.session.NinchatSessionManagerHelper
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
@@ -22,6 +23,7 @@ import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.misc.Parameter
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.android.synthetic.main.activity_ninchat_queue.view.*
+import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
 import kotlinx.coroutines.launch
 
 interface INinchatQueuePresenter {
@@ -30,9 +32,9 @@ interface INinchatQueuePresenter {
 }
 
 class NinchatQueuePresenter(
-        val ninchatQueueModel: NinchatQueueModel,
-        val callback: INinchatQueuePresenter?,
-        val mContext: Context,
+    val ninchatQueueModel: NinchatQueueModel,
+    val callback: INinchatQueuePresenter?,
+    val mContext: Context,
 ) {
 
     fun hasSession(): Boolean {
@@ -41,37 +43,55 @@ class NinchatQueuePresenter(
 
     fun updateQueueView(view: View) {
         // update queue text
-        view.ninchat_queue_activity_queue_status.text = Misc.toRichText(ninchatQueueModel.getQueueStatus(), view.ninchat_queue_activity_queue_status)
-        view.ninchat_queue_activity_queue_message.text = Misc.toRichText(ninchatQueueModel.getInQueueMessageText(), view.ninchat_queue_activity_queue_message)
-        view.ninchat_queue_activity_close_button.text = Misc.toRichText(ninchatQueueModel.getChatCloseText(), view.ninchat_queue_activity_close_button)
+        view.ninchat_queue_activity_queue_status.text = Misc.toRichText(
+            ninchatQueueModel.getQueueStatus(),
+            view.ninchat_queue_activity_queue_status
+        )
+        view.ninchat_queue_activity_queue_message.text = Misc.toRichText(
+            ninchatQueueModel.getInQueueMessageText(),
+            view.ninchat_queue_activity_queue_message
+        )
+        view.ninchat_queue_activity_close_button.text = Misc.toRichText(
+            ninchatQueueModel.getChatCloseText(),
+            view.ninchat_queue_activity_close_button
+        )
 
         // update queue visibility
-        view.ninchat_queue_activity_queue_status.visibility = if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
-        view.ninchat_queue_activity_queue_message.visibility = if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
-        view.ninchat_queue_activity_close_button.visibility = if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
+        view.ninchat_queue_activity_queue_status.visibility =
+            if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
+        view.ninchat_queue_activity_queue_message.visibility =
+            if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
+        view.ninchat_queue_activity_close_button.visibility =
+            if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
     }
 
     fun updateQueueId(intent: Intent?) {
         // update queue id
         val queueId = intent?.getStringExtra(NinchatQueueModel.QUEUE_ID)
-        if(ninchatQueueModel.queueId == queueId)return
+        if (ninchatQueueModel.queueId == queueId) return
         ninchatQueueModel.queueId = queueId
         if (!ninchatQueueModel.isAlreadyInQueueList()) {
             // if not already in queue then try to describe the queue
             NinchatScopeHandler.getIOScope().launch {
                 NinchatDescribeQueue.execute(
-                        currentSession = NinchatSessionManager.getInstance()?.session,
-                        queueId = queueId
+                    currentSession = NinchatSessionManager.getInstance()?.session,
+                    queueId = queueId
                 )
             }
         }
-
     }
 
     fun showQueueAnimation(view: ImageView?) {
         // show rotate animation
         view?.run {
-            animation = RotateAnimation(0f, 359f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f).apply {
+            animation = RotateAnimation(
+                0f,
+                359f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f
+            ).apply {
                 interpolator = LinearInterpolator()
                 repeatCount = Animation.INFINITE
                 duration = 3000
@@ -106,7 +126,7 @@ class NinchatQueuePresenter(
         NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
             NinchatScopeHandler.getIOScope().launch {
                 NinchatDeleteUser.execute(
-                        currentSession = ninchatSessionManager.session
+                    currentSession = ninchatSessionManager.session
                 )
             }
         }
@@ -126,6 +146,28 @@ class NinchatQueuePresenter(
             if (intent.action == Broadcast.QUEUE_UPDATED) {
                 callback?.onQueueUpdate()
             }
+        }
+    }
+
+    fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
+        if (ninchatQueueModel.hideTitleBar()) return
+
+        view.ninchat_titlebar.ninchat_titlebar_agent_info_parent.visibility = View.GONE
+        view.ninchat_queue_activity_close_button.visibility = View.INVISIBLE
+
+        // show text placeholder
+        view.ninchat_titlebar.ninchat_chat_titlebar_avatar_text_placeholder.visibility =
+            View.VISIBLE
+        // show avatar placeholder
+        view.ninchat_titlebar.ninchat_chat_titlebar_avatar_img.setImageResource(R.drawable.ninchat_chat_avatar_placeholder)
+        // update close button text
+        ninchatQueueModel.getTitleBarInfo()?.closeButtonText.let {
+            view.ninchat_titlebar.ninchat_chat_close.text = it
+        }
+        view.ninchat_titlebar.visibility = View.VISIBLE
+        // attach action handler
+        view.ninchat_titlebar.ninchat_chat_close.setOnClickListener {
+            callback()
         }
     }
 
