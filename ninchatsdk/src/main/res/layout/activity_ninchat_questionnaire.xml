@@ -10,7 +10,15 @@
     tools:context=".ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity">
 
 
+    <include
+        android:visibility="gone"
+        android:id="@+id/ninchat_titlebar"
+        layout="@layout/ninchat_titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_below="@id/ninchat_titlebar"
         android:background="@android:color/transparent"
         android:id="@+id/questionnaire_form_rview"
         android:layout_width="match_parent"

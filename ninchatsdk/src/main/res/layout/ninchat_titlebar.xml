@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/ninchat_title_bar_height"
     android:background="@drawable/ninchat_titlebar_background"
@@ -13,7 +14,8 @@
         android:layout_marginEnd="@dimen/ninchat_chat_activity_avatar_margin"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        android:src="@drawable/ninchat_chat_avatar_left" />
+        android:visibility="gone"
+        tools:src="@drawable/ninchat_chat_avatar_left" />
 
     <TextView
         android:id="@+id/ninchat_chat_titlebar_avatar_text_placeholder"
@@ -29,34 +31,35 @@
         android:visibility="gone" />
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_weight="0.8"
         android:id="@+id/ninchat_titlebar_agent_info_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_weight="0.8"
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/ninchat_chat_titlebar_agent_name"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/ninchat_chat_activity_text_margin"
             android:autoLink="none"
             android:ellipsize="end"
             android:maxLines="2"
-            android:text="Agent name"
+            android:textColor="@color/ninchat_color_modal_text"
             android:textStyle="normal|bold"
-            android:textColor="@color/ninchat_color_modal_text" />
+            tools:text="Agent name" />
 
         <TextView
             android:id="@+id/ninchat_chat_titlebar_agent_jobtitle"
-            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/ninchat_chat_activity_text_margin"
             android:autoLink="none"
             android:ellipsize="end"
             android:maxLines="2"
-            android:text="Agent job title placeholder"
-            android:textColor="@color/ninchat_color_modal_text" />
+            android:textColor="@color/ninchat_color_modal_text"
+            tools:text="Agent job title placeholder" />
     </LinearLayout>
 
     <View
@@ -71,6 +74,6 @@
         style="@style/NinchatTheme.Button.Close.Chat"
         android:layout_width="@dimen/ninchat_close_button_width"
         android:layout_height="@dimen/ninchat_close_button_height"
-        android:text="Close" />
+        tools:text="Close" />
 
 </LinearLayout>

@@ -14,6 +14,7 @@
         android:layout_marginEnd="@dimen/ninchat_chat_activity_avatar_margin"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
+        android:visibility="gone"
         android:src="@drawable/ninchat_chat_avatar_left" />
 
     <TextView

@@ -150,20 +150,20 @@ class NinchatQueuePresenter(
     }
 
     fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
-        if (ninchatQueueModel.hideTitleBar()) return
+        val titleBarInfo = ninchatQueueModel.getTitleBarInfo()
+        if (ninchatQueueModel.hideTitleBar() || titleBarInfo == null) return
 
-        view.ninchat_titlebar.ninchat_titlebar_agent_info_parent.visibility = View.GONE
-        view.ninchat_queue_activity_close_button.visibility = View.INVISIBLE
+        // make inqueue close button gone
+        view.ninchat_queue_activity_close_button.visibility = View.GONE
 
-        // show text placeholder
+        // show text placeholder and avatar visible
         view.ninchat_titlebar.ninchat_chat_titlebar_avatar_text_placeholder.visibility =
             View.VISIBLE
+        view.ninchat_titlebar.ninchat_chat_titlebar_avatar_img.visibility = View.VISIBLE
         // show avatar placeholder
         view.ninchat_titlebar.ninchat_chat_titlebar_avatar_img.setImageResource(R.drawable.ninchat_chat_avatar_placeholder)
         // update close button text
-        ninchatQueueModel.getTitleBarInfo()?.closeButtonText.let {
-            view.ninchat_titlebar.ninchat_chat_close.text = it
-        }
+        view.ninchat_titlebar.ninchat_chat_close.text = titleBarInfo.closeButtonText
         view.ninchat_titlebar.visibility = View.VISIBLE
         // attach action handler
         view.ninchat_titlebar.ninchat_chat_close.setOnClickListener {

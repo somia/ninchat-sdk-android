@@ -262,7 +262,7 @@ class NinchatSiteConfig {
 
     fun getHideTitleBar(): Boolean =
         getBoolean("hideTitlebar", fallback = false)
-            ?: true // default is true ( should hide titlebar if nothing is present )
+            ?: false // default is true ( should hide titlebar if nothing is present )
 
     fun getTitlebarCloseText(): String =
         getTranslation("Close")

@@ -105,6 +105,7 @@ class NinchatActivity : NinchatBaseActivity(), INinchatActivityPresenter {
                         ninchatActivityPresenter.updateQueueId(intent = data)
                         ninchatActivityPresenter.openQueueActivity(this, queueId = ninchatActivityPresenter.ninchatActivityModel.queueId)
                     } else {
+                        NinchatSessionManager.getInstance()?.close()
                         finish()
                     }
                 } else if (resultCode == RESULT_CANCELED) {
