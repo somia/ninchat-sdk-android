@@ -19,11 +19,15 @@ data class NinchatTitleBarInfo(
 fun getTitleBarInfoForChatAndRatings(): NinchatTitleBarInfo? {
     return NinchatSessionManager.getInstance()?.let { session ->
         val user = session.ninchatState?.members?.entries?.find { !it.value.isGuest }?.value
-        val userAvatar = user?.avatar
+        val showAvatar = session.ninchatState?.siteConfig?.isFalse("agentAvatar") != true
+        val userAvatar = when {
+            session.ninchatState?.siteConfig?.isTrue("agentAvatar") == true -> user?.avatar
+            else -> session.ninchatState?.siteConfig?.getAgentAvatar()
+        } ?: "defaultIcon"
+
         val name = user?.name ?: session.ninchatState.siteConfig.getAgentName()
         val jobTitle = user?.jobTitle
         val closeButtonText = session.ninchatState?.siteConfig?.getTitlebarCloseText()
-        val showAvatar = session.ninchatState.siteConfig.showAgentAvatar(fallback = true)
         NinchatTitleBarInfo(
             userAvatar = userAvatar,
             name = name,
@@ -35,18 +39,38 @@ fun getTitleBarInfoForChatAndRatings(): NinchatTitleBarInfo? {
 
 }
 
-fun getTitleBarInfoForQuestionnaire(): NinchatTitleBarInfo? {
+fun getTitleBarInfoForPreAudienceQuestionnaire(): NinchatTitleBarInfo? {
     return NinchatSessionManager.getInstance()?.let { session ->
         val name = session.ninchatState?.siteConfig?.getQuestionnaireName()
+        val showAvatar = session.ninchatState?.siteConfig?.getQuestionnaireAvatar()?.let { true } ?: false
         val avatar = session.ninchatState?.siteConfig?.getQuestionnaireAvatar()
         val closeButtonText = session.ninchatState?.siteConfig?.getTitlebarCloseText()
-        val showAvatar = avatar?.let { true } ?: false
         NinchatTitleBarInfo(
             name = name,
             userAvatar = avatar,
             closeButtonText = closeButtonText,
             showAvatar = showAvatar
         )
+    }
+}
+
+fun getTitleBarInfoForPostAudienceQuestionnaire(): NinchatTitleBarInfo? {
+    return NinchatSessionManager.getInstance()?.let { session ->
+        val display = session.ninchatState?.siteConfig?.getPostQuestionnaireTitleBarDisplay()
+            ?: ""
+        return when (display) {
+            "agent" -> {
+                // similar to chat and rating -> show agent details
+                getTitleBarInfoForChatAndRatings()
+            }
+            "questionnaire" -> {
+                // similar to pre audience questionnaire -> show agent details
+                getTitleBarInfoForPreAudienceQuestionnaire()
+            }
+            else -> {
+                null
+            }
+        }
     }
 }
 
