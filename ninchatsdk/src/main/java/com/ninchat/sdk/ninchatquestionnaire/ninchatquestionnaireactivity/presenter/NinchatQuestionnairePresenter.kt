@@ -10,7 +10,7 @@ import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
-import com.ninchat.sdk.models.getTitleBarInfoForQuestionnaire
+import com.ninchat.sdk.models.getTitleBarInfoForPreAudienceQuestionnaire
 import com.ninchat.sdk.models.shouldHideTitleBar
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
 import com.ninchat.sdk.networkdispatchers.NinchatPartChannel
@@ -23,7 +23,6 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.Ni
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.NinchatQuestionnaireListAdapter
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.android.synthetic.main.activity_ninchat_queue.view.*
-import kotlinx.android.synthetic.main.bot_item_conversation_view.view.*
 import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
@@ -167,7 +166,7 @@ class NinchatQuestionnairePresenter(
     }
 
     fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
-        val titleBarInfo = getTitleBarInfoForQuestionnaire()
+        val titleBarInfo = getTitleBarInfoForPreAudienceQuestionnaire()
         if (shouldHideTitleBar() || titleBarInfo == null) return
         when {
             // no questionnaire avatar and no questionnaire name
