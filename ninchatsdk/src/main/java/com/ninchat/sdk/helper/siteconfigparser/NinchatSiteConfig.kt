@@ -54,13 +54,50 @@ class NinchatSiteConfig {
                 for (currentEnvironment in it) {
                     if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
                         found = true
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, fallback)
-                            ?: false
+                        value =
+                            siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, fallback)
+                                ?: false
                     }
                 }
             }
         }
         return if (found) value else null
+    }
+
+    fun isTrue(key: String): Boolean {
+        return siteConfig?.let {
+            preferredEnvironments?.let { environmentList ->
+                environmentList.any {
+                    siteConfig?.optJSONObject(it)?.has(key) == true &&
+                            siteConfig?.optJSONObject(it)?.optBoolean(key, false) == true
+                }
+            }
+        } ?: false
+    }
+
+    fun isFalse(key: String): Boolean {
+        return siteConfig?.let {
+            preferredEnvironments?.let { environmentList ->
+                environmentList.any {
+                    siteConfig?.optJSONObject(it)?.has(key) == true &&
+                            listOf("null", "false", "").contains(
+                                siteConfig?.optJSONObject(it)?.optString(key, "false")
+                            )
+                }
+            }
+        } ?: false
+    }
+
+    fun hasValue(key: String): Boolean {
+        return siteConfig?.let {
+            preferredEnvironments?.let { environmentList ->
+                environmentList.any {
+                    siteConfig?.optJSONObject(it)
+                        ?.has(key) == true && !siteConfig?.optJSONObject(it)?.optString(key, "")
+                        .isNullOrEmpty()
+                }
+            }
+        } ?: false
     }
 
     fun getString(key: String): String? {
@@ -129,8 +166,8 @@ class NinchatSiteConfig {
     fun showUserAvatar(fallback: Boolean = false): Boolean =
         getBoolean("userAvatar", fallback = fallback) ?: false
 
-    fun showAgentAvatar(fallback: Boolean = false): Boolean =
-        getBoolean("agentAvatar", fallback = fallback) ?: false
+    fun showAgentAvatar(fallback: Boolean = false): Boolean? =
+        getBoolean("agentAvatar", fallback = fallback)
 
     fun getAgentAvatar(): String? =
         getString("agentAvatar")
@@ -236,6 +273,9 @@ class NinchatSiteConfig {
 
     fun getQuestionnaireName(): String? =
         getString("questionnaireName")
+
+    fun getPostQuestionnaireTitleBarDisplay(): String? =
+        getString("postAudienceQuestionnaireTitlebar")
 
     fun getQuestionnaireAvatar(): String? =
         getString("questionnaireAvatar")
