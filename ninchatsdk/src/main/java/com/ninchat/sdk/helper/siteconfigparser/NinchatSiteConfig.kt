@@ -88,15 +88,18 @@ class NinchatSiteConfig {
         } ?: false
     }
 
-    fun isNonEmpty(key: String): Boolean {
-        return siteConfig?.let {
+    fun isEmpty(key: String): Boolean {
+        val notEmpty = siteConfig?.let {
             preferredEnvironments?.let { environmentList ->
                 environmentList.any {
-                    siteConfig?.optJSONObject(it)?.has(key) == true &&
-                            siteConfig?.optJSONObject(it)?.optString(key, "").isNullOrEmpty()
+                    siteConfig?.optJSONObject(it)
+                        ?.has(key) == true && !siteConfig?.optJSONObject(it)?.optString(key, "")
+                        .isNullOrEmpty()
                 }
             }
         } ?: false
+
+        return !notEmpty
     }
 
     fun getString(key: String): String? {
