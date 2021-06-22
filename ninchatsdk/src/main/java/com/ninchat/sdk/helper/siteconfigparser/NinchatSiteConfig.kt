@@ -88,8 +88,8 @@ class NinchatSiteConfig {
         } ?: false
     }
 
-    fun isEmpty(key: String): Boolean {
-        val notEmpty = siteConfig?.let {
+    fun hasValue(key: String): Boolean {
+        return siteConfig?.let {
             preferredEnvironments?.let { environmentList ->
                 environmentList.any {
                     siteConfig?.optJSONObject(it)
@@ -98,8 +98,6 @@ class NinchatSiteConfig {
                 }
             }
         } ?: false
-
-        return !notEmpty
     }
 
     fun getString(key: String): String? {
