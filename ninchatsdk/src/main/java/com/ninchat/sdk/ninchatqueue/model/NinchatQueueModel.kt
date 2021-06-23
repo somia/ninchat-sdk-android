@@ -2,8 +2,6 @@ package com.ninchat.sdk.ninchatqueue.model
 
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.helper.session.NinchatSessionManagerHelper
-import com.ninchat.sdk.models.getTitleBarInfoForQueue
-import com.ninchat.sdk.models.shouldHideTitleBar
 
 class NinchatQueueModel {
     var queueId: String? = null
@@ -55,10 +53,6 @@ class NinchatQueueModel {
             ?.any { currentQueue -> currentQueue.id == queueId }
             ?: false
     }
-
-    fun hideTitleBar(): Boolean = shouldHideTitleBar()
-
-    fun getTitleBarInfo() = getTitleBarInfoForQueue()
 
     companion object {
         @JvmField

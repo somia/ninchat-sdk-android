@@ -7,10 +7,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.R
 import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
-import com.ninchat.sdk.models.shouldHideTitleBar
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.BotWritingCompleteListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.INinchatBotWritingViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.NinchatBotWritingViewPresenter
+import com.ninchat.sdk.titlebar.model.shouldHideTitleBar
 import kotlinx.android.synthetic.main.bot_item_conversation_view.view.*
 import kotlinx.android.synthetic.main.bot_writing_indicator.view.*
 import org.json.JSONObject
@@ -50,11 +50,7 @@ class NinchatBotWriting(
 
         imgUrl?.let {
             itemView.ninchat_chat_message_bot_avatar.visibility = View.VISIBLE
-            try {
-                GlideWrapper.loadImageAsCircle(itemView.context, it, itemView.ninchat_chat_message_bot_avatar)
-            } catch (e: Exception) {
-                itemView.ninchat_chat_message_bot_avatar.setImageResource(R.drawable.ninchat_chat_avatar_left)
-            }
+            GlideWrapper.loadImageAsCircle(itemView.context, it, itemView.ninchat_chat_message_bot_avatar, R.drawable.ninchat_chat_avatar_left)
         }
     }
 

@@ -18,6 +18,8 @@ import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity
+import com.ninchat.sdk.titlebar.model.shouldHideTitleBar
+import com.ninchat.sdk.titlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.misc.Parameter
@@ -62,7 +64,7 @@ class NinchatQueuePresenter(
         view.ninchat_queue_activity_queue_message.visibility =
             if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
         view.ninchat_queue_activity_close_button.visibility =
-            if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
+            if (ninchatQueueModel.hasChannel() || !shouldHideTitleBar()) View.INVISIBLE else View.VISIBLE
     }
 
     fun updateQueueId(intent: Intent?) {
@@ -150,27 +152,8 @@ class NinchatQueuePresenter(
     }
 
     fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
-        val titleBarInfo = ninchatQueueModel.getTitleBarInfo()
-        if (ninchatQueueModel.hideTitleBar() || titleBarInfo == null) return
-
-        // make inqueue close button gone
-        view.ninchat_queue_activity_close_button.visibility = View.GONE
-
-        // show text placeholder and avatar visible
-        view.ninchat_titlebar.ninchat_chat_titlebar_avatar_text_placeholder.visibility =
-            View.VISIBLE
-        view.ninchat_titlebar.ninchat_chat_titlebar_avatar_img.visibility = View.VISIBLE
-        // show avatar placeholder
-        view.ninchat_titlebar.ninchat_chat_titlebar_avatar_img.setImageResource(R.drawable.ninchat_chat_avatar_placeholder)
-        // update close button text
-        view.ninchat_titlebar.ninchat_chat_close.text = titleBarInfo.closeButtonText
-        view.ninchat_titlebar.visibility = View.VISIBLE
-        // attach action handler
-        view.ninchat_titlebar.ninchat_chat_close.setOnClickListener {
-            callback()
-        }
+        NinchatTitlebarView.showTitlebarPlaceholder(view, callback = callback)
     }
-
 
     companion object {
         fun getLaunchIntentForChatActivity(context: Context?, isClosed: Boolean): Intent {
