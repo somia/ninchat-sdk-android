@@ -166,8 +166,8 @@ class NinchatSiteConfig {
     fun showUserAvatar(fallback: Boolean = false): Boolean =
         getBoolean("userAvatar", fallback = fallback) ?: false
 
-    fun showAgentAvatar(fallback: Boolean = false): Boolean? =
-        getBoolean("agentAvatar", fallback = fallback)
+    fun showAgentAvatar(fallback: Boolean = false): Boolean =
+        getBoolean("agentAvatar", fallback = fallback) ?: false
 
     fun getAgentAvatar(): String? =
         getString("agentAvatar")
