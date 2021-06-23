@@ -19,6 +19,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.N
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.NinchatQuestionnaireListAdapter
+import com.ninchat.sdk.titlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.android.synthetic.main.activity_ninchat_queue.view.*
 import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
@@ -164,6 +165,11 @@ class NinchatQuestionnairePresenter(
     }
 
     fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
+        if(isPostAudienceQuestionnaire()) {
+            NinchatTitlebarView.showTitlebarForPreAudienceQuestionnaire(view, callback = callback)
+        } else {
+            NinchatTitlebarView.showTitlebarForPreAudienceQuestionnaire(view, callback = callback)
+        }
 
     }
 

@@ -1,13 +1,15 @@
 package com.ninchat.sdk.titlebar.view
 
 import android.view.View
+import com.ninchat.sdk.titlebar.model.NinchatTitleBarInfo
 import com.ninchat.sdk.titlebar.model.chatCloseText
+import com.ninchat.sdk.titlebar.model.shouldHideTitleBar
 import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
 
 
 class NinchatTitlebarView {
     companion object {
-        fun showTitlebarPlaceholder(view: View, callback: () -> Unit) {
+        private fun showTitlebarPlaceholder(view: View, callback: () -> Unit) {
             view.ninchat_titlebar_with_placeholder.visibility = View.VISIBLE
             view.ninchat_titlebar_with_agent_info.visibility = View.GONE
             view.ninchat_titlebar_with_agent_info_and_job_title.visibility = View.GONE
@@ -17,6 +19,27 @@ class NinchatTitlebarView {
                 it.setOnClickListener { callback() }
                 it.text = chatCloseText()
             }
+        }
+
+        private fun showTitlebarWithAgentInfo(view: View, data: NinchatTitleBarInfo, callback: () -> Unit) {
+
+        }
+
+        private fun showTitlebarWithAgentInfoAndJobTitle(
+            view: View,
+            data: NinchatTitleBarInfo,
+            callback: () -> Unit
+        ) {
+
+        }
+
+        fun showTitlebarForPreAudienceQuestionnaire(view: View, callback: () -> Unit) {
+
+        }
+
+        fun showTitlebarForInQueueView(view: View, callback: () -> Unit) {
+            if(shouldHideTitleBar())return
+            showTitlebarPlaceholder(view, callback = callback)
         }
     }
 

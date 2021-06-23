@@ -19,6 +19,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.present
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.NinchatQuestionnaireListAdapter
 import com.ninchat.sdk.utils.misc.Misc
 import kotlinx.android.synthetic.main.activity_ninchat_questionnaire.*
+import kotlinx.android.synthetic.main.activity_ninchat_questionnaire.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -74,11 +75,9 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
             this.adapter = currentAdapter
             addItemDecoration(NinchatQuestionnaireItemDecoration(spaceInPixelTop, spaceLeft, spaceRight))
         }
-        ninchat_titlebar?.let {
-            presenter.mayBeAttachTitlebar(it, callback = {
-                onFinishQuestionnaire(openQueue = false)
-            })
-        }
+        presenter.mayBeAttachTitlebar(ninchat_audience_questionnaire_root.ninchat_titlebar, callback = {
+            onFinishQuestionnaire(openQueue = false)
+        })
     }
 
     override fun onCompleteQuestionnaire() {

@@ -11,21 +11,17 @@ import android.view.animation.RotateAnimation
 import android.widget.ImageView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatChatActivity
 import com.ninchat.sdk.helper.session.NinchatSessionManagerHelper
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity
-import com.ninchat.sdk.titlebar.model.shouldHideTitleBar
-import com.ninchat.sdk.titlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.misc.Parameter
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.android.synthetic.main.activity_ninchat_queue.view.*
-import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
 import kotlinx.coroutines.launch
 
 interface INinchatQueuePresenter {
@@ -64,7 +60,7 @@ class NinchatQueuePresenter(
         view.ninchat_queue_activity_queue_message.visibility =
             if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
         view.ninchat_queue_activity_close_button.visibility =
-            if (ninchatQueueModel.hasChannel() || !shouldHideTitleBar()) View.INVISIBLE else View.VISIBLE
+            if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
     }
 
     fun updateQueueId(intent: Intent?) {
@@ -152,7 +148,7 @@ class NinchatQueuePresenter(
     }
 
     fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
-        NinchatTitlebarView.showTitlebarPlaceholder(view, callback = callback)
+        // NinchatTitlebarView.showTitlebarForInQueueView(view, callback = callback)
     }
 
     companion object {

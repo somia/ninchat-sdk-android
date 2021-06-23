@@ -10,7 +10,6 @@ import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.BotWritingCompleteListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.INinchatBotWritingViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.NinchatBotWritingViewPresenter
-import com.ninchat.sdk.titlebar.model.shouldHideTitleBar
 import kotlinx.android.synthetic.main.bot_item_conversation_view.view.*
 import kotlinx.android.synthetic.main.bot_writing_indicator.view.*
 import org.json.JSONObject
@@ -45,13 +44,9 @@ class NinchatBotWriting(
     override fun onRenderView(label: String?, imgUrl: String?, enabled: Boolean) {
         itemView.isEnabled = enabled
         itemView.ninchat_chat_message_bot_text.text = label
-        if(!shouldHideTitleBar())
-            return
 
-        imgUrl?.let {
-            itemView.ninchat_chat_message_bot_avatar.visibility = View.VISIBLE
-            GlideWrapper.loadImageAsCircle(itemView.context, it, itemView.ninchat_chat_message_bot_avatar, R.drawable.ninchat_chat_avatar_left)
-        }
+        itemView.ninchat_chat_message_bot_avatar.visibility = View.VISIBLE
+        GlideWrapper.loadImageAsCircle(itemView.context, imgUrl, itemView.ninchat_chat_message_bot_avatar, R.drawable.ninchat_chat_avatar_left)
     }
 
     override fun onUpdateView(label: String?, imgUrl: String?, enabled: Boolean) {
