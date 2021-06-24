@@ -12,14 +12,15 @@ data class NinchatTitleBarInfo(
     val name: String? = null,
     val jobTitle: String? = null,
     val closeButtonText: String? = null,
-    val showAvatar: Boolean = false
+    val hasAvatar: Boolean = false,
+    val hasName: Boolean = false
 )
 
 // Chat, rating view
 fun getTitleBarInfoForChatAndRatings(): NinchatTitleBarInfo? {
     return NinchatSessionManager.getInstance()?.let { session ->
         val user = session.ninchatState?.members?.entries?.find { !it.value.isGuest }?.value
-        val showAvatar = session.ninchatState?.siteConfig?.isFalse("agentAvatar") != true
+        val hasAvatar = session.ninchatState?.siteConfig?.isFalse("agentAvatar") != true
         val userAvatar = when {
             session.ninchatState?.siteConfig?.isTrue("agentAvatar") == true -> user?.avatar
             else -> session.ninchatState?.siteConfig?.getAgentAvatar()
@@ -33,7 +34,7 @@ fun getTitleBarInfoForChatAndRatings(): NinchatTitleBarInfo? {
             name = name,
             jobTitle = jobTitle,
             closeButtonText = closeButtonText,
-            showAvatar = showAvatar
+            hasAvatar = hasAvatar
         )
     }
 
@@ -42,15 +43,16 @@ fun getTitleBarInfoForChatAndRatings(): NinchatTitleBarInfo? {
 fun getTitleBarInfoForPreAudienceQuestionnaire(): NinchatTitleBarInfo? {
     return NinchatSessionManager.getInstance()?.let { session ->
         val name = session.ninchatState?.siteConfig?.getQuestionnaireName()
-        val showAvatar =
-            session.ninchatState?.siteConfig?.getQuestionnaireAvatar()?.let { true } ?: false
         val avatar = session.ninchatState?.siteConfig?.getQuestionnaireAvatar()
         val closeButtonText = session.ninchatState?.siteConfig?.getTitlebarCloseText()
+        val hasAvatar = session.ninchatState?.siteConfig?.hasValue("questionnaireAvatar") ?: false
+        val hasName = name?.let { true } ?: false
         NinchatTitleBarInfo(
             name = name,
             userAvatar = avatar,
             closeButtonText = closeButtonText,
-            showAvatar = showAvatar
+            hasAvatar = hasAvatar,
+            hasName = hasName
         )
     }
 }
@@ -75,15 +77,10 @@ fun getTitleBarInfoForPostAudienceQuestionnaire(): NinchatTitleBarInfo? {
     }
 }
 
-fun getTitleBarInfoForQueue(): NinchatTitleBarInfo? {
-    return NinchatSessionManager.getInstance()?.let { session ->
-        val closeButtonText = session.ninchatState?.siteConfig?.getTitlebarCloseText()
-        NinchatTitleBarInfo(closeButtonText = closeButtonText, showAvatar = true)
-    }
-}
 
 fun chatCloseText(): String = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getTitlebarCloseText() ?: ""
 
+// default (key not present) should be hidden
 fun shouldHideTitleBar(): Boolean {
-    return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getHideTitleBar() ?: false
+    return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getHideTitleBar() ?: true
 }

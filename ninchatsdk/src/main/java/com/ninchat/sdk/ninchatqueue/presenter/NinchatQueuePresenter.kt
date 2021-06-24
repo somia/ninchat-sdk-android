@@ -172,5 +172,3 @@ class NinchatQueuePresenter(
         }
     }
 }
-
-// no questionnaire name -> always show placeholder ( same for old questionnaire -> need fix)

@@ -48,7 +48,7 @@ class NinchatSiteConfig {
 
     fun getBoolean(key: String, fallback: Boolean = false): Boolean? {
         var value = false
-        var found = false;
+        var found = false
         siteConfig?.let {
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
@@ -240,12 +240,12 @@ class NinchatSiteConfig {
             replacePlaceholder(
                 getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}} (closed)"),
                 name
-            );
+            )
         } else {
             replacePlaceholder(
                 getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"),
                 name
-            );
+            )
         }
     }
 
@@ -253,7 +253,7 @@ class NinchatSiteConfig {
         replacePlaceholder(
             getTranslation("Audience in queue {{queue}} accepted."), name
                 ?: ""
-        );
+        )
 
     fun getQueueStatus(name: String?, position: Long = 0): String {
         val key = if (position == 1L) {
@@ -300,7 +300,8 @@ class NinchatSiteConfig {
         getString("postAudienceQuestionnaireStyle")
             ?: "form" // default style is form
 
-    fun getHideTitleBar() = isTrue("hideTitlebar")
+    // needs to be strictly not false
+    fun getHideTitleBar() = !isFalse("hideTitlebar")
 
     fun getTitlebarCloseText(): String =
         getTranslation("Close")

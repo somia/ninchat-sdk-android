@@ -15,6 +15,7 @@
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:visibility="gone"
+        android:contentDescription="Agent avatar"
         android:src="@drawable/ninchat_chat_avatar_left" />
 
     <TextView
@@ -23,8 +24,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:layout_toEndOf="@id/ninchat_chat_message_bot_avatar"
-        android:gravity="center|left"
+        android:gravity="center|start"
         android:minHeight="@dimen/ninchat_chat_activity_message_title_height"
+        android:visibility="gone"
         android:textColor="@color/ninchat_color_chat_name"
         tools:text="LightbotAgent" />
 
