@@ -1,9 +1,9 @@
-package com.ninchat.sdk.titlebar.view
+package com.ninchat.sdk.ninchattitlebar.view
 
 import android.view.View
-import com.ninchat.sdk.titlebar.model.NinchatTitleBarInfo
-import com.ninchat.sdk.titlebar.model.chatCloseText
-import com.ninchat.sdk.titlebar.model.shouldHideTitleBar
+import com.ninchat.sdk.ninchattitlebar.model.NinchatTitleBarInfo
+import com.ninchat.sdk.ninchattitlebar.model.chatCloseText
+import com.ninchat.sdk.ninchattitlebar.model.shouldHideTitleBar
 import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
 
 

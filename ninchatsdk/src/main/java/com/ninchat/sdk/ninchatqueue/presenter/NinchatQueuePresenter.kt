@@ -17,6 +17,7 @@ import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity
+import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.misc.Parameter
@@ -148,7 +149,7 @@ class NinchatQueuePresenter(
     }
 
     fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
-        // NinchatTitlebarView.showTitlebarForInQueueView(view, callback = callback)
+        NinchatTitlebarView.showTitlebarForInQueueView(view, callback = callback)
     }
 
     companion object {
@@ -166,3 +167,5 @@ class NinchatQueuePresenter(
         }
     }
 }
+
+// no questionnaire name -> always show placeholder ( same for old questionnaire -> need fix)

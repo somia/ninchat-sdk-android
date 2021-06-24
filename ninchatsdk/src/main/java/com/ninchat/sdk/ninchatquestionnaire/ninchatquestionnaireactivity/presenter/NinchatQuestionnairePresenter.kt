@@ -7,9 +7,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.client.Props
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.R
 import com.ninchat.sdk.events.OnNextQuestionnaire
-import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
 import com.ninchat.sdk.networkdispatchers.NinchatPartChannel
 import com.ninchat.sdk.networkdispatchers.NinchatRegisterAudience
@@ -19,10 +17,8 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.N
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.NinchatQuestionnaireListAdapter
-import com.ninchat.sdk.titlebar.view.NinchatTitlebarView
+import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
-import kotlinx.android.synthetic.main.activity_ninchat_queue.view.*
-import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import org.json.JSONObject

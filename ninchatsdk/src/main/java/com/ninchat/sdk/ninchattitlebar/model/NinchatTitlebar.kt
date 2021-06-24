@@ -1,4 +1,4 @@
-package com.ninchat.sdk.titlebar.model
+package com.ninchat.sdk.ninchattitlebar.model
 
 import com.ninchat.sdk.NinchatSessionManager
 
