@@ -8,7 +8,6 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.view.animation.RotateAnimation
-import android.widget.Button
 import android.widget.ImageView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.NinchatSessionManager
@@ -18,7 +17,7 @@ import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity
-import com.ninchat.sdk.ninchattitlebar.model.shouldHideTitleBar
+import com.ninchat.sdk.ninchattitlebar.model.shouldShowTitlebar
 import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Misc
@@ -151,9 +150,10 @@ class NinchatQueuePresenter(
     }
 
     fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
-        if(!shouldHideTitleBar())
+        if(shouldShowTitlebar()) {
+            // since default close button visibility is "visible" -> make it invisible when we are show titlebar
             view.ninchat_queue_activity_close_button.visibility = View.INVISIBLE
-
+        }
         NinchatTitlebarView.showTitlebarForInQueueView(view = view.ninchat_titlebar, callback = callback)
     }
 

@@ -33,6 +33,17 @@
             android:textColor="@color/ninchat_color_modal_text"
             android:textStyle="normal|bold"
             tools:text="Agent name" />
+
+        <TextView
+            android:id="@+id/ninchat_chat_titlebar_agent_jobtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/ninchat_chat_activity_text_margin"
+            android:autoLink="none"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/ninchat_color_modal_text"
+            tools:text="Agent job title placeholder" />
     </LinearLayout>
 
     <View

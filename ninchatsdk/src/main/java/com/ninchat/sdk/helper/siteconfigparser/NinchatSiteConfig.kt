@@ -300,9 +300,6 @@ class NinchatSiteConfig {
         getString("postAudienceQuestionnaireStyle")
             ?: "form" // default style is form
 
-    // needs to be strictly not false
-    fun getHideTitleBar() = !isFalse("hideTitlebar")
-
     fun getTitlebarCloseText(): String =
         getTranslation("Close")
 

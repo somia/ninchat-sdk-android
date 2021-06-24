@@ -25,15 +25,6 @@
         android:visibility="gone"
         tools:visibility="gone" />
 
-    <include
-        android:id="@+id/ninchat_titlebar_with_agent_info_and_job_title"
-        layout="@layout/ninchat_titlebar_with_agent_info_and_job_title"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:visibility="gone"
-        tools:visibility="gone" />
-
     <Button
         android:id="@+id/ninchat_titlebar_chat_close"
         style="@style/NinchatTheme.Button.Close.Chat"
