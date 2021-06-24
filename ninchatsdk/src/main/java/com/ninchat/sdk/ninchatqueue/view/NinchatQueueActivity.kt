@@ -49,7 +49,7 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
         ninchatQueuePresenter.updateQueueView(ninchat_queue_activity)
 
         //4: add actions
-        ninchatQueuePresenter.mayBeAttachTitlebar(ninchat_queue_activity.ninchat_titlebar, callback = {
+        ninchatQueuePresenter.mayBeAttachTitlebar(ninchat_queue_activity, callback = {
             this.onClose(ninchat_queue_activity)
         })
 
@@ -78,7 +78,8 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
             ninchatQueuePresenter.updateQueueId(intent = data)
             ninchatQueuePresenter.updateQueueView(ninchat_queue_activity)
 
-            ninchatQueuePresenter.mayBeAttachTitlebar(ninchat_queue_activity.ninchat_titlebar, callback = {
+            ninchatQueuePresenter.mayBeAttachTitlebar(
+                ninchat_queue_activity, callback = {
                 this.onClose(ninchat_queue_activity)
             })
         }
@@ -98,7 +99,7 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
 
     override fun onQueueUpdate() {
         ninchatQueuePresenter.updateQueueView(ninchat_queue_activity)
-        ninchatQueuePresenter.mayBeAttachTitlebar(ninchat_queue_activity.ninchat_titlebar, callback = {
+        ninchatQueuePresenter.mayBeAttachTitlebar(ninchat_queue_activity, callback = {
             this.onClose(ninchat_queue_activity)
         })
     }
