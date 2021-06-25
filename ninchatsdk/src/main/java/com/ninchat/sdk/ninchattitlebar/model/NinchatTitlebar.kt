@@ -28,9 +28,10 @@ fun getTitleBarInfoFromAgent(): NinchatTitleBarInfo? {
         val hasJobTitle = !jobTitle.isNullOrEmpty()
 
         val userAvatar = when {
-            else -> null
+            // is agent avatar is true -> use user avatar
+            session.ninchatState?.siteConfig?.isTrue("agentAvatar") == true -> user?.avatar
+            else -> session.ninchatState?.siteConfig?.getAgentAvatar()
         }
-
         // is not strictly false
         val hasAvatar = session.ninchatState?.siteConfig?.isFalse("agentAvatar") == false
         val closeButtonText = session.ninchatState?.siteConfig?.getTitlebarCloseText()
@@ -39,7 +40,7 @@ fun getTitleBarInfoFromAgent(): NinchatTitleBarInfo? {
             hasName = hasName,
             jobTitle = jobTitle,
             hasJobTitle = hasJobTitle,
-            userAvatar = null,
+            userAvatar = userAvatar,
             hasAvatar = hasAvatar,
             closeButtonText = closeButtonText,
         )

@@ -17,9 +17,8 @@
 
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.8"
         android:orientation="vertical">
 
         <TextView
@@ -32,7 +31,7 @@
             android:maxLines="2"
             android:textColor="@color/ninchat_color_modal_text"
             android:textStyle="normal|bold"
-            tools:text="Agent name" />
+            tools:text="Pallab Gain ( new user name )" />
 
         <TextView
             android:id="@+id/ninchat_chat_titlebar_agent_jobtitle"
@@ -45,13 +44,5 @@
             android:textColor="@color/ninchat_color_modal_text"
             tools:text="Agent job title placeholder" />
     </LinearLayout>
-
-    <View
-        android:id="@+id/view_padding"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="0.2"
-        android:visibility="invisible" />
-
 
 </LinearLayout>
