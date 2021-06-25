@@ -12,6 +12,7 @@
 
     <include
         android:visibility="gone"
+        tools:visibility="visible"
         android:id="@+id/ninchat_titlebar"
         layout="@layout/ninchat_titlebar"
         android:layout_width="match_parent"

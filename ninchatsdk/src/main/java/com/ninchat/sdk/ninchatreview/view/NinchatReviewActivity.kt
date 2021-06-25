@@ -9,6 +9,7 @@ import com.ninchat.sdk.activities.NinchatBaseActivity
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel
 import com.ninchat.sdk.ninchatreview.presenter.NinchatReviewPresenter
 import kotlinx.android.synthetic.main.activity_ninchat_review.*
+import kotlinx.android.synthetic.main.activity_ninchat_review.view.*
 
 // todo (pallab) convert to mvvm from current mvp in future iteration
 class NinchatReviewActivity : NinchatBaseActivity() {
@@ -24,17 +25,23 @@ class NinchatReviewActivity : NinchatBaseActivity() {
 
         if (ninchatReviewPresenter.isConversationView()) {
             ninchatReviewPresenter.renderBotView(
-                    formView = review_rating_normal_view,
-                    botView = review_rating_bot_view,
-                    rootActivity = ninchat_review_activity
+                formView = review_rating_normal_view,
+                botView = review_rating_bot_view,
+                rootActivity = ninchat_review_activity
             )
         } else {
             ninchatReviewPresenter.renderFormView(
-                    formView = review_rating_normal_view,
-                    botView = review_rating_bot_view,
-                    rootActivity = ninchat_review_activity
+                formView = review_rating_normal_view,
+                botView = review_rating_bot_view,
+                rootActivity = ninchat_review_activity
             )
         }
+
+        ninchatReviewPresenter.mayBeAttachTitlebar(
+            view = ninchat_review_activity.ninchat_titlebar,
+            callback = {
+                onSkipClick(ninchat_review_activity)
+            })
     }
 
     fun onGoodClick(view: View) {

@@ -103,6 +103,18 @@ class NinchatTitlebarView {
             showTitlebarWithAgentInfo(view = view, data = titleBarInfo, callback = callback)
         }
 
+        fun showTitlebarForReview(view: View, callback: () -> Unit) {
+            val titleBarInfo = getTitleBarInfoFromAgent() ?: return
+            //1: if no name
+            //2: if no name and no avatar
+            if (!titleBarInfo.hasName || (!titleBarInfo.hasName && !titleBarInfo.hasAvatar)) {
+                // show placeholder
+                showTitlebarPlaceholder(view, callback = callback)
+                return
+            }
+            showTitlebarWithAgentInfo(view = view, data = titleBarInfo, callback = callback)
+        }
+
         fun showTitlebarForInQueueView(view: View, callback: () -> Unit) {
             showTitlebarPlaceholder(view, callback = callback)
         }

@@ -14,6 +14,8 @@ import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
 import com.ninchat.sdk.networkdispatchers.NinchatSendRatings
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel
 import com.ninchat.sdk.ninchatreview.view.NinchatReviewActivity
+import com.ninchat.sdk.ninchattitlebar.model.shouldShowTitlebar
+import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.android.synthetic.main.activity_ninchat_review.view.*
@@ -85,16 +87,16 @@ class NinchatReviewPresenter(
 
         //3: set bot details
         view.ninchat_chat_message_bot_text.text = ninchatReviewModel.getBotName()
-        ninchatReviewModel.getBotAvatar()?.let {
-            try {
+        if(!shouldShowTitlebar()) {
+            ninchatReviewModel.getBotAvatar()?.let {
                 GlideWrapper.loadImageAsCircle(
                     view.context,
                     it,
-                    view.ninchat_chat_message_bot_avatar
+                    view.ninchat_chat_message_bot_avatar,
+                    R.drawable.ninchat_chat_avatar_left
                 )
-            } catch (e: Exception) {
-                view.ninchat_chat_message_bot_avatar.setImageResource(R.drawable.ninchat_chat_avatar_left)
             }
+            view.ninchat_chat_message_bot_avatar.visibility = View.VISIBLE
         }
 
         //4: start dummy animation
@@ -154,6 +156,10 @@ class NinchatReviewPresenter(
 
     fun isConversationView(): Boolean {
         return ninchatReviewModel.isConversationLikeQuestionnaire()
+    }
+
+    fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
+        NinchatTitlebarView.showTitlebarForReview(view = view, callback = callback)
     }
 
     companion object {
