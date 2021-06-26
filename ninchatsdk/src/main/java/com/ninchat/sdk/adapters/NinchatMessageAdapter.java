@@ -50,6 +50,8 @@ import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import static com.ninchat.sdk.ninchattitlebar.model.NinchatTitlebarKt.shouldShowTitlebar;
+
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
@@ -76,6 +78,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 userAvatar = ninchatMessage.isRemoteMessage() ?
                         sessionManager.ninchatState.getSiteConfig().getAgentAvatar() :
                         sessionManager.ninchatState.getSiteConfig().getUserAvatar();
+            }
+
+            if(ninchatMessage.isRemoteMessage() && shouldShowTitlebar()) {
+                avatar.setVisibility(View.GONE);
+                return ;
             }
             if (!TextUtils.isEmpty(userAvatar)) {
                 GlideWrapper.loadImageAsCircle(itemView.getContext(), userAvatar, avatar);

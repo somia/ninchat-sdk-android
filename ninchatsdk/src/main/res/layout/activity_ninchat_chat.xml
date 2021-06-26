@@ -108,6 +108,14 @@
 
     </LinearLayout>
 
+    <include
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:id="@+id/ninchat_titlebar"
+        layout="@layout/ninchat_titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    
     <Button
         android:id="@+id/ninchat_chat_close"
         android:layout_width="@dimen/ninchat_close_button_width"
@@ -118,9 +126,12 @@
         android:layout_marginEnd="@dimen/ninchat_chat_activity_close_button_end_margin"
         style="@style/NinchatTheme.Button.Close.Chat"
         tools:text="Close"
+        android:visibility="gone"
+        tools:visibility="gone"
         android:onClick="onCloseChat"/>
 
     <RelativeLayout
+        android:layout_below="@+id/ninchat_titlebar"
         android:id="@+id/videoContainer"
         android:layout_width="match_parent"
         android:layout_height="@dimen/ninchat_chat_activity_video_view_height"
