@@ -60,4 +60,6 @@
 
     <color name="ninchat_color_titlebar_placeholder">#E9E9E9</color>
     <color name="ninchat_color_modal_border">#DBDDE1</color>
+
+    <color name="ninchat_color_titlebar_text">#242424</color>
 </resources>

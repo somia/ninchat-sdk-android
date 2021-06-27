@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/ninchat_title_bar_height"
+    android:layout_height="wrap_content"
     android:background="@drawable/ninchat_titlebar_background"
     android:gravity="center"
     android:orientation="horizontal">
@@ -27,10 +27,7 @@
 
     <Button
         android:id="@+id/ninchat_titlebar_chat_close"
-        style="@style/NinchatTheme.Button.Close.Chat"
-        android:layout_width="@dimen/ninchat_close_button_width"
-        android:layout_height="@dimen/ninchat_close_button_height"
-        android:maxWidth="350dp"
+        style="@style/NinchatTheme.Button.Close.Titlebar"
         tools:text="Close" />
 
 

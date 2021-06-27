@@ -304,9 +304,9 @@
 
         <Button
             android:id="@+id/ninchat_chat_message_close"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/ninchat_backlog_chat_close_button_width"
             android:layout_height="wrap_content"
-            style="@style/NinchatTheme.Button.Close.Chat"
+            style="@style/NinchatTheme.Button.Close.Chat.Backlog"
             tools:text="Close"
             android:layout_gravity="center_horizontal" />
 

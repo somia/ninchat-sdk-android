@@ -52,6 +52,13 @@
         </item>
     </style>
 
+    <style name="NinchatTheme.Button.Close.Titlebar" parent="NinchatTheme.Button.Close.Chat">
+        <item name="android:maxWidth">350dp</item>
+        <item name="android:layout_height">@dimen/ninchat_titlebar_close_button_height</item>
+        <item name="android:layout_width">@dimen/ninchat_titlebar_close_button_width</item>
+    </style>
+    <style name="NinchatTheme.Button.Close.Chat.Backlog" parent="NinchatTheme.Button.Close.Chat"/>
+
     <style name="NinchatTheme.Button.Send" parent="NinchatTheme.Button.Close">
         <item name="android:height">@dimen/ninchat_send_button_height</item>
         <item name="android:layout_height">@dimen/ninchat_send_button_height</item>
@@ -106,10 +113,12 @@
     <style name="NinchatTheme.Radio.Selected" parent="NinchatTheme.MultiChoice" >
         <item name="android:textColor">@color/ninchat_color_radio_item_selected_text</item>
     </style>
+
     <style name="NinchatTheme.Radio.UnSelected" parent="NinchatTheme.MultiChoice" >
         <item name="android:textColor">@color/ninchat_color_radio_item_unselected_text</item>
     </style>
-    <style name="NinchatTheme.TitlebarPlaceholder">
+
+    <style name="NinchatTheme.TitlebarPlaceholder" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@drawable/ninchat_titlebar_text_placeholder</item>
