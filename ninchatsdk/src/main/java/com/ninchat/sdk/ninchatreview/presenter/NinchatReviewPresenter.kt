@@ -87,7 +87,7 @@ class NinchatReviewPresenter(
 
         //3: set bot details
         view.ninchat_chat_message_bot_text.text = ninchatReviewModel.getBotName()
-        if(!shouldShowTitlebar()) {
+        if (!shouldShowTitlebar() && !hideAvatar()) {
             ninchatReviewModel.getBotAvatar()?.let {
                 GlideWrapper.loadImageAsCircle(
                     view.context,
@@ -161,6 +161,9 @@ class NinchatReviewPresenter(
     fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
         NinchatTitlebarView.showTitlebarForReview(view = view, callback = callback)
     }
+
+    fun hideAvatar() =
+        NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.hideAgentAvatar() ?: false
 
     companion object {
         @JvmStatic

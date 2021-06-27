@@ -32,8 +32,7 @@ fun getTitleBarInfoFromAgent(): NinchatTitleBarInfo? {
             session.ninchatState?.siteConfig?.isTrue("agentAvatar") == true -> user?.avatar
             else -> session.ninchatState?.siteConfig?.getAgentAvatar()
         }
-        // is not strictly false
-        val hasAvatar = session.ninchatState?.siteConfig?.isFalse("agentAvatar") == false
+        val hasAvatar = session.ninchatState?.siteConfig?.hideAgentAvatar() == false
         val closeButtonText = session.ninchatState?.siteConfig?.getTitlebarCloseText()
         NinchatTitleBarInfo(
             name = name,
@@ -53,7 +52,9 @@ fun getTitleBarInfoFromAudienceQuestionnaire(): NinchatTitleBarInfo? {
         val name = session.ninchatState?.siteConfig?.getQuestionnaireName()
         val hasName = !name.isNullOrEmpty()
         val avatar = session.ninchatState?.siteConfig?.getQuestionnaireAvatar()
-        val hasAvatar = session.ninchatState?.siteConfig?.hasValue("questionnaireAvatar") ?: false
+        val hasAvatar =
+            session.ninchatState?.siteConfig?.hideAgentAvatar() == false
+                    && session.ninchatState?.siteConfig?.hasValue("questionnaireAvatar") == true
         val closeButtonText = session.ninchatState?.siteConfig?.getTitlebarCloseText()
         NinchatTitleBarInfo(
             name = name,

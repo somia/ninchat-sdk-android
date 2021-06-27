@@ -162,7 +162,9 @@ class NinchatQuestionnairePresenter(
 
     fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
         if(isPostAudienceQuestionnaire()) {
-            NinchatTitlebarView.showTitlebarForPostAudienceQuestionnaire(view, callback = callback)
+            NinchatTitlebarView.showTitlebarForPostAudienceQuestionnaire(view, callback = {
+                viewCallback.onCompletePostAudienceQuestionnaire()
+            })
         } else {
             NinchatTitlebarView.showTitlebarForPreAudienceQuestionnaire(view, callback = callback)
         }

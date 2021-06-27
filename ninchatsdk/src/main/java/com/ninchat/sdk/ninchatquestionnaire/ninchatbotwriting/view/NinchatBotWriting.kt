@@ -17,18 +17,18 @@ import org.json.JSONObject
 
 
 class NinchatBotWriting(
-        itemView: View,
-        jsonObject: JSONObject?,
-        position: Int,
-        updateCallback: BotWritingCompleteListener,
-        enabled: Boolean,
+    itemView: View,
+    jsonObject: JSONObject?,
+    position: Int,
+    updateCallback: BotWritingCompleteListener,
+    enabled: Boolean,
 ) : RecyclerView.ViewHolder(itemView), INinchatBotWritingViewPresenter {
     private val presenter = NinchatBotWritingViewPresenter(
-            jsonObject = jsonObject,
-            position = position,
-            enabled = enabled,
-            updateCallback = updateCallback,
-            presenter = this
+        jsonObject = jsonObject,
+        position = position,
+        enabled = enabled,
+        updateCallback = updateCallback,
+        presenter = this
     )
 
     init {
@@ -47,11 +47,16 @@ class NinchatBotWriting(
         itemView.ninchat_chat_message_bot_text.visibility = View.VISIBLE
         itemView.ninchat_chat_message_bot_text.text = label
 
-        if(shouldShowTitlebar()) {
+        if (shouldShowTitlebar() || presenter.hideAvatar()) {
             return
         }
         itemView.ninchat_chat_message_bot_avatar.visibility = View.VISIBLE
-        GlideWrapper.loadImageAsCircle(itemView.context, imgUrl, itemView.ninchat_chat_message_bot_avatar, R.drawable.ninchat_chat_avatar_left)
+        GlideWrapper.loadImageAsCircle(
+            itemView.context,
+            imgUrl,
+            itemView.ninchat_chat_message_bot_avatar,
+            R.drawable.ninchat_chat_avatar_left
+        )
     }
 
     override fun onUpdateView(label: String?, imgUrl: String?, enabled: Boolean) {
@@ -63,9 +68,13 @@ class NinchatBotWriting(
         }
         // presenter.setLoaded()
         itemView.ninchat_chat_message_bot_writing_root.visibility = View.VISIBLE
-        itemView.ninchat_chat_message_bot_writing_root.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
+        itemView.ninchat_chat_message_bot_writing_root.background = ContextCompat.getDrawable(
+            itemView.context,
+            R.drawable.ninchat_chat_questionnaire_background
+        )
         itemView.ninchat_chat_message_bot_writing.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator)
-        val animationDrawable = (itemView.ninchat_chat_message_bot_writing.background) as AnimationDrawable
+        val animationDrawable =
+            (itemView.ninchat_chat_message_bot_writing.background) as AnimationDrawable
         animationDrawable.start()
 
         Handler().postDelayed({

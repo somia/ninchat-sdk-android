@@ -1,14 +1,15 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter
 
+import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.model.NinchatBotWritingViewModel
 import org.json.JSONObject
 
 class NinchatBotWritingViewPresenter(
-        jsonObject: JSONObject?,
-        position: Int,
-        enabled: Boolean,
-        val updateCallback: BotWritingCompleteListener,
-        val presenter: INinchatBotWritingViewPresenter,
+    jsonObject: JSONObject?,
+    position: Int,
+    enabled: Boolean,
+    val updateCallback: BotWritingCompleteListener,
+    val presenter: INinchatBotWritingViewPresenter,
 ) {
     private var model = NinchatBotWritingViewModel(position = position, enabled = enabled).apply {
         parse(jsonObject = jsonObject)
@@ -28,14 +29,18 @@ class NinchatBotWritingViewPresenter(
 
     fun onAnimationComplete() {
         updateCallback.onCompleteLoading(
-                target = model.target,
-                thankYouText = model.thankYouText,
-                loaded = model.loaded ?: false,
-                position = model.position,
+            target = model.target,
+            thankYouText = model.thankYouText,
+            loaded = model.loaded ?: false,
+            position = model.position,
         )
     }
 
     fun isLoaded(): Boolean = model.loaded == true
+
+    fun hideAvatar() =
+        NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.hideAgentAvatar() ?: false
+
     fun setLoaded() {
         model.loaded = true
     }
