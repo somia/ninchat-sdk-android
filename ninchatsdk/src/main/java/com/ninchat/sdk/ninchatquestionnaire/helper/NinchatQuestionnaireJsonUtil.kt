@@ -439,5 +439,10 @@ class NinchatQuestionnaireJsonUtil {
                         it.optString("queue", it.optString("queueId"))
                     }.firstOrNull()
         }
+
+        fun isBoolean(result: String): Boolean = result.toBoolean()
+        fun isNumber(result: String): Boolean = result.toLongOrNull()?.let { true } ?: false
+        fun asLong(result: String): Long = result.toLongOrNull() ?: 0
+
     }
 }
