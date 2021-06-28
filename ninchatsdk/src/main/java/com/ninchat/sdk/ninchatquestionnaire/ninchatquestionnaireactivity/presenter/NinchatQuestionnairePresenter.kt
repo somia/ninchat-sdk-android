@@ -7,12 +7,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.client.Props
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.R
 import com.ninchat.sdk.events.OnNextQuestionnaire
-import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
-import com.ninchat.sdk.models.getTitleBarInfoForPostAudienceQuestionnaire
-import com.ninchat.sdk.models.getTitleBarInfoForPreAudienceQuestionnaire
-import com.ninchat.sdk.models.shouldHideTitleBar
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
 import com.ninchat.sdk.networkdispatchers.NinchatPartChannel
 import com.ninchat.sdk.networkdispatchers.NinchatRegisterAudience
@@ -22,9 +17,8 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.N
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.NinchatQuestionnaireListAdapter
+import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
-import kotlinx.android.synthetic.main.activity_ninchat_queue.view.*
-import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -167,55 +161,14 @@ class NinchatQuestionnairePresenter(
     }
 
     fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
-        val titleBarInfo =
-            if (isPostAudienceQuestionnaire()) getTitleBarInfoForPostAudienceQuestionnaire() else getTitleBarInfoForPreAudienceQuestionnaire()
-        if (shouldHideTitleBar() || titleBarInfo == null) return
-        when {
-            // no questionnaire avatar and no questionnaire name
-            !titleBarInfo.showAvatar && titleBarInfo.name.isNullOrEmpty() -> {
-                view.ninchat_titlebar.ninchat_chat_titlebar_avatar_text_placeholder.visibility =
-                    View.VISIBLE
-                view.ninchat_titlebar.ninchat_chat_titlebar_avatar_img.visibility = View.VISIBLE
-                view.ninchat_titlebar.ninchat_chat_titlebar_avatar_img.setImageResource(R.drawable.ninchat_chat_avatar_placeholder)
-            }
-            // questionnaire avatar and questionnaire name
-            titleBarInfo.showAvatar && !titleBarInfo.name.isNullOrEmpty() -> {
-                view.ninchat_titlebar.ninchat_titlebar_agent_info_parent.visibility = View.VISIBLE
-                view.ninchat_titlebar.ninchat_chat_titlebar_avatar_img.visibility = View.VISIBLE
-
-                view.ninchat_titlebar.ninchat_chat_titlebar_agent_name.text = titleBarInfo.name
-                view.ninchat_titlebar.ninchat_chat_titlebar_agent_jobtitle.visibility = View.GONE
-                GlideWrapper.loadImageAsCircle(
-                    view.context,
-                    titleBarInfo.userAvatar,
-                    view.ninchat_titlebar.ninchat_chat_titlebar_avatar_img,
-                    R.drawable.ninchat_chat_avatar_left
-                )
-            }
-            // no questionnaire avatar and only questionnaire name
-            !titleBarInfo.showAvatar && !titleBarInfo.name.isNullOrEmpty() -> {
-                view.ninchat_titlebar.ninchat_titlebar_agent_info_parent.visibility = View.VISIBLE
-
-                view.ninchat_titlebar.ninchat_chat_titlebar_agent_name.text = titleBarInfo.name
-                view.ninchat_titlebar.ninchat_chat_titlebar_agent_jobtitle.visibility = View.GONE
-            }
-
-            // questionnaire avatar and no questionnaire name
-            titleBarInfo.showAvatar && titleBarInfo.name.isNullOrEmpty() -> {
-                view.ninchat_titlebar.ninchat_chat_titlebar_avatar_img.visibility = View.VISIBLE
-                GlideWrapper.loadImageAsCircle(
-                    view.context,
-                    titleBarInfo.userAvatar,
-                    view.ninchat_titlebar.ninchat_chat_titlebar_avatar_img,
-                    R.drawable.ninchat_chat_avatar_left
-                )
-            }
+        if(isPostAudienceQuestionnaire()) {
+            NinchatTitlebarView.showTitlebarForPostAudienceQuestionnaire(view, callback = {
+                viewCallback.onCompletePostAudienceQuestionnaire()
+            })
+        } else {
+            NinchatTitlebarView.showTitlebarForPreAudienceQuestionnaire(view, callback = callback)
         }
-        view.ninchat_chat_close.text = titleBarInfo.closeButtonText
-        view.visibility = View.VISIBLE
-        view.ninchat_chat_close.setOnClickListener {
-            callback()
-        }
+
     }
 
     fun isComplete(): Boolean = model.fromComplete

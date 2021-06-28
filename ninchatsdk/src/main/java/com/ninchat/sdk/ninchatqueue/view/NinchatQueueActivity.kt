@@ -11,6 +11,7 @@ import com.ninchat.sdk.ninchatqueue.presenter.INinchatQueuePresenter
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
 import com.ninchat.sdk.utils.misc.Parameter
 import kotlinx.android.synthetic.main.activity_ninchat_queue.*
+import kotlinx.android.synthetic.main.activity_ninchat_queue.view.*
 
 class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
     var queueId: String? = null
@@ -38,7 +39,7 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
         //1: update the queue id
         ninchatQueuePresenter.updateQueueId(intent = intent)
 
-        //2: show queue animation
+        // 2: show queue animation
         // do not show animation during testing
         // https://stackoverflow.com/questions/29550508/espresso-freezing-on-view-with-looping-animation
         if (intent?.getBooleanExtra("isDebug", false) == false) {
@@ -76,7 +77,9 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
             }
             ninchatQueuePresenter.updateQueueId(intent = data)
             ninchatQueuePresenter.updateQueueView(ninchat_queue_activity)
-            ninchatQueuePresenter.mayBeAttachTitlebar(ninchat_queue_activity, callback = {
+
+            ninchatQueuePresenter.mayBeAttachTitlebar(
+                ninchat_queue_activity, callback = {
                 this.onClose(ninchat_queue_activity)
             })
         }

@@ -48,6 +48,7 @@ import com.ninchat.sdk.networkdispatchers.NinchatSendFile;
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel;
 import com.ninchat.sdk.ninchatreview.presenter.NinchatReviewPresenter;
+import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView;
 import com.ninchat.sdk.states.NinchatState;
 import com.ninchat.sdk.utils.misc.NinchatLinearLayoutManager;
 import com.ninchat.sdk.utils.writingindicator.WritingIndicator;
@@ -63,6 +64,8 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.List;
+
+import static com.ninchat.sdk.ninchattitlebar.model.NinchatTitlebarKt.shouldShowTitlebar;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
@@ -515,6 +518,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         final Button closeButton = findViewById(R.id.ninchat_chat_close);
         final String closeText = sessionManager.ninchatState.getSiteConfig().getChatCloseText();
         closeButton.setText(closeText);
+        if (!shouldShowTitlebar())
+            closeButton.setVisibility(View.VISIBLE);
+
+
         final String sendButtonText = sessionManager.ninchatState.getSiteConfig().getSendButtonText();
         final Button sendButton = findViewById(R.id.send_button);
         final RelativeLayout sendIcon = findViewById(R.id.send_button_icon);
@@ -534,7 +541,12 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Parameter.CHAT_IS_CLOSED)) {
             initializeClosedChat(messages);
         }
-
+        NinchatTitlebarView.Companion.showTitlebarForBacklog(
+                findViewById(R.id.ninchat_chat_root).findViewById(R.id.ninchat_titlebar),
+                () -> {
+                    onCloseChat(null);
+                    return null;
+                });
         // Set up a soft keyboard visibility listener so video call container height can be adjusted
         setRootViewHeightListener();
     }

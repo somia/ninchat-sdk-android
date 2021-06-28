@@ -28,6 +28,8 @@
                 android:layout_marginEnd="@dimen/ninchat_chat_activity_avatar_margin"
                 android:src="@drawable/ninchat_chat_avatar_left"
                 android:adjustViewBounds="true"
+                android:visibility="gone"
+                tools:visibility="visible"
                 android:scaleType="fitCenter"/>
 
             <TextView

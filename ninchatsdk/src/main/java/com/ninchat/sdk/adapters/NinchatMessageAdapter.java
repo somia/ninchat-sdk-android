@@ -50,6 +50,8 @@ import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import static com.ninchat.sdk.ninchattitlebar.model.NinchatTitlebarKt.shouldShowTitlebar;
+
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
@@ -63,21 +65,28 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         }
 
         private void setAvatar(final ImageView avatar, final NinchatMessage ninchatMessage, final boolean hideAvatar) {
+            final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
+            if(sessionManager == null) {
+                return ;
+            }
             String userAvatar = null;
-            final NinchatUser user = NinchatSessionManager.getInstance().getMember(ninchatMessage.getSenderId());
+            final NinchatUser user = sessionManager.getMember(ninchatMessage.getSenderId());
             if (user != null) {
                 userAvatar = user.getAvatar();
             }
             if (TextUtils.isEmpty(userAvatar)) {
-                final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
                 userAvatar = ninchatMessage.isRemoteMessage() ?
                         sessionManager.ninchatState.getSiteConfig().getAgentAvatar() :
                         sessionManager.ninchatState.getSiteConfig().getUserAvatar();
             }
+
+            if(ninchatMessage.isRemoteMessage() && shouldShowTitlebar()) {
+                avatar.setVisibility(View.GONE);
+                return ;
+            }
             if (!TextUtils.isEmpty(userAvatar)) {
                 GlideWrapper.loadImageAsCircle(itemView.getContext(), userAvatar, avatar);
             }
-            final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
             final boolean showAvatars = ninchatMessage.isRemoteMessage() ?
                     sessionManager.ninchatState.getSiteConfig().showAgentAvatar(false) :
                     sessionManager.ninchatState.getSiteConfig().showUserAvatar(false);

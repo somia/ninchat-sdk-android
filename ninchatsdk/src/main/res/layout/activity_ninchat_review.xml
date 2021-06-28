@@ -1,20 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ninchat_review_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/ninchat_review_activity"
     android:background="@color/ninchat_color_background_bottom"
     tools:context=".ninchatreview.view.NinchatReviewActivity">
 
 
     <include
-        layout="@layout/review_rating_normal_view"
+        android:id="@+id/ninchat_titlebar"
+        layout="@layout/ninchat_titlebar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:visibility="gone"
-        android:id="@+id/review_rating_normal_view" />
+        tools:visibility="visible" />
 
-    <include layout="@layout/review_rating_bot_view"
-        android:id="@+id/review_rating_bot_view" />
+    <include
+        android:id="@+id/review_rating_normal_view"
+        layout="@layout/review_rating_normal_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ninchat_titlebar"
+        android:visibility="gone"
+        tools:visibility="gone"
+        />
+
+    <include
+        android:id="@+id/review_rating_bot_view"
+        layout="@layout/review_rating_bot_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:visibility="visible"
+        android:layout_below="@id/ninchat_titlebar" />
 
     <TextView
         android:id="@+id/ninchat_review_skip"

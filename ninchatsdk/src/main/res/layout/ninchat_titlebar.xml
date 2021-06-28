@@ -7,73 +7,31 @@
     android:gravity="center"
     android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/ninchat_chat_titlebar_avatar_img"
-        android:layout_width="@dimen/ninchat_chat_activity_avatar_size"
-        android:layout_height="@dimen/ninchat_chat_activity_avatar_size"
-        android:layout_marginEnd="@dimen/ninchat_chat_activity_avatar_margin"
-        android:adjustViewBounds="true"
-        android:scaleType="fitCenter"
+    <include
+        android:id="@+id/ninchat_titlebar_with_placeholder"
+        layout="@layout/ninchat_titlebar_with_placeholder"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
         android:visibility="gone"
-        tools:src="@drawable/ninchat_chat_avatar_left" />
+        tools:visibility="visible" />
 
-    <TextView
-        android:id="@+id/ninchat_chat_titlebar_avatar_text_placeholder"
-        style="@style/NinchatTheme.TitlebarPlaceholder"
+    <include
+        android:id="@+id/ninchat_titlebar_with_agent_info"
+        layout="@layout/ninchat_titlebar_with_agent_info"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/ninchat_chat_activity_text_margin"
-        android:layout_weight="0.4"
-        android:autoLink="none"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:textColor="@color/ninchat_color_modal_text"
-        android:visibility="gone" />
-
-    <LinearLayout
-        android:id="@+id/ninchat_titlebar_agent_info_parent"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.8"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/ninchat_chat_titlebar_agent_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/ninchat_chat_activity_text_margin"
-            android:autoLink="none"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:textColor="@color/ninchat_color_modal_text"
-            android:textStyle="normal|bold"
-            tools:text="Agent name" />
-
-        <TextView
-            android:id="@+id/ninchat_chat_titlebar_agent_jobtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/ninchat_chat_activity_text_margin"
-            android:autoLink="none"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:textColor="@color/ninchat_color_modal_text"
-            tools:text="Agent job title placeholder" />
-    </LinearLayout>
-
-    <View
-        android:id="@+id/view_padding"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_weight="0.2"
-        android:visibility="invisible" />
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:visibility="gone"
+        tools:visibility="gone" />
 
     <Button
-        android:id="@+id/ninchat_chat_close"
+        android:id="@+id/ninchat_titlebar_chat_close"
         style="@style/NinchatTheme.Button.Close.Chat"
         android:layout_width="@dimen/ninchat_close_button_width"
         android:layout_height="@dimen/ninchat_close_button_height"
+        android:maxWidth="350dp"
         tools:text="Close" />
+
 
 </LinearLayout>

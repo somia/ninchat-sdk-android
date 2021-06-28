@@ -48,7 +48,7 @@ class NinchatSiteConfig {
 
     fun getBoolean(key: String, fallback: Boolean = false): Boolean? {
         var value = false
-        var found = false;
+        var found = false
         siteConfig?.let {
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
@@ -166,8 +166,11 @@ class NinchatSiteConfig {
     fun showUserAvatar(fallback: Boolean = false): Boolean =
         getBoolean("userAvatar", fallback = fallback) ?: false
 
-    fun showAgentAvatar(fallback: Boolean = false): Boolean? =
-        getBoolean("agentAvatar", fallback = fallback)
+    fun showAgentAvatar(fallback: Boolean = false): Boolean =
+        getBoolean("agentAvatar", fallback = fallback) ?: false
+
+    fun hideAgentAvatar(): Boolean =
+        isFalse("agentAvatar")
 
     fun getAgentAvatar(): String? =
         getString("agentAvatar")
@@ -240,12 +243,12 @@ class NinchatSiteConfig {
             replacePlaceholder(
                 getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}} (closed)"),
                 name
-            );
+            )
         } else {
             replacePlaceholder(
                 getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"),
                 name
-            );
+            )
         }
     }
 
@@ -253,7 +256,7 @@ class NinchatSiteConfig {
         replacePlaceholder(
             getTranslation("Audience in queue {{queue}} accepted."), name
                 ?: ""
-        );
+        )
 
     fun getQueueStatus(name: String?, position: Long = 0): String {
         val key = if (position == 1L) {
@@ -299,10 +302,6 @@ class NinchatSiteConfig {
     fun getPostAudienceQuestionnaireStyle(): String =
         getString("postAudienceQuestionnaireStyle")
             ?: "form" // default style is form
-
-    fun getHideTitleBar(): Boolean =
-        getBoolean("hideTitlebar", fallback = false)
-            ?: false // default is true ( should hide titlebar if nothing is present )
 
     fun getTitlebarCloseText(): String =
         getTranslation("Close")
