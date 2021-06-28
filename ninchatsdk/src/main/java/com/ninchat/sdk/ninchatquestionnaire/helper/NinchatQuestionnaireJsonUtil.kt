@@ -392,8 +392,7 @@ class NinchatQuestionnaireJsonUtil {
                         }
                     }
                     .map {
-                        val result = if(it.optString("result") == "true") "yes" else it.optString("result")
-                        Pair<String, String>(it.optString("name"), result)
+                        Pair<String, String>(it.optString("name"), it.optString("result"))
                     }
         }
 
