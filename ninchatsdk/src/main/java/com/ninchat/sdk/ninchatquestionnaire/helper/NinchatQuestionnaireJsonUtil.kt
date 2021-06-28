@@ -387,12 +387,13 @@ class NinchatQuestionnaireJsonUtil {
                             NinchatQuestionnaireType.isLogic(it) || NinchatQuestionnaireType.isButton(it) || NinchatQuestionnaireType.isText(it) -> null
                             it.optString("result").isNullOrBlank() -> null
                             // ignore any result that is false
-                            it.optString("result", "") == "false" -> null
+                            it.optString("result") == "false" -> null
                             else -> it
                         }
                     }
                     .map {
-                        Pair<String, String>(it.optString("name"), it.optString("result"))
+                        val result = if(it.optString("result") == "true") "yes" else it.optString("result")
+                        Pair<String, String>(it.optString("name"), result)
                     }
         }
 
