@@ -106,7 +106,4 @@
     <dimen name="ninchat_questionnaire_item_bot_height">50dp</dimen>
     <dimen name="ninchat_questionnaire_checkbox_margin">10dp</dimen>
 
-    <dimen name="ninchat_titlebar_close_button_width">-2dp</dimen>
-    <dimen name="ninchat_titlebar_close_button_height">-2dp</dimen>
-    <dimen name="ninchat_backlog_chat_close_button_width">-2dp</dimen>
 </resources>
