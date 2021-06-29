@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -65,6 +66,7 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.util.List;
 
+import static android.provider.Settings.System.ACCELEROMETER_ROTATION;
 import static com.ninchat.sdk.ninchattitlebar.model.NinchatTitlebarKt.shouldShowTitlebar;
 
 /**
@@ -692,6 +694,12 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     public void onOrientationChange(int orientation) {
         if (toggleFullScreen) {
             return;
+        }
+        try {
+            if (Settings.System.getInt(getApplicationContext().getContentResolver(), ACCELEROMETER_ROTATION, 0) != 1)
+                return;
+        } catch (Exception e) {
+            // pass
         }
         if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
