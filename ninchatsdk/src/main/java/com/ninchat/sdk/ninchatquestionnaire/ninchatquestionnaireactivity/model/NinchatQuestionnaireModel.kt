@@ -62,7 +62,17 @@ data class NinchatQuestionnaireModel(
         val answerProps = Props()
         if (answers?.answerList.isNullOrEmpty().not()) {
             answers?.answerList?.forEach {
-                answerProps.setString(it.first, it.second)
+                when {
+                    NinchatQuestionnaireJsonUtil.isBoolean(it.second) -> {
+                        answerProps.setBool(it.first, true)
+                    }
+                    NinchatQuestionnaireJsonUtil.isNumber(it.second) -> {
+                        answerProps.setInt(it.first, NinchatQuestionnaireJsonUtil.asLong(it.second))
+                    }
+                    else -> {
+                        answerProps.setString(it.first, it.second)
+                    }
+                }
             }
         }
         if (answers?.tagList.isNullOrEmpty().not()) {
