@@ -289,6 +289,9 @@ class NinchatSiteConfig {
     fun getAudienceRegisteredClosedText(): String? =
         getString("audienceRegisteredClosedText")
 
+    fun getRatingInfoText(): String? =
+        getString("ratingInfoText")
+
     fun getPreAudienceQuestionnaire(): JSONArray? =
         getArray("preAudienceQuestionnaire")
 

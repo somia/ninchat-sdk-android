@@ -60,6 +60,10 @@ class NinchatReviewModel {
         return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getFeedbackSkipText()
     }
 
+    fun getRatingInfoText(): String? {
+        return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getRatingInfoText()
+    }
+
     companion object {
         @JvmField
         val REQUEST_CODE = NinchatReviewModel::class.java.hashCode() and 0xffff
