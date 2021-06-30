@@ -116,6 +116,9 @@ class NinchatReviewPresenter(
     private fun renderText(view: View, rootActivity: View) {
         view.ninchat_review_title.text =
             Misc.toRichText(ninchatReviewModel.getFeedbackTitleText(), view.ninchat_review_title)
+        rootActivity.rating_info_text.text =
+            Misc.toRichText(ninchatReviewModel.getRatingInfoText(), rootActivity.rating_info_text)
+
         view.ninchat_review_positive.text = ninchatReviewModel.getFeedbackPositiveText()
         view.ninchat_review_neutral.text = ninchatReviewModel.getFeedbackNeutralText()
         view.ninchat_review_negative.text = ninchatReviewModel.getFeedbackNegativeText()
