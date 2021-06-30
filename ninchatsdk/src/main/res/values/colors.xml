@@ -60,4 +60,10 @@
 
     <color name="ninchat_color_titlebar_placeholder">#E9E9E9</color>
     <color name="ninchat_color_modal_border">#DBDDE1</color>
+
+    <color name="ninchat_color_chat_close_button">@color/ninchat_colorAccent</color>
+    <color name="ninchat_color_close_button">@color/ninchat_colorAccent</color>
+    <color name="ninchat_color_titlebar_close_button">@color/ninchat_colorAccent</color>
+
+
 </resources>

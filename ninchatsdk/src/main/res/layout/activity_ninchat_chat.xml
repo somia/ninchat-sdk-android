@@ -124,7 +124,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="@dimen/ninchat_chat_activity_close_button_top_margin"
         android:layout_marginEnd="@dimen/ninchat_chat_activity_close_button_end_margin"
-        style="@style/NinchatTheme.Button.Close.Chat"
+        style="@style/NinchatTheme.Button.Close.Chat.Top"
         tools:text="Close"
         android:visibility="gone"
         tools:visibility="gone"

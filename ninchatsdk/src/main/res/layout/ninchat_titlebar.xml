@@ -27,7 +27,7 @@
 
     <Button
         android:id="@+id/ninchat_titlebar_chat_close"
-        style="@style/NinchatTheme.Button.Close.Chat"
+        style="@style/NinchatTheme.Button.Close.Titlebar"
         android:layout_width="@dimen/ninchat_close_button_width"
         android:layout_height="@dimen/ninchat_close_button_height"
         android:maxWidth="350dp"
