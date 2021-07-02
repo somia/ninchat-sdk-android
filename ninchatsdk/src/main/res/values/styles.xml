@@ -46,17 +46,17 @@
     <style name="NinchatTheme.Button.Close.Chat" parent="NinchatTheme.Button.Close">
         <item name="android:height">@dimen/ninchat_close_button_height</item>
         <item name="android:layout_height">@dimen/ninchat_close_button_height</item>
-        <item name="android:background">@drawable/ninchat_chat_close_button</item>
-        <item name="android:drawableEnd">@drawable/ninchat_icon_chat_close_button</item>
-        <item name="android:textColor">@color/ninchat_color_chat_close_button</item>
+        <item name="android:background">@drawable/ninchat_close_button</item>
+        <item name="android:drawableEnd">@drawable/ninchat_icon_close_button</item>
+        <item name="android:textColor">@color/ninchat_color_close_button</item>
         <item name="android:drawablePadding">@dimen/ninchat_chat_activity_close_button_end_margin
         </item>
     </style>
 
     <style name="NinchatTheme.Button.Close.Chat.Top" parent="NinchatTheme.Button.Close.Chat">
-        <item name="android:background">@drawable/ninchat_close_button</item>
-        <item name="android:drawableEnd">@drawable/ninchat_icon_close_button</item>
-        <item name="android:textColor">@color/ninchat_color_close_button</item>
+        <item name="android:background">@drawable/ninchat_chat_close_button</item>
+        <item name="android:drawableEnd">@drawable/ninchat_icon_chat_close_button</item>
+        <item name="android:textColor">@color/ninchat_color_chat_close_button</item>
     </style>
 
     <style name="NinchatTheme.Button.Close.Titlebar" parent="NinchatTheme.Button.Close.Chat.Top">
