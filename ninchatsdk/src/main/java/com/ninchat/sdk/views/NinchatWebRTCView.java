@@ -99,6 +99,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     private NinchatAudioManager ninchatAudioManager;
     private PeerConnection peerConnection;
     private PeerConnectionFactory peerConnectionFactory;
+    private Boolean inCall = false;
 
     public NinchatWebRTCView(final View view) {
         videoContainer = view;
@@ -107,6 +108,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     public void init() {
         if (videoContainer == null) return;
+        inCall = true;
         eglBase = EglBase.create();
         remoteVideo = videoContainer.findViewById(R.id.video);
         localVideo = videoContainer.findViewById(R.id.pip_video);
@@ -531,6 +533,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     private void hangUp(final boolean sendMessage) {
+        inCall = false;
         if (localRender != null) {
             localRender.setTarget(null);
         }
@@ -673,6 +676,10 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         } catch (final Exception e) {
             // Not fully initialized yet, ignore the exception
         }
+    }
+
+    public boolean isInCall() {
+        return this.inCall;
     }
 
 }

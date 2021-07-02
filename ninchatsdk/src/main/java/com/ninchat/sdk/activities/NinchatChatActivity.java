@@ -27,6 +27,9 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.Display;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -367,6 +370,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
+        handleTitlebarView();
     }
 
     public void onToggleAudio(final View view) {
@@ -690,8 +694,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         });
     }
 
-    @Override
-    public void onOrientationChange(int orientation) {
+    private void handleOrientationChange(int currentOrientation) {
         if (toggleFullScreen) {
             return;
         }
@@ -701,10 +704,32 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         } catch (Exception e) {
             // pass
         }
-        if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+        if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else if (orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+        } else if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
+    }
+
+    private void handleTitlebarView() {
+        if (webRTCView == null || !webRTCView.isInCall()) return;
+        if (!shouldShowTitlebar()) return;
+        int rotation = getWindowManager().getDefaultDisplay().getRotation();
+        switch (rotation) {
+            case Surface.ROTATION_0:
+            case Surface.ROTATION_180:
+                findViewById(R.id.ninchat_chat_root).findViewById(R.id.ninchat_titlebar).setVisibility(View.VISIBLE);
+                return;
+            case Surface.ROTATION_270:
+            case Surface.ROTATION_90:
+                findViewById(R.id.ninchat_chat_root).findViewById(R.id.ninchat_titlebar).setVisibility(View.GONE);
+                return;
+        }
+    }
+
+    @Override
+    public void onOrientationChange(int orientation) {
+        handleOrientationChange(orientation);
+        handleTitlebarView();
     }
 }
