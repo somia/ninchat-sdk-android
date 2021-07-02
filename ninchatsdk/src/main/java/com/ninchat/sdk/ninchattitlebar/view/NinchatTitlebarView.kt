@@ -79,7 +79,7 @@ class NinchatTitlebarView {
             val titleBarInfo = when (displayInfo) {
                 "questionnaire" -> getTitleBarInfoFromAudienceQuestionnaire()
                 "agent" -> getTitleBarInfoFromAgent()
-                else -> null
+                else -> getTitleBarInfoFromAudienceQuestionnaire()
             } ?: return
             //1: if no questionnaire name
             //2: if no questionnaire name and no questionnaire avatar
