@@ -53,6 +53,10 @@
         <item name="android:background">@drawable/ninchat_questionnaire_label_disabled</item>
     </style>
 
+    <style name="NinchatTheme.Questionnaire.Label.Error" parent="NinchatTheme.Questionnaire.Label">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_label_text_error</item>
+    </style>
+
     <style name="NinchatTheme.Questionnaire.InputText" parent="NinchatTheme.Questionnaire">
         <item name="android:background">@drawable/ninchat_border_with_unfocus</item>
         <item name="android:textColorHint">@color/ninchat_color_textarea_text</item>
