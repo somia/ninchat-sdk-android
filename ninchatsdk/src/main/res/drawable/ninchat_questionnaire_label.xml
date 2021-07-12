@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/ninchat_top_icon"
+        android:gravity="top|left">
+        <bitmap
+            android:gravity="end"
+            android:src="@drawable/ninchat_chat_bubble_left_caret" />
+    </item>
+    <item
+        android:id="@+id/ninchat_middle"
+        android:top="3dp">
+        <shape android:shape="rectangle">
+            <corners
+                android:radius="@dimen/ninchat_chat_activity_message_bubble_corner_radius"
+                android:topLeftRadius="0dp" />
+            <solid android:color="#FFFFFF" />
+        </shape>
+    </item>
+    <item>
+        <shape
+            android:id="@+id/ninchat_end"
+            android:shape="rectangle">
+            <padding
+                android:bottom="@dimen/ninchat_chat_activity_message_bubble_padding_vertical"
+                android:left="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal"
+                android:right="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal"
+                android:top="@dimen/ninchat_chat_activity_message_bubble_continued_padding_top" />
+        </shape>
+    </item>
+</layer-list>
