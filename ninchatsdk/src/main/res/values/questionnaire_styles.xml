@@ -41,8 +41,16 @@
     </style>
 
     <style name="NinchatTheme.Questionnaire.Label" parent="Theme.AppCompat.Light">
-        <item name="android:textColor">@color/ninchat_colorPrimary</item>
-        <item name="android:textSize">@dimen/ninchat_questionnaire_item_label_text_size</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_label_text</item>
+        <item name="android:layout_marginBottom">@dimen/ninchat_questionnaire_item_margin_bottom
+        </item>
+        <item name="android:textSize">@dimen/ninchat_questionnaire_label_text_size</item>
+        <item name="android:background">@drawable/ninchat_questionnaire_label</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Label.Disabled" parent="NinchatTheme.Questionnaire.Label">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_label_text_disabled</item>
+        <item name="android:background">@drawable/ninchat_questionnaire_label_disabled</item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.InputText" parent="NinchatTheme.Questionnaire">
