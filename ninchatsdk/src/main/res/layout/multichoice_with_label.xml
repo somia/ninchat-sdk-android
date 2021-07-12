@@ -8,8 +8,7 @@
     android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom">
 
     <TextView
-        android:theme="@style/NinchatTheme.Questionnaire.Label"
-        android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
+        style="@style/NinchatTheme.Questionnaire.Label"
         android:id="@+id/radio_option_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
