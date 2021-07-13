@@ -11,6 +11,7 @@ import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.DropDownSelectUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.INinchatDropDownSelectViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.NinchatDropDownSelectViewPresenter
+import com.ninchat.sdk.utils.misc.Misc
 import kotlinx.android.synthetic.main.dropdown_list.view.*
 import kotlinx.android.synthetic.main.dropdown_with_label.view.*
 import org.json.JSONObject
@@ -89,13 +90,12 @@ class NinchatDropDownSelectViewHolder(
 
     private fun renderCommonView(label: String?, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int) {
         itemView.apply {
-            background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
             isEnabled = enabled
         }
         itemView.dropdown_text_label?.apply {
             isEnabled = enabled
-            setTextColor(ContextCompat.getColor(itemView.context, if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled))
-            text = label
+            setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
+            text = Misc.toRichText(label, this)
         }
         // render adapter view
         itemView.ninchat_dropdown_list?.apply {
@@ -115,7 +115,7 @@ class NinchatDropDownSelectViewHolder(
             isEnabled = enabled
             dropdown_text_label.isEnabled = enabled
             ninchat_dropdown_list.isEnabled = enabled
-            dropdown_text_label.setTextColor(ContextCompat.getColor(itemView.context, if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled))
+            dropdown_text_label.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
             ninchat_dropdown_list.setSelection(selectedIndex)
         }
 
