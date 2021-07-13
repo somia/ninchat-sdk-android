@@ -100,7 +100,7 @@
     <dimen name="ninchat_questionnaire_items_margin_top">10dp</dimen>
     <dimen name="ninchat_questionnaire_items_margin_left">15dp</dimen>
     <dimen name="ninchat_questionnaire_items_margin_right">15dp</dimen>
-    <dimen name="ninchat_questionnaire_item_label_text_size">20sp</dimen>
+    <dimen name="ninchat_questionnaire_label_text_size">18sp</dimen>
     <dimen name="ninchat_questionnaire_item_dropdown_height">40dp</dimen>
     <dimen name="ninchat_questionnaire_item_bot_height">50dp</dimen>
     <dimen name="ninchat_questionnaire_checkbox_margin">10dp</dimen>

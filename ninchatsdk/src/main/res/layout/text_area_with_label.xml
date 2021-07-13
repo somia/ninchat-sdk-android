@@ -7,12 +7,11 @@
     android:orientation="vertical">
 
     <TextView
-        android:theme="@style/NinchatTheme.Questionnaire.Label"
-        android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
+        style="@style/NinchatTheme.Questionnaire.Label"
         android:id="@+id/multiline_text_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Element label"/>
+        tools:text="Element label that cross the boundary. Ok what else could happen" />
 
     <EditText
         android:id="@+id/multiline_text_area"
