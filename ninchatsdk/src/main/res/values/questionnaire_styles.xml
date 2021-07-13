@@ -40,7 +40,7 @@
         <item name="android:textColor">@color/ninchat_color_button_disable_text</item>
     </style>
 
-    <style name="NinchatTheme.Questionnaire.Label" parent="Theme.AppCompat.Light">
+    <style name="NinchatTheme.Questionnaire.Label" parent="NinchatTheme.Questionnaire">
         <item name="android:textColor">@color/ninchat_color_questionnaire_label_text</item>
         <item name="android:layout_marginBottom">@dimen/ninchat_questionnaire_item_margin_bottom
         </item>
@@ -87,6 +87,19 @@
 
     <style name="NinchatTheme.Dropdown.Text" parent="Theme.AppCompat.Light">
         <item name="android:textColor">@color/ninchat_color_dropdown_unselected_text</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.TextView" parent="NinchatTheme.Questionnaire">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_textview_text</item>
+        <item name="android:layout_marginBottom">@dimen/ninchat_questionnaire_item_margin_bottom
+        </item>
+        <item name="android:textSize">@dimen/ninchat_questionnaire_textview_text_size</item>
+        <item name="android:background">@drawable/ninchat_questionnaire_textview</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.TextView.Disabled" parent="NinchatTheme.Questionnaire.TextView">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_textview_text_disabled</item>
+        <item name="android:background">@drawable/ninchat_questionnaire_textview_disabled</item>
     </style>
 
 </resources>
