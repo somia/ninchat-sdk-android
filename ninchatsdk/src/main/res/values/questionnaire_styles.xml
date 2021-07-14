@@ -58,16 +58,36 @@
     </style>
 
     <style name="NinchatTheme.Questionnaire.InputText" parent="NinchatTheme.Questionnaire">
-        <item name="android:background">@drawable/ninchat_border_with_unfocus</item>
-        <item name="android:textColorHint">@color/ninchat_color_textarea_text</item>
+        <item name="android:background">@drawable/ninchat_questionnaire_input_text</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_input_text</item>
+        <item name="android:editTextBackground">@drawable/ninchat_questionnaire_input_text</item>
+        <item name="android:textColorHint">
+            @color/ninchat_color_questionnaire_input_text_placeholder
+        </item>
         <item name="android:paddingLeft">13dp</item>
         <item name="android:paddingRight">13dp</item>
-        <item name="android:paddingTop">9dp</item>
-        <item name="android:paddingBottom">9dp</item>
+        <item name="android:gravity">top</item>
+        <item name="android:inputType">textMultiLine|textCapSentences</item>
+        <item name="android:selectAllOnFocus">false</item>
+        <item name="android:imeOptions">actionDone</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.InputText.Focus" parent="NinchatTheme.Questionnaire.InputText">
+        <item name="android:background">@drawable/ninchat_questionnaire_input_text_focus</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_input_text_focus</item>
+        <item name="android:editTextBackground">@drawable/ninchat_questionnaire_input_text_focus
+        </item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.InputText.Error" parent="NinchatTheme.Questionnaire.InputText">
+        <item name="android:background">@drawable/ninchat_questionnaire_input_text_error</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_input_text_error</item>
+        <item name="android:editTextBackground">@drawable/ninchat_questionnaire_input_text_error
+        </item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.InputText.Cursor" parent="NinchatTheme.Questionnaire">
-        <item name="android:colorControlActivated">@color/ninchat_colorPrimary</item>
+        <item name="android:colorControlActivated">@color/ninchat_color_questionnaire_input_text_focus</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
 
@@ -98,7 +118,8 @@
     </style>
 
     <style name="NinchatTheme.Questionnaire.TextView.Disabled" parent="NinchatTheme.Questionnaire.TextView">
-        <item name="android:textColor">@color/ninchat_color_questionnaire_textview_text_disabled</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_textview_text_disabled
+        </item>
         <item name="android:background">@drawable/ninchat_questionnaire_textview_disabled</item>
     </style>
 
