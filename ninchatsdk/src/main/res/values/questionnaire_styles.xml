@@ -66,8 +66,6 @@
         </item>
         <item name="android:paddingLeft">13dp</item>
         <item name="android:paddingRight">13dp</item>
-        <item name="android:gravity">top</item>
-        <item name="android:inputType">textMultiLine|textCapSentences</item>
         <item name="android:selectAllOnFocus">false</item>
         <item name="android:imeOptions">actionDone</item>
     </style>
@@ -89,6 +87,7 @@
     <style name="NinchatTheme.Questionnaire.InputText.Cursor" parent="NinchatTheme.Questionnaire">
         <item name="android:colorControlActivated">@color/ninchat_color_questionnaire_input_text_focus</item>
         <item name="android:background">@android:color/transparent</item>
+        <item name="android:inputType">textMultiLine|textCapSentences</item>
     </style>
 
     <style name="NinchatTheme.Checkbox" parent="Theme.AppCompat.Light">

@@ -24,9 +24,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:autofillHints="..."
+            android:background="@android:color/transparent"
+            android:gravity="top|start"
             android:maxLines="4"
             android:minHeight="80dp"
-            android:background="@android:color/transparent"
+            android:paddingTop="9dp"
             android:theme="@style/NinchatTheme.Questionnaire.InputText.Cursor"
             tools:hint="Enter text" />
     </LinearLayout>
