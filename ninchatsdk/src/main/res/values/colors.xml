@@ -67,11 +67,16 @@
 
 
     <color name="ninchat_color_questionnaire_label_text">@color/ninchat_color_text_normal</color>
-    <color name="ninchat_color_questionnaire_label_text_error">@color/ninchat_color_error_background</color>
+    <color name="ninchat_color_questionnaire_label_text_error">#983637</color>
     <color name="ninchat_color_questionnaire_label_text_disabled">@color/ninchat_color_text_disabled</color>
 
     <color name="ninchat_color_questionnaire_textview_text">@color/ninchat_color_text_normal</color>
     <color name="ninchat_color_questionnaire_textview_text_disabled">@color/ninchat_color_text_disabled</color>
+
+    <color name="ninchat_color_questionnaire_input_text">#A2A2A2</color>
+    <color name="ninchat_color_questionnaire_input_text_error">#983637</color>
+    <color name="ninchat_color_questionnaire_input_text_focus">@color/ninchat_color_text_normal</color>
+    <color name="ninchat_color_questionnaire_input_text_placeholder">@color/ninchat_color_hint</color>
 
 
 </resources>

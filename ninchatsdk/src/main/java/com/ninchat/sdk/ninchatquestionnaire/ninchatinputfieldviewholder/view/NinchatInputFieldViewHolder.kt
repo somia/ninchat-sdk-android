@@ -4,8 +4,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.View.OnFocusChangeListener
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.INinchatInputFieldViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.InputFieldUpdateListener
@@ -86,29 +86,25 @@ class NinchatInputFieldViewHolder(
     }
 
     override fun onUpdateText(value: String, hasError: Boolean) {
-        val mEditText =
-            if (presenter.isMultiline()) itemView.multiline_text_area else itemView.simple_text_field
-        if (hasError) {
-            mEditText?.setBackgroundResource(R.drawable.ninchat_border_with_error);
-        } else {
-            mEditText?.setBackgroundResource(R.drawable.ninchat_border_with_focus);
-        }
+        val view = if (presenter.isMultiline()) itemView.multiline_text_field_container else itemView.simple_text_field_container
+        view.style(
+            if (hasError) R.style.NinchatTheme_Questionnaire_InputText_Error else R.style.NinchatTheme_Questionnaire_InputText_Focus
+        )
     }
 
     override fun onUpdateFocus(hasFocus: Boolean) {
-        val mEditText =
-            if (presenter.isMultiline()) itemView.multiline_text_area else itemView.simple_text_field
-        mEditText?.setBackgroundResource(if (hasFocus) R.drawable.ninchat_border_with_focus else R.drawable.ninchat_border_with_unfocus)
+        val view = if (presenter.isMultiline()) itemView.multiline_text_field_container else itemView.simple_text_field_container
+        view.style(
+            if (hasFocus) R.style.NinchatTheme_Questionnaire_InputText_Focus else R.style.NinchatTheme_Questionnaire_InputText
+        )
     }
 
     private fun renderCommonView(isMultiline: Boolean, label: String, enabled: Boolean) {
         itemView.isEnabled = enabled
         // set label
         val mLabel = if (isMultiline) itemView.multiline_text_label else itemView.simple_text_label
-        // set color of the label
-        val textColor = if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled
         mLabel?.let {
-            if (label.isNotBlank()){
+            if (label.isNotBlank()) {
                 mLabel.text = Misc.toRichText(label, mLabel)
             }
             mLabel.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
@@ -117,7 +113,6 @@ class NinchatInputFieldViewHolder(
         if (!isMultiline) {
             setInputType()
         }
-
         val mEditText =
             if (presenter.isMultiline()) itemView.multiline_text_area else itemView.simple_text_field
         mEditText?.let {
@@ -126,7 +121,12 @@ class NinchatInputFieldViewHolder(
                 it.setText(presenter.getInputValue())
             }
             it.isEnabled = enabled
-            it.setTextColor(ContextCompat.getColor(itemView.context, textColor))
+            // it.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_InputText_Focus else R.style.NinchatTheme_Questionnaire_InputText)
+            val view = if (presenter.isMultiline()) itemView.multiline_text_field_container else itemView.simple_text_field_container
+            view.style(
+                if (enabled) R.style.NinchatTheme_Questionnaire_InputText_Focus else R.style.NinchatTheme_Questionnaire_InputText
+            )
+
         }
     }
 
@@ -142,11 +142,9 @@ class NinchatInputFieldViewHolder(
                 it.setSelection(presenter.getInputValue()?.length ?: 0)
             }
             it.isEnabled = enabled
-            it.setTextColor(
-                ContextCompat.getColor(
-                    itemView.context,
-                    if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled
-                )
+            val view = if (presenter.isMultiline()) itemView.multiline_text_field_container else itemView.simple_text_field_container
+            view.style(
+                if (enabled) R.style.NinchatTheme_Questionnaire_InputText_Focus else R.style.NinchatTheme_Questionnaire_InputText
             )
         }
     }

@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
     android:orientation="vertical">
 
     <TextView
-        style="@style/NinchatTheme.Questionnaire.Label"
         android:id="@+id/simple_text_label"
+        style="@style/NinchatTheme.Questionnaire.Label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="Element label that cross the boundary. Ok what else could happen" />
 
-    <EditText
-        android:id="@+id/simple_text_field"
-        android:theme="@style/NinchatTheme.Questionnaire.InputText.Cursor"
+    <LinearLayout
+        android:id="@+id/simple_text_field_container"
         style="@style/NinchatTheme.Questionnaire.InputText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:autofillHints="..."
-        android:inputType="text|textCapSentences"
-        android:minHeight="50dp"
-        android:selectAllOnFocus="false"
-        android:imeOptions="actionDone"
-        android:singleLine="true"
-        tools:hint="Enter text" />
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/simple_text_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:gravity="start|center_vertical"
+            android:minHeight="50dp"
+            android:singleLine="true"
+            android:theme="@style/NinchatTheme.Questionnaire.InputText.Cursor"
+            tools:hint="Enter text" />
+
+    </LinearLayout>
 
 </LinearLayout>
 
