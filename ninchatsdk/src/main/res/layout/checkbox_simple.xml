@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/checkbox_simple"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -20,7 +21,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.9"
-        android:textColor="@color/ninchat_color_text_normal"
-        android:text="A compound text box label "/>
+        android:textColor="@color/ninchat_color_questionnaire_checkbox_label"
+        tools:text="A compound text box label "/>
 
 </LinearLayout>
