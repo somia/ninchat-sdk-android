@@ -90,10 +90,30 @@
         <item name="android:inputType">textMultiLine|textCapSentences</item>
     </style>
 
-    <style name="NinchatTheme.Checkbox" parent="Theme.AppCompat.Light">
-        <item name="android:colorControlActivated">@color/ninchat_color_checkbox_selected</item>
-        <item name="android:colorControlNormal">@color/ninchat_color_checkbox_unselected</item>
+    <style name="NinchatTheme.Questionnaire.Checkbox.Label" parent="NinchatTheme.Questionnaire">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_checkbox_label</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:layout_marginStart">10dp</item>
+        <item name="android:layout_gravity">center</item>
     </style>
+
+    <style name="NinchatTheme.Questionnaire.Checkbox.Label.Focused" parent="NinchatTheme.Questionnaire.Checkbox.Label">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_checkbox_label_focused</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Checkbox.Label.Selected" parent="NinchatTheme.Questionnaire.Checkbox.Label">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_checkbox_label_selected</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Checkbox.Image" parent="NinchatTheme.Questionnaire">
+        <item name="android:src">@drawable/ninchat_chat_checkbox</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Checkbox.Image.Selected" parent="NinchatTheme.Questionnaire.Checkbox.Image">
+        <item name="android:src">@drawable/ninchat_chat_checkbox_selected</item>
+    </style>
+
 
     <style name="NinchatTheme.Dropdown.Item" parent="Theme.AppCompat.Light">
         <item name="android:divider">@color/ninchat_color_dropdown_unselected_text</item>
