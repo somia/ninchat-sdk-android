@@ -44,7 +44,6 @@ class NinchatCheckBoxListView(
 
     override fun onRenderView(optionsList: List<JSONObject>, enabled: Boolean, isFormView: Boolean) {
         itemView.isEnabled = enabled
-        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         val spaceInPixel = if (presenter.size() < 2) 0 else itemView.resources.getDimensionPixelSize(R.dimen.ninchat_questionnaire_checkbox_margin)
         itemView.ninchat_chat_checkbox_options?.apply {
             layoutManager = LinearLayoutManager(itemView.context)

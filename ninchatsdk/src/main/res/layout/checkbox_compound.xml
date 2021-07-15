@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:focusableInTouchMode ="true"
+    android:background="@drawable/ninchat_chat_questionnaire_background"
     android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom">
 
     <androidx.recyclerview.widget.RecyclerView

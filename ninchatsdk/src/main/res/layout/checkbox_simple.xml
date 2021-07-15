@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/checkbox_simple"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -7,20 +8,17 @@
 
     <ImageView
         android:id="@+id/ninchat_checkbox_image"
-        android:layout_gravity="center"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.1"
-        android:src="@drawable/ninchat_chat_checkbox_selected"/>
+        style="@style/NinchatTheme.Questionnaire.Checkbox.Image"/>
 
     <TextView
         android:id="@+id/ninchat_checkbox_label"
-        android:layout_marginStart="10dp"
-        android:layout_gravity="center"
-        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_width="0dp"
         android:layout_weight="0.9"
-        android:textColor="@color/ninchat_color_text_normal"
-        android:text="A compound text box label "/>
+        style="@style/NinchatTheme.Questionnaire.Checkbox.Label"
+        tools:text="A compound text box label "/>
 
 </LinearLayout>
