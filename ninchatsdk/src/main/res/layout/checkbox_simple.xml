@@ -8,20 +8,17 @@
 
     <ImageView
         android:id="@+id/ninchat_checkbox_image"
-        android:layout_gravity="center"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.1"
-        android:src="@drawable/ninchat_chat_checkbox_selected"/>
+        style="@style/NinchatTheme.Questionnaire.Checkbox.Image"/>
 
     <TextView
         android:id="@+id/ninchat_checkbox_label"
-        android:layout_marginStart="10dp"
-        android:layout_gravity="center"
-        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_width="0dp"
         android:layout_weight="0.9"
-        android:textColor="@color/ninchat_color_questionnaire_checkbox_label"
+        style="@style/NinchatTheme.Questionnaire.Checkbox.Label"
         tools:text="A compound text box label "/>
 
 </LinearLayout>
