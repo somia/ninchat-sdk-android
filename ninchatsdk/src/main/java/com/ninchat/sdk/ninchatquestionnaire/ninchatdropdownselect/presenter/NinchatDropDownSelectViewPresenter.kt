@@ -7,17 +7,17 @@ import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
 class NinchatDropDownSelectViewPresenter(
-        isFormLikeQuestionnaire: Boolean,
-        jsonObject: JSONObject? = null,
-        val viewCallback: INinchatDropDownSelectViewPresenter,
-        val updateCallback: DropDownSelectUpdateListener,
-        position: Int,
-        enabled: Boolean,
+    isFormLikeQuestionnaire: Boolean,
+    jsonObject: JSONObject? = null,
+    val viewCallback: INinchatDropDownSelectViewPresenter,
+    val updateCallback: DropDownSelectUpdateListener,
+    position: Int,
+    enabled: Boolean,
 ) : INinchatDropDownSelectViewHolder {
     private val model = NinchatDropDownSelectViewModel(
-            isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-            position = position,
-            enabled = enabled
+        isFormLikeQuestionnaire = isFormLikeQuestionnaire,
+        position = position,
+        enabled = enabled
     ).apply {
         parse(jsonObject = jsonObject)
     }
@@ -27,11 +27,23 @@ class NinchatDropDownSelectViewPresenter(
             model.update(jsonObject = jsonObject, enabled = enabled)
         }
         if (model.isFormLikeQuestionnaire) {
-            viewCallback.onRenderFromView(label = model.label
-                    ?: "", options = model.translatedOptionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
+            viewCallback.onRenderFromView(
+                label = model.label
+                    ?: "",
+                options = model.translatedOptionList,
+                enabled = enabled,
+                hasError = model.hasError,
+                selectedIndex = model.selectedIndex
+            )
         } else {
-            viewCallback.onRenderConversationView(label = model.label
-                    ?: "", options = model.translatedOptionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
+            viewCallback.onRenderConversationView(
+                label = model.label
+                    ?: "",
+                options = model.translatedOptionList,
+                enabled = enabled,
+                hasError = model.hasError,
+                selectedIndex = model.selectedIndex
+            )
         }
     }
 
@@ -40,11 +52,23 @@ class NinchatDropDownSelectViewPresenter(
             model.update(jsonObject = jsonObject, enabled = enabled)
         }
         if (model.isFormLikeQuestionnaire) {
-            viewCallback.onUpdateFromView(label = model.label
-                    ?: "", options = model.translatedOptionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
+            viewCallback.onUpdateFromView(
+                label = model.label
+                    ?: "",
+                options = model.translatedOptionList,
+                enabled = enabled,
+                hasError = model.hasError,
+                selectedIndex = model.selectedIndex
+            )
         } else {
-            viewCallback.onUpdateConversationView(label = model.label
-                    ?: "", options = model.translatedOptionList, enabled = enabled, hasError = model.hasError, selectedIndex = model.selectedIndex)
+            viewCallback.onUpdateConversationView(
+                label = model.label
+                    ?: "",
+                options = model.translatedOptionList,
+                enabled = enabled,
+                hasError = model.hasError,
+                selectedIndex = model.selectedIndex
+            )
         }
     }
 
@@ -53,10 +77,19 @@ class NinchatDropDownSelectViewPresenter(
         model.value = if (value == "Select") null else value
         model.hasError = if (value == "Select") model.hasError else false
         // first position is "Selected" and should be consider as not selected
-        viewCallback.onSelectionChange( selectedIndex = position, isSelected = position != 0, hasError = model.hasError, enabled = model.enabled)
+        viewCallback.onSelectionChange(
+            selectedIndex = position,
+            isSelected = position != 0,
+            hasError = model.hasError,
+            enabled = model.enabled
+        )
         if (model.selectedIndex != position) {
             model.selectedIndex = position
-            updateCallback.onUpdate(value = model.value, position = model.position, hasError = model.hasError)
+            updateCallback.onUpdate(
+                value = model.value,
+                position = model.position,
+                hasError = model.hasError
+            )
             if (position != 0) {
                 mayBeFireEvent()
             }
@@ -67,16 +100,49 @@ class NinchatDropDownSelectViewPresenter(
         if (!model.fireEvent) return
         EventBus.getDefault().post(OnNextQuestionnaire(OnNextQuestionnaire.other))
     }
+
+    fun isEnabled() = model.enabled
 }
 
 interface INinchatDropDownSelectViewPresenter {
-    fun onRenderFromView(label: String, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int)
-    fun onRenderConversationView(label: String, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int)
+    fun onRenderFromView(
+        label: String,
+        options: List<String>,
+        enabled: Boolean,
+        hasError: Boolean,
+        selectedIndex: Int
+    )
 
-    fun onUpdateFromView(label: String, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int)
-    fun onUpdateConversationView(label: String, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int)
+    fun onRenderConversationView(
+        label: String,
+        options: List<String>,
+        enabled: Boolean,
+        hasError: Boolean,
+        selectedIndex: Int
+    )
 
-    fun onSelectionChange(selectedIndex: Int, isSelected: Boolean, hasError: Boolean, enabled: Boolean)
+    fun onUpdateFromView(
+        label: String,
+        options: List<String>,
+        enabled: Boolean,
+        hasError: Boolean,
+        selectedIndex: Int
+    )
+
+    fun onUpdateConversationView(
+        label: String,
+        options: List<String>,
+        enabled: Boolean,
+        hasError: Boolean,
+        selectedIndex: Int
+    )
+
+    fun onSelectionChange(
+        selectedIndex: Int,
+        isSelected: Boolean,
+        hasError: Boolean,
+        enabled: Boolean
+    )
 }
 
 
