@@ -88,7 +88,7 @@
     <color name="ninchat_color_questionnaire_dropdown_selected">@color/ninchat_colorAccent</color>
     <color name="ninchat_color_questionnaire_dropdown_error">@color/ninchat_color_text_error</color>
 
-    <color name="ninchat_color_questionnaire_bot_name_text">@color/ninchat_color_hint</color>
+    <color name="ninchat_color_questionnaire_bot_name_text">@color/ninchat_color_text_normal</color>
 
 
 </resources>
