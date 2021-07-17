@@ -111,5 +111,7 @@
     <dimen name="ninchat_title_bar_height">-2dp</dimen>
     <dimen name="ninchat_chat_activity_text_margin">15dp</dimen>
 
+    <dimen name="ninchat_chat_info_text_size">@dimen/ninchat_text_size</dimen>
+
 
 </resources>

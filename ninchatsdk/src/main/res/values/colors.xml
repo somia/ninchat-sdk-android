@@ -90,5 +90,8 @@
 
     <color name="ninchat_color_questionnaire_bot_name_text">@color/ninchat_color_text_normal</color>
 
+    <color name="ninchat_color_chat_info_text">@color/ninchat_color_text_normal</color>
+    <color name="ninchat_color_chat_info_border">@android:color/white</color>
+
 
 </resources>
