@@ -116,17 +116,40 @@
         <!--<item name="android:windowNoTitle">true</item>-->
     </style>
 
-    <style name="NinchatTheme.Radio.Selected" parent="NinchatTheme.MultiChoice" >
+    <style name="NinchatTheme.Radio.Selected" parent="NinchatTheme.MultiChoice">
         <item name="android:textColor">@color/ninchat_color_radio_item_selected_text</item>
     </style>
-    <style name="NinchatTheme.Radio.UnSelected" parent="NinchatTheme.MultiChoice" >
+
+    <style name="NinchatTheme.Radio.UnSelected" parent="NinchatTheme.MultiChoice">
         <item name="android:textColor">@color/ninchat_color_radio_item_unselected_text</item>
     </style>
+
     <style name="NinchatTheme.TitlebarPlaceholder">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">@drawable/ninchat_titlebar_text_placeholder</item>
         <item name="android:gravity">left</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.BotView" parent="NinchatTheme">
+        <item name="android:src">@drawable/ninchat_chat_avatar_left</item>
+        <item name="android:layout_width">@dimen/ninchat_chat_activity_avatar_size</item>
+        <item name="android:layout_height">@dimen/ninchat_chat_activity_avatar_size</item>
+        <item name="android:layout_alignParentStart">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_marginEnd">@dimen/ninchat_chat_activity_avatar_margin</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:contentDescription">"Agent avatar</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.BotView.Text" parent="NinchatTheme">
+        <item name="android:layout_marginEnd">10dp</item>
+        <item name="android:layout_toEndOf">@id/ninchat_chat_message_bot_avatar</item>
+        <item name="android:gravity">center|start</item>
+        <item name="android:minHeight">@dimen/ninchat_chat_activity_message_title_height</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_bot_name_text</item>
     </style>
 
 </resources>
