@@ -45,12 +45,10 @@ class NinchatRadioButtonListView(
     }
 
     override fun onRenderFormView(label: String, hasError: Boolean, enabled: Boolean) {
-        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         renderCommon(label = label, hasError = hasError, enabled = enabled)
     }
 
     override fun onRenderConversationView(label: String, hasError: Boolean, enabled: Boolean) {
-        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         renderCommon(label = label, hasError = hasError, enabled = enabled)
     }
 
