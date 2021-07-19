@@ -93,5 +93,10 @@
     <color name="ninchat_color_chat_info_text">@color/ninchat_color_text_normal</color>
     <color name="ninchat_color_chat_info_border">@android:color/white</color>
 
+    <color name="ninchat_color_chat_command_input_text">@color/ninchat_color_textarea_text</color>
+    <color name="ninchat_color_chat_command_input_text_placeholder">@color/ninchat_color_textarea_text_hint</color>
+    <color name="ninchat_color_chat_command_input_background">#f7f7f7</color>
+    <color name="ninchat_color_chat_command_input_border">#ececec</color>
+
 
 </resources>
