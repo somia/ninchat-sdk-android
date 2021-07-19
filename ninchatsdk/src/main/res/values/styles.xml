@@ -173,4 +173,16 @@
         <item name="android:textColor">@color/ninchat_color_info_text</item>
     </style>
 
+    <style name="NinchatTheme.Backlog.CommandView" parent="NinchatTheme">
+        <item name="android:layout_marginTop">@dimen/ninchat_chat_activity_message_margin</item>
+        <item name="android:layout_marginLeft">@dimen/ninchat_chat_activity_message_margin</item>
+        <item name="android:layout_marginRight">@dimen/ninchat_chat_activity_message_margin</item>
+        <item name="android:background">@drawable/ninchat_chat_command_input_text</item>
+        <item name="android:inputType">textMultiLine|textCapSentences</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:maxLines">6</item>
+        <item name="android:textColor">@color/ninchat_color_textarea_text</item>
+        <item name="android:textColorHint">@color/ninchat_color_textarea_text_hint</item>
+    </style>
+
 </resources>
