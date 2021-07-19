@@ -207,6 +207,7 @@
             android:layout_height="wrap_content"
             android:layout_alignWithParentIfMissing="true"
             android:layout_alignParentTop="true"
+            tools:visibility="gone"
             android:layout_toStartOf="@id/ninchat_chat_message_user_avatar"
             android:orientation="vertical">
 
