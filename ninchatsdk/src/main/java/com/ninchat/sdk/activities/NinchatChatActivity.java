@@ -27,8 +27,6 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Display;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,8 +84,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     private boolean toggleFullScreen = false;
     private int rootViewHeight = 0;
     private WritingIndicator writingIndicator = new WritingIndicator();
-
-    private NinchatMessageAdapter messageAdapter;
 
     @Override
     protected int getLayoutRes() {
@@ -199,7 +195,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (Broadcast.CHANNEL_CLOSED.equals(action)) {
-                messageAdapter.close(NinchatChatActivity.this);
+                NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
+                if (sessionManager != null)
+                    sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.close(NinchatChatActivity.this));
                 chatClosed = true;
                 hideKeyboard();
             }
@@ -287,7 +285,11 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         }
         final String metaMessage = answer ? sessionManager.ninchatState.getSiteConfig().getVideoCallAcceptedText() :
                 sessionManager.ninchatState.getSiteConfig().getVideoCallRejectedText();
-        messageAdapter.addMetaMessage(messageAdapter.getLastMessageId(true) + "answer", Misc.center(metaMessage));
+
+        sessionManager.getOnInitializeMessageAdapter(adapter -> {
+            adapter.addMetaMessage(adapter.getLastMessageId(true) + "answer", Misc.center(metaMessage));
+        });
+
     }
 
     private View videoContainer;
@@ -339,7 +341,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
                         dialog.dismiss();
                     });
                     hideKeyboard();
-                    messageAdapter.addMetaMessage(intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_ID), sessionManager.ninchatState.getSiteConfig().getVideoCallMetaMessageText());
+                    sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.addMetaMessage(intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_ID), sessionManager.ninchatState.getSiteConfig().getVideoCallMetaMessageText()));
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_CONTENT))) {
                     if (NinchatMessageTypes.HANG_UP.equals(messageType)) {
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
@@ -513,9 +515,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         localBroadcastManager.registerReceiver(webRTCMessageReceiver, new IntentFilter(Broadcast.WEBRTC_MESSAGE));
         final RecyclerView messages = findViewById(R.id.message_list);
         final NinchatLinearLayoutManager linearLayoutManager = new NinchatLinearLayoutManager(getApplicationContext());
-        messageAdapter = sessionManager.getMessageAdapter();
         messages.setLayoutManager(linearLayoutManager);
-        messages.setAdapter(messageAdapter);
+        sessionManager.getOnInitializeMessageAdapter(messages::setAdapter);
         final EditText message = findViewById(R.id.message);
         final String enterMessageText = sessionManager.ninchatState.getSiteConfig().getEnterMessageText();
         message.setHint(enterMessageText);
@@ -558,20 +559,20 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     }
 
     private void initializeClosedChat(RecyclerView messages) {
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
 
         // Wait for RecyclerView to be initialized
         messages.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
 
             // Close chat if it hasn't been closed yet
             if (!chatClosed && historyLoaded) {
-                messageAdapter.close(NinchatChatActivity.this);
+                sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.close(NinchatChatActivity.this));
                 chatClosed = true;
                 hideKeyboard();
             }
 
             // Initialize closed chat with recent messages only
             if (!historyLoaded) {
-                NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
                 sessionManager.loadChannelHistory(null);
                 historyLoaded = true;
             }
@@ -584,15 +585,15 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         // Refresh the message list, just in case
         NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         if (sessionManager == null) return;
-
-        messageAdapter = sessionManager.getMessageAdapter();
-        messageAdapter.notifyDataSetChanged();
+        sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.notifyDataSetChanged());
         if (webRTCView != null) {
             webRTCView.onResume();
         }
         // Don't load first messages if chat is closed, we want to load the latest messages only
         if (getIntent().getExtras() == null || !(getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Parameter.CHAT_IS_CLOSED))) {
-            sessionManager.loadChannelHistory(messageAdapter.getLastMessageId(false));
+            sessionManager.getOnInitializeMessageAdapter(adapter -> {
+                sessionManager.loadChannelHistory(adapter.getLastMessageId(false));
+            });
         }
     }
 
@@ -648,8 +649,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
 
         if (webRTCView != null)
             webRTCView.onResume();
-        if (messageAdapter != null)
-            messageAdapter.scrollToBottom(true);
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
+        if (sessionManager != null)
+            sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.scrollToBottom(true));
     }
 
     // Reinitialize webRTC on hangup for possible new connection
@@ -664,7 +666,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     // Listen for changes in root view height so we can determine when soft keyboard is visible
     public void setRootViewHeightListener() {
         final View activityRootView = getWindow().getDecorView().findViewById(android.R.id.content);
-
         // Set initial rootViewHeight
         if (rootViewHeight == 0) {
             rootViewHeight = activityRootView.getHeight();
@@ -688,7 +689,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
                 // Update video height and cache current rootview height
                 videoContainer.setLayoutParams(layoutParams);
                 // push messages on top of soft keyboard
-                messageAdapter.scrollToBottom(true);
+                if (NinchatSessionManager.getInstance() != null) {
+                    NinchatSessionManager.getInstance().getOnInitializeMessageAdapter(adapter -> adapter.scrollToBottom(true));
+                }
             }
             rootViewHeight = activityRootView.getHeight();
         });
