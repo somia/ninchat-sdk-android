@@ -68,10 +68,6 @@ class NinchatBotWriting(
         }
         // presenter.setLoaded()
         itemView.ninchat_chat_message_bot_writing_root.visibility = View.VISIBLE
-        itemView.ninchat_chat_message_bot_writing_root.background = ContextCompat.getDrawable(
-            itemView.context,
-            R.drawable.ninchat_chat_questionnaire_background
-        )
         itemView.ninchat_chat_message_bot_writing.setBackgroundResource(R.drawable.ninchat_icon_chat_writing_indicator)
         val animationDrawable =
             (itemView.ninchat_chat_message_bot_writing.background) as AnimationDrawable

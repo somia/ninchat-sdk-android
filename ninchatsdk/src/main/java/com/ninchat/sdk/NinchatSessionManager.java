@@ -8,7 +8,6 @@ import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.ninchat.client.Props;
@@ -25,6 +24,7 @@ import com.ninchat.sdk.helper.session.NinchatSessionHolder;
 import com.ninchat.sdk.states.NinchatState;
 import com.ninchat.sdk.utils.misc.Broadcast;
 import com.ninchat.sdk.utils.misc.Misc;
+import com.ninchat.sdk.utils.misc.NinchatAdapterCallback;
 import com.ninchat.sdk.utils.misc.Parameter;
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
@@ -43,7 +43,7 @@ public final class NinchatSessionManager {
     public WeakReference<NinchatSDKLogListener> logListenerWeakReference;
 
     public NinchatQueueListAdapter ninchatQueueListAdapter;
-    protected NinchatMessageAdapter messageAdapter;
+    public NinchatMessageAdapter messageAdapter;
 
     @Nullable
     private NinchatConfiguration ninchatConfiguration;
@@ -86,7 +86,7 @@ public final class NinchatSessionManager {
         ninchatState.setConfigurationKey(configurationKey);
         ninchatState.setPreferredEnvironments(preferredEnvironments);
         ninchatState.setSessionCredentials(sessionCredentials);
-        this.messageAdapter = new NinchatMessageAdapter();
+        this.getOnInitializeMessageAdapter(null);
         this.ninchatQueueListAdapter = null;
         this.activityWeakReference = new WeakReference(null);
         this.ninchatConfiguration = configurationManager;
@@ -114,15 +114,19 @@ public final class NinchatSessionManager {
         );
     }
 
-    public NinchatMessageAdapter getMessageAdapter() {
-        if (messageAdapter == null) reInitializeMessageAdapter(this);
-        return messageAdapter;
+    public void getOnInitializeMessageAdapter(NinchatAdapterCallback callback) {
+        if (messageAdapter == null) {
+            new Handler(Looper.getMainLooper()).post(() -> {
+                this.messageAdapter = new NinchatMessageAdapter();
+                if (callback != null)
+                    callback.onMessageAdapter(this.messageAdapter);
+            });
+        } else {
+            if (callback != null)
+                callback.onMessageAdapter(this.messageAdapter);
+        }
     }
 
-    public void reInitializeMessageAdapter(NinchatSessionManager currentSession) {
-        messageAdapter = new NinchatMessageAdapter();
-        messageAdapter.addMetaMessage("", currentSession.getChatStarted());
-    }
 
     public void setConfiguration(final String config) {
         Log.v(TAG, "Got configuration: " + config);
