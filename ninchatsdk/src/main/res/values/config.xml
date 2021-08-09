@@ -4,4 +4,5 @@
     <bool name="ninchat_allow_user_initiated_video_calls">false</bool>
     <bool name="ninchat_chat_background_not_tiled">false</bool>
     <string name="ninchat_questionnaire_checkbox_label_text_style">normal</string>
+    <string name="ninchat_chat_info_text_align">center</string>
 </resources>

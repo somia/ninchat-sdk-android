@@ -48,10 +48,8 @@
     <color name="ninchat_color_rating_negative_text">@color/ninchat_colorPrimary</color>
     
     <color name="ninchat_color_ui_compose_submit_text">@color/ninchat_colorPrimary</color>
-    <color name="ninchat_color_ui_compose_select_unselected_text">@color/ninchat_color_hint</color>
-    <color name="ninchat_color_ui_compose_select_selected_text">@android:color/white</color>
-    <color name="ninchat_color_radio_item_selected_text">@color/ninchat_colorAccent</color>
-    <color name="ninchat_color_radio_item_unselected_text">@color/ninchat_color_hint</color>
+    <color name="ninchat_color_ui_compose_select_text">@color/ninchat_color_hint</color>
+    <color name="ninchat_color_ui_compose_select_selected_text">@color/ninchat_colorAccent</color>
 
     <color name="ninchat_color_dropdown_selected_text">@color/ninchat_colorAccent</color>
     <color name="ninchat_color_dropdown_unselected_text">@color/ninchat_color_hint</color>
@@ -82,6 +80,21 @@
     <color name="ninchat_color_questionnaire_checkbox_label">@color/ninchat_color_text_disabled</color>
     <color name="ninchat_color_questionnaire_checkbox_label_focused">@color/ninchat_color_text_normal</color>
     <color name="ninchat_color_questionnaire_checkbox_label_selected">@color/ninchat_colorAccent</color>
+
+
+    <color name="ninchat_color_questionnaire_dropdown">@color/ninchat_color_hint</color>
+    <color name="ninchat_color_questionnaire_dropdown_selected">@color/ninchat_colorAccent</color>
+    <color name="ninchat_color_questionnaire_dropdown_error">@color/ninchat_color_text_error</color>
+
+    <color name="ninchat_color_questionnaire_bot_name_text">@color/ninchat_color_text_normal</color>
+
+    <color name="ninchat_color_chat_info_text">@color/ninchat_color_text_normal</color>
+    <color name="ninchat_color_chat_info_border">@android:color/white</color>
+
+    <color name="ninchat_color_chat_command_input_text">@color/ninchat_color_textarea_text</color>
+    <color name="ninchat_color_chat_command_input_text_placeholder">@color/ninchat_color_textarea_text_hint</color>
+    <color name="ninchat_color_chat_command_input_background">@color/ninchat_color_transparent</color>
+    <color name="ninchat_color_chat_command_input_border">@color/ninchat_color_transparent</color>
 
 
 </resources>

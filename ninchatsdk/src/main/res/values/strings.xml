@@ -17,6 +17,8 @@
     <string name="ninchat_review_neutral">Okay</string>
     <string name="ninchat_review_sad">Poor</string>
 
+    <string name="ninchat_chat_command_input_text_placeholder_string">null</string>
+
 
     <!--test specific values-->
     <string name="ninchat_site_secret">dummy_value</string>

@@ -6,6 +6,7 @@
     android:id="@+id/bot_writing_indicator"
     android:layout_marginTop="@dimen/ninchat_questionnaire_item_margin_start"
     android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
+    android:background="@drawable/ninchat_questionnaire_bot_view"
     android:orientation="vertical">
 
     <ImageView
