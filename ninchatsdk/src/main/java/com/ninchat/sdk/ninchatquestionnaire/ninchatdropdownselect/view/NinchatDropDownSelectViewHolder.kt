@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.DropDownSelectUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.INinchatDropDownSelectViewPresenter
@@ -18,21 +19,21 @@ import org.json.JSONObject
 
 
 class NinchatDropDownSelectViewHolder(
-        itemView: View,
-        jsonObject: JSONObject?,
-        isFormLikeQuestionnaire: Boolean = true,
-        updateCallback: DropDownSelectUpdateListener,
-        position: Int,
-        enabled: Boolean,
+    itemView: View,
+    jsonObject: JSONObject?,
+    isFormLikeQuestionnaire: Boolean = true,
+    updateCallback: DropDownSelectUpdateListener,
+    position: Int,
+    enabled: Boolean,
 ) : RecyclerView.ViewHolder(itemView), INinchatDropDownSelectViewPresenter {
 
     val presenter = NinchatDropDownSelectViewPresenter(
-            jsonObject = jsonObject,
-            isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-            viewCallback = this,
-            updateCallback = updateCallback,
-            position = position,
-            enabled = enabled
+        jsonObject = jsonObject,
+        isFormLikeQuestionnaire = isFormLikeQuestionnaire,
+        viewCallback = this,
+        updateCallback = updateCallback,
+        position = position,
+        enabled = enabled
     )
 
     init {
@@ -46,41 +47,104 @@ class NinchatDropDownSelectViewHolder(
 
     private fun attachUserActionHandler() {
         itemView.ninchat_dropdown_list.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onItemSelected(adapterView: AdapterView<*>?, mView: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                adapterView: AdapterView<*>?,
+                mView: View?,
+                position: Int,
+                id: Long
+            ) {
                 presenter.onItemSelectionChange(position = position)
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
         itemView.ninchat_dropdown_list_icon.setOnClickListener {
-            itemView.ninchat_dropdown_list.performClick()
+            if (presenter.isEnabled())
+                itemView.ninchat_dropdown_list.performClick()
         }
     }
 
-    override fun onRenderFromView(label: String, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int) {
-        renderCommonView(label = label, options = options, enabled = enabled, hasError = hasError, selectedIndex = selectedIndex)
+    override fun onRenderFromView(
+        label: String,
+        options: List<String>,
+        enabled: Boolean,
+        hasError: Boolean,
+        selectedIndex: Int
+    ) {
+        renderCommonView(
+            label = label,
+            options = options,
+            enabled = enabled,
+            hasError = hasError,
+            selectedIndex = selectedIndex
+        )
     }
 
-    override fun onRenderConversationView(label: String, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int) {
-        renderCommonView(label = label, options = options, enabled = enabled, hasError = hasError, selectedIndex = selectedIndex)
+    override fun onRenderConversationView(
+        label: String,
+        options: List<String>,
+        enabled: Boolean,
+        hasError: Boolean,
+        selectedIndex: Int
+    ) {
+        renderCommonView(
+            label = label,
+            options = options,
+            enabled = enabled,
+            hasError = hasError,
+            selectedIndex = selectedIndex
+        )
     }
 
-    override fun onUpdateFromView(label: String, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int) {
-        updateCommonView(label = label, options = options, enabled = enabled, hasError = hasError, selectedIndex = selectedIndex)
+    override fun onUpdateFromView(
+        label: String,
+        options: List<String>,
+        enabled: Boolean,
+        hasError: Boolean,
+        selectedIndex: Int
+    ) {
+        updateCommonView(
+            label = label,
+            options = options,
+            enabled = enabled,
+            hasError = hasError,
+            selectedIndex = selectedIndex
+        )
     }
 
-    override fun onUpdateConversationView(label: String, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int) {
-        updateCommonView(label = label, options = options, enabled = enabled, hasError = hasError, selectedIndex = selectedIndex)
+    override fun onUpdateConversationView(
+        label: String,
+        options: List<String>,
+        enabled: Boolean,
+        hasError: Boolean,
+        selectedIndex: Int
+    ) {
+        updateCommonView(
+            label = label,
+            options = options,
+            enabled = enabled,
+            hasError = hasError,
+            selectedIndex = selectedIndex
+        )
     }
 
-    override fun onSelectionChange(selectedIndex: Int, isSelected: Boolean, hasError: Boolean, enabled: Boolean) {
-        itemView.dropdown_select_layout.background = ContextCompat.getDrawable(itemView.context, if (isSelected) R.drawable.ninchat_dropdown_border_select else R.drawable.ninchat_dropdown_border_not_selected)
-        itemView.ninchat_dropdown_list_icon?.setColorFilter(ContextCompat.getColor(itemView.context, if (isSelected) R.color.ninchat_color_dropdown_selected_text else R.color.ninchat_color_dropdown_unselected_text))
+    override fun onSelectionChange(
+        selectedIndex: Int,
+        isSelected: Boolean,
+        hasError: Boolean,
+        enabled: Boolean
+    ) {
+        itemView.dropdown_select_layout.style(
+            if (isSelected) R.style.NinchatTheme_Questionnaire_Dropdown_Selected else R.style.NinchatTheme_Questionnaire_Dropdown
+        )
+        itemView.ninchat_dropdown_list_icon?.style(
+            if (isSelected) R.style.NinchatTheme_Questionnaire_Dropdown_Image_Selected else R.style.NinchatTheme_Questionnaire_Dropdown_Image
+        )
         itemView.ninchat_dropdown_list?.apply {
             setSelection(selectedIndex)
             selectedView?.let {
                 val currentView = it as TextView
-                currentView.setTextColor(ContextCompat.getColor(itemView.context, if (isSelected) R.color.ninchat_color_dropdown_selected_text else R.color.ninchat_color_dropdown_unselected_text))
+                currentView.setTextAppearance(if (isSelected) R.style.NinchatTheme_Questionnaire_Dropdown_Text_Selected else R.style.NinchatTheme_Questionnaire_Dropdown_Text)
             }
         }
         if (hasError) {
@@ -88,7 +152,13 @@ class NinchatDropDownSelectViewHolder(
         }
     }
 
-    private fun renderCommonView(label: String?, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int) {
+    private fun renderCommonView(
+        label: String?,
+        options: List<String>,
+        enabled: Boolean,
+        hasError: Boolean,
+        selectedIndex: Int
+    ) {
         itemView.apply {
             isEnabled = enabled
         }
@@ -99,9 +169,10 @@ class NinchatDropDownSelectViewHolder(
         }
         // render adapter view
         itemView.ninchat_dropdown_list?.apply {
-            adapter = ArrayAdapter<String>(itemView.context, R.layout.dropdown_item_text_view).apply {
-                addAll(options)
-            }
+            adapter =
+                ArrayAdapter<String>(itemView.context, R.layout.dropdown_item_text_view).apply {
+                    addAll(options)
+                }
             isEnabled = enabled
             setSelection(selectedIndex)
         }
@@ -110,7 +181,13 @@ class NinchatDropDownSelectViewHolder(
         }
     }
 
-    private fun updateCommonView(label: String?, options: List<String>, enabled: Boolean, hasError: Boolean, selectedIndex: Int) {
+    private fun updateCommonView(
+        label: String?,
+        options: List<String>,
+        enabled: Boolean,
+        hasError: Boolean,
+        selectedIndex: Int
+    ) {
         itemView.apply {
             isEnabled = enabled
             dropdown_text_label.isEnabled = enabled
@@ -125,13 +202,8 @@ class NinchatDropDownSelectViewHolder(
     }
 
     private fun renderErrorView(position: Int = 0) {
-        itemView.dropdown_select_layout.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_dropdown_border_with_error)
-        itemView.ninchat_dropdown_list_icon?.setColorFilter(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background))
-        itemView.ninchat_dropdown_list.selectedView?.let {
-            val currentView = it as TextView
-            currentView.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background))
-        }
-
+        itemView.dropdown_select_layout.style(R.style.NinchatTheme_Questionnaire_Dropdown_Error)
+        itemView.ninchat_dropdown_list.style(R.style.NinchatTheme_Questionnaire_Dropdown_Spinner)
     }
 
 }

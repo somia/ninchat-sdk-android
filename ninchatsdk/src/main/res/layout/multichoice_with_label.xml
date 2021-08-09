@@ -15,7 +15,7 @@
         tools:text="Element label"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:background="@color/ninchat_color_transparent"
+        android:background="@drawable/ninchat_chat_questionnaire_background"
         android:id="@+id/ninchat_chat_radio_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

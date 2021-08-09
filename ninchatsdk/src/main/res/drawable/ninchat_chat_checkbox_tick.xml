@@ -9,9 +9,9 @@
       android:translateY="37.94281">
     <path
         android:pathData="M1.1848,5.4272L1.1848,5.4272A1.6755,1.676 134.9949,0 1,3.5546 5.4276L7.9592,9.8322A1.6755,1.676 134.9949,0 1,7.9595 12.202L7.9595,12.202A1.6755,1.676 134.9949,0 1,5.5897 12.2017L1.1851,7.7971A1.6755,1.676 134.9949,0 1,1.1848 5.4272z"
-        android:fillColor="@color/ninchat_color_checkbox_selected"/>
+        android:fillColor="#008aff"/>
     <path
         android:pathData="M16.6438,1.1848L16.6438,1.1848A1.676,1.6755 134.9949,0 1,16.6434 3.5546L7.9962,12.2018A1.676,1.6755 134.9949,0 1,5.6263 12.2022L5.6263,12.2022A1.676,1.6755 134.9949,0 1,5.6267 9.8323L14.2739,1.1851A1.676,1.6755 134.9949,0 1,16.6438 1.1848z"
-        android:fillColor="@color/ninchat_color_checkbox_selected"/>
+        android:fillColor="#008aff"/>
   </group>
 </vector>
