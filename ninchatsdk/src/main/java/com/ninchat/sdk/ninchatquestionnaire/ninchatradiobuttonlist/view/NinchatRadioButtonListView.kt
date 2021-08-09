@@ -12,6 +12,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.But
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.INinchatRadioButtonListPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.NinchatRadioButtonListPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.OnToggleListener
+import com.ninchat.sdk.utils.misc.Misc
 import kotlinx.android.synthetic.main.multichoice_with_label.view.*
 import org.json.JSONObject
 
@@ -44,12 +45,10 @@ class NinchatRadioButtonListView(
     }
 
     override fun onRenderFormView(label: String, hasError: Boolean, enabled: Boolean) {
-        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         renderCommon(label = label, hasError = hasError, enabled = enabled)
     }
 
     override fun onRenderConversationView(label: String, hasError: Boolean, enabled: Boolean) {
-        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
         renderCommon(label = label, hasError = hasError, enabled = enabled)
     }
 
@@ -63,15 +62,15 @@ class NinchatRadioButtonListView(
 
     private fun renderCommon(label: String, hasError: Boolean, enabled: Boolean) {
         itemView.isEnabled = enabled
-        itemView.radio_option_label.text = label
+        itemView.radio_option_label.text = Misc.toRichText(label, itemView.radio_option_label)
         itemView.ninchat_chat_radio_options.apply {
             layoutManager = LinearLayoutManager(itemView.context)
             adapter = NinchatRadioButtonListViewAdapter()
         }
         if (hasError) {
-            itemView.radio_option_label.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background));
+            itemView.radio_option_label.setTextAppearance(R.style.NinchatTheme_Questionnaire_Label_Error)
         } else {
-            itemView.radio_option_label.setTextColor(ContextCompat.getColor(itemView.context, if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled))
+            itemView.radio_option_label.setTextAppearance( if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
         }
     }
 
@@ -79,9 +78,9 @@ class NinchatRadioButtonListView(
         itemView.isEnabled = enabled
         (itemView.ninchat_chat_radio_options.adapter as NinchatRadioButtonListViewAdapter).notifyDataSetChanged()
         if (hasError) {
-            itemView.radio_option_label.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_error_background));
+            itemView.radio_option_label.setTextAppearance(R.style.NinchatTheme_Questionnaire_Label_Error)
         } else {
-            itemView.radio_option_label.setTextColor(ContextCompat.getColor(itemView.context, if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled))
+            itemView.radio_option_label.setTextAppearance( if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
         }
     }
 
@@ -112,7 +111,7 @@ class NinchatRadioButtonListView(
         override fun onOptionToggled(isSelected: Boolean, listPosition: Int) {
             toggleLister.onButtonToggle(callback = {
                 // update view
-                itemView.radio_option_label.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_text_normal))
+                itemView.radio_option_label.setTextAppearance(R.style.NinchatTheme_Questionnaire_Label)
                 val previousIndex = presenter.handleOptionToggled(
                         isSelected = isSelected,
                         listPosition = listPosition)

@@ -35,18 +35,16 @@ class NinchatTextViewHolder(
     }
 
     override fun onUpdateConversationView(label: String?, enabled: Boolean) {
-        itemView.text_view_content.setTextColor(ContextCompat.getColor(itemView.context, if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled))
         itemView.isEnabled = enabled
+        itemView.text_view_content.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_TextView else R.style.NinchatTheme_Questionnaire_TextView_Disabled)
     }
 
     override fun onRenderConversationVIew(label: String?, enabled: Boolean) {
         val text = Misc.toRichText(label, itemView.text_view_content)
-        val textColor = if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled
         if (text.isNotBlank()) {
             itemView.text_view_content.text = text
         }
-        itemView.text_view_content.setTextColor(ContextCompat.getColor(itemView.context, textColor))
-        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
+        itemView.text_view_content.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_TextView else R.style.NinchatTheme_Questionnaire_TextView_Disabled)
         itemView.isEnabled = enabled
     }
 
@@ -59,7 +57,7 @@ class NinchatTextViewHolder(
         if (text.isNotBlank()) {
             itemView.text_view_content.text = text
         }
-        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
+        itemView.text_view_content.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_TextView else R.style.NinchatTheme_Questionnaire_TextView_Disabled)
         itemView.isEnabled = enabled
     }
 }
