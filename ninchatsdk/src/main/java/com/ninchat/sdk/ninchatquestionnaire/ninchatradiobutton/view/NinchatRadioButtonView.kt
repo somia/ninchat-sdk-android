@@ -3,6 +3,7 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.view
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.presenter.INinchatRadioButtonPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.presenter.NinchatRadioButtonPresenter
@@ -43,11 +44,9 @@ class NinchatRadioButtonView(
         itemView.isEnabled = enabled
         // render initialize view
         if (isSelected) {
-            itemView.single_radio_item.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_radio_item_selected_text))
-            itemView.single_radio_item.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_radio_select_button)
+            itemView.single_radio_item.style(R.style.NinchatTheme_Questionnaire_Radio_Selected)
         } else {
-            itemView.single_radio_item.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_radio_item_unselected_text))
-            itemView.single_radio_item.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_ui_compose_select_button)
+            itemView.single_radio_item.style(R.style.NinchatTheme_Questionnaire_Radio)
         }
     }
 
@@ -55,11 +54,9 @@ class NinchatRadioButtonView(
         itemView.isEnabled = enabled
         // update view
         if (isSelected) {
-            itemView.single_radio_item.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_radio_item_selected_text))
-            itemView.single_radio_item.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_radio_select_button)
+            itemView.single_radio_item.style(R.style.NinchatTheme_Questionnaire_Radio_Selected)
         } else {
-            itemView.single_radio_item.setTextColor(ContextCompat.getColor(itemView.context, R.color.ninchat_color_radio_item_unselected_text))
-            itemView.single_radio_item.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_ui_compose_select_button)
+            itemView.single_radio_item.style(R.style.NinchatTheme_Questionnaire_Radio)
         }
     }
 
