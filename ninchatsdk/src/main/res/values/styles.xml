@@ -92,7 +92,7 @@
         <item name="android:textAllCaps">false</item>
         <item name="android:elevation">0dp</item>
         <item name="android:background">@drawable/ninchat_ui_compose_select_button</item>
-        <item name="android:textColor">@color/ninchat_color_ui_compose_select_unselected_text</item>
+        <item name="android:textColor">@color/ninchat_color_ui_compose_select_text</item>
         <item name="android:gravity">center</item>
         <item name="android:textAlignment">center</item>
     </style>
@@ -116,12 +116,12 @@
         <!--<item name="android:windowNoTitle">true</item>-->
     </style>
 
-    <style name="NinchatTheme.Radio.Selected" parent="NinchatTheme.MultiChoice">
-        <item name="android:textColor">@color/ninchat_color_radio_item_selected_text</item>
+    <style name="NinchatTheme.Questionnaire.Radio" parent="NinchatTheme.MultiChoice">
+        <item name="android:minHeight">50dp</item>
     </style>
 
-    <style name="NinchatTheme.Radio.UnSelected" parent="NinchatTheme.MultiChoice">
-        <item name="android:textColor">@color/ninchat_color_radio_item_unselected_text</item>
+    <style name="NinchatTheme.Questionnaire.Radio.Selected" parent="NinchatTheme.MultiChoice.Selected">
+        <item name="android:minHeight">50dp</item>
     </style>
 
     <style name="NinchatTheme.TitlebarPlaceholder">
@@ -150,6 +150,39 @@
         <item name="android:gravity">center|start</item>
         <item name="android:minHeight">@dimen/ninchat_chat_activity_message_title_height</item>
         <item name="android:textColor">@color/ninchat_color_questionnaire_bot_name_text</item>
+    </style>
+
+    <style name="NinchatTheme.Backlog.Info" parent="NinchatTheme">
+        <item name="android:layout_marginTop">
+            @dimen/ninchat_chat_activity_chat_started_bottom_margin
+        </item>
+        <item name="android:layout_marginBottom">
+            @dimen/ninchat_chat_activity_chat_started_bottom_margin
+        </item>
+        <item name="android:background">@drawable/ninchat_chat_info</item>
+        <item name="android:gravity">center</item>
+        <item name="android:minHeight">45dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+    </style>
+
+    <style name="NinchatTheme.Backlog.Info.Text" parent="NinchatTheme">
+        <item name="android:drawableStart">@drawable/ninchat_icon_chat_info_icon</item>
+        <item name="android:drawablePadding">5dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/ninchat_color_info_text</item>
+    </style>
+
+    <style name="NinchatTheme.Backlog.CommandView" parent="NinchatTheme">
+        <item name="android:layout_marginTop">@dimen/ninchat_chat_activity_message_margin</item>
+        <item name="android:layout_marginLeft">@dimen/ninchat_chat_activity_message_margin</item>
+        <item name="android:layout_marginRight">@dimen/ninchat_chat_activity_message_margin</item>
+        <item name="android:background">@drawable/ninchat_chat_command_input_text</item>
+        <item name="android:inputType">textMultiLine|textCapSentences</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:maxLines">6</item>
+        <item name="android:textColor">@color/ninchat_color_textarea_text</item>
+        <item name="android:textColorHint">@color/ninchat_color_textarea_text_hint</item>
     </style>
 
 </resources>

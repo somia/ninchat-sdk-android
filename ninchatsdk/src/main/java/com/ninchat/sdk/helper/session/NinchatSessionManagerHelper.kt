@@ -12,12 +12,12 @@ import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getChannelIdFromUserChannel
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getOpenQueueList
 import com.ninchat.sdk.models.NinchatMessage
-import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeChannel
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience
 import com.ninchat.sdk.ninchatactivity.presenter.NinchatActivityPresenter
+import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Parameter
@@ -301,9 +301,7 @@ class NinchatSessionManagerHelper {
                         it.second
                     );
                 }
-                Handler(Looper.getMainLooper()).post {
-                    currentSession.reInitializeMessageAdapter(currentSession)
-                }
+                currentSession.messageAdapter?.addMetaMessage("", currentSession.chatStarted)
                 currentSession.contextWeakReference?.get()?.let { mContext ->
                     val i = Intent(Broadcast.CHANNEL_JOINED)
                     i.putExtra(Parameter.CHAT_IS_CLOSED, isClosed)
