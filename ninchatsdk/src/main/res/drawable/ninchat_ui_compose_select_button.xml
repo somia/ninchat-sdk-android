@@ -6,6 +6,6 @@
     <solid android:color="@android:color/white" />
     <stroke
         android:width="2dp"
-        android:color="@color/ninchat_color_ui_compose_select_unselected_text"
+        android:color="#A2A2A2"
         />
 </shape>
