@@ -150,6 +150,7 @@
         <item name="android:gravity">center|start</item>
         <item name="android:minHeight">@dimen/ninchat_chat_activity_message_title_height</item>
         <item name="android:textColor">@color/ninchat_color_questionnaire_bot_name_text</item>
+        <item name="android:textSize">@dimen/ninchat_questionnaire_bot_name_text_size</item>
     </style>
 
     <style name="NinchatTheme.Backlog.Info" parent="NinchatTheme">
