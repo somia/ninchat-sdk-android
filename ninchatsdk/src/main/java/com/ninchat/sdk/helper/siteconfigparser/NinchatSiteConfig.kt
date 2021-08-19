@@ -172,6 +172,9 @@ class NinchatSiteConfig {
     fun hideAgentAvatar(): Boolean =
         isFalse("agentAvatar")
 
+    fun hideUserAvatar(): Boolean =
+        isFalse("userAvatar")
+
     fun getAgentAvatar(): String? =
         getString("agentAvatar")
 
