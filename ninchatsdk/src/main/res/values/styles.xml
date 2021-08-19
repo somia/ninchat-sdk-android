@@ -144,7 +144,7 @@
         <item name="android:contentDescription">"Agent avatar</item>
     </style>
 
-    <style name="NinchatTheme.Questionnaire.BotView.Text" parent="NinchatTheme">
+    <style name="NinchatTheme.Questionnaire.BotView.Text" parent="NinchatTheme.Questionnaire">
         <item name="android:layout_marginEnd">10dp</item>
         <item name="android:layout_toEndOf">@id/ninchat_chat_message_bot_avatar</item>
         <item name="android:gravity">center|start</item>
