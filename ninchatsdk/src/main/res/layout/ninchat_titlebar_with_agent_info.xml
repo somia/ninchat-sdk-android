@@ -29,7 +29,7 @@
             android:autoLink="none"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textColor="@color/ninchat_color_modal_text"
+            android:textColor="@color/ninchat_color_titlebar_agent_info"
             android:textStyle="normal|bold"
             tools:text="Pallab Gain ( new user name )" />
 
@@ -41,7 +41,7 @@
             android:autoLink="none"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textColor="@color/ninchat_color_modal_text"
+            android:textColor="@color/ninchat_color_titlebar_agent_info"
             tools:text="Agent job title placeholder" />
     </LinearLayout>
 
