@@ -87,6 +87,9 @@ class NinchatReviewPresenter(
 
         //3: set bot details
         view.ninchat_chat_message_bot_text.text = ninchatReviewModel.getBotName()
+        if (ninchatReviewModel.getBotName().isNullOrEmpty()) {
+            view.ninchat_chat_message_bot_text.visibility = View.GONE
+        }
         if (!shouldShowTitlebar() && !hideAvatar()) {
             ninchatReviewModel.getBotAvatar()?.let {
                 GlideWrapper.loadImageAsCircle(
