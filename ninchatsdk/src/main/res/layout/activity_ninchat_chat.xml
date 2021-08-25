@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="5dp"
-        android:background="@android:color/white"
+        android:background="@drawable/ninchat_chat_command_input_divider"
         android:onClick="onEditTextClick"
         android:orientation="vertical">
 

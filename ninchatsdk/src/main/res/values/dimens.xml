@@ -43,7 +43,7 @@
     <dimen name="ninchat_chat_activity_message_writing_indicator_width">40dp</dimen>
     <dimen name="ninchat_chat_activity_chat_ended_top_margin">26dp</dimen>
     <dimen name="ninchat_chat_activity_message_list_bottom_padding">10dp</dimen>
-    <dimen name="ninchat_chat_activity_message_margin">5dp</dimen>
+    <dimen name="ninchat_chat_activity_message_margin">10dp</dimen>
     <dimen name="ninchat_chat_activity_action_bar_padding">15dp</dimen>
     <dimen name="ninchat_chat_activity_action_bar_height">50dp</dimen>
     <dimen name="ninchat_chat_activity_action_icon_size">35dp</dimen>
@@ -104,7 +104,8 @@
     <dimen name="ninchat_questionnaire_item_bot_height">50dp</dimen>
     <dimen name="ninchat_questionnaire_checkbox_margin">10dp</dimen>
 
-    <dimen name="ninchat_questionnaire_label_text_size">@dimen/ninchat_text_size</dimen>
+    <dimen name="ninchat_questionnaire_label_text_size">17sp</dimen>
+    <dimen name="ninchat_questionnaire_bot_name_text_size">18sp</dimen>
     <dimen name="ninchat_questionnaire_textview_text_size">@dimen/ninchat_text_size</dimen>
 
     <!-- Titlebar -->

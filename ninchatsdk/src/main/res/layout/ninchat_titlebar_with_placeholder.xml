@@ -12,7 +12,7 @@
         android:layout_marginEnd="@dimen/ninchat_chat_activity_avatar_margin"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        android:src="@drawable/ninchat_chat_avatar_placeholder" />
+        android:src="@drawable/ninchat_titlebar_avatar_placeholder" />
 
     <TextView
         style="@style/NinchatTheme.TitlebarPlaceholder"
@@ -21,8 +21,7 @@
         android:layout_marginEnd="@dimen/ninchat_chat_activity_text_margin"
         android:layout_weight="0.8"
         android:autoLink="none"
-        android:ellipsize="end"
-        android:textColor="@color/ninchat_color_modal_text" />
+        android:ellipsize="end"/>
 
     <View
         android:layout_width="0dp"

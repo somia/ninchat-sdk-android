@@ -6,6 +6,7 @@ import com.ninchat.client.Payload
 import com.ninchat.client.Props
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.events.OnPostAudienceQuestionnaire
+import com.ninchat.sdk.helper.propsparser.getSafe
 import com.ninchat.sdk.ninchatmedia.model.NinchatFile
 import com.ninchat.sdk.models.NinchatMessage
 import com.ninchat.sdk.models.NinchatMessage.Type.MULTICHOICE
@@ -31,11 +32,11 @@ class NinchatMessageService {
                 if (ninchatSessionManager.ninchatState?.channelId.isNullOrBlank()) {
                     return
                 }
-                val currentActionId = params?.getInt("action_id")
-                val messageType = params?.getString("message_type")
-                val sender = params?.getString("message_user_id")
-                val messageId = params?.getString("message_id")
-                val timestampMs = 1000L * ((params?.getFloat("message_time") ?: 0)).toLong()
+                val currentActionId = params?.getSafe<Long>("action_id")
+                val messageType = params?.getSafe<String>("message_type")
+                val sender = params?.getSafe<String>("message_user_id")
+                val messageId = params?.getSafe<String>("message_id")
+                val timestampMs = 1000L * ((params?.getSafe<Double>("message_time") ?: 0)).toLong()
                 val builder = StringBuilder()
                 payload?.let { currentPayload ->
                     for (i in 0 until currentPayload.length()) {

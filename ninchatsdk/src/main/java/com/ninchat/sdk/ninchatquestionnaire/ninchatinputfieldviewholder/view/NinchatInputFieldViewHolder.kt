@@ -126,13 +126,20 @@ class NinchatInputFieldViewHolder(
             view.style(
                 if (enabled) R.style.NinchatTheme_Questionnaire_InputText_Focus else R.style.NinchatTheme_Questionnaire_InputText
             )
-
         }
     }
 
     private fun updateCommonView(isMultiline: Boolean, label: String, enabled: Boolean) {
         itemView.isEnabled = enabled
-        // set color of the label
+        // set label
+        val mLabel = if (isMultiline) itemView.multiline_text_label else itemView.simple_text_label
+        mLabel?.let {
+            if (label.isNotBlank()) {
+                mLabel.text = Misc.toRichText(label, mLabel)
+            }
+            mLabel.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
+        }
+
         val mEditText =
             if (presenter.isMultiline()) itemView.multiline_text_area else itemView.simple_text_field
         mEditText?.let {

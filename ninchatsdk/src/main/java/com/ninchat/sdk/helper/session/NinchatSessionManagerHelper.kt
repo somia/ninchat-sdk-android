@@ -6,11 +6,13 @@ import android.os.Looper
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.client.Objects
 import com.ninchat.client.Props
+import com.ninchat.client.Strings
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getChannelIdFromUserChannel
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getOpenQueueList
+import com.ninchat.sdk.helper.propsparser.getSafe
 import com.ninchat.sdk.models.NinchatMessage
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeChannel
@@ -34,22 +36,25 @@ class NinchatSessionManagerHelper {
                     val retval = arrayListOf<NinchatWebRTCServerInfo>()
                     for (i in 0 until it.length()) {
                         val stunServerProps = it[i]
-                        val urls = stunServerProps.getStringArray("urls")
-                        for (j in 0 until urls.length()) {
-                            if (isTurn) {
-                                val username: String = stunServerProps.getString("username")
-                                val credential: String = stunServerProps.getString("credential")
-                                retval.add(
-                                    NinchatWebRTCServerInfo(
-                                        urls.get(j),
-                                        username,
-                                        credential
-                                    )
-                                );
-                            } else {
-                                retval.add(NinchatWebRTCServerInfo(urls[j]))
-                            }
+                        stunServerProps.getSafe<Strings>("urls")?.let { urls ->
+                            for (j in 0 until urls.length()) {
+                                if (isTurn) {
+                                    val username: String =
+                                        stunServerProps.getSafe<String>("username") ?: ""
+                                    val credential: String =
+                                        stunServerProps.getSafe<String>("credential") ?: ""
+                                    retval.add(
+                                        NinchatWebRTCServerInfo(
+                                            urls.get(j),
+                                            username,
+                                            credential
+                                        )
+                                    );
+                                } else {
+                                    retval.add(NinchatWebRTCServerInfo(urls[j]))
+                                }
 
+                            }
                         }
                     }
                     return retval

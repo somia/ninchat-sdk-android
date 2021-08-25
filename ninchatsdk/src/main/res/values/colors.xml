@@ -42,6 +42,7 @@
     <color name="ninchat_color_modal_background">@android:color/white</color>
     <color name="ninchat_color_modal_title_text">@color/ninchat_colorPrimary</color>
     <color name="ninchat_color_modal_text">#242424</color>
+    <color name="ninchat_color_titlebar_agent_info">@color/ninchat_colorPrimary</color>
 
     <color name="ninchat_color_rating_positive_text">@color/ninchat_colorPrimary</color>
     <color name="ninchat_color_rating_neutral_text">@color/ninchat_colorPrimary</color>
@@ -95,6 +96,7 @@
     <color name="ninchat_color_chat_command_input_text_placeholder">@color/ninchat_color_textarea_text_hint</color>
     <color name="ninchat_color_chat_command_input_background">@color/ninchat_color_transparent</color>
     <color name="ninchat_color_chat_command_input_border">@color/ninchat_color_transparent</color>
+    <color name="ninchat_color_chat_command_input_divider">@color/ninchat_color_transparent</color>
 
 
 </resources>

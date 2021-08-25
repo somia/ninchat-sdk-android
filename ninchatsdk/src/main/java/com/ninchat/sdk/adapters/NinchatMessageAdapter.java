@@ -72,8 +72,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             }
             String userAvatar = null;
             final NinchatUser user = sessionManager.getMember(ninchatMessage.getSenderId());
-            if (user != null) {
-                userAvatar = user.getAvatar();
+            if (user != null && sessionManager.ninchatState.getSiteConfig().isTrue("agentAvatar")) {
+                boolean showUserAvatar = ninchatMessage.isRemoteMessage() ?
+                        sessionManager.ninchatState.getSiteConfig().isTrue("agentAvatar") :
+                        sessionManager.ninchatState.getSiteConfig().isTrue("userAvatar");
+                userAvatar = showUserAvatar ? user.getAvatar() : null;
             }
             if (TextUtils.isEmpty(userAvatar)) {
                 userAvatar = ninchatMessage.isRemoteMessage() ?
@@ -89,8 +92,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 GlideWrapper.loadImageAsCircle(itemView.getContext(), userAvatar, avatar);
             }
             final boolean showAvatars = ninchatMessage.isRemoteMessage() ?
-                    sessionManager.ninchatState.getSiteConfig().showAgentAvatar(false) :
-                    sessionManager.ninchatState.getSiteConfig().showUserAvatar(false);
+                    !sessionManager.ninchatState.getSiteConfig().hideAgentAvatar() :
+                    !sessionManager.ninchatState.getSiteConfig().hideUserAvatar();
             if (!showAvatars) {
                 avatar.setVisibility(View.GONE);
             } else if (hideAvatar) {
