@@ -1,14 +1,13 @@
 package com.ninchat.sdk.helper.session
 
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.client.Objects
 import com.ninchat.client.Props
 import com.ninchat.client.Strings
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getChannelIdFromUserChannel
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getOpenQueueList
@@ -22,6 +21,7 @@ import com.ninchat.sdk.ninchatactivity.presenter.NinchatActivityPresenter
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Broadcast
+import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import com.ninchat.sdk.utils.misc.Parameter
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler.getIOScope
@@ -306,7 +306,11 @@ class NinchatSessionManagerHelper {
                         it.second
                     );
                 }
-                currentSession.messageAdapter?.addMetaMessage("", currentSession.chatStarted)
+                sessionManager.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
+                    override fun onMessageAdapter(adapter: NinchatMessageAdapter) {
+                        adapter.addMetaMessage("", currentSession.chatStarted)
+                    }
+                })
                 currentSession.contextWeakReference?.get()?.let { mContext ->
                     val i = Intent(Broadcast.CHANNEL_JOINED)
                     i.putExtra(Parameter.CHAT_IS_CLOSED, isClosed)
@@ -394,26 +398,27 @@ class NinchatSessionManagerHelper {
                     if (params.getString("channel_id") != ninchatSessionManager.ninchatState?.channelId) {
                         return
                     }
-                } catch (e: java.lang.Exception) {
+                } catch (e: Exception) {
                     return
                 }
                 val channelAttributes = try {
                     params.getObject("channel_attrs")
-                } catch (e: java.lang.Exception) {
+                } catch (e: Exception) {
                     return
                 }
                 val closed = try {
                     channelAttributes.getBool("closed")
-                } catch (e: java.lang.Exception) {
+                } catch (e: Exception) {
                     return
                 }
                 val suspended = try {
                     channelAttributes.getBool("suspended")
-                } catch (e: java.lang.Exception) {
+                } catch (e: Exception) {
                     return
                 }
+                val isAudienceTransfer = params.getSafe<String>("event_cause") == "audience_transfer"
                 ninchatSessionManager.contextWeakReference?.get()?.let { mContext ->
-                    if (closed || suspended) {
+                    if (!isAudienceTransfer && (closed || suspended)) {
                         LocalBroadcastManager.getInstance(mContext)
                             .sendBroadcast(Intent(Broadcast.CHANNEL_CLOSED))
                     }
