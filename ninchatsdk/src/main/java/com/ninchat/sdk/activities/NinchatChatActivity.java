@@ -538,10 +538,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
             sendButton.setVisibility(View.GONE);
             sendIcon.setVisibility(View.VISIBLE);
         }
-        if (sessionManager.ninchatState.getSiteConfig().isAttachmentsEnabled()) {
+        if (sessionManager.ninchatSessionHolder.supportFiles()) {
             findViewById(R.id.attachment).setVisibility(View.VISIBLE);
         }
-        if (sessionManager.ninchatState.getSiteConfig().isVideoEnabled() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
+        if (sessionManager.ninchatSessionHolder.supportVideos() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
             findViewById(R.id.video_call).setVisibility(View.VISIBLE);
         }
 
