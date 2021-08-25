@@ -86,6 +86,11 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
                     }
                 }
                 NinchatMessage.Type.META -> {
+                    // if there is already a meta message of given sender id,
+                    // then don't add again
+                    if (newList.contains(pendingMessage.sender)) {
+                        continue
+                    }
                     newList.add(pendingMessage.sender)
                     messageMap[pendingMessage.sender] = pendingMessage.message!!
                 }
