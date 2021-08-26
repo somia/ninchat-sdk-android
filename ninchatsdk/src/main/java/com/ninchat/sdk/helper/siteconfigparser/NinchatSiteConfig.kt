@@ -157,12 +157,6 @@ class NinchatSiteConfig {
     fun getSubmitButtonText(): String =
         getTranslation("Submit")
 
-    fun isAttachmentsEnabled(): Boolean =
-        getBoolean("supportFiles") ?: false
-
-    fun isVideoEnabled(): Boolean =
-        getBoolean("supportVideo") ?: false
-
     fun showUserAvatar(fallback: Boolean = false): Boolean =
         getBoolean("userAvatar", fallback = fallback) ?: false
 
