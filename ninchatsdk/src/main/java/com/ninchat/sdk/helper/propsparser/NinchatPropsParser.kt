@@ -143,10 +143,19 @@ class NinchatPropsParser {
                 val currentQueue = (it.value as Props)
                 val queuePosition = currentQueue.getSafe<Long>("queue_position") ?: 0L
                 val queueName =
-                    currentQueue.getSafe<Props>("queue_attrs")?.getSafe<String>("name")?:""
+                    currentQueue.getSafe<Props>("queue_attrs")?.getSafe<String>("name") ?: ""
                 val queueClosed = currentQueue.getSafe<Props>("queue_attrs")
                     ?.getSafe<Boolean>("closed") ?: false
-                val ninchatQueue = NinchatQueue(it.key, queueName)
+                val supportVideos = currentQueue.getSafe<Props>("queue_attrs")
+                    ?.getSafe<String>("video") == "member"
+                val supportFiles = currentQueue.getSafe<Props>("queue_attrs")
+                    ?.getSafe<String>("upload") == "member"
+                val ninchatQueue = NinchatQueue(
+                    it.key,
+                    name = queueName,
+                    supportVideos = supportVideos,
+                    supportFiles = supportFiles
+                )
                 ninchatQueue.position = queuePosition
                 ninchatQueue.isClosed = queueClosed
                 ninchatQueue

@@ -155,6 +155,16 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
         return (ninchatState.currentSessionState and (1 shl Misc.HAS_CHANNEL)) != 0
     }
 
+    fun supportVideos(): Boolean {
+        return NinchatSessionManager.getInstance()
+            ?.getQueue(ninchatState.queueId)?.supportVideos == true
+    }
+
+    fun supportFiles(): Boolean {
+        return NinchatSessionManager.getInstance()
+            ?.getQueue(ninchatState.queueId)?.supportFiles == true
+    }
+
     fun dispose() {
         currentSession?.close()
         NinchatSessionManager.getInstance()?.context?.let {

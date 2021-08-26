@@ -197,9 +197,16 @@ class NinchatSessionManagerHelper {
                 } catch (e: Exception) {
                     false
                 }
+                val supportVideos = queueAttributes?.getSafe<String>("video") == "member"
+                val supportFiles = queueAttributes?.getSafe<String>("upload") == "member"
                 if (currentSession.getQueue(queueId) == null) {
                     val queueName = queueAttributes?.getString("name")
-                    currentSession.ninchatState.addQueue(NinchatQueue(queueId, queueName))
+                    currentSession.ninchatState.addQueue(
+                        NinchatQueue(
+                            queueId, name = queueName,
+                            supportFiles = supportFiles, supportVideos = supportVideos
+                        )
+                    )
                 }
                 val currentQueue = currentSession.getQueue(queueId)
                 currentQueue?.apply {
@@ -209,6 +216,8 @@ class NinchatSessionManagerHelper {
                     if ((position == Long.MAX_VALUE || position == 0L)) {
                         isClosed = closed
                     }
+                    this.supportFiles = supportFiles
+                    this.supportVideos = supportVideos
                 }
                 return queueId
             }
