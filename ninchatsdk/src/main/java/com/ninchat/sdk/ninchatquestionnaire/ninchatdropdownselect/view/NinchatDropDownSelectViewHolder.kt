@@ -166,6 +166,7 @@ class NinchatDropDownSelectViewHolder(
             isEnabled = enabled
             setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
             text = Misc.toRichText(label, this)
+            if (label.isNullOrEmpty()) visibility = View.GONE
         }
         // render adapter view
         itemView.ninchat_dropdown_list?.apply {
@@ -194,6 +195,7 @@ class NinchatDropDownSelectViewHolder(
             ninchat_dropdown_list.isEnabled = enabled
             dropdown_text_label.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
             ninchat_dropdown_list.setSelection(selectedIndex)
+            if (label.isNullOrEmpty()) dropdown_text_label.visibility = View.GONE
         }
 
         if (hasError) {
