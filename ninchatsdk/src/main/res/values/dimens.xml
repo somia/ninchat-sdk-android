@@ -35,7 +35,7 @@
     <dimen name="ninchat_chat_activity_message_title_top_margin">20dp</dimen>
     <dimen name="ninchat_chat_activity_message_bubble_corner_radius">15dp</dimen>
     <dimen name="ninchat_chat_activity_message_bubble_padding_vertical">12dp</dimen>
-    <dimen name="ninchat_chat_activity_message_bubble_continued_padding_top">16dp</dimen>
+    <dimen name="ninchat_chat_activity_message_bubble_continued_padding_top">12dp</dimen>
     <dimen name="ninchat_chat_activity_message_bubble_padding_horizontal">16dp</dimen>
     <dimen name="ninchat_chat_activity_message_video_play_icon_background_size">35dp</dimen>
     <dimen name="ninchat_chat_activity_message_video_play_icon_size">17dp</dimen>
