@@ -8,7 +8,6 @@
     android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:background="@drawable/ninchat_chat_questionnaire_background"
         android:id="@+id/ninchat_chat_checkbox_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
