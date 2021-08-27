@@ -27,6 +27,7 @@
             android:gravity="start|center_vertical"
             android:minHeight="50dp"
             android:singleLine="true"
+            android:imeOptions="actionDone"
             android:theme="@style/NinchatTheme.Questionnaire.InputText.Cursor"
             tools:hint="Enter text" />
 

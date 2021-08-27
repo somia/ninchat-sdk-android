@@ -31,6 +31,7 @@
         <EditText
             android:id="@+id/message"
             style="@style/NinchatTheme.Backlog.CommandView"
+            android:imeOptions="actionDone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:hint="Enter your message" />
