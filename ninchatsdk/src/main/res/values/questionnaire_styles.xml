@@ -135,7 +135,7 @@
         <item name="android:dividerHeight">0.5dp</item>
         <item name="android:divider">@color/ninchat_color_questionnaire_dropdown</item>
         <item name="android:textColor">@color/ninchat_color_questionnaire_dropdown</item>
-        <item name="android:gravity">center</item>
+        <item name="android:gravity">start|center_vertical</item>
         <item name="android:overlapAnchor">false</item>
         <item name="android:spinnerMode">dropdown</item>
         <item name="android:dropDownWidth">match_parent</item>
