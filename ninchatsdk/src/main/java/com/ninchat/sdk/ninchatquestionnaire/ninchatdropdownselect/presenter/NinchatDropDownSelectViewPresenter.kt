@@ -26,50 +26,30 @@ class NinchatDropDownSelectViewPresenter(
         jsonObject?.let {
             model.update(jsonObject = jsonObject, enabled = enabled)
         }
-        if (model.isFormLikeQuestionnaire) {
-            viewCallback.onRenderFromView(
-                label = model.label
-                    ?: "",
-                options = model.translatedOptionList,
-                enabled = enabled,
-                hasError = model.hasError,
-                selectedIndex = model.selectedIndex
-            )
-        } else {
-            viewCallback.onRenderConversationView(
-                label = model.label
-                    ?: "",
-                options = model.translatedOptionList,
-                enabled = enabled,
-                hasError = model.hasError,
-                selectedIndex = model.selectedIndex
-            )
-        }
+        viewCallback.renderCommonView(
+            label = model.label
+                ?: "",
+            options = model.translatedOptionList,
+            enabled = enabled,
+            hasError = model.hasError,
+            selectedIndex = model.selectedIndex,
+            isFormLike = model.isFormLikeQuestionnaire
+        )
     }
 
     fun updateCurrentView(jsonObject: JSONObject? = null, enabled: Boolean) {
         jsonObject?.let {
             model.update(jsonObject = jsonObject, enabled = enabled)
         }
-        if (model.isFormLikeQuestionnaire) {
-            viewCallback.onUpdateFromView(
-                label = model.label
-                    ?: "",
-                options = model.translatedOptionList,
-                enabled = enabled,
-                hasError = model.hasError,
-                selectedIndex = model.selectedIndex
-            )
-        } else {
-            viewCallback.onUpdateConversationView(
-                label = model.label
-                    ?: "",
-                options = model.translatedOptionList,
-                enabled = enabled,
-                hasError = model.hasError,
-                selectedIndex = model.selectedIndex
-            )
-        }
+        viewCallback.updateCommonView(
+            label = model.label
+                ?: "",
+            options = model.translatedOptionList,
+            enabled = enabled,
+            hasError = model.hasError,
+            selectedIndex = model.selectedIndex,
+            isFormLike = model.isFormLikeQuestionnaire
+        )
     }
 
     override fun onItemSelectionChange(position: Int) {
@@ -105,36 +85,23 @@ class NinchatDropDownSelectViewPresenter(
 }
 
 interface INinchatDropDownSelectViewPresenter {
-    fun onRenderFromView(
-        label: String,
+
+    fun renderCommonView(
+        label: String?,
         options: List<String>,
         enabled: Boolean,
         hasError: Boolean,
-        selectedIndex: Int
+        selectedIndex: Int,
+        isFormLike: Boolean = false
     )
 
-    fun onRenderConversationView(
-        label: String,
+    fun updateCommonView(
+        label: String?,
         options: List<String>,
         enabled: Boolean,
         hasError: Boolean,
-        selectedIndex: Int
-    )
-
-    fun onUpdateFromView(
-        label: String,
-        options: List<String>,
-        enabled: Boolean,
-        hasError: Boolean,
-        selectedIndex: Int
-    )
-
-    fun onUpdateConversationView(
-        label: String,
-        options: List<String>,
-        enabled: Boolean,
-        hasError: Boolean,
-        selectedIndex: Int
+        selectedIndex: Int,
+        isFormLike: Boolean = false
     )
 
     fun onSelectionChange(

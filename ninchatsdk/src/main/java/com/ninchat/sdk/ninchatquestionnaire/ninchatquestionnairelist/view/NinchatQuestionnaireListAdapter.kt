@@ -24,7 +24,7 @@ import kotlin.math.max
 class NinchatQuestionnaireListAdapter(
         questionnaireList: List<JSONObject>,
         preAnswers: List<Pair<String, Any>>,
-        isFormLike: Boolean,
+        val isFormLike: Boolean,
         rootActivityCallback: QuestionnaireActivityCallback,
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), INinchatConversationListPresenter {
 
@@ -64,7 +64,7 @@ class NinchatQuestionnaireListAdapter(
                 NinchatTextViewHolder(
                         itemView = view,
                         jsonObject = currentElement,
-                        isFormLikeQuestionnaire = false,
+                        isFormLikeQuestionnaire = isFormLike,
                         position = position,
                         enabled = presenter.isLast(position)
                 )
@@ -75,7 +75,7 @@ class NinchatQuestionnaireListAdapter(
                         itemView = view,
                         jsonObject = currentElement,
                         isMultiline = NinchatQuestionnaireType.isTextArea(currentElement),
-                        isFormLikeQuestionnaire = false,
+                        isFormLikeQuestionnaire = isFormLike,
                         updateCallback = presenter,
                         position = position,
                         enabled = presenter.isLast(position)
@@ -87,7 +87,7 @@ class NinchatQuestionnaireListAdapter(
                         itemView = view,
                         jsonObject = currentElement,
                         isMultiline = NinchatQuestionnaireType.isTextArea(currentElement),
-                        isFormLikeQuestionnaire = false,
+                        isFormLikeQuestionnaire = isFormLike,
                         updateCallback = presenter,
                         position = position,
                         enabled = presenter.isLast(position)
@@ -98,7 +98,7 @@ class NinchatQuestionnaireListAdapter(
                 NinchatRadioButtonListView(
                         itemView = view,
                         jsonObject = currentElement,
-                        isFormLikeQuestionnaire = false,
+                        isFormLikeQuestionnaire = isFormLike,
                         updateCallback = presenter,
                         position = position,
                         enabled = presenter.isLast(position)
@@ -109,7 +109,7 @@ class NinchatQuestionnaireListAdapter(
                 NinchatDropDownSelectViewHolder(
                         itemView = view,
                         jsonObject = currentElement,
-                        isFormLikeQuestionnaire = false,
+                        isFormLikeQuestionnaire = isFormLike,
                         updateCallback = presenter,
                         position = position,
                         enabled = presenter.isLast(position)
@@ -120,7 +120,7 @@ class NinchatQuestionnaireListAdapter(
                 NinchatCheckBoxListView(
                         itemView = view,
                         jsonObject = currentElement,
-                        isFormLikeQuestionnaire = false,
+                        isFormLikeQuestionnaire = isFormLike,
                         position = position,
                         updateCallback = presenter,
                         enabled = presenter.isLast(position)
@@ -150,7 +150,7 @@ class NinchatQuestionnaireListAdapter(
                 NinchatTextViewHolder(
                         itemView = view,
                         jsonObject = currentElement,
-                        isFormLikeQuestionnaire = false,
+                        isFormLikeQuestionnaire = isFormLike,
                         position = position,
                         enabled = presenter.isLast(position)
                 )

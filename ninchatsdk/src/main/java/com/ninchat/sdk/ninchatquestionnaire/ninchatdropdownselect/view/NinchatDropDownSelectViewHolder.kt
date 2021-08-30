@@ -64,70 +64,6 @@ class NinchatDropDownSelectViewHolder(
         }
     }
 
-    override fun onRenderFromView(
-        label: String,
-        options: List<String>,
-        enabled: Boolean,
-        hasError: Boolean,
-        selectedIndex: Int
-    ) {
-        renderCommonView(
-            label = label,
-            options = options,
-            enabled = enabled,
-            hasError = hasError,
-            selectedIndex = selectedIndex
-        )
-    }
-
-    override fun onRenderConversationView(
-        label: String,
-        options: List<String>,
-        enabled: Boolean,
-        hasError: Boolean,
-        selectedIndex: Int
-    ) {
-        renderCommonView(
-            label = label,
-            options = options,
-            enabled = enabled,
-            hasError = hasError,
-            selectedIndex = selectedIndex
-        )
-    }
-
-    override fun onUpdateFromView(
-        label: String,
-        options: List<String>,
-        enabled: Boolean,
-        hasError: Boolean,
-        selectedIndex: Int
-    ) {
-        updateCommonView(
-            label = label,
-            options = options,
-            enabled = enabled,
-            hasError = hasError,
-            selectedIndex = selectedIndex
-        )
-    }
-
-    override fun onUpdateConversationView(
-        label: String,
-        options: List<String>,
-        enabled: Boolean,
-        hasError: Boolean,
-        selectedIndex: Int
-    ) {
-        updateCommonView(
-            label = label,
-            options = options,
-            enabled = enabled,
-            hasError = hasError,
-            selectedIndex = selectedIndex
-        )
-    }
-
     override fun onSelectionChange(
         selectedIndex: Int,
         isSelected: Boolean,
@@ -144,7 +80,7 @@ class NinchatDropDownSelectViewHolder(
             setSelection(selectedIndex)
             selectedView?.let {
                 val currentView = it as TextView
-                currentView.setTextAppearance(if (isSelected) R.style.NinchatTheme_Questionnaire_Dropdown_Text_Selected else R.style.NinchatTheme_Questionnaire_Dropdown_Text)
+                currentView.style(if (isSelected) R.style.NinchatTheme_Questionnaire_Dropdown_Text_Selected else R.style.NinchatTheme_Questionnaire_Dropdown_Text)
             }
         }
         if (hasError) {
@@ -152,19 +88,23 @@ class NinchatDropDownSelectViewHolder(
         }
     }
 
-    private fun renderCommonView(
+    override fun renderCommonView(
         label: String?,
         options: List<String>,
         enabled: Boolean,
         hasError: Boolean,
-        selectedIndex: Int
+        selectedIndex: Int,
+        isFormLike: Boolean
     ) {
         itemView.apply {
             isEnabled = enabled
         }
         itemView.dropdown_text_label?.apply {
             isEnabled = enabled
-            setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
+            style(
+                if (enabled) if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form else R.style.NinchatTheme_Questionnaire_Label
+                else if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form_Disabled else R.style.NinchatTheme_Questionnaire_Label_Disabled
+            )
             text = Misc.toRichText(label, this)
             if (label.isNullOrEmpty()) visibility = View.GONE
         }
@@ -182,18 +122,22 @@ class NinchatDropDownSelectViewHolder(
         }
     }
 
-    private fun updateCommonView(
+    override fun updateCommonView(
         label: String?,
         options: List<String>,
         enabled: Boolean,
         hasError: Boolean,
-        selectedIndex: Int
+        selectedIndex: Int,
+        isFormLike: Boolean
     ) {
         itemView.apply {
             isEnabled = enabled
             dropdown_text_label.isEnabled = enabled
             ninchat_dropdown_list.isEnabled = enabled
-            dropdown_text_label.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
+            dropdown_text_label.style(
+                if (enabled) if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form else R.style.NinchatTheme_Questionnaire_Label
+                else if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form_Disabled else R.style.NinchatTheme_Questionnaire_Label_Disabled
+            )
             ninchat_dropdown_list.setSelection(selectedIndex)
             if (label.isNullOrEmpty()) dropdown_text_label.visibility = View.GONE
         }

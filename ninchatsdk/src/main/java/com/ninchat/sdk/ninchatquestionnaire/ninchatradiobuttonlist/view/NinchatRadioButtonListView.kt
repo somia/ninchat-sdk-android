@@ -3,9 +3,9 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.view
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobutton.view.NinchatRadioButtonView
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.ButtonListUpdateListener
@@ -44,23 +44,12 @@ class NinchatRadioButtonListView(
         presenter.updateCurrentView(jsonObject = jsonObject, enabled = enabled)
     }
 
-    override fun onRenderFormView(label: String, hasError: Boolean, enabled: Boolean) {
-        renderCommon(label = label, hasError = hasError, enabled = enabled)
-    }
-
-    override fun onRenderConversationView(label: String, hasError: Boolean, enabled: Boolean) {
-        renderCommon(label = label, hasError = hasError, enabled = enabled)
-    }
-
-    override fun onUpdateFormView(label: String, hasError: Boolean, enabled: Boolean) {
-        updateCommon(label = label, hasError = hasError, enabled = enabled)
-    }
-
-    override fun onUpdateConversationView(label: String, hasError: Boolean, enabled: Boolean) {
-        updateCommon(label = label, hasError = hasError, enabled = enabled)
-    }
-
-    private fun renderCommon(label: String, hasError: Boolean, enabled: Boolean) {
+    override fun renderCommon(
+        label: String,
+        hasError: Boolean,
+        enabled: Boolean,
+        isFormLike: Boolean
+    ) {
         itemView.isEnabled = enabled
         itemView.radio_option_label.text = Misc.toRichText(label, itemView.radio_option_label)
         if (label.isNullOrEmpty()) itemView.radio_option_label.visibility = View.GONE
@@ -69,20 +58,36 @@ class NinchatRadioButtonListView(
             adapter = NinchatRadioButtonListViewAdapter()
         }
         if (hasError) {
-            itemView.radio_option_label.setTextAppearance(R.style.NinchatTheme_Questionnaire_Label_Error)
+            itemView.radio_option_label.style(
+                if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form_Error else R.style.NinchatTheme_Questionnaire_Label_Error
+            )
         } else {
-            itemView.radio_option_label.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
+            itemView.radio_option_label.style(
+                if (enabled) if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form else R.style.NinchatTheme_Questionnaire_Label
+                else if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form_Disabled else R.style.NinchatTheme_Questionnaire_Label_Disabled
+            )
+
         }
     }
 
-    private fun updateCommon(label: String, hasError: Boolean, enabled: Boolean) {
+    override fun updateCommon(
+        label: String,
+        hasError: Boolean,
+        enabled: Boolean,
+        isFormLike: Boolean
+    ) {
         itemView.isEnabled = enabled
         (itemView.ninchat_chat_radio_options.adapter as NinchatRadioButtonListViewAdapter).notifyDataSetChanged()
         if (label.isNullOrEmpty()) itemView.radio_option_label.visibility = View.GONE
         if (hasError) {
-            itemView.radio_option_label.setTextAppearance(R.style.NinchatTheme_Questionnaire_Label_Error)
+            itemView.radio_option_label.style(
+                if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form_Error else R.style.NinchatTheme_Questionnaire_Label_Error
+            )
         } else {
-            itemView.radio_option_label.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
+            itemView.radio_option_label.style(
+                if (enabled) if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form else R.style.NinchatTheme_Questionnaire_Label
+                else if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form_Disabled else R.style.NinchatTheme_Questionnaire_Label_Disabled
+            )
         }
     }
 

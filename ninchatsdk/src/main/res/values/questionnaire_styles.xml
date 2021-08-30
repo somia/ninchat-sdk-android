@@ -53,8 +53,20 @@
         <item name="android:background">@drawable/ninchat_questionnaire_label_disabled</item>
     </style>
 
+    <style name="NinchatTheme.Questionnaire.Label.Form" parent="NinchatTheme.Questionnaire.Label">
+        <item name="android:background">@drawable/null_</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Label.Form.Disabled" parent="NinchatTheme.Questionnaire.Label.Disabled">
+        <item name="android:background">@drawable/null_</item>
+    </style>
+
     <style name="NinchatTheme.Questionnaire.Label.Error" parent="NinchatTheme.Questionnaire.Label">
         <item name="android:textColor">@color/ninchat_color_questionnaire_label_text_error</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Label.Form.Error" parent="NinchatTheme.Questionnaire.Label.Error">
+        <item name="android:background">@drawable/null_</item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.InputText" parent="NinchatTheme.Questionnaire">
@@ -140,15 +152,15 @@
     </style>
 
     <style name="NinchatTheme.Questionnaire.Dropdown.Spinner" parent="NinchatTheme.Questionnaire.Dropdown">
-        <item name="android:background">@null</item>
+        <item name="android:background">@drawable/null_</item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.Dropdown.Text" parent="NinchatTheme.Questionnaire.Dropdown">
-        <item name="android:background">@null</item>
+        <item name="android:background">@drawable/null_</item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.Dropdown.Text.Selected" parent="NinchatTheme.Questionnaire.Dropdown.Selected">
-        <item name="android:background">@null</item>
+        <item name="android:background">@drawable/null_</item>
     </style>
 
 
@@ -175,6 +187,14 @@
         <item name="android:textColor">@color/ninchat_color_questionnaire_textview_text_disabled
         </item>
         <item name="android:background">@drawable/ninchat_questionnaire_textview_disabled</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.TextView.Form" parent="NinchatTheme.Questionnaire.TextView">
+        <item name="android:background">@drawable/null_</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.TextView.Form.Disabled" parent="NinchatTheme.Questionnaire.TextView.Disabled">
+        <item name="android:background">@drawable/null_</item>
     </style>
 
 </resources>

@@ -69,21 +69,6 @@ class NinchatInputFieldViewHolder(
 
     }
 
-    override fun onRenderFromView(label: String, enabled: Boolean) {
-        renderCommonView(isMultiline = presenter.isMultiline(), label = label, enabled = enabled)
-    }
-
-    override fun onRenderConversationView(label: String, enabled: Boolean) {
-        renderCommonView(isMultiline = presenter.isMultiline(), label = label, enabled = enabled)
-    }
-
-    override fun onUpdateFromView(label: String, enabled: Boolean) {
-        updateCommonView(isMultiline = presenter.isMultiline(), label = label, enabled = enabled)
-    }
-
-    override fun onUpdateConversationView(label: String, enabled: Boolean) {
-        updateCommonView(isMultiline = presenter.isMultiline(), label = label, enabled = enabled)
-    }
 
     override fun onUpdateText(value: String, hasError: Boolean) {
         val view =
@@ -101,7 +86,7 @@ class NinchatInputFieldViewHolder(
         )
     }
 
-    private fun renderCommonView(isMultiline: Boolean, label: String, enabled: Boolean) {
+    override fun renderCommonView(isMultiline: Boolean, label: String, enabled: Boolean, isFormLike: Boolean) {
         itemView.isEnabled = enabled
         // set label
         val mLabel = if (isMultiline) itemView.multiline_text_label else itemView.simple_text_label
@@ -110,7 +95,9 @@ class NinchatInputFieldViewHolder(
             if (label.isNotBlank()) {
                 mLabel.text = Misc.toRichText(label, mLabel)
             }
-            mLabel.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
+            mLabel.style(
+                if (enabled) if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form else R.style.NinchatTheme_Questionnaire_Label
+                else if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form_Disabled else R.style.NinchatTheme_Questionnaire_Label_Disabled)
         }
         // set input type if it is a simple view
         if (!isMultiline) {
@@ -133,7 +120,7 @@ class NinchatInputFieldViewHolder(
         }
     }
 
-    private fun updateCommonView(isMultiline: Boolean, label: String, enabled: Boolean) {
+    override fun updateCommonView(isMultiline: Boolean, label: String, enabled: Boolean, isFormLike: Boolean) {
         itemView.isEnabled = enabled
         // set label
         val mLabel = if (isMultiline) itemView.multiline_text_label else itemView.simple_text_label
@@ -142,7 +129,9 @@ class NinchatInputFieldViewHolder(
             if (label.isNotBlank()) {
                 mLabel.text = Misc.toRichText(label, mLabel)
             }
-            mLabel.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
+            mLabel.style(
+                if (enabled) if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form else R.style.NinchatTheme_Questionnaire_Label
+                else if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form_Disabled else R.style.NinchatTheme_Questionnaire_Label_Disabled)
         }
         val mEditText =
             if (presenter.isMultiline()) itemView.multiline_text_area else itemView.simple_text_field
