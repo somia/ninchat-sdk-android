@@ -134,12 +134,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             } else {
                 final int width = file.getWidth();
                 final int height = file.getHeight();
-                final float density = itemView.getResources().getDisplayMetrics().density;
-                image.getLayoutParams().width = (int) (width * density);
-                image.getLayoutParams().height = (int) (height * density);
-                image.setBackgroundResource(isContinuedMessage ? repeatedMessageBackground : firstMessageBackground);
+                final int density = (int)itemView.getResources().getDisplayMetrics().density;
                 image.setVisibility(View.VISIBLE);
-                GlideWrapper.loadImage(image.getContext(), file.getThumbnailUrl(), image, R.color.ninchat_colorPrimaryDark, width, height);
+                image.setBackgroundResource(isContinuedMessage ? repeatedMessageBackground : firstMessageBackground);
+                GlideWrapper.loadImage(image.getContext(), file.getThumbnailUrl(), image, R.color.ninchat_colorPrimaryDark, width * density, height * density);
                 if (file.isVideo()) {
                     playIcon.setVisibility(View.VISIBLE);
                 }
