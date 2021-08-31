@@ -8,16 +8,6 @@
     android:keepScreenOn="true"
     tools:context=".activities.NinchatChatActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/message_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignWithParentIfMissing="true"
-        android:layout_above="@id/send_message_container"
-        android:overScrollMode="never"
-        tools:itemCount="2"
-        tools:listitem="@layout/item_chat_message" />
-
     <LinearLayout
         android:id="@+id/send_message_container"
         android:layout_width="match_parent"
@@ -104,6 +94,8 @@
     </LinearLayout>
 
     <include
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
         android:id="@+id/ninchat_titlebar"
         layout="@layout/ninchat_titlebar"
         android:layout_width="match_parent"
@@ -217,6 +209,17 @@
         </LinearLayout>
 
     </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/message_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_above="@id/send_message_container"
+        android:layout_below="@id/videoContainer"
+        android:overScrollMode="never"
+        tools:itemCount="2"
+        tools:listitem="@layout/item_chat_message" />
 
     <include
         android:id="@+id/ninchat_chat_error"
