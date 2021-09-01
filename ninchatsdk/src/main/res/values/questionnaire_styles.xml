@@ -55,10 +55,14 @@
 
     <style name="NinchatTheme.Questionnaire.Label.Form" parent="NinchatTheme.Questionnaire.Label">
         <item name="android:background">@drawable/null_</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.Label.Form.Disabled" parent="NinchatTheme.Questionnaire.Label.Disabled">
         <item name="android:background">@drawable/null_</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.Label.Error" parent="NinchatTheme.Questionnaire.Label">
@@ -67,6 +71,8 @@
 
     <style name="NinchatTheme.Questionnaire.Label.Form.Error" parent="NinchatTheme.Questionnaire.Label.Error">
         <item name="android:background">@drawable/null_</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.InputText" parent="NinchatTheme.Questionnaire">
@@ -191,10 +197,14 @@
 
     <style name="NinchatTheme.Questionnaire.TextView.Form" parent="NinchatTheme.Questionnaire.TextView">
         <item name="android:background">@drawable/null_</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.TextView.Form.Disabled" parent="NinchatTheme.Questionnaire.TextView.Disabled">
         <item name="android:background">@drawable/null_</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
     </style>
 
 </resources>
