@@ -44,7 +44,7 @@ class NinchatReviewPresenter(
         renderText(view = formView, rootActivity = rootActivity)
 
         // initially review description was not visible. so make it visible on load
-        formView.ninchat_review_description.visibility = View.VISIBLE
+        formView.ninchat_review_description.visibility = View.GONE
     }
 
     fun renderBotView(formView: View, botView: View, rootActivity: View) {
@@ -66,7 +66,7 @@ class NinchatReviewPresenter(
 
             // for bot like view, they should place in the beginning
             botView.ninchat_review_title.gravity = Gravity.START
-            botView.ninchat_review_description.gravity = Gravity.START
+            botView.ninchat_review_description.visibility = View.GONE
         })
     }
 
