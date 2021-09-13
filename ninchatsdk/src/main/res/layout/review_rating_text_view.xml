@@ -16,6 +16,7 @@
         android:textColor="@color/ninchat_color_text_top"
         android:textStyle="bold"
         tools:visibility="visible"
+        android:textIsSelectable="true"
         tools:text="How was our customer service?" />
 
     <TextView

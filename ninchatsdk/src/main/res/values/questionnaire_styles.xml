@@ -42,6 +42,7 @@
 
     <style name="NinchatTheme.Questionnaire.Label" parent="NinchatTheme.Questionnaire">
         <item name="android:textColor">@color/ninchat_color_questionnaire_label_text</item>
+        <item name="android:textIsSelectable">true</item>
         <item name="android:layout_marginBottom">@dimen/ninchat_questionnaire_item_margin_bottom
         </item>
         <item name="android:textSize">@dimen/ninchat_questionnaire_label_text_size</item>
@@ -182,6 +183,7 @@
 
 
     <style name="NinchatTheme.Questionnaire.TextView" parent="NinchatTheme.Questionnaire">
+        <item name="android:textIsSelectable">true</item>
         <item name="android:textColor">@color/ninchat_color_questionnaire_textview_text</item>
         <item name="android:layout_marginBottom">@dimen/ninchat_questionnaire_item_margin_bottom
         </item>
