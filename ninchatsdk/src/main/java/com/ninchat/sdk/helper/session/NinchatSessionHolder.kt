@@ -121,6 +121,7 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
                     }
                 }
                 "channel_updated" -> NinchatSessionManagerHelper.channelUpdated(params)
+                "jitsi_discovered" -> NinchatSessionManagerHelper.jitsiDiscovered(params)
                 "message_received" -> NinchatMessageService.handleIncomingMessage(params, payload)
                 "ice_begun" -> NinchatSessionManager.getInstance().iceBegun(params)
                 "file_found" -> NinchatSessionManagerHelper.fileFound(params)
@@ -163,6 +164,11 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
     fun supportFiles(): Boolean {
         return NinchatSessionManager.getInstance()
             ?.getQueue(ninchatState.queueId)?.supportFiles == true
+    }
+
+    fun isGroupVideo(): Boolean {
+        return NinchatSessionManager.getInstance()
+            ?.getQueue(ninchatState.queueId)?.isGroup == true
     }
 
     fun dispose() {

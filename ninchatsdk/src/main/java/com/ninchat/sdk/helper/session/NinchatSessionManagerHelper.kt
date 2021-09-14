@@ -1,6 +1,7 @@
 package com.ninchat.sdk.helper.session
 
 import android.content.Intent
+import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.client.Objects
 import com.ninchat.client.Props
@@ -199,12 +200,16 @@ class NinchatSessionManagerHelper {
                 }
                 val supportVideos = queueAttributes?.getSafe<String>("video") == "member"
                 val supportFiles = queueAttributes?.getSafe<String>("upload") == "member"
+                val isGroup = queueAttributes.getSafe<String>("video") == "group"
                 if (currentSession.getQueue(queueId) == null) {
                     val queueName = queueAttributes?.getString("name")
                     currentSession.ninchatState.addQueue(
                         NinchatQueue(
-                            queueId, name = queueName,
-                            supportFiles = supportFiles, supportVideos = supportVideos
+                            queueId,
+                            name = queueName,
+                            supportFiles = supportFiles,
+                            supportVideos = supportVideos,
+                            isGroup = isGroup
                         )
                     )
                 }
@@ -425,7 +430,8 @@ class NinchatSessionManagerHelper {
                 } catch (e: Exception) {
                     return
                 }
-                val isAudienceTransfer = params.getSafe<String>("event_cause") == "audience_transfer"
+                val isAudienceTransfer =
+                    params.getSafe<String>("event_cause") == "audience_transfer"
                 ninchatSessionManager.contextWeakReference?.get()?.let { mContext ->
                     if (!isAudienceTransfer && (closed || suspended)) {
                         LocalBroadcastManager.getInstance(mContext)
@@ -435,6 +441,23 @@ class NinchatSessionManagerHelper {
             }
         }
 
+        @JvmStatic
+        fun jitsiDiscovered(params: Props) {
+            Log.e("jitsiDiscover", params.marshalJSON())
+            val jitsiRoom = params.getSafe<String>("jitsi_room")
+            val jitsiToken = params.getSafe<String>("jitsi_token")
 
+            val serverPrefix = jitsiRoom?.substringBeforeLast(".")
+            NinchatSessionManager.getInstance()?.context?.let { mContext ->
+                LocalBroadcastManager.getInstance(mContext)
+                    .sendBroadcast(Intent(Broadcast.WEBRTC_MESSAGE).also { mIntent ->
+                        mIntent.putExtra(Broadcast.WEBRTC_MESSAGE_TYPE, NinchatMessageTypes.WEBRTC_JITSI_SERVER_CONFIG)
+                        mIntent.putExtra(Broadcast.WEBRTC_MESSAGE_JITSI_ROOM, jitsiRoom)
+                        mIntent.putExtra(Broadcast.WEBRTC_MESSAGE_JITSI_TOKEN, jitsiToken)
+                        mIntent.putExtra(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER_PREFIX, serverPrefix)
+                    })
+            }
+
+        }
     }
 }

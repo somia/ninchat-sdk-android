@@ -1,10 +1,13 @@
 package com.ninchat.sdk.utils.misc
 
+import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
+import android.provider.OpenableColumns
 import android.text.Html
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
@@ -69,6 +72,19 @@ class Misc {
                 }
             }
         }
+
+        @JvmStatic
+        fun getFileName(uri: Uri, contentResolver: ContentResolver): String? {
+            var displayName: String? = ""
+            contentResolver.query(uri, null, null, null, null, null).use { cursor ->
+                if (cursor != null && cursor.moveToFirst()) {
+                    displayName = cursor.getString(
+                        cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    )
+                }
+            }
+            return displayName
+        }
     }
 }
 
@@ -82,6 +98,9 @@ class Broadcast {
         const val WEBRTC_MESSAGE_ID = WEBRTC_MESSAGE + ".messageId"
         const val WEBRTC_MESSAGE_SENDER = WEBRTC_MESSAGE + ".sender"
         const val WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type"
+        const val WEBRTC_MESSAGE_JITSI_ROOM = WEBRTC_MESSAGE + ".jitsi.room"
+        const val WEBRTC_MESSAGE_JITSI_TOKEN = WEBRTC_MESSAGE + ".jitsi.token"
+        const val WEBRTC_MESSAGE_JITSI_SERVER_PREFIX = WEBRTC_MESSAGE + ".jitsi.server.prefix"
         const val WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content"
         const val CLOSE_NINCHAT_ACTIVITY = BuildConfig.LIBRARY_PACKAGE_NAME + ".closeActivity"
     }

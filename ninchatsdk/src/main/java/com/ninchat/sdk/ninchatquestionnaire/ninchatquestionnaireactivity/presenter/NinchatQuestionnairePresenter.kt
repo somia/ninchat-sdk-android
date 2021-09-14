@@ -21,10 +21,8 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.Nincha
 import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.lang.Exception
 
 class NinchatQuestionnairePresenter(
     val viewCallback: INinchatQuestionnairePresenter,
@@ -163,7 +161,7 @@ class NinchatQuestionnairePresenter(
     }
 
     fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
-        if (isPostAudienceQuestionnaire()) {
+        if(isPostAudienceQuestionnaire()) {
             NinchatTitlebarView.showTitlebarForPostAudienceQuestionnaire(view, callback = {
                 viewCallback.onCompletePostAudienceQuestionnaire()
             })

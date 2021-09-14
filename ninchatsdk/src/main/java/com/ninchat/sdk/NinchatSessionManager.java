@@ -13,6 +13,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.ninchat.client.Props;
 import com.ninchat.client.Session;
 import com.ninchat.sdk.adapters.NinchatMessageAdapter;
+import com.ninchat.sdk.networkdispatchers.NinchatDiscoverJitsi;
+import com.ninchat.sdk.ninchatintegrations.jitsi.NinchatJitsiIntegration;
 import com.ninchat.sdk.ninchatqueuelist.view.NinchatQueueListAdapter;
 import com.ninchat.sdk.helper.session.NinchatSessionManagerHelper;
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue;
@@ -131,7 +133,6 @@ public final class NinchatSessionManager {
     public void setConfiguration(final String config) {
         Log.v(TAG, "Got configuration: " + config);
         ninchatState.getSiteConfig().setConfigString(config, ninchatState.getPreferredEnvironments());
-        Log.i(TAG, "Configuration fetched successfully!");
         final Context context = contextWeakReference.get();
         if (context != null) {
             LocalBroadcastManager.getInstance(context)
@@ -272,6 +273,16 @@ public final class NinchatSessionManager {
             // Ignore
         }
     }
+
+    public void loadJitsiConfig() {
+        NinchatDiscoverJitsi.executeAsync(
+                NinchatScopeHandler.getIOScope(),
+                ninchatSessionHolder.getCurrentSession(),
+                ninchatState.getChannelId(),
+                aLong -> null
+        );
+    }
+
 
     public String getUserName() {
         if (this.ninchatConfiguration != null && this.ninchatConfiguration.getUserName() != null) {

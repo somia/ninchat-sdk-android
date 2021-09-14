@@ -8,6 +8,7 @@ data class NinchatQueue(
     var supportFiles: Boolean,
     var supportVideos: Boolean,
     val name: String?,
+    var isGroup: Boolean
 ) {
     var position = Long.MAX_VALUE
     var isClosed = false
