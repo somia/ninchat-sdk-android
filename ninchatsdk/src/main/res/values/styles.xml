@@ -117,10 +117,14 @@
     </style>
 
     <style name="NinchatTheme.Questionnaire.Radio" parent="NinchatTheme.MultiChoice">
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:paddingTop">0dp</item>
         <item name="android:minHeight">50dp</item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.Radio.Selected" parent="NinchatTheme.MultiChoice.Selected">
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:paddingTop">0dp</item>
         <item name="android:minHeight">50dp</item>
     </style>
 

@@ -95,6 +95,10 @@ class Parameter {
 }
 
 class NinchatLinearLayoutManager(context: Context) : LinearLayoutManager(context) {
+    init {
+        this.stackFromEnd = true
+    }
+
     override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
         try {
             super.onLayoutChildren(recycler, state)

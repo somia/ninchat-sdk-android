@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_marginTop="@dimen/ninchat_questionnaire_item_margin_start"
     android:orientation="vertical">
 
     <TextView
@@ -10,10 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/ninchat_review_activity_title_top_margin"
+        android:layout_marginBottom="@dimen/ninchat_review_activity_title_top_margin"
         android:gravity="center_horizontal"
         android:textColor="@color/ninchat_color_text_top"
         android:textStyle="bold"
-        android:text="How was our customer service?"
+        tools:visibility="visible"
+        android:textIsSelectable="true"
         tools:text="How was our customer service?" />
 
     <TextView
@@ -23,6 +26,8 @@
         android:layout_marginTop="@dimen/ninchat_review_activity_description_top_margin"
         android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
         android:gravity="center_horizontal"
+        android:visibility="gone"
+        tools:visibility="visible"
         android:textColor="@color/ninchat_color_text_top"
         tools:text="Give a rating - select a smiley" />
 
