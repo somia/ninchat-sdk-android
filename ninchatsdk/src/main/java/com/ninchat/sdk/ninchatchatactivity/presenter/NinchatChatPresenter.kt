@@ -44,10 +44,14 @@ class NinchatChatPresenter() {
         showVideoCalls = NinchatSessionManager.getInstance()?.ninchatSessionHolder?.supportVideos()
             ?: false,
         showTitlebar = shouldShowTitlebar(),
-        showRatingView = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.showRating() ?: false,
-        chatCloseText = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getChatCloseText() ?: "",
-        chatCloseConfirmationText = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getChatCloseConfirmationText() ?: "",
-        chatCloseDeclineText = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getContinueChatText() ?: ""
+        showRatingView = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.showRating()
+            ?: false,
+        chatCloseText = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getChatCloseText()
+            ?: "",
+        chatCloseConfirmationText = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getChatCloseConfirmationText()
+            ?: "",
+        chatCloseDeclineText = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getContinueChatText()
+            ?: ""
 
     )
 
@@ -105,65 +109,51 @@ class NinchatChatPresenter() {
         }
     }
 
-    fun channelCloseReceiver(
+    fun activityBroadcastReceiver(
         onChatClosed: () -> Unit,
         onHideKeyboard: () -> Unit,
+        onCloseActivity: (intent: Intent?) -> Unit,
+        onP2PCall: () -> Unit, onGroupCall: () -> Unit
     ): BroadcastReceiver {
         return object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                if (Broadcast.CHANNEL_CLOSED == intent?.action) {
-                    NinchatSessionManager.getInstance()
-                        ?.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
-                            override fun onMessageAdapter(adapter: NinchatMessageAdapter) {
-                                adapter.addEndMessage()
+                when (intent?.action) {
+                    Broadcast.CHANNEL_CLOSED-> {
+                        if (intent.action == Broadcast.CHANNEL_CLOSED) {
+                            NinchatSessionManager.getInstance()
+                                ?.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
+                                    override fun onMessageAdapter(adapter: NinchatMessageAdapter) {
+                                        adapter.addEndMessage()
+                                    }
+                                })
+                        }
+                        onHideKeyboard()
+                        onChatClosed()
+                    }
+                    Broadcast.AUDIENCE_ENQUEUED -> {
+                        NinchatSessionManager.getInstance()?.let { sessionManager ->
+                            NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
+                                NinchatPartChannel.execute(
+                                    currentSession = sessionManager.session,
+                                    channelId = sessionManager.ninchatState?.channelId
+                                )
                             }
-                        })
-                    onChatClosed()
-                    onHideKeyboard()
-                }
-            }
-        }
-    }
-
-    fun transferReceiver(onCloseActivity: (intent: Intent?) -> Unit): BroadcastReceiver {
-        return object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (Broadcast.AUDIENCE_ENQUEUED == intent?.action) {
-                    NinchatSessionManager.getInstance()?.let { sessionManager ->
-                        NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
-                            NinchatPartChannel.execute(
-                                currentSession = sessionManager.session,
-                                channelId = sessionManager.ninchatState?.channelId
-                            )
+                        }
+                        onCloseActivity(intent)
+                    }
+                    Broadcast.WEBRTC_MESSAGE -> {
+                        val messageType = intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_TYPE)
+                        when {
+                            NinchatMessageTypes.CALL == messageType -> {
+                                onP2PCall()
+                            }
+                            NinchatMessageTypes.WEBRTC_JITSI_SERVER_CONFIG == messageType -> {
+                                onGroupCall()
+                            }
                         }
                     }
-                    onCloseActivity(intent)
                 }
-            }
-        }
-    }
 
-    fun chatCloseReceiver(onChatClosed: () -> Unit): BroadcastReceiver {
-        return object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                onChatClosed()
-            }
-        }
-    }
-
-
-    fun webrtcMessageReceiver(onP2PCall: () -> Unit, onGroupCall: () -> Unit): BroadcastReceiver {
-        return object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                val messageType = intent?.getStringExtra(Broadcast.WEBRTC_MESSAGE_TYPE)
-                when {
-                    NinchatMessageTypes.CALL == messageType -> {
-                        onP2PCall()
-                    }
-                    NinchatMessageTypes.WEBRTC_JITSI_SERVER_CONFIG == messageType -> {
-                        onGroupCall()
-                    }
-                }
             }
         }
     }

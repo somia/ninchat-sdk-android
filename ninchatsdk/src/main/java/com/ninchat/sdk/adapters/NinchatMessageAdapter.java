@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
+import com.ninchat.sdk.events.OnCloseChat;
 import com.ninchat.sdk.helper.glidewrapper.GlideWrapper;
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity;
 import com.ninchat.sdk.ninchatchatmessage.INinchatMessageList;
@@ -47,6 +48,7 @@ import com.ninchat.sdk.utils.misc.Misc;
 import com.ninchat.sdk.utils.misc.Parameter;
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -138,7 +140,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             } else {
                 final int width = file.getWidth();
                 final int height = file.getHeight();
-                final int density = (int)itemView.getResources().getDisplayMetrics().density;
+                final int density = (int) itemView.getResources().getDisplayMetrics().density;
                 image.setVisibility(View.VISIBLE);
                 image.setBackgroundResource(isContinuedMessage ? repeatedMessageBackground : firstMessageBackground);
                 GlideWrapper.loadImage(image.getContext(), file.getThumbnailUrl(), image, R.color.ninchat_colorPrimaryDark, width * density, height * density);
@@ -196,7 +198,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 final String closeText =
                         NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getChatCloseText();
                 closeButton.setText(closeText);
-                closeButton.setOnClickListener(v -> LocalBroadcastManager.getInstance(itemView.getContext()).sendBroadcast(new Intent(Broadcast.CHANNEL_CLOSED)));
+                closeButton.setOnClickListener(v -> EventBus.getDefault().post(new OnCloseChat()));
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.VISIBLE);
             } else if (data.getType().equals(NinchatMessage.Type.WRITING)) {
                 itemView.findViewById(R.id.ninchat_chat_message_meta_container).setVisibility(View.GONE);

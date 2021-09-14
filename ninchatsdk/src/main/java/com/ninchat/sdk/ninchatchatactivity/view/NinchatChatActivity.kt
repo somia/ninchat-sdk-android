@@ -10,6 +10,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.facebook.react.modules.core.PermissionListener
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
+import com.ninchat.sdk.events.OnCloseChat
 import com.ninchat.sdk.managers.IOrientationManager
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter.Companion.PICK_PHOTO_VIDEO_REQUEST_CODE
@@ -21,31 +22,29 @@ import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.NinchatLinearLayoutManager
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.dialog_close_chat.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface
 
 class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMeetActivityInterface {
     private val presenter by lazy {
         NinchatChatPresenter()
     }
-    private val channelCloseReceiver = presenter.channelCloseReceiver(
+    private val broadcastReceiver = presenter.activityBroadcastReceiver(
         onChatClosed = {
             presenter.layoutModel.chatClosed = true
             send_message_container.isEnabled = false
         },
         onHideKeyboard = {
             hideKeyBoardForce()
-        }
-    )
-
-    private val transferReceiver = presenter.transferReceiver(
+        },
         onCloseActivity = {
             quit(it)
-        }
-    )
+        },
 
-    private val webRTCMessageReceiver = presenter.webrtcMessageReceiver(
         onP2PCall = {},
-        onGroupCall = {}
+        onGroupCall = {},
     )
 
     override val layoutRes: Int
@@ -64,7 +63,11 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    private fun chatClosed() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    @JvmName("OnCloseChat")
+    fun chatClosed(onCloseChat: OnCloseChat) {
+        presenter.layoutModel.chatClosed = true
+        send_message_container.isEnabled = false
         if (presenter.layoutModel.showRatingView) {
             startActivityForResult(
                 NinchatReviewPresenter.getLaunchIntent(this@NinchatChatActivity),
@@ -87,10 +90,13 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     override fun onStart() {
         super.onStart()
+        EventBus.getDefault().register(this)
         LocalBroadcastManager.getInstance(this).let {
-            it.registerReceiver(channelCloseReceiver, IntentFilter(Broadcast.CHANNEL_CLOSED))
-            it.registerReceiver(transferReceiver, IntentFilter(Broadcast.AUDIENCE_ENQUEUED))
-            it.registerReceiver(webRTCMessageReceiver, IntentFilter(Broadcast.WEBRTC_MESSAGE))
+            it.registerReceiver(broadcastReceiver, IntentFilter().apply {
+                addAction(Broadcast.CHANNEL_CLOSED)
+                addAction(Broadcast.AUDIENCE_ENQUEUED)
+                addAction(Broadcast.WEBRTC_MESSAGE)
+            })
         }
         presenter.loadMessageHistory()
         updateVisibility()
@@ -98,10 +104,9 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     override fun onStop() {
         super.onStop()
-        LocalBroadcastManager.getInstance(this).let {
-            it.unregisterReceiver(channelCloseReceiver)
-            it.unregisterReceiver(transferReceiver)
-            it.unregisterReceiver(webRTCMessageReceiver)
+        EventBus.getDefault().unregister(this)
+        LocalBroadcastManager.getInstance(this).apply {
+            unregisterReceiver(broadcastReceiver)
         }
     }
 
@@ -132,7 +137,11 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             )
         }
         ninchat_chat_close?.apply {
-
+            visibility = if (presenter.layoutModel.showTitlebar) View.GONE else View.VISIBLE
+            text = presenter.layoutModel.chatCloseText
+            setOnClickListener {
+                showChatCloseDialog()
+            }
         }
     }
 
@@ -181,7 +190,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             ninchat_close_chat_dialog_confirm.also { btn ->
                 btn.text = presenter.layoutModel.chatCloseText
                 btn.setOnClickListener {
-                    chatClosed()
+                    chatClosed(OnCloseChat())
                     dialog.dismiss()
                 }
             }
