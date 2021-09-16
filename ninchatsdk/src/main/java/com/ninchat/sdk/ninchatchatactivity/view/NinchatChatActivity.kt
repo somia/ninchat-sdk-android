@@ -20,6 +20,7 @@ import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.NinchatLinearLayoutManager
+import com.ninchat.sdk.utils.misc.Parameter
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.dialog_close_chat.*
 import org.greenrobot.eventbus.EventBus
@@ -98,7 +99,8 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 addAction(Broadcast.WEBRTC_MESSAGE)
             })
         }
-        presenter.loadMessageHistory()
+        presenter.layoutModel.chatClosed = intent.extras?.getBoolean(Parameter.CHAT_IS_CLOSED, false) ?: false
+        presenter.loadMessageHistory( )
         updateVisibility()
     }
 

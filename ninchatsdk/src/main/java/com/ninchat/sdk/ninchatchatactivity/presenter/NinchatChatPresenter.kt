@@ -118,7 +118,7 @@ class NinchatChatPresenter() {
         return object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 when (intent?.action) {
-                    Broadcast.CHANNEL_CLOSED-> {
+                    Broadcast.CHANNEL_CLOSED -> {
                         if (intent.action == Broadcast.CHANNEL_CLOSED) {
                             NinchatSessionManager.getInstance()
                                 ?.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
@@ -175,9 +175,16 @@ class NinchatChatPresenter() {
     }
 
     fun messageAdapter() = NinchatSessionManager.getInstance()?.messageAdapter
-    fun loadMessageHistory() = NinchatSessionManager.getInstance()?.loadChannelHistory(
-        messageAdapter()?.getLastMessageId(true)
-    )
+    fun loadMessageHistory() {
+        NinchatSessionManager.getInstance()?.let { currentSessionManager ->
+            if (layoutModel.chatClosed) {
+                currentSessionManager.messageAdapter?.addEndMessage()
+            }
+            currentSessionManager.loadChannelHistory(
+                currentSessionManager.messageAdapter?.getLastMessageId(true)
+            )
+        }
+    }
 
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
         Timber.d(exception)
