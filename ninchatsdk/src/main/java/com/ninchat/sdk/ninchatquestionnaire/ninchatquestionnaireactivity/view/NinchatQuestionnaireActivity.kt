@@ -136,6 +136,7 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
     @Subscribe(threadMode = ThreadMode.MAIN)
     @JvmName("onNextQuestionnaire")
     fun onNextQuestionnaire(onNextQuestionnaire: OnNextQuestionnaire) {
+        hideKeyBoardForce()
         currentAdapter.showNextQuestionnaire(onNextQuestionnaire)
     }
 
