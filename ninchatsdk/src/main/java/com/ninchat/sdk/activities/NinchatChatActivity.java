@@ -196,7 +196,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
             final String action = intent.getAction();
             if (Broadcast.CHANNEL_CLOSED.equals(action)) {
                 NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
-                if (sessionManager != null)
+                if (!chatClosed && sessionManager != null)
                     sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.close(NinchatChatActivity.this));
                 chatClosed = true;
                 hideKeyboard();
