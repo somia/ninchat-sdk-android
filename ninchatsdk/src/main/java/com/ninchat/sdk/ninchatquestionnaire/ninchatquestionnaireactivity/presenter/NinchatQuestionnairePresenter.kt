@@ -157,7 +157,7 @@ class NinchatQuestionnairePresenter(
                     Handler(Looper.getMainLooper()).postDelayed({
                         it.close()
                         callback()
-                    }, 500)
+                    }, 400)
                 }
         }
     }
