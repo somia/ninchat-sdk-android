@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit
 
 
 const val WRITING_MESSAGE_ID_PREFIX = "zzzzzwriting"
+const val END_MESSAGE_ID_SUFFIX = "zzzzz"
 
 fun <T> bufferDebounce(
     time: Long, unit: TimeUnit?
@@ -64,6 +65,15 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
                     newList.removeAt(at)
                     messageMap.remove(pendingMessage.sender)
                 }
+
+                NinchatMessage.Type.REMOVE_END -> {
+                    val lastMessage = newList.last()
+                    if (lastMessage.endsWith(END_MESSAGE_ID_SUFFIX)) {
+                        // remove the message from `messageIds` and  `messageMap`
+                        newList.removeLast()
+                        messageMap.remove(lastMessage)
+                    }
+                }
                 NinchatMessage.Type.MESSAGE -> {
                     if (newList.contains(pendingMessage.sender)) {
                         continue
@@ -96,7 +106,7 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
                 }
                 NinchatMessage.Type.END -> {
                     // get end message id from here since it require calling messageIds
-                    val endMessageId = getLastMessageId(true) + "zzzzz"
+                    val endMessageId = getLastMessageId(true) + END_MESSAGE_ID_SUFFIX
                     newList.add(endMessageId)
                     messageMap[endMessageId] = pendingMessage.message!!
                 }
@@ -219,6 +229,15 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
             }
         }
         return messageIds[messageIds.size - 1]
+    }
+
+    fun removeChatCloseMessage() {
+        subject.onNext(
+            NinchatPendingMessage(
+                messageType = NinchatMessage.Type.REMOVE_END,
+                sender = "",
+            )
+        )
     }
 
     fun size(): Int {
