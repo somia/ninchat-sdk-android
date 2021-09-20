@@ -177,8 +177,9 @@ class NinchatChatPresenter() {
     fun messageAdapter() = NinchatSessionManager.getInstance()?.messageAdapter
     fun loadMessageHistory() {
         NinchatSessionManager.getInstance()?.let { currentSessionManager ->
-            if (layoutModel.chatClosed) {
-                currentSessionManager.messageAdapter?.addEndMessage()
+            currentSessionManager.messageAdapter?.let {
+                if (layoutModel.chatClosed) it.addEndMessage()
+                else it.removeChatCloseMessage()
             }
             currentSessionManager.loadChannelHistory(
                 currentSessionManager.messageAdapter?.getLastMessageId(true)
