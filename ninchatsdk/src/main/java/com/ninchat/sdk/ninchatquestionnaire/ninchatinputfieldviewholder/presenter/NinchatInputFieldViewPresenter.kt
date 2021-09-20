@@ -93,6 +93,8 @@ class NinchatInputFieldViewPresenter(
             viewCallback.onUpdateFocus(hasFocus = hasFocus)
         }
     }
+
+    fun position() = model.position
 }
 
 interface INinchatInputFieldViewPresenter {

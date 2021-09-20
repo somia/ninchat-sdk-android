@@ -377,6 +377,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         return ninchatMessageList.getLastMessageId(allowMeta);
     }
 
+    public void removeChatCloseMessage() {
+        ninchatMessageList.removeChatCloseMessage();
+    }
+
     public void addMetaMessage(final String messageId, final String message) {
         ninchatMessageList.addMetaMessage(messageId, message);
     }

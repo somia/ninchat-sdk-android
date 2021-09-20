@@ -65,6 +65,15 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
                     newList.removeAt(at)
                     messageMap.remove(pendingMessage.sender)
                 }
+
+                NinchatMessage.Type.REMOVE_END -> {
+                    val lastMessage = newList.last()
+                    if (lastMessage.endsWith(END_MESSAGE_ID_SUFFIX)) {
+                        // remove the message from `messageIds` and  `messageMap`
+                        newList.removeLast()
+                        messageMap.remove(lastMessage)
+                    }
+                }
                 NinchatMessage.Type.MESSAGE -> {
                     if (newList.contains(pendingMessage.sender)) {
                         continue
@@ -223,6 +232,15 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
             }
         }
         return messageIds[messageIds.size - 1]
+    }
+
+    fun removeChatCloseMessage() {
+        subject.onNext(
+            NinchatPendingMessage(
+                messageType = NinchatMessage.Type.REMOVE_END,
+                sender = "",
+            )
+        )
     }
 
     fun size(): Int {

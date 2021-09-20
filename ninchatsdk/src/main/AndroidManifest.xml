@@ -37,6 +37,7 @@
         <activity
             android:name=".ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity"
             android:theme="@style/NinchatTheme.Questionnaire"
+            android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation|screenSize"/>
 
     </application>
