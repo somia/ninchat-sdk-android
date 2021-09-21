@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ninchat_colorPrimaryDark">
+
+    <FrameLayout
+        android:id="@+id/ninchat_jitsi_layout"
+        android:layout_width="match_parent"
+        android:layout_height="480dp"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/black"
+        android:visibility="gone"
+        tools:visibility="gone">
+        <!-- Note: A org.jitsi.meet.sdk.JitsiMeetView will be added here and so add tools:ignore="UselessParent" -->
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/ninchat_video_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        tools:visibility="visible">
+
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/video"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true" />
+
+        <org.webrtc.SurfaceViewRenderer
+            android:id="@+id/pip_video"
+            android:layout_width="@dimen/ninchat_chat_activity_pip_video_width"
+            android:layout_height="@dimen/ninchat_chat_activity_pip_video_height"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true" />
+
+        <ImageView
+            android:id="@+id/video_call_spinner"
+            android:layout_width="@dimen/ninchat_chat_activity_video_call_spinner_size"
+            android:layout_height="@dimen/ninchat_chat_activity_video_call_spinner_size"
+            android:layout_centerInParent="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ninchat_icon_loader_large"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal"
+            android:padding="@dimen/ninchat_chat_activity_video_control_padding">
+
+            <ImageView
+                android:id="@+id/fullscreen_on_off"
+                android:layout_width="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_height="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_marginEnd="@dimen/ninchat_chat_activity_video_control_icon_margin"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ninchat_icon_video_toggle_full" />
+
+            <ImageView
+                android:id="@+id/audio_on_off"
+                android:layout_width="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_height="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_marginEnd="@dimen/ninchat_chat_activity_video_control_icon_margin"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ninchat_icon_video_sound_on" />
+
+            <ImageView
+                android:id="@+id/microphone_on_off"
+                android:layout_width="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_height="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_marginEnd="@dimen/ninchat_chat_activity_video_control_icon_margin"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ninchat_icon_video_microphone_on" />
+
+            <ImageView
+                android:id="@+id/video_on_off"
+                android:layout_width="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_height="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_marginEnd="@dimen/ninchat_chat_activity_video_control_icon_margin"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ninchat_icon_video_camera_on" />
+
+            <ImageView
+                android:id="@+id/hangup_video"
+                android:layout_width="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:layout_height="@dimen/ninchat_chat_activity_video_control_icon_size"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ninchat_icon_video_hangup" />
+
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -11,7 +11,10 @@ data class LayoutModel(
     val showRatingView: Boolean = false,
     val chatCloseText: String = "",
     val chatCloseConfirmationText: String = "",
-    val chatCloseDeclineText: String = ""
-
+    val chatCloseDeclineText: String = "",
+    val videoCallTitleText: String = "",
+    val videoCallDescriptionText: String = "",
+    val videoCallAcceptText: String = "",
+    val videoCallDeclineText: String = ""
 ) {
 }

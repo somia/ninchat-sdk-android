@@ -7,11 +7,11 @@ import android.content.Context
 import android.content.Intent
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
+import com.ninchat.sdk.models.NinchatUser
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
 import com.ninchat.sdk.networkdispatchers.NinchatPartChannel
 import com.ninchat.sdk.networkdispatchers.NinchatSendFile
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage
-import com.ninchat.sdk.networkdispatchers.NinchatSendMessage.Companion.executeAsync
 import com.ninchat.sdk.ninchatchatactivity.model.LayoutModel
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel
@@ -22,12 +22,9 @@ import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
-import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler.getIOScope
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
-import org.json.JSONException
 import org.json.JSONObject
-import timber.log.Timber
 
 
 class NinchatChatPresenter() {
@@ -51,8 +48,15 @@ class NinchatChatPresenter() {
         chatCloseConfirmationText = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getChatCloseConfirmationText()
             ?: "",
         chatCloseDeclineText = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getContinueChatText()
-            ?: ""
-
+            ?: "",
+        videoCallTitleText = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getVideoChatTitleText()
+            ?: "",
+        videoCallDescriptionText = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getVideoChatDescriptionText()
+            ?: "",
+        videoCallAcceptText = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getVideoCallAcceptText()
+            ?: "",
+        videoCallDeclineText = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getVideoCallDeclineText()
+            ?: "",
     )
 
     private fun shouldPartChannel(ninchatState: NinchatState?): Boolean {
@@ -113,7 +117,9 @@ class NinchatChatPresenter() {
         onChatClosed: () -> Unit,
         onHideKeyboard: () -> Unit,
         onCloseActivity: (intent: Intent?) -> Unit,
-        onP2PCall: () -> Unit, onGroupCall: () -> Unit
+        onP2PCall: () -> Unit,
+        onGroupCall: () -> Unit,
+        onWebRTCEvents: (messageType: String, payload: String?) -> Unit,
     ): BroadcastReceiver {
         return object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
@@ -142,13 +148,18 @@ class NinchatChatPresenter() {
                         onCloseActivity(intent)
                     }
                     Broadcast.WEBRTC_MESSAGE -> {
-                        val messageType = intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_TYPE)
-                        when {
-                            NinchatMessageTypes.CALL == messageType -> {
+                        when (val messageType = intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_TYPE)) {
+                            NinchatMessageTypes.CALL -> {
                                 onP2PCall()
                             }
-                            NinchatMessageTypes.WEBRTC_JITSI_SERVER_CONFIG == messageType -> {
+                            NinchatMessageTypes.WEBRTC_JITSI_SERVER_CONFIG -> {
                                 onGroupCall()
+                            }
+                            else -> {
+                                onWebRTCEvents(
+                                    messageType,
+                                    intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_CONTENT),
+                                )
                             }
                         }
                     }
@@ -188,11 +199,43 @@ class NinchatChatPresenter() {
     }
 
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
-        Timber.d(exception)
+        NinchatSessionManager.getInstance()?.sessionError(Exception(exception))
+    }
+
+    fun getUser(userId: String): NinchatUser? =
+        NinchatSessionManager.getInstance()?.getMember(userId)
+
+    fun getUserAvatar(user: NinchatUser?): String? {
+        if (user?.avatar?.isEmpty() == true) return NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getAgentAvatar()
+        return user?.avatar
+    }
+
+    fun sendPickUpAnswer(answer: Boolean) {
+        NinchatSessionManager.getInstance()?.let { currentSessionManager ->
+            val data = JSONObject().apply {
+                put("answer", answer)
+            }
+            NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
+                NinchatSendMessage.execute(
+                    currentSession = currentSessionManager.session,
+                    channelId = currentSessionManager.ninchatState?.channelId,
+                    messageType = NinchatMessageTypes.PICK_UP,
+                    message = data.toString()
+                )
+                val metaMessage =
+                    if (answer) currentSessionManager.ninchatState?.siteConfig?.getVideoCallAcceptedText() else currentSessionManager.ninchatState?.siteConfig?.getVideoCallRejectedText()
+                currentSessionManager.messageAdapter?.addMetaMessage(
+                    currentSessionManager.messageAdapter?.getLastMessageId(true)
+                        .toString() + "answer", Misc.center(metaMessage)
+                )
+            }
+        }
+
     }
 
     companion object {
         val REQUEST_CODE = NinchatChatActivity::class.java.hashCode() and 0xffff
         val PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() and 0xffff
+        val CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE = "WebRTCVideoAudio".hashCode() and 0xffff
     }
 }
