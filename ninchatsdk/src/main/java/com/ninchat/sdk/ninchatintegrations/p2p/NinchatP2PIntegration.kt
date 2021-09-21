@@ -27,6 +27,7 @@ class NinchatP2PIntegration(view: View, onToggleFullScreen: () -> Unit) {
         }
     }
 
+    fun call() = webRTCView.call()
     fun hangUp() = webRTCView.hangUp()
     fun onPause() = webRTCView.onPause()
     fun onDestroy() = webRTCView.hangUp()

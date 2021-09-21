@@ -135,7 +135,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     }
 
     private fun updateVisibility() {
-
         ninchat_message_send_button_icon?.apply {
             visibility = if (presenter.layoutModel.showSendButtonIcon) View.VISIBLE else View.GONE
         }
@@ -151,6 +150,9 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         }
         video_call?.apply {
             visibility = if (presenter.layoutModel.showVideoCalls) View.VISIBLE else View.GONE
+            setOnClickListener {
+                p2pView.call()
+            }
         }
         ninchat_titlebar?.apply {
             visibility = if (presenter.layoutModel.showTitlebar) View.VISIBLE else View.GONE
@@ -304,10 +306,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     }
 
     private fun attachJitsiVideoView() {
-
-    }
-
-    private fun detachJitsiVideoView() {
 
     }
 
