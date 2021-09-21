@@ -662,22 +662,6 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         videoImage.setImageResource(R.drawable.ninchat_icon_video_camera_on);
     }
 
-    public void onResume() {
-        try {
-            // TODO: Resume video?
-        } catch (final Exception e) {
-            // Not fully initialized yet, ignore the exception
-        }
-    }
-
-    public void onPause() {
-        try {
-            // TODO: Pause video?
-        } catch (final Exception e) {
-            // Not fully initialized yet, ignore the exception
-        }
-    }
-
     public boolean isInCall() {
         return this.inCall;
     }

@@ -9,7 +9,6 @@ import kotlinx.android.synthetic.main.ninchat_video_view.view.*
 class NinchatP2PIntegration(view: View, onToggleFullScreen: () -> Unit) {
     val webRTCView: NinchatWebRTCView by lazy {
         NinchatWebRTCView(view)
-
     }
 
     init {
@@ -29,7 +28,5 @@ class NinchatP2PIntegration(view: View, onToggleFullScreen: () -> Unit) {
 
     fun call() = webRTCView.call()
     fun hangUp() = webRTCView.hangUp()
-    fun onPause() = webRTCView.onPause()
     fun onDestroy() = webRTCView.hangUp()
-    fun onResume() = webRTCView.onResume()
 }

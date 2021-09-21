@@ -15,6 +15,7 @@ data class LayoutModel(
     val videoCallTitleText: String = "",
     val videoCallDescriptionText: String = "",
     val videoCallAcceptText: String = "",
-    val videoCallDeclineText: String = ""
+    val videoCallDeclineText: String = "",
+    val isGroupCall: Boolean = false
 ) {
 }

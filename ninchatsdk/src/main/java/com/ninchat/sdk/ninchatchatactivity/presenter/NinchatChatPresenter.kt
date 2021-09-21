@@ -40,6 +40,8 @@ class NinchatChatPresenter() {
             ?: false,
         showVideoCalls = NinchatSessionManager.getInstance()?.ninchatSessionHolder?.supportVideos()
             ?: false,
+        isGroupCall = NinchatSessionManager.getInstance()?.ninchatSessionHolder?.isGroupVideo()
+            ?: false,
         showTitlebar = shouldShowTitlebar(),
         showRatingView = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.showRating()
             ?: false,

@@ -29,6 +29,7 @@ import com.ninchat.sdk.utils.misc.Parameter
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.dialog_close_chat.*
 import kotlinx.android.synthetic.main.dialog_video_call_consent.*
+import kotlinx.android.synthetic.main.ninchat_video_view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -134,6 +135,11 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         }
     }
 
+    override fun onDestroy() {
+        p2pView.onDestroy()
+        super.onDestroy()
+    }
+
     private fun updateVisibility() {
         ninchat_message_send_button_icon?.apply {
             visibility = if (presenter.layoutModel.showSendButtonIcon) View.VISIBLE else View.GONE
@@ -170,6 +176,13 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 showChatCloseDialog()
             }
         }
+        videoContainer?.apply {
+            ninchat_video_layout.visibility =
+                if (presenter.layoutModel.isGroupCall) View.GONE else View.VISIBLE
+            ninchat_jitsi_layout.visibility =
+                if (presenter.layoutModel.isGroupCall) View.VISIBLE else View.GONE
+        }
+
     }
 
     override fun requestPermissions(p0: Array<out String>?, p1: Int, p2: PermissionListener?) {
@@ -313,6 +326,8 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         return checkCallingOrSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
                 checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
     }
+
+
 }
 
 fun Activity.quit(intent: Intent?) {
