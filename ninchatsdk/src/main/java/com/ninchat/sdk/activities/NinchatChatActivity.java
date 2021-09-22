@@ -233,13 +233,13 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         title.setText(closeText);
         final TextView description = dialog.findViewById(R.id.ninchat_close_chat_dialog_description);
         description.setText(sessionManager.ninchatState.getSiteConfig().getChatCloseConfirmationText());
-        final Button confirm = dialog.findViewById(R.id.ninchat_close_chat_dialog_confirm);
+        final TextView confirm = dialog.findViewById(R.id.ninchat_close_chat_dialog_confirm);
         confirm.setText(closeText);
         confirm.setOnClickListener(v -> {
             chatClosed();
             dialog.dismiss();
         });
-        final Button decline = dialog.findViewById(R.id.ninchat_close_chat_dialog_decline);
+        final TextView decline = dialog.findViewById(R.id.ninchat_close_chat_dialog_decline);
         final String continueChatText = sessionManager.ninchatState.getSiteConfig().getContinueChatText();
         decline.setText(continueChatText);
         decline.setOnClickListener(v -> dialog.dismiss());
