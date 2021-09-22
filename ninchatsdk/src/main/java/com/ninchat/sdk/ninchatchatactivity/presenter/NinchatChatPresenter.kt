@@ -8,10 +8,7 @@ import android.content.Intent
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.models.NinchatUser
-import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
-import com.ninchat.sdk.networkdispatchers.NinchatPartChannel
-import com.ninchat.sdk.networkdispatchers.NinchatSendFile
-import com.ninchat.sdk.networkdispatchers.NinchatSendMessage
+import com.ninchat.sdk.networkdispatchers.*
 import com.ninchat.sdk.ninchatchatactivity.model.LayoutModel
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel
@@ -120,7 +117,7 @@ class NinchatChatPresenter() {
         onHideKeyboard: () -> Unit,
         onCloseActivity: (intent: Intent?) -> Unit,
         onP2PCall: () -> Unit,
-        onGroupCall: () -> Unit,
+        onGroupCall: (jitsiRoom: String?, jitsiToken: String?, jitsiServerPrefix: String?) -> Unit,
         onWebRTCEvents: (messageType: String, payload: String?) -> Unit,
     ): BroadcastReceiver {
         return object : BroadcastReceiver() {
@@ -150,12 +147,17 @@ class NinchatChatPresenter() {
                         onCloseActivity(intent)
                     }
                     Broadcast.WEBRTC_MESSAGE -> {
-                        when (val messageType = intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_TYPE)) {
+                        when (val messageType =
+                            intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_TYPE)) {
                             NinchatMessageTypes.CALL -> {
                                 onP2PCall()
                             }
                             NinchatMessageTypes.WEBRTC_JITSI_SERVER_CONFIG -> {
-                                onGroupCall()
+                                onGroupCall(
+                                    intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_JITSI_ROOM),
+                                    intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_JITSI_TOKEN),
+                                    intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER_PREFIX)
+                                )
                             }
                             else -> {
                                 onWebRTCEvents(
@@ -230,6 +232,17 @@ class NinchatChatPresenter() {
                     currentSessionManager.messageAdapter?.getLastMessageId(true)
                         .toString() + "answer", Misc.center(metaMessage)
                 )
+            }
+        }
+    }
+
+    fun loadJitsi() {
+        NinchatSessionManager.getInstance()?.let{ currentSessionManager ->
+            NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
+                NinchatDiscoverJitsi.execute(
+                    currentSession = currentSessionManager.session,
+                    channelId = currentSessionManager.ninchatState?.channelId,
+                );
             }
         }
 

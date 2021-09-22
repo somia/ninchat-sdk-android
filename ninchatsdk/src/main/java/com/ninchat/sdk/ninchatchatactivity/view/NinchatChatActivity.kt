@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.content.pm.PackageManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.facebook.react.modules.core.PermissionListener
+import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
 import com.ninchat.sdk.events.OnCloseChat
@@ -18,6 +19,7 @@ import com.ninchat.sdk.managers.IOrientationManager
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter.Companion.CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter.Companion.PICK_PHOTO_VIDEO_REQUEST_CODE
+import com.ninchat.sdk.ninchatintegrations.jitsi.NinchatJitsiIntegration
 import com.ninchat.sdk.ninchatintegrations.p2p.NinchatP2PIntegration
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel
 import com.ninchat.sdk.ninchatreview.presenter.NinchatReviewPresenter
@@ -34,6 +36,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface
+import org.jitsi.meet.sdk.JitsiMeetView
 
 class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMeetActivityInterface {
     private val presenter by lazy {
@@ -44,6 +47,10 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
         })
     }
+    private val groupView by lazy {
+        NinchatJitsiIntegration(JitsiMeetView(this))
+    }
+
     private val broadcastReceiver = presenter.activityBroadcastReceiver(
         onChatClosed = {
             presenter.layoutModel.chatClosed = true
@@ -58,8 +65,8 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         onP2PCall = {
             attachP2pVideoView()
         },
-        onGroupCall = {
-            attachJitsiVideoView()
+        onGroupCall = { jitsiRoom, jitsiToken, jitsiServerPrefix ->
+            attachJitsiVideoView(jitsiRoom, jitsiToken, jitsiServerPrefix)
         },
         onWebRTCEvents = { mediaType, payload ->
             p2pView.handleRTCMessage(
@@ -109,6 +116,9 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         }
         ninchat_message_send_button.setOnClickListener { onSendButtonClicked() }
         ninchat_message_send_button_icon.setOnClickListener { onSendButtonClicked() }
+        if(presenter.layoutModel.isGroupCall) {
+            presenter.loadJitsi()
+        }
     }
 
     override fun onStart() {
@@ -137,6 +147,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     override fun onDestroy() {
         p2pView.onDestroy()
+        groupView.onDestroy()
         super.onDestroy()
     }
 
@@ -177,10 +188,12 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             }
         }
         videoContainer?.apply {
-            ninchat_video_layout.visibility =
-                if (presenter.layoutModel.isGroupCall) View.GONE else View.VISIBLE
-            ninchat_jitsi_layout.visibility =
-                if (presenter.layoutModel.isGroupCall) View.VISIBLE else View.GONE
+            if(presenter.layoutModel.isGroupCall) {
+                visibility = View.VISIBLE
+                ninchat_jitsi_layout.visibility = View.VISIBLE
+            } else {
+                ninchat_video_layout.visibility = View.VISIBLE
+            }
         }
 
     }
@@ -318,8 +331,18 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         }
     }
 
-    private fun attachJitsiVideoView() {
-
+    private fun attachJitsiVideoView(
+        jitsiRoom: String?,
+        jitsiToken: String?,
+        jitsiServerPrefix: String?
+    ) {
+        groupView.handleWebRTCMessage(jitsiRoom = jitsiRoom,
+            jitsiToken = jitsiToken,
+            jitsiVideoView = ninchat_jitsi_layout,
+            serverAddress = NinchatSessionManager.getInstance()?.ninchatState?.serverAddress ?: "api.ninchat.com",
+            width = ninchat_jitsi_layout.measuredWidth,
+            height = ninchat_jitsi_layout.measuredHeight,
+        )
     }
 
     private fun hasVideoCallPermissions(): Boolean {

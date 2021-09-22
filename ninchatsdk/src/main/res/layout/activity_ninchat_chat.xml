@@ -117,7 +117,7 @@
         android:id="@+id/videoContainer"
         layout="@layout/ninchat_video_view"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/ninchat_chat_activity_video_view_height"
+        android:layout_height="wrap_content"
         android:layout_alignWithParentIfMissing="true"
         android:layout_below="@+id/ninchat_titlebar"
         android:visibility="gone"

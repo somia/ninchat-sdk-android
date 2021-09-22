@@ -1,12 +1,11 @@
 package com.ninchat.sdk.ninchatintegrations.jitsi
 
-import android.util.Log
 import android.widget.FrameLayout
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
 import org.jitsi.meet.sdk.JitsiMeetView
 import java.net.URL
 
-class NinchatJitsiIntegration(var view: JitsiMeetView? = null) {
+class NinchatJitsiIntegration(val view: JitsiMeetView? = null) {
     var options: JitsiMeetConferenceOptions? = null
 
     fun dispose() {
@@ -17,9 +16,10 @@ class NinchatJitsiIntegration(var view: JitsiMeetView? = null) {
     fun handleWebRTCMessage(
         jitsiVideoView: FrameLayout,
         serverAddress: String,
-        serverAddressPrefix: String?,
         jitsiRoom: String?,
-        jitsiToken: String?
+        jitsiToken: String?,
+        width: Int,
+        height: Int
     ) {
         val jitsiServerAddress = "https://${"jitsi-www"}.${serverAddress.removePrefix("api.")}"
         this.options = JitsiMeetConferenceOptions.Builder()
@@ -48,9 +48,9 @@ class NinchatJitsiIntegration(var view: JitsiMeetView? = null) {
             .setFeatureFlag("reactions.enabled", false)
             .build()
 
-        val height = jitsiVideoView.measuredHeight
-        val width = jitsiVideoView.measuredWidth
         view!!.join(options)
         jitsiVideoView.addView(view, height, width)
     }
+
+    fun onDestroy() = view?.leave()
 }

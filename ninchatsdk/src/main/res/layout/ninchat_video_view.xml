@@ -2,15 +2,15 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/ninchat_colorPrimaryDark">
 
     <FrameLayout
         android:id="@+id/ninchat_jitsi_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/ninchat_chat_activity_video_view_height"
         android:layout_alignParentTop="true"
-        android:background="@android:color/black"
+        android:background="@android:color/white"
         android:visibility="gone"
         tools:visibility="visible">
         <!-- Note: A org.jitsi.meet.sdk.JitsiMeetView will be added here and so add tools:ignore="UselessParent" -->
@@ -19,9 +19,9 @@
     <RelativeLayout
         android:id="@+id/ninchat_video_layout"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/ninchat_chat_activity_video_view_height"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="gone">
 
         <org.webrtc.SurfaceViewRenderer
             android:id="@+id/video"
