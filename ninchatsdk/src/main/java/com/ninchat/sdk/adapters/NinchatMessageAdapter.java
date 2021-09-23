@@ -72,7 +72,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             }
             String userAvatar = null;
             final NinchatUser user = sessionManager.getMember(ninchatMessage.getSenderId());
-            if (user != null && sessionManager.ninchatState.getSiteConfig().isTrue("agentAvatar")) {
+            if (user != null) {
                 boolean showUserAvatar = ninchatMessage.isRemoteMessage() ?
                         sessionManager.ninchatState.getSiteConfig().isTrue("agentAvatar") :
                         sessionManager.ninchatState.getSiteConfig().isTrue("userAvatar");
