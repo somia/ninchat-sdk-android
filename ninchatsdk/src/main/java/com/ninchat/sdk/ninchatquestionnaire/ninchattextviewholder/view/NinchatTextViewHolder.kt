@@ -1,8 +1,8 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchattextviewholder.view
 
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchattextviewholder.presenter.INinchatTextViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchattextviewholder.presenter.NinchatTextViewPresenter
@@ -36,7 +36,7 @@ class NinchatTextViewHolder(
 
     override fun onUpdateConversationView(label: String?, enabled: Boolean) {
         itemView.isEnabled = enabled
-        itemView.text_view_content.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_TextView else R.style.NinchatTheme_Questionnaire_TextView_Disabled)
+        itemView.text_view_content.style(if (enabled) R.style.NinchatTheme_Questionnaire_TextView else R.style.NinchatTheme_Questionnaire_TextView_Disabled)
     }
 
     override fun onRenderConversationVIew(label: String?, enabled: Boolean) {
@@ -44,12 +44,13 @@ class NinchatTextViewHolder(
         if (text.isNotBlank()) {
             itemView.text_view_content.text = text
         }
-        itemView.text_view_content.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_TextView else R.style.NinchatTheme_Questionnaire_TextView_Disabled)
+        itemView.text_view_content.style(if (enabled) R.style.NinchatTheme_Questionnaire_TextView else R.style.NinchatTheme_Questionnaire_TextView_Disabled)
         itemView.isEnabled = enabled
     }
 
     override fun onUpdateFormView(label: String?, enabled: Boolean) {
         itemView.isEnabled = enabled
+        itemView.text_view_content.style(if (enabled) R.style.NinchatTheme_Questionnaire_TextView_Form else R.style.NinchatTheme_Questionnaire_TextView_Form_Disabled)
     }
 
     override fun onRenderFormView(label: String?, enabled: Boolean) {
@@ -57,7 +58,7 @@ class NinchatTextViewHolder(
         if (text.isNotBlank()) {
             itemView.text_view_content.text = text
         }
-        itemView.text_view_content.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_TextView else R.style.NinchatTheme_Questionnaire_TextView_Disabled)
+        itemView.text_view_content.style(if (enabled) R.style.NinchatTheme_Questionnaire_TextView_Form else R.style.NinchatTheme_Questionnaire_TextView_Form_Disabled)
         itemView.isEnabled = enabled
     }
 }

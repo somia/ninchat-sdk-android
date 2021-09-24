@@ -4,9 +4,12 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.View.OnFocusChangeListener
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.R
+import com.ninchat.sdk.events.OnItemFocus
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.INinchatInputFieldViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.InputFieldUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.NinchatInputFieldViewPresenter
@@ -14,6 +17,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presente
 import com.ninchat.sdk.utils.misc.Misc
 import kotlinx.android.synthetic.main.text_area_with_label.view.*
 import kotlinx.android.synthetic.main.text_field_with_label.view.*
+import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
 class NinchatInputFieldViewHolder(
@@ -62,52 +66,58 @@ class NinchatInputFieldViewHolder(
                     onChangeListener.onChange { presenter.onTextChange(text?.toString()) }
                 }
             })
-            it.onFocusChangeListener = OnFocusChangeListener { v: View?, hasFocus: Boolean ->
+            it.onFocusChangeListener = OnFocusChangeListener { _, hasFocus: Boolean ->
                 presenter.onFocusChange(hasFocus = hasFocus)
             }
+            it.setOnEditorActionListener(TextView.OnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    EventBus.getDefault().post(OnItemFocus(presenter.position(), true))
+                    it.clearFocus()
+                    return@OnEditorActionListener true
+                }
+                false
+            })
         }
 
     }
 
-    override fun onRenderFromView(label: String, enabled: Boolean) {
-        renderCommonView(isMultiline = presenter.isMultiline(), label = label, enabled = enabled)
-    }
-
-    override fun onRenderConversationView(label: String, enabled: Boolean) {
-        renderCommonView(isMultiline = presenter.isMultiline(), label = label, enabled = enabled)
-    }
-
-    override fun onUpdateFromView(label: String, enabled: Boolean) {
-        updateCommonView(isMultiline = presenter.isMultiline(), label = label, enabled = enabled)
-    }
-
-    override fun onUpdateConversationView(label: String, enabled: Boolean) {
-        updateCommonView(isMultiline = presenter.isMultiline(), label = label, enabled = enabled)
-    }
 
     override fun onUpdateText(value: String, hasError: Boolean) {
-        val view = if (presenter.isMultiline()) itemView.multiline_text_field_container else itemView.simple_text_field_container
+        val view =
+            if (presenter.isMultiline()) itemView.multiline_text_field_container else itemView.simple_text_field_container
         view.style(
             if (hasError) R.style.NinchatTheme_Questionnaire_InputText_Error else R.style.NinchatTheme_Questionnaire_InputText_Focus
         )
     }
 
     override fun onUpdateFocus(hasFocus: Boolean) {
-        val view = if (presenter.isMultiline()) itemView.multiline_text_field_container else itemView.simple_text_field_container
+        val view =
+            if (presenter.isMultiline()) itemView.multiline_text_field_container else itemView.simple_text_field_container
         view.style(
             if (hasFocus) R.style.NinchatTheme_Questionnaire_InputText_Focus else R.style.NinchatTheme_Questionnaire_InputText
         )
+        if (hasFocus)
+            EventBus.getDefault().post(OnItemFocus(presenter.position(), false))
     }
 
-    private fun renderCommonView(isMultiline: Boolean, label: String, enabled: Boolean) {
+    override fun renderCommonView(
+        isMultiline: Boolean,
+        label: String,
+        enabled: Boolean,
+        isFormLike: Boolean
+    ) {
         itemView.isEnabled = enabled
         // set label
         val mLabel = if (isMultiline) itemView.multiline_text_label else itemView.simple_text_label
         mLabel?.let {
+            if (label.isNullOrEmpty()) mLabel.visibility = View.GONE
             if (label.isNotBlank()) {
                 mLabel.text = Misc.toRichText(label, mLabel)
             }
-            mLabel.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
+            mLabel.style(
+                if (enabled) if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form else R.style.NinchatTheme_Questionnaire_Label
+                else if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form_Disabled else R.style.NinchatTheme_Questionnaire_Label_Disabled
+            )
         }
         // set input type if it is a simple view
         if (!isMultiline) {
@@ -122,24 +132,33 @@ class NinchatInputFieldViewHolder(
             }
             it.isEnabled = enabled
             // it.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_InputText_Focus else R.style.NinchatTheme_Questionnaire_InputText)
-            val view = if (presenter.isMultiline()) itemView.multiline_text_field_container else itemView.simple_text_field_container
+            val view =
+                if (presenter.isMultiline()) itemView.multiline_text_field_container else itemView.simple_text_field_container
             view.style(
                 if (enabled) R.style.NinchatTheme_Questionnaire_InputText_Focus else R.style.NinchatTheme_Questionnaire_InputText
             )
         }
     }
 
-    private fun updateCommonView(isMultiline: Boolean, label: String, enabled: Boolean) {
+    override fun updateCommonView(
+        isMultiline: Boolean,
+        label: String,
+        enabled: Boolean,
+        isFormLike: Boolean
+    ) {
         itemView.isEnabled = enabled
         // set label
         val mLabel = if (isMultiline) itemView.multiline_text_label else itemView.simple_text_label
         mLabel?.let {
+            if (label.isNullOrEmpty()) mLabel.visibility = View.GONE
             if (label.isNotBlank()) {
                 mLabel.text = Misc.toRichText(label, mLabel)
             }
-            mLabel.setTextAppearance(if (enabled) R.style.NinchatTheme_Questionnaire_Label else R.style.NinchatTheme_Questionnaire_Label_Disabled)
+            mLabel.style(
+                if (enabled) if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form else R.style.NinchatTheme_Questionnaire_Label
+                else if (isFormLike) R.style.NinchatTheme_Questionnaire_Label_Form_Disabled else R.style.NinchatTheme_Questionnaire_Label_Disabled
+            )
         }
-
         val mEditText =
             if (presenter.isMultiline()) itemView.multiline_text_area else itemView.simple_text_field
         mEditText?.let {
@@ -149,7 +168,8 @@ class NinchatInputFieldViewHolder(
                 it.setSelection(presenter.getInputValue()?.length ?: 0)
             }
             it.isEnabled = enabled
-            val view = if (presenter.isMultiline()) itemView.multiline_text_field_container else itemView.simple_text_field_container
+            val view =
+                if (presenter.isMultiline()) itemView.multiline_text_field_container else itemView.simple_text_field_container
             view.style(
                 if (enabled) R.style.NinchatTheme_Questionnaire_InputText_Focus else R.style.NinchatTheme_Questionnaire_InputText
             )

@@ -196,7 +196,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
             final String action = intent.getAction();
             if (Broadcast.CHANNEL_CLOSED.equals(action)) {
                 NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
-                if (sessionManager != null)
+                if (!chatClosed && sessionManager != null)
                     sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.close(NinchatChatActivity.this));
                 chatClosed = true;
                 hideKeyboard();
@@ -261,6 +261,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
             quit(null);
         }
     }
+
 
     private boolean hasVideoCallPermissions() {
         return checkCallingOrSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
@@ -547,6 +548,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
 
         if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Parameter.CHAT_IS_CLOSED)) {
             initializeClosedChat(messages);
+        } else {
+            initializeChat(messages);
         }
         NinchatTitlebarView.Companion.showTitlebarForBacklog(
                 findViewById(R.id.ninchat_chat_root).findViewById(R.id.ninchat_titlebar),
@@ -575,6 +578,17 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
             if (!historyLoaded) {
                 sessionManager.loadChannelHistory(null);
                 historyLoaded = true;
+            }
+        });
+    }
+
+    private void initializeChat(RecyclerView messages) {
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
+
+        // Wait for RecyclerView to be initialized
+        messages.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            if (!chatClosed) {
+                sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.removeChatCloseMessage());
             }
         });
     }

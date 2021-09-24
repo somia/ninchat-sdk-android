@@ -3,6 +3,7 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presen
 import android.content.Context
 import android.content.Intent
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.client.Props
@@ -20,8 +21,10 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.Nincha
 import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.lang.Exception
 
 class NinchatQuestionnairePresenter(
     val viewCallback: INinchatQuestionnairePresenter,
@@ -150,18 +153,17 @@ class NinchatQuestionnairePresenter(
                         currentSession = it,
                         channelId = NinchatSessionManager.getInstance().ninchatState?.channelId
                     )
-
                     NinchatDeleteUser.execute(currentSession = it)
-                    Handler().postDelayed({
+                    Handler(Looper.getMainLooper()).postDelayed({
                         it.close()
                         callback()
-                    }, 500)
+                    }, 400)
                 }
         }
     }
 
     fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
-        if(isPostAudienceQuestionnaire()) {
+        if (isPostAudienceQuestionnaire()) {
             NinchatTitlebarView.showTitlebarForPostAudienceQuestionnaire(view, callback = {
                 viewCallback.onCompletePostAudienceQuestionnaire()
             })

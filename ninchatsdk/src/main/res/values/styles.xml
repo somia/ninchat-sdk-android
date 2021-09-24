@@ -28,19 +28,34 @@
         <item name="android:elevation">0dp</item>
     </style>
 
+    <style name="NinchatTheme.Button.Queue.Item" parent="NinchatTheme.Button">
+        <item name="android:height">@null</item>
+        <item name="android:lines">@null</item>
+        <item name="android:layout_marginTop">@null</item>
+        <item name="android:layout_marginBottom">@null</item>
+    </style>
+
     <style name="NinchatTheme.Button.Dialog" parent="NinchatTheme.Button">
-        <item name="android:height">@dimen/ninchat_dialog_button_height</item>
-        <item name="android:layout_height">@dimen/ninchat_dialog_button_height</item>
+        <item name="android:layout_marginStart">40dp</item>
+        <item name="android:layout_marginEnd">40dp</item>
+        <item name="android:height">@null</item>
+        <item name="android:minHeight">@dimen/ninchat_dialog_button_height</item>
+        <item name="android:lines">@null</item>
     </style>
 
     <style name="NinchatTheme.Button.Close" parent="NinchatTheme.Button">
+        <item name="android:height">@null</item>
         <item name="android:background">@drawable/ninchat_chat_secondary_button</item>
         <item name="android:textColor">@color/ninchat_color_button_secondary_text</item>
+        <item name="android:lines">@null</item>
     </style>
 
     <style name="NinchatTheme.Button.Dialog.Close" parent="NinchatTheme.Button.Close">
-        <item name="android:height">@dimen/ninchat_dialog_button_height</item>
-        <item name="android:layout_height">@dimen/ninchat_dialog_button_height</item>
+        <item name="android:layout_marginStart">40dp</item>
+        <item name="android:layout_marginEnd">40dp</item>
+        <item name="android:height">@null</item>
+        <item name="android:minHeight">@dimen/ninchat_dialog_button_height</item>
+        <item name="android:lines">@null</item>
     </style>
 
     <style name="NinchatTheme.Button.Close.Chat" parent="NinchatTheme.Button.Close">
@@ -106,7 +121,7 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsFloating">false</item>
-        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:backgroundDimEnabled">true</item>
         <item name="android:background">@android:color/transparent</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowMinWidthMajor">100%</item>
@@ -117,10 +132,14 @@
     </style>
 
     <style name="NinchatTheme.Questionnaire.Radio" parent="NinchatTheme.MultiChoice">
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:paddingTop">0dp</item>
         <item name="android:minHeight">50dp</item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.Radio.Selected" parent="NinchatTheme.MultiChoice.Selected">
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:paddingTop">0dp</item>
         <item name="android:minHeight">50dp</item>
     </style>
 

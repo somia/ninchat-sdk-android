@@ -72,7 +72,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             }
             String userAvatar = null;
             final NinchatUser user = sessionManager.getMember(ninchatMessage.getSenderId());
-            if (user != null && sessionManager.ninchatState.getSiteConfig().isTrue("agentAvatar")) {
+            if (user != null) {
                 boolean showUserAvatar = ninchatMessage.isRemoteMessage() ?
                         sessionManager.ninchatState.getSiteConfig().isTrue("agentAvatar") :
                         sessionManager.ninchatState.getSiteConfig().isTrue("userAvatar");
@@ -134,12 +134,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             } else {
                 final int width = file.getWidth();
                 final int height = file.getHeight();
-                final float density = itemView.getResources().getDisplayMetrics().density;
-                image.getLayoutParams().width = (int) (width * density);
-                image.getLayoutParams().height = (int) (height * density);
-                image.setBackgroundResource(isContinuedMessage ? repeatedMessageBackground : firstMessageBackground);
+                final int density = (int)itemView.getResources().getDisplayMetrics().density;
                 image.setVisibility(View.VISIBLE);
-                GlideWrapper.loadImage(image.getContext(), file.getThumbnailUrl(), image, R.color.ninchat_colorPrimaryDark, width, height);
+                image.setBackgroundResource(isContinuedMessage ? repeatedMessageBackground : firstMessageBackground);
+                GlideWrapper.loadImage(image.getContext(), file.getThumbnailUrl(), image, R.color.ninchat_colorPrimaryDark, width * density, height * density);
                 if (file.isVideo()) {
                     playIcon.setVisibility(View.VISIBLE);
                 }
@@ -379,6 +377,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     public String getLastMessageId(final boolean allowMeta) {
         return ninchatMessageList.getLastMessageId(allowMeta);
+    }
+
+    public void removeChatCloseMessage() {
+        ninchatMessageList.removeChatCloseMessage();
     }
 
     public void addMetaMessage(final String messageId, final String message) {

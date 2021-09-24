@@ -14,10 +14,10 @@
         </shape>
     </item>
     <item>
-        <shape android:shape="rectangle" >
+        <shape android:shape="rectangle">
             <padding android:left="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal"
-                android:top="@dimen/ninchat_chat_activity_message_bubble_continued_padding_top"
-                android:bottom="@dimen/ninchat_chat_activity_message_bubble_padding_vertical"
+                android:top="20dp"
+                android:bottom="14dp"
                 android:right="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal" />
         </shape>
     </item>

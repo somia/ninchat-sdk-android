@@ -102,6 +102,7 @@
                     android:autoLink="none"
                     android:textColor="@color/ninchat_color_chat_bubble_left_text"
                     android:textColorLink="@color/ninchat_color_chat_bubble_left_link"
+                    android:textIsSelectable="true"
                     android:visibility="gone"
                     tools:text="Message from agent"
                     tools:visibility="visible" />
@@ -251,6 +252,7 @@
                     android:id="@+id/ninchat_chat_message_user_message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textIsSelectable="true"
                     android:textColor="@color/ninchat_color_chat_bubble_right_text"
                     tools:text="Message from user" />
 

@@ -17,7 +17,7 @@
     <dimen name="ninchat_activity_top_matter_bottom_margin">45dp</dimen>
     <dimen name="ninchat_activity_top_matter_buttons_top_margin">48dp</dimen>
     <dimen name="ninchat_activity_bottom_matter_padding">20dp</dimen>
-    <dimen name="ninchat_button_queue_horizontal_margin">78dp</dimen>
+    <dimen name="ninchat_button_queue_horizontal_margin">40dp</dimen>
 
     <dimen name="ninchat_queue_activity_top_matter_top_margin">86dp</dimen>
     <dimen name="ninchat_queue_activity_progress_size">50dp</dimen>
@@ -35,8 +35,8 @@
     <dimen name="ninchat_chat_activity_message_title_top_margin">20dp</dimen>
     <dimen name="ninchat_chat_activity_message_bubble_corner_radius">15dp</dimen>
     <dimen name="ninchat_chat_activity_message_bubble_padding_vertical">12dp</dimen>
-    <dimen name="ninchat_chat_activity_message_bubble_continued_padding_top">16dp</dimen>
-    <dimen name="ninchat_chat_activity_message_bubble_padding_horizontal">16dp</dimen>
+    <dimen name="ninchat_chat_activity_message_bubble_continued_padding_top">19dp</dimen>
+    <dimen name="ninchat_chat_activity_message_bubble_padding_horizontal">10dp</dimen>
     <dimen name="ninchat_chat_activity_message_video_play_icon_background_size">35dp</dimen>
     <dimen name="ninchat_chat_activity_message_video_play_icon_size">17dp</dimen>
     <dimen name="ninchat_chat_activity_message_writing_indicator_height">20dp</dimen>
@@ -49,7 +49,7 @@
     <dimen name="ninchat_chat_activity_action_icon_size">35dp</dimen>
     <dimen name="ninchat_chat_activity_send_text_padding">10dp</dimen>
     <dimen name="ninchat_chat_activity_video_view_height">256dp</dimen>
-    <dimen name="ninchat_chat_activity_video_view_height_small">166dp</dimen>
+    <dimen name="ninchat_chat_activity_video_view_height_small">188dp</dimen>
     <dimen name="ninchat_chat_activity_video_call_spinner_size">100dp</dimen>
     <dimen name="ninchat_chat_activity_video_control_padding">15dp</dimen>
     <dimen name="ninchat_chat_activity_video_control_icon_size">35dp</dimen>
@@ -64,14 +64,14 @@
     <dimen name="ninchat_chat_activity_video_call_consent_image_margin">10dp</dimen>
     <dimen name="ninchat_chat_activity_video_call_consent_description_margin_top">20dp</dimen>
     <dimen name="ninchat_chat_activity_video_call_consent_button_width">180dp</dimen>
-    <dimen name="ninchat_chat_activity_video_call_consent_button_outer_margin">23dp</dimen>
-    <dimen name="ninchat_chat_activity_video_call_consent_button_inner_margin">20dp</dimen>
+    <dimen name="ninchat_chat_activity_video_call_consent_button_outer_margin">40dp</dimen>
+    <dimen name="ninchat_chat_activity_video_call_consent_button_inner_margin">10dp</dimen>
 
     <dimen name="ninchat_chat_activity_close_chat_dialog_title_height">70dp</dimen>
     <dimen name="ninchat_chat_activity_close_chat_dialog_button_width">180dp</dimen>
     <dimen name="ninchat_chat_activity_close_chat_dialog_description_margin_top">20dp</dimen>
-    <dimen name="ninchat_chat_activity_close_chat_dialog_button_outer_margin">21dp</dimen>
-    <dimen name="ninchat_chat_activity_close_chat_dialog_button_inner_margin">8dp</dimen>
+    <dimen name="ninchat_chat_activity_close_chat_dialog_button_outer_margin">45dp</dimen>
+    <dimen name="ninchat_chat_activity_close_chat_dialog_button_inner_margin">10dp</dimen>
 
     <dimen name="ninchat_media_activity_top_bar_height">70dp</dimen>
     <dimen name="ninchat_media_activity_top_bar_file_name_margin">15dp</dimen>
@@ -81,7 +81,7 @@
     <dimen name="ninchat_media_activity_top_bar_button_end_margin">11dp</dimen>
 
     <dimen name="ninchat_review_activity_top_padding">38dp</dimen>
-    <dimen name="ninchat_review_activity_title_top_margin">9dp</dimen>
+    <dimen name="ninchat_review_activity_title_top_margin">5dp</dimen>
     <dimen name="ninchat_review_activity_description_top_margin">15dp</dimen>
     <dimen name="ninchat_review_activity_icons_top_margin">33dp</dimen>
     <dimen name="ninchat_review_activity_icon_margin">20dp</dimen>

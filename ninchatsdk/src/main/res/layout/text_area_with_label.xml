@@ -29,6 +29,7 @@
             android:maxLines="4"
             android:minHeight="80dp"
             android:paddingTop="9dp"
+            android:imeOptions="actionDone"
             android:theme="@style/NinchatTheme.Questionnaire.InputText.Cursor"
             tools:hint="Enter text" />
     </LinearLayout>
