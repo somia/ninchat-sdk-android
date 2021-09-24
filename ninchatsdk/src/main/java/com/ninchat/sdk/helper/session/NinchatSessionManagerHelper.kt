@@ -1,25 +1,27 @@
 package com.ninchat.sdk.helper.session
 
 import android.content.Intent
-import android.os.Handler
-import android.os.Looper
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.client.Objects
 import com.ninchat.client.Props
+import com.ninchat.client.Strings
 import com.ninchat.sdk.NinchatSession
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getChannelIdFromUserChannel
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser.Companion.getOpenQueueList
+import com.ninchat.sdk.helper.propsparser.getSafe
 import com.ninchat.sdk.models.NinchatMessage
-import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.models.NinchatWebRTCServerInfo
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeChannel
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience
 import com.ninchat.sdk.ninchatactivity.presenter.NinchatActivityPresenter
+import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Broadcast
+import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import com.ninchat.sdk.utils.misc.Parameter
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler.getIOScope
@@ -34,22 +36,25 @@ class NinchatSessionManagerHelper {
                     val retval = arrayListOf<NinchatWebRTCServerInfo>()
                     for (i in 0 until it.length()) {
                         val stunServerProps = it[i]
-                        val urls = stunServerProps.getStringArray("urls")
-                        for (j in 0 until urls.length()) {
-                            if (isTurn) {
-                                val username: String = stunServerProps.getString("username")
-                                val credential: String = stunServerProps.getString("credential")
-                                retval.add(
-                                    NinchatWebRTCServerInfo(
-                                        urls.get(j),
-                                        username,
-                                        credential
-                                    )
-                                );
-                            } else {
-                                retval.add(NinchatWebRTCServerInfo(urls[j]))
-                            }
+                        stunServerProps.getSafe<Strings>("urls")?.let { urls ->
+                            for (j in 0 until urls.length()) {
+                                if (isTurn) {
+                                    val username: String =
+                                        stunServerProps.getSafe<String>("username") ?: ""
+                                    val credential: String =
+                                        stunServerProps.getSafe<String>("credential") ?: ""
+                                    retval.add(
+                                        NinchatWebRTCServerInfo(
+                                            urls.get(j),
+                                            username,
+                                            credential
+                                        )
+                                    );
+                                } else {
+                                    retval.add(NinchatWebRTCServerInfo(urls[j]))
+                                }
 
+                            }
                         }
                     }
                     return retval
@@ -192,9 +197,16 @@ class NinchatSessionManagerHelper {
                 } catch (e: Exception) {
                     false
                 }
+                val supportVideos = queueAttributes?.getSafe<String>("video") == "member"
+                val supportFiles = queueAttributes?.getSafe<String>("upload") == "member"
                 if (currentSession.getQueue(queueId) == null) {
                     val queueName = queueAttributes?.getString("name")
-                    currentSession.ninchatState.addQueue(NinchatQueue(queueId, queueName))
+                    currentSession.ninchatState.addQueue(
+                        NinchatQueue(
+                            queueId, name = queueName,
+                            supportFiles = supportFiles, supportVideos = supportVideos
+                        )
+                    )
                 }
                 val currentQueue = currentSession.getQueue(queueId)
                 currentQueue?.apply {
@@ -204,6 +216,8 @@ class NinchatSessionManagerHelper {
                     if ((position == Long.MAX_VALUE || position == 0L)) {
                         isClosed = closed
                     }
+                    this.supportFiles = supportFiles
+                    this.supportVideos = supportVideos
                 }
                 return queueId
             }
@@ -301,9 +315,11 @@ class NinchatSessionManagerHelper {
                         it.second
                     );
                 }
-                Handler(Looper.getMainLooper()).post {
-                    currentSession.reInitializeMessageAdapter(currentSession)
-                }
+                sessionManager.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
+                    override fun onMessageAdapter(adapter: NinchatMessageAdapter) {
+                        adapter.addMetaMessage("", currentSession.chatStarted)
+                    }
+                })
                 currentSession.contextWeakReference?.get()?.let { mContext ->
                     val i = Intent(Broadcast.CHANNEL_JOINED)
                     i.putExtra(Parameter.CHAT_IS_CLOSED, isClosed)
@@ -391,26 +407,27 @@ class NinchatSessionManagerHelper {
                     if (params.getString("channel_id") != ninchatSessionManager.ninchatState?.channelId) {
                         return
                     }
-                } catch (e: java.lang.Exception) {
+                } catch (e: Exception) {
                     return
                 }
                 val channelAttributes = try {
                     params.getObject("channel_attrs")
-                } catch (e: java.lang.Exception) {
+                } catch (e: Exception) {
                     return
                 }
                 val closed = try {
                     channelAttributes.getBool("closed")
-                } catch (e: java.lang.Exception) {
+                } catch (e: Exception) {
                     return
                 }
                 val suspended = try {
                     channelAttributes.getBool("suspended")
-                } catch (e: java.lang.Exception) {
+                } catch (e: Exception) {
                     return
                 }
+                val isAudienceTransfer = params.getSafe<String>("event_cause") == "audience_transfer"
                 ninchatSessionManager.contextWeakReference?.get()?.let { mContext ->
-                    if (closed || suspended) {
+                    if (!isAudienceTransfer && (closed || suspended)) {
                         LocalBroadcastManager.getInstance(mContext)
                             .sendBroadcast(Intent(Broadcast.CHANNEL_CLOSED))
                     }

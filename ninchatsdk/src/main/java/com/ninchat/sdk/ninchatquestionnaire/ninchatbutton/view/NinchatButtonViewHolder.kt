@@ -57,6 +57,9 @@ class NinchatButtonViewHolder(
         val background = if (enabled) if (clicked) R.drawable.ninchat_chat_secondary_onclicked_button else R.drawable.ninchat_chat_secondary_button else R.drawable.ninchat_chat_disable_button
         itemView.run {
             isEnabled = enabled
+            if(presenter.isSingleButton() && !presenter.imageButton()) {
+                view_padding?.visibility = View.GONE
+            }
             if (imageButton) {
                 ninchat_image_button_previous?.isEnabled = enabled
                 ninchat_image_button_previous?.background = ContextCompat.getDrawable(itemView.context, background)
@@ -74,6 +77,9 @@ class NinchatButtonViewHolder(
         val background = if (enabled) if (clicked) R.drawable.ninchat_chat_primary_oncliked_button else R.drawable.ninchat_chat_primary_button else R.drawable.ninchat_chat_disable_button
         itemView.run {
             isEnabled = enabled
+            if(presenter.isSingleButton() && !presenter.imageButton()) {
+                view_padding?.visibility = View.GONE
+            }
             if (imageButton) {
                 ninchat_image_button_next?.isEnabled = enabled
                 ninchat_image_button_next?.visibility = if (visible) View.VISIBLE else View.GONE

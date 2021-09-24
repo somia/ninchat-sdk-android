@@ -6,17 +6,18 @@ import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
 class NinchatRadioButtonListPresenter(
-        jsonObject: JSONObject? = null,
-        isFormLikeQuestionnaire: Boolean,
-        val viewCallback: INinchatRadioButtonListPresenter,
-        val updateCallback: ButtonListUpdateListener,
-        position: Int,
-        enabled: Boolean,
+    jsonObject: JSONObject? = null,
+    isFormLikeQuestionnaire: Boolean,
+    val viewCallback: INinchatRadioButtonListPresenter,
+    val updateCallback: ButtonListUpdateListener,
+    position: Int,
+    enabled: Boolean,
 ) {
     private val model = NinchatRadioButtonListModel(
-            isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-            position = position,
-            enabled = enabled).apply {
+        isFormLikeQuestionnaire = isFormLikeQuestionnaire,
+        position = position,
+        enabled = enabled
+    ).apply {
         parse(jsonObject = jsonObject)
     }
 
@@ -24,26 +25,22 @@ class NinchatRadioButtonListPresenter(
         jsonObject?.let {
             model.update(jsonObject = it, enabled = enabled)
         }
-        if (model.isFormLikeQuestionnaire) {
-            viewCallback.onRenderFormView(label = model.label
-                    ?: "", hasError = model.hasError, enabled = model.enabled)
-        } else {
-            viewCallback.onRenderConversationView(label = model.label
-                    ?: "", hasError = model.hasError, enabled = model.enabled)
-        }
+        viewCallback.renderCommon(
+            label = model.label
+                ?: "", hasError = model.hasError, enabled = model.enabled,
+            isFormLike = model.isFormLikeQuestionnaire
+        )
     }
 
     fun updateCurrentView(jsonObject: JSONObject? = null, enabled: Boolean) {
         jsonObject?.let {
             model.update(jsonObject = jsonObject, enabled = enabled)
         }
-        if (model.isFormLikeQuestionnaire) {
-            viewCallback.onUpdateFormView(label = model.label
-                    ?: "", hasError = model.hasError, enabled = model.enabled)
-        } else {
-            viewCallback.onUpdateConversationView(label = model.label
-                    ?: "", hasError = model.hasError, enabled = model.enabled)
-        }
+        viewCallback.updateCommon(
+            label = model.label
+                ?: "", hasError = model.hasError, enabled = model.enabled,
+            isFormLike = model.isFormLikeQuestionnaire
+        )
     }
 
     fun handleOptionToggled(isSelected: Boolean, listPosition: Int): Int {
@@ -52,10 +49,12 @@ class NinchatRadioButtonListPresenter(
         model.listPosition = if (isSelected) listPosition else -1
         model.hasError = if (isSelected) false else model.hasError
 
-        updateCallback.onUpdate(value = model.value,
-                sublistPosition = model.listPosition,
-                hasError = model.hasError,
-                position = model.position)
+        updateCallback.onUpdate(
+            value = model.value,
+            sublistPosition = model.listPosition,
+            hasError = model.hasError,
+            position = model.position
+        )
         if (isSelected) {
             mayBeFireEvent()
         }
@@ -79,10 +78,8 @@ class NinchatRadioButtonListPresenter(
 }
 
 interface INinchatRadioButtonListPresenter {
-    fun onRenderFormView(label: String, hasError: Boolean, enabled: Boolean)
-    fun onRenderConversationView(label: String, hasError: Boolean, enabled: Boolean)
-    fun onUpdateFormView(label: String, hasError: Boolean, enabled: Boolean)
-    fun onUpdateConversationView(label: String, hasError: Boolean, enabled: Boolean)
+    fun renderCommon(label: String, hasError: Boolean, enabled: Boolean, isFormLike: Boolean)
+    fun updateCommon(label: String, hasError: Boolean, enabled: Boolean, isFormLike: Boolean)
 }
 
 interface ButtonListUpdateListener {

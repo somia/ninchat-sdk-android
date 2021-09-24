@@ -34,11 +34,11 @@ class NinchatSiteConfig {
 
     fun getArray(key: String): JSONArray? {
         var value: JSONArray? = null
-        siteConfig?.let {
+        siteConfig?.let { config ->
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
-                    if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optJSONArray(key)
+                    if (config.optJSONObject(currentEnvironment)?.has(key) == true) {
+                        value = config.optJSONObject(currentEnvironment)?.optJSONArray(key)
                     }
                 }
             }
@@ -49,14 +49,13 @@ class NinchatSiteConfig {
     fun getBoolean(key: String, fallback: Boolean = false): Boolean? {
         var value = false
         var found = false
-        siteConfig?.let {
+        siteConfig?.let { config ->
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
-                    if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
+                    if (config.optJSONObject(currentEnvironment)?.has(key) == true) {
                         found = true
-                        value =
-                            siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, fallback)
-                                ?: false
+                        value = config.optJSONObject(currentEnvironment)?.optBoolean(key, fallback)
+                            ?: false
                     }
                 }
             }
@@ -65,10 +64,10 @@ class NinchatSiteConfig {
     }
 
     fun isTrue(key: String): Boolean {
-        return siteConfig?.let {
+        return siteConfig?.let { config ->
             preferredEnvironments?.let { environmentList ->
                 environmentList.any {
-                    siteConfig?.optJSONObject(it)?.has(key) == true &&
+                    config.optJSONObject(it)?.has(key) == true &&
                             siteConfig?.optJSONObject(it)?.optBoolean(key, false) == true
                 }
             }
@@ -76,12 +75,12 @@ class NinchatSiteConfig {
     }
 
     fun isFalse(key: String): Boolean {
-        return siteConfig?.let {
+        return siteConfig?.let {config ->
             preferredEnvironments?.let { environmentList ->
                 environmentList.any {
-                    siteConfig?.optJSONObject(it)?.has(key) == true &&
+                    config.optJSONObject(it)?.has(key) == true &&
                             listOf("null", "false", "").contains(
-                                siteConfig?.optJSONObject(it)?.optString(key, "false")
+                                config.optJSONObject(it)?.optString(key, "false")
                             )
                 }
             }
@@ -89,10 +88,10 @@ class NinchatSiteConfig {
     }
 
     fun hasValue(key: String): Boolean {
-        return siteConfig?.let {
+        return siteConfig?.let { config ->
             preferredEnvironments?.let { environmentList ->
                 environmentList.any {
-                    siteConfig?.optJSONObject(it)
+                    config.optJSONObject(it)
                         ?.has(key) == true && !siteConfig?.optJSONObject(it)?.optString(key, "")
                         .isNullOrEmpty()
                 }
@@ -102,12 +101,12 @@ class NinchatSiteConfig {
 
     fun getString(key: String): String? {
         var value: String? = null
-        siteConfig?.let {
+        siteConfig?.let { config ->
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
-                    if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
+                    if (config.optJSONObject(currentEnvironment)?.has(key) == true) {
                         value =
-                            siteConfig?.optJSONObject(currentEnvironment)?.optString(key, "null")
+                            config.optJSONObject(currentEnvironment)?.optString(key, "null")
                         // workaround value can be null which when parsing will be interpreted as "null" string in Java with quote
                         if ("null" == value || "false" == value) {
                             value = null
@@ -157,12 +156,6 @@ class NinchatSiteConfig {
     fun getSubmitButtonText(): String =
         getTranslation("Submit")
 
-    fun isAttachmentsEnabled(): Boolean =
-        getBoolean("supportFiles") ?: false
-
-    fun isVideoEnabled(): Boolean =
-        getBoolean("supportVideo") ?: false
-
     fun showUserAvatar(fallback: Boolean = false): Boolean =
         getBoolean("userAvatar", fallback = fallback) ?: false
 
@@ -171,6 +164,9 @@ class NinchatSiteConfig {
 
     fun hideAgentAvatar(): Boolean =
         isFalse("agentAvatar")
+
+    fun hideUserAvatar(): Boolean =
+        isFalse("userAvatar")
 
     fun getAgentAvatar(): String? =
         getString("agentAvatar")
@@ -311,13 +307,13 @@ class NinchatSiteConfig {
 
     internal fun getTranslation(translationKey: String = "translations", key: String): String? {
         var value: String? = null
-        siteConfig?.let {
+        siteConfig?.let { config ->
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
-                    if (siteConfig?.optJSONObject(currentEnvironment)?.optJSONObject(translationKey)
+                    if (config.optJSONObject(currentEnvironment)?.optJSONObject(translationKey)
                             ?.has(key) == true
                     ) {
-                        value = siteConfig?.optJSONObject(currentEnvironment)
+                        value = config.optJSONObject(currentEnvironment)
                             ?.optJSONObject(translationKey)?.optString(key)
                     }
                 }

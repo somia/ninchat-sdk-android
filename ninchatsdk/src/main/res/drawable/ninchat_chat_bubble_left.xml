@@ -6,7 +6,7 @@
         />
     <solid android:color="@android:color/white" />
     <padding android:left="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal"
-        android:top="@dimen/ninchat_chat_activity_message_bubble_padding_vertical"
-        android:bottom="@dimen/ninchat_chat_activity_message_bubble_padding_vertical"
+        android:top="14dp"
+        android:bottom="16dp"
         android:right="@dimen/ninchat_chat_activity_message_bubble_padding_horizontal" />
 </shape>

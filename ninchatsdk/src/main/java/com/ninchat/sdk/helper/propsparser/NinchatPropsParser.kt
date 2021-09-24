@@ -1,6 +1,8 @@
 package com.ninchat.sdk.helper.propsparser
 
+import com.ninchat.client.Objects
 import com.ninchat.client.Props
+import com.ninchat.client.Strings
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.models.NinchatUser
 import com.ninchat.sdk.utils.propsvisitor.NinchatPropVisitor
@@ -18,9 +20,9 @@ class NinchatPropsParser {
             return try {
                 props?.accept(parser)
                 return parser.properties.values.map {
-                    (it as Props).getObject("channel_attrs")
+                    (it as Props).getSafe<Props>("channel_attrs")
                 }.map {
-                    it.getString("queue_id")
+                    it?.getSafe<String>("queue_id") ?: ""
                 }.firstOrNull { it.isNotBlank() }
             } catch (_: Exception) {
                 null
@@ -37,7 +39,7 @@ class NinchatPropsParser {
             return try {
                 props?.accept(parser)
                 return parser.properties.filterValues { value ->
-                    val position = (value as Props).getInt("queue_position")
+                    val position = (value as Props).getSafe<Long>("queue_position") ?: 0L
                     position > 0L
                 }.keys.firstOrNull()
             } catch (e: Exception) {
@@ -57,7 +59,7 @@ class NinchatPropsParser {
                 val queuePosition = parser.properties.filterKeys {
                     it == queueId
                 }.map {
-                    (it.value as Props).getInt("queue_position")
+                    (it.value as Props).getSafe<Long>("queue_position")
                 }.firstOrNull()
                 return queuePosition ?: -1
             } catch (e: Exception) {
@@ -74,12 +76,13 @@ class NinchatPropsParser {
                 parser.properties.filterKeys {
                     it == queueId
                 }.filter {
-                    val queuePosition = (it.value as Props).getInt("queue_position")
+                    val queuePosition =
+                        (it.value as Props).getSafe<Long>("queue_position") ?: 0L
                     queuePosition > 0
                 }.map {
-                    (it.value as Props).getObject("queue_attrs")
+                    (it.value as Props).getSafe<Props>("queue_attrs")
                 }.map {
-                    (it as Props).getString("name")
+                    (it as Props).getSafe<String>("name")
                 }.firstOrNull()
             } catch (e: Exception) {
                 null
@@ -114,7 +117,7 @@ class NinchatPropsParser {
             return try {
                 currentUserQueues?.accept(parser)
                 parser.properties.values.any {
-                    val queuePosition = (it as Props).getInt("queue_position")
+                    val queuePosition = (it as Props).getSafe<Long>("queue_position") ?: 0L
                     queuePosition > 0L
                 }
             } catch (e: Exception) {
@@ -131,21 +134,28 @@ class NinchatPropsParser {
             audienceQueue: Collection<String>? = null
         ): List<NinchatQueue> {
             val parser = NinchatPropVisitor()
-            val realmQueues = try {
-                props?.getObject("realm_queues")
-            } catch (_: Exception) {
-                null
-            }
+            val realmQueues = props?.getSafe<Props>("realm_queues")
             realmQueues?.accept(parser)
             // only get list of queues that are open
             return parser.properties.filterKeys {
                 audienceQueue?.contains(it) ?: false
             }.mapValues {
                 val currentQueue = (it.value as Props)
-                val queuePosition = currentQueue.getInt("queue_position")
-                val queueName = currentQueue.getObject("queue_attrs")?.getString("name")
-                val queueClosed = currentQueue.getObject("queue_attrs")?.getBool("closed") ?: false
-                val ninchatQueue = NinchatQueue(it.key, queueName)
+                val queuePosition = currentQueue.getSafe<Long>("queue_position") ?: 0L
+                val queueName =
+                    currentQueue.getSafe<Props>("queue_attrs")?.getSafe<String>("name") ?: ""
+                val queueClosed = currentQueue.getSafe<Props>("queue_attrs")
+                    ?.getSafe<Boolean>("closed") ?: false
+                val supportVideos = currentQueue.getSafe<Props>("queue_attrs")
+                    ?.getSafe<String>("video") == "member"
+                val supportFiles = currentQueue.getSafe<Props>("queue_attrs")
+                    ?.getSafe<String>("upload") == "member"
+                val ninchatQueue = NinchatQueue(
+                    it.key,
+                    name = queueName,
+                    supportVideos = supportVideos,
+                    supportFiles = supportFiles
+                )
                 ninchatQueue.position = queuePosition
                 ninchatQueue.isClosed = queueClosed
                 ninchatQueue
@@ -155,20 +165,16 @@ class NinchatPropsParser {
         @JvmStatic
         fun getUsersFromChannel(props: Props?): List<Pair<String, NinchatUser>> {
             val parser = NinchatPropVisitor()
-            val channelMembers = try {
-                props?.getObject("channel_members")
-            } catch (_: Exception) {
-                null
-            }
+            val channelMembers = props?.getSafe<Props>("channel_members")
             channelMembers?.accept(parser)
             // only get list of queues that are open
             return parser.properties.map {
-                val userAttr = (it.value as Props).getObject("user_attrs")
-                val displayName = userAttr?.getString("name")
-                val realName = userAttr?.getString("realname")
-                val avatar = userAttr?.getString("iconurl")
-                val guest = userAttr?.getBool("guest") ?: false
-                val jobTitle = userAttr?.getObject("info")?.getString("job_title")
+                val userAttr = (it.value as Props).getSafe<Props>("user_attrs")
+                val displayName = userAttr?.getSafe<String>("name")
+                val realName = userAttr?.getSafe<String>("realname")
+                val avatar = userAttr?.getSafe<String>("iconurl")
+                val guest = userAttr?.getSafe<Boolean>("guest") ?: false
+                val jobTitle = userAttr?.getSafe<Props>("info")?.getSafe<String>("job_title")
                 Pair(it.key, NinchatUser(displayName, realName, avatar, guest, jobTitle))
             }
         }
@@ -176,11 +182,7 @@ class NinchatPropsParser {
         @JvmStatic
         fun getPreAnswersFromProps(props: Props?): List<Pair<String, Any>> {
             val parser = NinchatPropVisitor()
-            val preAnswers = try {
-                props?.getObject("pre_answers")
-            } catch (_: Exception) {
-                null
-            }
+            val preAnswers = props?.getSafe<Props>("pre_answers")
             preAnswers?.accept(parser)
             return parser.properties.mapNotNull {
                 if (it.key != "tags") {
@@ -201,4 +203,23 @@ class NinchatPropsParser {
         }
 
     }
+}
+
+inline fun <reified T> Props.getSafe(key: String, default: T? = null): T? {
+    return try {
+        return when (T::class) {
+            Boolean::class -> this.getBool(key)
+            Double::class -> this.getFloat(key)
+            Long::class -> this.getInt(key)
+            Props::class -> this.getObject(key)
+            Objects::class -> this.getObjectArray(key)
+            String::class -> this.getString(key)
+            Strings::class -> this.getStringArray(key)
+            else ->
+                default
+        } as T
+    } catch (_: Exception) {
+        default
+    }
+
 }

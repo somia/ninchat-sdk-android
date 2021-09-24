@@ -1,33 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
     android:orientation="vertical">
 
     <TextView
-        android:theme="@style/NinchatTheme.Questionnaire.Label"
-        android:layout_marginBottom="@dimen/ninchat_questionnaire_item_margin_bottom"
         android:id="@+id/multiline_text_label"
+        style="@style/NinchatTheme.Questionnaire.Label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Element label"/>
+        tools:text="Element label that cross the boundary. Ok what else could happen" />
 
-    <EditText
-        android:id="@+id/multiline_text_area"
-        android:theme="@style/NinchatTheme.Questionnaire.InputText.Cursor"
+    <LinearLayout
+        android:id="@+id/multiline_text_field_container"
         style="@style/NinchatTheme.Questionnaire.InputText"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:autofillHints="..."
-        android:gravity="top"
-        android:inputType="textMultiLine|textCapSentences"
-        android:minHeight="80dp"
-        android:selectAllOnFocus="false"
-        android:imeOptions="actionDone"
-        android:maxLines="4"
-        tools:hint="Enter text" />
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/multiline_text_area"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autofillHints="..."
+            android:background="@android:color/transparent"
+            android:gravity="top|start"
+            android:maxLines="4"
+            android:minHeight="80dp"
+            android:paddingTop="9dp"
+            android:imeOptions="actionDone"
+            android:theme="@style/NinchatTheme.Questionnaire.InputText.Cursor"
+            tools:hint="Enter text" />
+    </LinearLayout>
 
 
 </LinearLayout>

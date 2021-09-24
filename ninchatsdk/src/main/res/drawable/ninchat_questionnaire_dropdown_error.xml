@@ -4,7 +4,7 @@
     <corners android:radius="5dp" />
     <stroke
         android:width="2dp"
-        android:color="#983637" />
+        android:color="@color/ninchat_color_questionnaire_dropdown_error" />
     <padding
         android:bottom="3dp"
         android:left="4dp"

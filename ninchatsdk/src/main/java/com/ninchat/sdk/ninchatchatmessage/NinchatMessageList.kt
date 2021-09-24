@@ -4,19 +4,24 @@ import android.util.Log
 import androidx.recyclerview.widget.DiffUtil
 import com.ninchat.sdk.models.NinchatMessage
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.*
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableTransformer
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
 
 
 const val WRITING_MESSAGE_ID_PREFIX = "zzzzzwriting"
+const val END_MESSAGE_ID_SUFFIX = "zzzzz"
 
 fun <T> bufferDebounce(
-        time: Long, unit: TimeUnit?): ObservableTransformer<T, List<T>> {
+    time: Long, unit: TimeUnit?
+): ObservableTransformer<T, List<T>> {
     return ObservableTransformer { o: Observable<T> ->
         o.publish { v: Observable<T> ->
-            v.buffer(v.debounce(time, unit)
+            v.buffer(
+                v.debounce(time, unit)
                     .takeUntil(v.ignoreElements().toObservable<Any>())
             )
         }
@@ -30,16 +35,20 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
 
     init {
         subject.compose(bufferDebounce(200, TimeUnit.MILLISECONDS))
-                .subscribeOn(Schedulers.io())
-                .subscribe({
-                    handleBufferedMessage(pendingMessageList = it)
-                }, { err -> Log.e("NinchatMessageList", "${err.message}") })
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                handleBufferedMessage(pendingMessageList = it)
+            }, { err -> Log.e("NinchatMessageList", "${err.message}") })
     }
 
     private fun handleBufferedMessage(pendingMessageList: List<NinchatPendingMessage> = emptyList()) {
         val newList = messageIds.toMutableList()
         for (pendingMessage in pendingMessageList) {
             when (pendingMessage.messageType) {
+                NinchatMessage.Type.CLEAR -> {
+                    newList.clear()
+                    messageMap.clear()
+                }
                 NinchatMessage.Type.WRITING -> {
                     if (newList.contains(pendingMessage.sender)) {
                         continue
@@ -56,11 +65,21 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
                     newList.removeAt(at)
                     messageMap.remove(pendingMessage.sender)
                 }
+
+                NinchatMessage.Type.REMOVE_END -> {
+                    val lastMessage = newList.last()
+                    if (lastMessage.endsWith(END_MESSAGE_ID_SUFFIX)) {
+                        // remove the message from `messageIds` and  `messageMap`
+                        newList.removeLast()
+                        messageMap.remove(lastMessage)
+                    }
+                }
                 NinchatMessage.Type.MESSAGE -> {
                     if (newList.contains(pendingMessage.sender)) {
                         continue
                     }
-                    val writingId = "$WRITING_MESSAGE_ID_PREFIX ${pendingMessage.message!!.senderId}"
+                    val writingId =
+                        "$WRITING_MESSAGE_ID_PREFIX ${pendingMessage.message!!.senderId}"
                     newList.apply {
                         // remove writing if there is any
                         val at = newList.indexOf(writingId)
@@ -77,12 +96,17 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
                     }
                 }
                 NinchatMessage.Type.META -> {
+                    // if there is already a meta message of given sender id,
+                    // then don't add again
+                    if (newList.contains(pendingMessage.sender)) {
+                        continue
+                    }
                     newList.add(pendingMessage.sender)
                     messageMap[pendingMessage.sender] = pendingMessage.message!!
                 }
                 NinchatMessage.Type.END -> {
                     // get end message id from here since it require calling messageIds
-                    val endMessageId = getLastMessageId(true) + "zzzzz"
+                    val endMessageId = getLastMessageId(true) + END_MESSAGE_ID_SUFFIX
                     newList.add(endMessageId)
                     messageMap[endMessageId] = pendingMessage.message!!
                 }
@@ -94,7 +118,10 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
         diffUtilAsync(newList = newList)
     }
 
-    private fun applyDiffUtil(newList: List<String> = emptyList(), diffResult: DiffUtil.DiffResult) {
+    private fun applyDiffUtil(
+        newList: List<String> = emptyList(),
+        diffResult: DiffUtil.DiffResult
+    ) {
         // assign to new list
         messageIds = newList
         // Call diff callback
@@ -103,59 +130,90 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
 
     private fun diffUtilAsync(newList: List<String> = emptyList()) {
         Single
-                .create<Pair<List<String>, DiffUtil.DiffResult>> { emitter ->
-                    val sortedNewList = newList.sorted()
-                    val diffResult = DiffUtil.calculateDiff(NinchatMessageDiffUtil(oldList = messageIds, newList = sortedNewList))
-                    emitter.onSuccess(Pair(sortedNewList, diffResult))
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe({ result ->
-                    // send callback
-                    applyDiffUtil(newList = result.first, diffResult = result.second)
-                }, {
-                    Log.e("diffUtlAsync", it.message ?: "Error in diffUtil Async task")
-                })
+            .create<Pair<List<String>, DiffUtil.DiffResult>> { emitter ->
+                val sortedNewList = newList.sorted()
+                val diffResult = DiffUtil.calculateDiff(
+                    NinchatMessageDiffUtil(
+                        oldList = messageIds,
+                        newList = sortedNewList
+                    )
+                )
+                emitter.onSuccess(Pair(sortedNewList, diffResult))
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .subscribe({ result ->
+                // send callback
+                applyDiffUtil(newList = result.first, diffResult = result.second)
+            }, {
+                Log.e("diffUtlAsync", it.message ?: "Error in diffUtil Async task")
+            })
     }
 
     fun addWriting(sender: String) {
-        subject.onNext(NinchatPendingMessage(
+        subject.onNext(
+            NinchatPendingMessage(
                 messageType = NinchatMessage.Type.WRITING,
                 sender = "$WRITING_MESSAGE_ID_PREFIX $sender",
-                message = NinchatMessage(NinchatMessage.Type.WRITING, sender, System.currentTimeMillis())))
+                message = NinchatMessage(
+                    NinchatMessage.Type.WRITING,
+                    sender,
+                    System.currentTimeMillis()
+                )
+            )
+        )
     }
 
     fun removeWriting(sender: String) {
-        subject.onNext(NinchatPendingMessage(
+        subject.onNext(
+            NinchatPendingMessage(
                 messageType = NinchatMessage.Type.REMOVE_WRITING,
                 sender = "$WRITING_MESSAGE_ID_PREFIX $sender",
-        ))
+            )
+        )
     }
 
     fun add(messageId: String, message: NinchatMessage) {
-        subject.onNext(NinchatPendingMessage(
+        subject.onNext(
+            NinchatPendingMessage(
                 messageType = NinchatMessage.Type.MESSAGE,
                 sender = messageId,
-                message = message))
+                message = message
+            )
+        )
     }
 
     fun addMetaMessage(messageId: String, message: String) {
-        subject.onNext(NinchatPendingMessage(
+        subject.onNext(
+            NinchatPendingMessage(
                 messageType = NinchatMessage.Type.META,
                 sender = messageId,
-                message = NinchatMessage(NinchatMessage.Type.META, message, System.currentTimeMillis())))
+                message = NinchatMessage(
+                    NinchatMessage.Type.META,
+                    message,
+                    System.currentTimeMillis()
+                )
+            )
+        )
     }
 
     fun addEndMessage() {
-        subject.onNext(NinchatPendingMessage(
+        subject.onNext(
+            NinchatPendingMessage(
                 messageType = NinchatMessage.Type.END,
                 sender = "",
-                message = NinchatMessage(NinchatMessage.Type.END, System.currentTimeMillis())))
+                message = NinchatMessage(NinchatMessage.Type.END, System.currentTimeMillis())
+            )
+        )
     }
 
     fun clear() {
-        messageIds = emptyList()
-        messageMap.clear()
+        subject.onNext(
+            NinchatPendingMessage(
+                messageType = NinchatMessage.Type.CLEAR,
+                sender = "",
+            )
+        )
     }
 
     fun getLastMessageId(allowMeta: Boolean): String {
@@ -173,6 +231,15 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
         return messageIds[messageIds.size - 1]
     }
 
+    fun removeChatCloseMessage() {
+        subject.onNext(
+            NinchatPendingMessage(
+                messageType = NinchatMessage.Type.REMOVE_END,
+                sender = "",
+            )
+        )
+    }
+
     fun size(): Int {
         return messageIds.size
     }
@@ -186,8 +253,16 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
         return messageMap[id]
     }
 
-    private data class NinchatPendingMessage(val messageType: NinchatMessage.Type, val sender: String, val message: NinchatMessage? = null)
-    private inner class NinchatMessageDiffUtil(private val oldList: List<String> = emptyList(), private val newList: List<String> = emptyList()) : DiffUtil.Callback() {
+    private data class NinchatPendingMessage(
+        val messageType: NinchatMessage.Type,
+        val sender: String,
+        val message: NinchatMessage? = null
+    )
+
+    private inner class NinchatMessageDiffUtil(
+        private val oldList: List<String> = emptyList(),
+        private val newList: List<String> = emptyList()
+    ) : DiffUtil.Callback() {
         override fun getOldListSize(): Int {
             return oldList.size
         }

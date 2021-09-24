@@ -7,19 +7,19 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.view.INi
 import org.json.JSONObject
 
 class NinchatInputFieldViewPresenter(
-        jsonObject: JSONObject?,
-        isMultiline: Boolean,
-        isFormLikeQuestionnaire: Boolean = true,
-        val viewCallback: INinchatInputFieldViewPresenter,
-        val updateCallback: InputFieldUpdateListener,
-        position: Int,
-        enabled: Boolean,
+    jsonObject: JSONObject?,
+    isMultiline: Boolean,
+    isFormLikeQuestionnaire: Boolean = true,
+    val viewCallback: INinchatInputFieldViewPresenter,
+    val updateCallback: InputFieldUpdateListener,
+    position: Int,
+    enabled: Boolean,
 ) : INinchatInputFieldViewHolder {
     private var model = NinchatInputFieldViewModel(
-            isMultiline = isMultiline,
-            isFormLikeQuestionnaire = isFormLikeQuestionnaire,
-            position = position,
-            enabled = enabled
+        isMultiline = isMultiline,
+        isFormLikeQuestionnaire = isFormLikeQuestionnaire,
+        position = position,
+        enabled = enabled
     ).apply {
         parse(jsonObject = jsonObject)
     }
@@ -28,21 +28,16 @@ class NinchatInputFieldViewPresenter(
     fun renderCurrentView(jsonObject: JSONObject?, enabled: Boolean) {
         jsonObject?.let { model.update(jsonObject = jsonObject, enabled = enabled) }
 
-        if (model.isFormLikeQuestionnaire) {
-            viewCallback.onRenderFromView(
-                    label = model.label ?: "",
-                    enabled = model.enabled
-            )
-        } else {
-            viewCallback.onRenderConversationView(
-                    label = model.label ?: "",
-                    enabled = model.enabled
-            )
-        }
+        viewCallback.renderCommonView(
+            label = model.label ?: "",
+            enabled = model.enabled,
+            isFormLike = model.isFormLikeQuestionnaire,
+            isMultiline = model.isMultiline,
+        )
         // update text change
         viewCallback.onUpdateText(
-                value = model.value ?: "",
-                hasError = model.hasError
+            value = model.value ?: "",
+            hasError = model.hasError
         )
         // update focus
         if (!model.hasError) {
@@ -53,21 +48,16 @@ class NinchatInputFieldViewPresenter(
     fun updateCurrentView(jsonObject: JSONObject?, enabled: Boolean) {
         jsonObject?.let { model.update(jsonObject = jsonObject, enabled = enabled) }
 
-        if (model.isFormLikeQuestionnaire) {
-            viewCallback.onUpdateFromView(
-                    label = model.label ?: "",
-                    enabled = model.enabled
-            )
-        } else {
-            viewCallback.onUpdateConversationView(
-                    label = model.label ?: "",
-                    enabled = model.enabled
-            )
-        }
+        viewCallback.updateCommonView(
+            label = model.label ?: "",
+            enabled = model.enabled,
+            isFormLike = model.isFormLikeQuestionnaire,
+            isMultiline = model.isMultiline,
+        )
         // update text change
         viewCallback.onUpdateText(
-                value = model.value ?: "",
-                hasError = model.hasError
+            value = model.value ?: "",
+            hasError = model.hasError
         )
         // update focus
         if (!model.hasError) {
@@ -86,10 +76,14 @@ class NinchatInputFieldViewPresenter(
         model.hasError = NinchatQuestionnaireJsonUtil.matchPattern(text, model.pattern) == false
         // check if there is any error
         viewCallback.onUpdateText(
-                value = model.value ?: "",
-                hasError = model.hasError
+            value = model.value ?: "",
+            hasError = model.hasError
         )
-        updateCallback.onUpdate(value = model.value, hasError = model.hasError, position = model.position)
+        updateCallback.onUpdate(
+            value = model.value,
+            hasError = model.hasError,
+            position = model.position
+        )
     }
 
     override fun onFocusChange(hasFocus: Boolean) {
@@ -99,13 +93,13 @@ class NinchatInputFieldViewPresenter(
             viewCallback.onUpdateFocus(hasFocus = hasFocus)
         }
     }
+
+    fun position() = model.position
 }
 
 interface INinchatInputFieldViewPresenter {
-    fun onRenderFromView(label: String, enabled: Boolean)
-    fun onRenderConversationView(label: String, enabled: Boolean)
-    fun onUpdateFromView(label: String, enabled: Boolean)
-    fun onUpdateConversationView(label: String, enabled: Boolean)
+    fun renderCommonView(isMultiline: Boolean, label: String, enabled: Boolean, isFormLike: Boolean)
+    fun updateCommonView(isMultiline: Boolean, label: String, enabled: Boolean, isFormLike: Boolean)
     fun onUpdateText(value: String, hasError: Boolean)
     fun onUpdateFocus(hasFocus: Boolean)
 }

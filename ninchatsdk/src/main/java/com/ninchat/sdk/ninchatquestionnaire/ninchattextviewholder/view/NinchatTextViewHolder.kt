@@ -1,8 +1,8 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchattextviewholder.view
 
 import android.view.View
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.R
 import com.ninchat.sdk.ninchatquestionnaire.ninchattextviewholder.presenter.INinchatTextViewPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchattextviewholder.presenter.NinchatTextViewPresenter
@@ -35,23 +35,22 @@ class NinchatTextViewHolder(
     }
 
     override fun onUpdateConversationView(label: String?, enabled: Boolean) {
-        itemView.text_view_content.setTextColor(ContextCompat.getColor(itemView.context, if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled))
         itemView.isEnabled = enabled
+        itemView.text_view_content.style(if (enabled) R.style.NinchatTheme_Questionnaire_TextView else R.style.NinchatTheme_Questionnaire_TextView_Disabled)
     }
 
     override fun onRenderConversationVIew(label: String?, enabled: Boolean) {
         val text = Misc.toRichText(label, itemView.text_view_content)
-        val textColor = if (enabled) R.color.ninchat_color_text_normal else R.color.ninchat_color_text_disabled
         if (text.isNotBlank()) {
             itemView.text_view_content.text = text
         }
-        itemView.text_view_content.setTextColor(ContextCompat.getColor(itemView.context, textColor))
-        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
+        itemView.text_view_content.style(if (enabled) R.style.NinchatTheme_Questionnaire_TextView else R.style.NinchatTheme_Questionnaire_TextView_Disabled)
         itemView.isEnabled = enabled
     }
 
     override fun onUpdateFormView(label: String?, enabled: Boolean) {
         itemView.isEnabled = enabled
+        itemView.text_view_content.style(if (enabled) R.style.NinchatTheme_Questionnaire_TextView_Form else R.style.NinchatTheme_Questionnaire_TextView_Form_Disabled)
     }
 
     override fun onRenderFormView(label: String?, enabled: Boolean) {
@@ -59,7 +58,7 @@ class NinchatTextViewHolder(
         if (text.isNotBlank()) {
             itemView.text_view_content.text = text
         }
-        itemView.background = ContextCompat.getDrawable(itemView.context, R.drawable.ninchat_chat_questionnaire_background)
+        itemView.text_view_content.style(if (enabled) R.style.NinchatTheme_Questionnaire_TextView_Form else R.style.NinchatTheme_Questionnaire_TextView_Form_Disabled)
         itemView.isEnabled = enabled
     }
 }

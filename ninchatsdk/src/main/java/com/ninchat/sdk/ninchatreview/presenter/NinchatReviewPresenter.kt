@@ -44,7 +44,7 @@ class NinchatReviewPresenter(
         renderText(view = formView, rootActivity = rootActivity)
 
         // initially review description was not visible. so make it visible on load
-        formView.ninchat_review_description.visibility = View.VISIBLE
+        formView.ninchat_review_description.visibility = View.GONE
     }
 
     fun renderBotView(formView: View, botView: View, rootActivity: View) {
@@ -66,7 +66,7 @@ class NinchatReviewPresenter(
 
             // for bot like view, they should place in the beginning
             botView.ninchat_review_title.gravity = Gravity.START
-            botView.ninchat_review_description.gravity = Gravity.START
+            botView.ninchat_review_description.visibility = View.GONE
         })
     }
 
@@ -87,6 +87,9 @@ class NinchatReviewPresenter(
 
         //3: set bot details
         view.ninchat_chat_message_bot_text.text = ninchatReviewModel.getBotName()
+        if (ninchatReviewModel.getBotName().isNullOrEmpty()) {
+            view.ninchat_chat_message_bot_text.visibility = View.GONE
+        }
         if (!shouldShowTitlebar() && !hideAvatar()) {
             ninchatReviewModel.getBotAvatar()?.let {
                 GlideWrapper.loadImageAsCircle(

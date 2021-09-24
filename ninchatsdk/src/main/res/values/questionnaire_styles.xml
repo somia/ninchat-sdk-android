@@ -6,7 +6,7 @@
         <item name="android:colorPrimary">@color/ninchat_colorPrimary</item>
         <item name="android:colorPrimaryDark">@color/ninchat_colorPrimaryDark</item>
         <item name="android:colorAccent">@color/ninchat_colorAccent</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">@dimen/ninchat_text_size</item>
         <item name="android:textColor">@color/ninchat_colorPrimary</item>
         <item name="android:linksClickable">true</item>
         <item name="android:autoLink">all</item>
@@ -40,41 +40,173 @@
         <item name="android:textColor">@color/ninchat_color_button_disable_text</item>
     </style>
 
-    <style name="NinchatTheme.Questionnaire.Label" parent="Theme.AppCompat.Light">
-        <item name="android:textColor">@color/ninchat_colorPrimary</item>
-        <item name="android:textSize">@dimen/ninchat_questionnaire_item_label_text_size</item>
+    <style name="NinchatTheme.Questionnaire.Label" parent="NinchatTheme.Questionnaire">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_label_text</item>
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:layout_marginBottom">@dimen/ninchat_questionnaire_item_margin_bottom
+        </item>
+        <item name="android:textSize">@dimen/ninchat_questionnaire_label_text_size</item>
+        <item name="android:background">@drawable/ninchat_questionnaire_label</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Label.Disabled" parent="NinchatTheme.Questionnaire.Label">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_label_text_disabled</item>
+        <item name="android:background">@drawable/ninchat_questionnaire_label_disabled</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Label.Form" parent="NinchatTheme.Questionnaire.Label">
+        <item name="android:background">@drawable/null_</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Label.Form.Disabled" parent="NinchatTheme.Questionnaire.Label.Disabled">
+        <item name="android:background">@drawable/null_</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Label.Error" parent="NinchatTheme.Questionnaire.Label">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_label_text_error</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Label.Form.Error" parent="NinchatTheme.Questionnaire.Label.Error">
+        <item name="android:background">@drawable/null_</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.InputText" parent="NinchatTheme.Questionnaire">
-        <item name="android:background">@drawable/ninchat_border_with_unfocus</item>
-        <item name="android:textColorHint">@color/ninchat_color_textarea_text</item>
+        <item name="android:background">@drawable/ninchat_questionnaire_input_text</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_input_text</item>
+        <item name="android:editTextBackground">@drawable/ninchat_questionnaire_input_text</item>
+        <item name="android:textColorHint">
+            @color/ninchat_color_questionnaire_input_text_placeholder
+        </item>
         <item name="android:paddingLeft">13dp</item>
         <item name="android:paddingRight">13dp</item>
-        <item name="android:paddingTop">9dp</item>
-        <item name="android:paddingBottom">9dp</item>
+        <item name="android:selectAllOnFocus">false</item>
+        <item name="android:imeOptions">actionDone</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.InputText.Focus" parent="NinchatTheme.Questionnaire.InputText">
+        <item name="android:background">@drawable/ninchat_questionnaire_input_text_focus</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_input_text_focus</item>
+        <item name="android:editTextBackground">@drawable/ninchat_questionnaire_input_text_focus
+        </item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.InputText.Error" parent="NinchatTheme.Questionnaire.InputText">
+        <item name="android:background">@drawable/ninchat_questionnaire_input_text_error</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_input_text_error</item>
+        <item name="android:editTextBackground">@drawable/ninchat_questionnaire_input_text_error
+        </item>
     </style>
 
     <style name="NinchatTheme.Questionnaire.InputText.Cursor" parent="NinchatTheme.Questionnaire">
-        <item name="android:colorControlActivated">@color/ninchat_colorPrimary</item>
+        <item name="android:colorControlActivated">
+            @color/ninchat_color_questionnaire_input_text_focus
+        </item>
         <item name="android:background">@android:color/transparent</item>
+        <item name="android:inputType">textMultiLine|textCapSentences</item>
     </style>
 
-    <style name="NinchatTheme.Checkbox" parent="Theme.AppCompat.Light">
-        <item name="android:colorControlActivated">@color/ninchat_color_checkbox_selected</item>
-        <item name="android:colorControlNormal">@color/ninchat_color_checkbox_unselected</item>
+    <style name="NinchatTheme.Questionnaire.Checkbox.Label" parent="NinchatTheme.Questionnaire">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_checkbox_label</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:layout_marginStart">10dp</item>
+        <item name="android:layout_gravity">center</item>
     </style>
 
-    <style name="NinchatTheme.Dropdown.Item" parent="Theme.AppCompat.Light">
-        <item name="android:divider">@color/ninchat_color_dropdown_unselected_text</item>
+    <style name="NinchatTheme.Questionnaire.Checkbox.Label.Focused" parent="NinchatTheme.Questionnaire.Checkbox.Label">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_checkbox_label_focused
+        </item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Checkbox.Label.Selected" parent="NinchatTheme.Questionnaire.Checkbox.Label">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_checkbox_label_selected
+        </item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Checkbox.Image" parent="NinchatTheme.Questionnaire">
+        <item name="android:src">@drawable/ninchat_chat_checkbox</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Checkbox.Image.Selected" parent="NinchatTheme.Questionnaire.Checkbox.Image">
+        <item name="android:src">@drawable/ninchat_chat_checkbox_selected</item>
+    </style>
+
+
+    <style name="NinchatTheme.Questionnaire.Dropdown" parent="NinchatTheme.Questionnaire">
         <item name="android:dividerHeight">0.5dp</item>
+        <item name="android:divider">@color/ninchat_color_questionnaire_dropdown</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_dropdown</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:overlapAnchor">false</item>
+        <item name="android:spinnerMode">dropdown</item>
+        <item name="android:dropDownWidth">match_parent</item>
+        <item name="android:background">@drawable/ninchat_questionnaire_dropdown</item>
     </style>
 
-    <style name="NinchatTheme.Dropdown.Spinner" parent="Theme.AppCompat.Light">
-        <item name="android:dropDownListViewStyle">@style/NinchatTheme.Dropdown.Item</item>
+    <style name="NinchatTheme.Questionnaire.Dropdown.Selected" parent="NinchatTheme.Questionnaire.Dropdown">
+        <item name="android:background">@drawable/ninchat_questionnaire_dropdown_selected</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_dropdown_selected</item>
     </style>
 
-    <style name="NinchatTheme.Dropdown.Text" parent="Theme.AppCompat.Light">
-        <item name="android:textColor">@color/ninchat_color_dropdown_unselected_text</item>
+    <style name="NinchatTheme.Questionnaire.Dropdown.Error" parent="NinchatTheme.Questionnaire.Dropdown">
+        <item name="android:background">@drawable/ninchat_questionnaire_dropdown_error</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Dropdown.Spinner" parent="NinchatTheme.Questionnaire.Dropdown">
+        <item name="android:background">@drawable/null_</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Dropdown.Text" parent="NinchatTheme.Questionnaire.Dropdown">
+        <item name="android:background">@drawable/null_</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Dropdown.Text.Selected" parent="NinchatTheme.Questionnaire.Dropdown.Selected">
+        <item name="android:background">@drawable/null_</item>
+    </style>
+
+
+    <style name="NinchatTheme.Questionnaire.Dropdown.Image" parent="Theme.AppCompat.Light">
+        <item name="android:tint">@color/ninchat_color_questionnaire_dropdown</item>
+        <item name="android:src">@drawable/ninchat_questionnaire_dropdown_image</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.Dropdown.Image.Selected" parent="NinchatTheme.Questionnaire.Dropdown.Image">
+        <item name="android:tint">@color/ninchat_color_questionnaire_dropdown_selected</item>
+    </style>
+
+
+    <style name="NinchatTheme.Questionnaire.TextView" parent="NinchatTheme.Questionnaire">
+        <item name="android:textIsSelectable">true</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_textview_text</item>
+        <item name="android:layout_marginBottom">@dimen/ninchat_questionnaire_item_margin_bottom
+        </item>
+        <item name="android:textSize">@dimen/ninchat_questionnaire_textview_text_size</item>
+        <item name="android:background">@drawable/ninchat_questionnaire_textview</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.TextView.Disabled" parent="NinchatTheme.Questionnaire.TextView">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_textview_text_disabled
+        </item>
+        <item name="android:background">@drawable/ninchat_questionnaire_textview_disabled</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.TextView.Form" parent="NinchatTheme.Questionnaire.TextView">
+        <item name="android:background">@drawable/null_</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.TextView.Form.Disabled" parent="NinchatTheme.Questionnaire.TextView.Disabled">
+        <item name="android:background">@drawable/null_</item>
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingRight">0dp</item>
     </style>
 
 </resources>

@@ -22,8 +22,10 @@ public final class NinchatMessage {
         WRITING,
         REMOVE_WRITING,
         END,
+        REMOVE_END,
         PADDING,
-        MULTICHOICE
+        MULTICHOICE,
+        CLEAR
     }
 
     private Type type;
