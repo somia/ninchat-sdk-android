@@ -17,7 +17,7 @@
     <dimen name="ninchat_activity_top_matter_bottom_margin">45dp</dimen>
     <dimen name="ninchat_activity_top_matter_buttons_top_margin">48dp</dimen>
     <dimen name="ninchat_activity_bottom_matter_padding">20dp</dimen>
-    <dimen name="ninchat_button_queue_horizontal_margin">78dp</dimen>
+    <dimen name="ninchat_button_queue_horizontal_margin">40dp</dimen>
 
     <dimen name="ninchat_queue_activity_top_matter_top_margin">86dp</dimen>
     <dimen name="ninchat_queue_activity_progress_size">50dp</dimen>
