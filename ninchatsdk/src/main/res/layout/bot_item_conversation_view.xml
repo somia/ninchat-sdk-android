@@ -5,26 +5,34 @@
     android:layout_height="wrap_content"
     android:visibility="visible">
 
-    <ImageView
-        android:id="@+id/ninchat_chat_message_bot_avatar"
-        style="@style/NinchatTheme.Questionnaire.BotView"
-        android:visibility="gone"
-        tools:visibility="visible" />
+    <RelativeLayout
+        android:id="@+id/bot_info_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/ninchat_chat_message_bot_text"
-        style="@style/NinchatTheme.Questionnaire.BotView.Text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        tools:text="LightbotAgent"
-        tools:visibility="visible" />
+        <ImageView
+            android:id="@+id/ninchat_chat_message_bot_avatar"
+            style="@style/NinchatTheme.Questionnaire.BotView"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/ninchat_chat_message_bot_text"
+            style="@style/NinchatTheme.Questionnaire.BotView.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            tools:text="Light bot"
+            tools:visibility="visible" />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/ninchat_chat_message_bot_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/ninchat_chat_message_bot_text"
+        android:layout_below="@id/bot_info_container"
         android:orientation="vertical">
 
         <include
