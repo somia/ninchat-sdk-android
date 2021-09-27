@@ -1,7 +1,6 @@
 package com.ninchat.sdk.utils.misc
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -16,7 +15,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.BuildConfig
-import com.ninchat.sdk.R
+import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.helper.NinchatImageGetter
 
 class Misc {
@@ -53,7 +52,7 @@ class Misc {
         fun guessMimeTypeFromFileName(name: String?): String {
             val extension = name?.replace(".*\\.".toRegex(), "")
             return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
-                    ?: return "application/octet-stream"
+                ?: return "application/octet-stream"
         }
 
         @JvmStatic
@@ -96,6 +95,10 @@ class Parameter {
 }
 
 class NinchatLinearLayoutManager(context: Context) : LinearLayoutManager(context) {
+    init {
+        this.stackFromEnd = true
+    }
+
     override fun onLayoutChildren(recycler: RecyclerView.Recycler?, state: RecyclerView.State?) {
         try {
             super.onLayoutChildren(recycler, state)
@@ -103,4 +106,8 @@ class NinchatLinearLayoutManager(context: Context) : LinearLayoutManager(context
             Log.e("NinchatLM", "${err.message}")
         }
     }
+}
+
+interface NinchatAdapterCallback {
+    fun onMessageAdapter(adapter: NinchatMessageAdapter)
 }

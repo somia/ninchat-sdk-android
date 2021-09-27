@@ -23,9 +23,11 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -48,6 +50,8 @@ import com.ninchat.sdk.networkdispatchers.NinchatSendFile;
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel;
 import com.ninchat.sdk.ninchatreview.presenter.NinchatReviewPresenter;
+import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView;
+import com.ninchat.sdk.states.NinchatState;
 import com.ninchat.sdk.utils.misc.NinchatLinearLayoutManager;
 import com.ninchat.sdk.utils.writingindicator.WritingIndicator;
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
@@ -62,6 +66,9 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.List;
+
+import static android.provider.Settings.System.ACCELEROMETER_ROTATION;
+import static com.ninchat.sdk.ninchattitlebar.model.NinchatTitlebarKt.shouldShowTitlebar;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
@@ -78,8 +85,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     private int rootViewHeight = 0;
     private WritingIndicator writingIndicator = new WritingIndicator();
 
-    private NinchatMessageAdapter messageAdapter;
-
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_ninchat_chat;
@@ -93,14 +98,19 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         finish();
     }
 
+    private boolean shouldPartChannel(final NinchatState state) {
+        if (state == null) return false;
+        //1. there is no post audience questionnaire
+        //2. Or if user click skipped rating
+        return !state.hasQuestionnaire(false) || state.getSkippedReview();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         if (requestCode == NinchatReviewModel.REQUEST_CODE) {
             // coming from ninchat review
-            if (sessionManager != null &&
-                    sessionManager.ninchatState != null &&
-                    !sessionManager.ninchatState.hasQuestionnaire(false)) {
+            if (sessionManager != null && shouldPartChannel(sessionManager.ninchatState)) {
                 NinchatPartChannel.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         sessionManager.getSession(),
@@ -108,7 +118,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
                         aLong -> null
                 );
                 // delete the user if current user is a guest
-                if (NinchatSessionManager.getInstance().isGuestMemeber()) {
+                if (NinchatSessionManager.getInstance().isGuestMember()) {
                     NinchatDeleteUser.executeAsync(
                             NinchatScopeHandler.getIOScope(),
                             sessionManager.getSession(),
@@ -185,7 +195,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             if (Broadcast.CHANNEL_CLOSED.equals(action)) {
-                messageAdapter.close(NinchatChatActivity.this);
+                NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
+                if (!chatClosed && sessionManager != null)
+                    sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.close(NinchatChatActivity.this));
                 chatClosed = true;
                 hideKeyboard();
             }
@@ -250,6 +262,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         }
     }
 
+
     private boolean hasVideoCallPermissions() {
         return checkCallingOrSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
                 checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
@@ -273,7 +286,11 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         }
         final String metaMessage = answer ? sessionManager.ninchatState.getSiteConfig().getVideoCallAcceptedText() :
                 sessionManager.ninchatState.getSiteConfig().getVideoCallRejectedText();
-        messageAdapter.addMetaMessage(messageAdapter.getLastMessageId(true) + "answer", Misc.center(metaMessage));
+
+        sessionManager.getOnInitializeMessageAdapter(adapter -> {
+            adapter.addMetaMessage(adapter.getLastMessageId(true) + "answer", Misc.center(metaMessage));
+        });
+
     }
 
     private View videoContainer;
@@ -325,7 +342,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
                         dialog.dismiss();
                     });
                     hideKeyboard();
-                    messageAdapter.addMetaMessage(intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_ID), sessionManager.ninchatState.getSiteConfig().getVideoCallMetaMessageText());
+                    sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.addMetaMessage(intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_ID), sessionManager.ninchatState.getSiteConfig().getVideoCallMetaMessageText()));
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_CONTENT))) {
                     if (NinchatMessageTypes.HANG_UP.equals(messageType)) {
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
@@ -356,6 +373,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
+        handleTitlebarView();
     }
 
     public void onToggleAudio(final View view) {
@@ -498,9 +516,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         localBroadcastManager.registerReceiver(webRTCMessageReceiver, new IntentFilter(Broadcast.WEBRTC_MESSAGE));
         final RecyclerView messages = findViewById(R.id.message_list);
         final NinchatLinearLayoutManager linearLayoutManager = new NinchatLinearLayoutManager(getApplicationContext());
-        messageAdapter = sessionManager.getMessageAdapter();
         messages.setLayoutManager(linearLayoutManager);
-        messages.setAdapter(messageAdapter);
+        sessionManager.getOnInitializeMessageAdapter(messages::setAdapter);
         final EditText message = findViewById(R.id.message);
         final String enterMessageText = sessionManager.ninchatState.getSiteConfig().getEnterMessageText();
         message.setHint(enterMessageText);
@@ -509,6 +526,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         final Button closeButton = findViewById(R.id.ninchat_chat_close);
         final String closeText = sessionManager.ninchatState.getSiteConfig().getChatCloseText();
         closeButton.setText(closeText);
+        if (!shouldShowTitlebar())
+            closeButton.setVisibility(View.VISIBLE);
+
+
         final String sendButtonText = sessionManager.ninchatState.getSiteConfig().getSendButtonText();
         final Button sendButton = findViewById(R.id.send_button);
         final RelativeLayout sendIcon = findViewById(R.id.send_button_icon);
@@ -518,38 +539,56 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
             sendButton.setVisibility(View.GONE);
             sendIcon.setVisibility(View.VISIBLE);
         }
-        if (sessionManager.ninchatState.getSiteConfig().isAttachmentsEnabled()) {
+        if (sessionManager.ninchatSessionHolder.supportFiles()) {
             findViewById(R.id.attachment).setVisibility(View.VISIBLE);
         }
-        if (sessionManager.ninchatState.getSiteConfig().isVideoEnabled() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
+        if (sessionManager.ninchatSessionHolder.supportVideos() && getResources().getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) {
             findViewById(R.id.video_call).setVisibility(View.VISIBLE);
         }
 
         if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Parameter.CHAT_IS_CLOSED)) {
             initializeClosedChat(messages);
+        } else {
+            initializeChat(messages);
         }
-
+        NinchatTitlebarView.Companion.showTitlebarForBacklog(
+                findViewById(R.id.ninchat_chat_root).findViewById(R.id.ninchat_titlebar),
+                () -> {
+                    onCloseChat(null);
+                    return null;
+                });
         // Set up a soft keyboard visibility listener so video call container height can be adjusted
         setRootViewHeightListener();
     }
 
     private void initializeClosedChat(RecyclerView messages) {
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
 
         // Wait for RecyclerView to be initialized
         messages.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
 
             // Close chat if it hasn't been closed yet
             if (!chatClosed && historyLoaded) {
-                messageAdapter.close(NinchatChatActivity.this);
+                sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.close(NinchatChatActivity.this));
                 chatClosed = true;
                 hideKeyboard();
             }
 
             // Initialize closed chat with recent messages only
             if (!historyLoaded) {
-                NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
                 sessionManager.loadChannelHistory(null);
                 historyLoaded = true;
+            }
+        });
+    }
+
+    private void initializeChat(RecyclerView messages) {
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
+
+        // Wait for RecyclerView to be initialized
+        messages.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            if (!chatClosed) {
+                sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.removeChatCloseMessage());
             }
         });
     }
@@ -560,15 +599,15 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         // Refresh the message list, just in case
         NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         if (sessionManager == null) return;
-
-        messageAdapter = sessionManager.getMessageAdapter();
-        messageAdapter.notifyDataSetChanged();
+        sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.notifyDataSetChanged());
         if (webRTCView != null) {
             webRTCView.onResume();
         }
         // Don't load first messages if chat is closed, we want to load the latest messages only
         if (getIntent().getExtras() == null || !(getIntent().getExtras() != null && getIntent().getExtras().getBoolean(Parameter.CHAT_IS_CLOSED))) {
-            sessionManager.loadChannelHistory(messageAdapter.getLastMessageId(false));
+            sessionManager.getOnInitializeMessageAdapter(adapter -> {
+                sessionManager.loadChannelHistory(adapter.getLastMessageId(false));
+            });
         }
     }
 
@@ -624,8 +663,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
 
         if (webRTCView != null)
             webRTCView.onResume();
-        if (messageAdapter != null)
-            messageAdapter.scrollToBottom(true);
+        NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
+        if (sessionManager != null)
+            sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.scrollToBottom(true));
     }
 
     // Reinitialize webRTC on hangup for possible new connection
@@ -640,7 +680,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     // Listen for changes in root view height so we can determine when soft keyboard is visible
     public void setRootViewHeightListener() {
         final View activityRootView = getWindow().getDecorView().findViewById(android.R.id.content);
-
         // Set initial rootViewHeight
         if (rootViewHeight == 0) {
             rootViewHeight = activityRootView.getHeight();
@@ -664,21 +703,50 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
                 // Update video height and cache current rootview height
                 videoContainer.setLayoutParams(layoutParams);
                 // push messages on top of soft keyboard
-                messageAdapter.scrollToBottom(true);
+                if (NinchatSessionManager.getInstance() != null) {
+                    NinchatSessionManager.getInstance().getOnInitializeMessageAdapter(adapter -> adapter.scrollToBottom(true));
+                }
             }
             rootViewHeight = activityRootView.getHeight();
         });
     }
 
-    @Override
-    public void onOrientationChange(int orientation) {
+    private void handleOrientationChange(int currentOrientation) {
         if (toggleFullScreen) {
             return;
         }
-        if (orientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+        try {
+            if (Settings.System.getInt(getApplicationContext().getContentResolver(), ACCELEROMETER_ROTATION, 0) != 1)
+                return;
+        } catch (Exception e) {
+            // pass
+        }
+        if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else if (orientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+        } else if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
+    }
+
+    private void handleTitlebarView() {
+        if (webRTCView == null || !webRTCView.isInCall()) return;
+        if (!shouldShowTitlebar()) return;
+        int rotation = getWindowManager().getDefaultDisplay().getRotation();
+        switch (rotation) {
+            case Surface.ROTATION_0:
+            case Surface.ROTATION_180:
+                findViewById(R.id.ninchat_chat_root).findViewById(R.id.ninchat_titlebar).setVisibility(View.VISIBLE);
+                return;
+            case Surface.ROTATION_270:
+            case Surface.ROTATION_90:
+                findViewById(R.id.ninchat_chat_root).findViewById(R.id.ninchat_titlebar).setVisibility(View.GONE);
+                return;
+        }
+    }
+
+    @Override
+    public void onOrientationChange(int orientation) {
+        handleOrientationChange(orientation);
+        handleTitlebarView();
     }
 }

@@ -99,6 +99,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     private NinchatAudioManager ninchatAudioManager;
     private PeerConnection peerConnection;
     private PeerConnectionFactory peerConnectionFactory;
+    private Boolean inCall = false;
 
     public NinchatWebRTCView(final View view) {
         videoContainer = view;
@@ -107,6 +108,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     public void init() {
         if (videoContainer == null) return;
+        inCall = true;
         eglBase = EglBase.create();
         remoteVideo = videoContainer.findViewById(R.id.video);
         localVideo = videoContainer.findViewById(R.id.pip_video);
@@ -129,6 +131,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     private void animateSpinner() {
+        if (inCall) return;
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             final RotateAnimation animation = new RotateAnimation(0f, 359f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
             animation.setInterpolator(new LinearInterpolator());
@@ -157,7 +160,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             final ImageView spinner = videoContainer.findViewById(R.id.video_call_spinner);
             final Animation animation = spinner.getAnimation();
-            if(animation != null){
+            if (animation != null) {
                 animation.cancel();
                 animation.reset();
             }
@@ -531,6 +534,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     private void hangUp(final boolean sendMessage) {
+        inCall = false;
         if (localRender != null) {
             localRender.setTarget(null);
         }
@@ -673,6 +677,10 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         } catch (final Exception e) {
             // Not fully initialized yet, ignore the exception
         }
+    }
+
+    public boolean isInCall() {
+        return this.inCall;
     }
 
 }

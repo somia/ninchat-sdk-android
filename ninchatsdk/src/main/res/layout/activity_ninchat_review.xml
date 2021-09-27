@@ -1,29 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ninchat_review_activity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/ninchat_review_activity"
     android:background="@color/ninchat_color_background_bottom"
+    android:fadeScrollbars="false"
     tools:context=".ninchatreview.view.NinchatReviewActivity">
 
-
-    <include
-        layout="@layout/review_rating_normal_view"
-        android:visibility="gone"
-        android:id="@+id/review_rating_normal_view" />
-
-    <include layout="@layout/review_rating_bot_view"
-        android:id="@+id/review_rating_bot_view" />
-
-    <TextView
-        android:id="@+id/ninchat_review_skip"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:onClick="onSkipClick"
-        android:padding="@dimen/ninchat_review_activity_skip_bottom_margin"
-        android:textColor="@color/ninchat_color_link"
-        tools:text="Skip" />
-</RelativeLayout>
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/ninchat_titlebar"
+            layout="@layout/ninchat_titlebar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <RelativeLayout
+            android:id="@+id/rating_view_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include
+                android:id="@+id/review_rating_normal_view"
+                layout="@layout/review_rating_normal_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:visibility="gone" />
+
+            <include
+                android:id="@+id/review_rating_bot_view"
+                layout="@layout/review_rating_bot_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/ninchat_questionnaire_item_margin_start"
+                tools:visibility="visible" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="@dimen/ninchat_activity_bottom_matter_padding">
+
+            <TextView
+                android:id="@+id/rating_info_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:textAlignment="center"
+                android:textColor="@color/ninchat_color_text_bottom"
+                tools:text="Message of the day" />
+
+            <TextView
+                android:id="@+id/ninchat_review_skip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:onClick="onSkipClick"
+                android:padding="@dimen/ninchat_review_activity_skip_bottom_margin"
+                android:textAlignment="center"
+                android:textColor="@color/ninchat_color_link"
+                tools:text="Skip" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

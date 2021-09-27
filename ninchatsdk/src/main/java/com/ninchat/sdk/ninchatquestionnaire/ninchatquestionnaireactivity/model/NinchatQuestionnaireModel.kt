@@ -52,7 +52,7 @@ data class NinchatQuestionnaireModel(
 
     fun isQueueClosed(): Boolean {
         // todo ( pallab ) currently if queue not found then we consider it as open queue
-        val queue = NinchatSessionManager.getInstance()?.ninchatState?.queues?.find { it.id == queueId }
+        val queue = NinchatSessionManager.getInstance()?.ninchatState?.getQueueList()?.find { it.id == queueId }
         return queue?.let {
             return it.isClosed
         } ?: false
@@ -62,7 +62,17 @@ data class NinchatQuestionnaireModel(
         val answerProps = Props()
         if (answers?.answerList.isNullOrEmpty().not()) {
             answers?.answerList?.forEach {
-                answerProps.setString(it.first, it.second)
+                when {
+                    NinchatQuestionnaireJsonUtil.isBoolean(it.second) -> {
+                        answerProps.setBool(it.first, true)
+                    }
+                    NinchatQuestionnaireJsonUtil.isNumber(it.second) -> {
+                        answerProps.setInt(it.first, NinchatQuestionnaireJsonUtil.asLong(it.second))
+                    }
+                    else -> {
+                        answerProps.setString(it.first, it.second)
+                    }
+                }
             }
         }
         if (answers?.tagList.isNullOrEmpty().not()) {

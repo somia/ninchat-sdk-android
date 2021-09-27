@@ -57,7 +57,8 @@ class NinchatActivityPresenter(
 
     fun shouldOpenPostAudienceQuestionnaireActivity(): Boolean {
         return NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
-            return ninchatSessionManager.ninchatState?.hasQuestionnaire(isPreAudienceQuestionnaire = false)
+            val shouldSkipped = ninchatSessionManager.ninchatState?.skippedReview ?: false
+            return !shouldSkipped && ninchatSessionManager.ninchatState?.hasQuestionnaire(isPreAudienceQuestionnaire = false)
                     ?: false
         } ?: false
     }

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ninchat_control_button_root"
     android:orientation="horizontal">
 
@@ -23,14 +24,16 @@
         android:minHeight="@dimen/ninchat_button_height"
         android:layout_weight="0.45"
         android:minWidth="@dimen/ninchat_chat_control_follow_button_width"
-        android:text="Queue name" />
+        tools:visibility="gone"
+        tools:text="Previous button" />
 
     <View
         android:id="@+id/view_padding"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_weight="0.02"
-        android:visibility="invisible" />
+        android:visibility="invisible"
+        tools:visibility="gone"/>
 
     <ImageView
         android:visibility="gone"
@@ -51,6 +54,7 @@
         android:minHeight="@dimen/ninchat_button_height"
         android:layout_weight="0.45"
         android:minWidth="@dimen/ninchat_chat_control_follow_button_width"
-        android:text="Queue name that is far too long to fit in one line and extends to multiple lines" />
+        tools:visibility="visible"
+        tools:text="Next button" />
 
 </LinearLayout>

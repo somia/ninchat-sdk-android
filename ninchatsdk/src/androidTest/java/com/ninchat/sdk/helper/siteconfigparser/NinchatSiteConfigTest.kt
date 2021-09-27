@@ -469,4 +469,49 @@ class NinchatSiteConfigTest {
         val value = ninchatSiteConfig.getString("sendButtonText_NoKey")
         Assert.assertEquals(null, value)
     }
+
+    @Test
+    fun `should_get_agent_avatar_true`() {
+        val siteConfigWithAgentAvatarSetFalse = """{
+          "description": "SDK dev queues",
+          "default": {
+            "agentAvatar": true,
+            "audienceRating": true,
+            "audienceRealmId": "5lmphjc200m3g",
+            "audienceQueues": [
+              "5lmpjrbl00m3g"
+            ]
+          }
+        }""".trimIndent()
+        val ninchatSiteConfig = NinchatSiteConfig()
+        ninchatSiteConfig.setConfigString(siteConfigWithAgentAvatarSetFalse, arrayListOf("default", "fi"))
+
+        val value = ninchatSiteConfig.showAgentAvatar()
+        Assert.assertEquals(true, value)
+    }
+
+    @Test
+    fun `should_get_agent_avatar_false_for_a_url`() {
+        val siteConfigWithAgentAvatarSetFalse = """{
+          "description": "SDK dev queues",
+          "default": {
+            "agentAvatar": "something else",
+            "audienceRating": true,
+            "audienceRealmId": "5lmphjc200m3g",
+            "audienceQueues": [
+              "5lmpjrbl00m3g"
+            ]
+          }
+        }""".trimIndent()
+        // "" -> false
+        // "false" -> false
+        // false -> false
+        // "null" -> false
+        // null -> false
+        val ninchatSiteConfig = NinchatSiteConfig()
+        ninchatSiteConfig.setConfigString(siteConfigWithAgentAvatarSetFalse, arrayListOf("default", "fi"))
+
+        val value = ninchatSiteConfig.showAgentAvatar(fallback = false)
+        Assert.assertEquals(false, value)
+    }
 }

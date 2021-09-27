@@ -34,11 +34,11 @@ class NinchatSiteConfig {
 
     fun getArray(key: String): JSONArray? {
         var value: JSONArray? = null
-        siteConfig?.let {
+        siteConfig?.let { config ->
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
-                    if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optJSONArray(key)
+                    if (config.optJSONObject(currentEnvironment)?.has(key) == true) {
+                        value = config.optJSONObject(currentEnvironment)?.optJSONArray(key)
                     }
                 }
             }
@@ -46,16 +46,16 @@ class NinchatSiteConfig {
         return value
     }
 
-    fun getBoolean(key: String): Boolean? {
+    fun getBoolean(key: String, fallback: Boolean = false): Boolean? {
         var value = false
-        var found = false;
-        siteConfig?.let {
+        var found = false
+        siteConfig?.let { config ->
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
-                    if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
+                    if (config.optJSONObject(currentEnvironment)?.has(key) == true) {
                         found = true
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optBoolean(key, true)
-                                ?: false
+                        value = config.optJSONObject(currentEnvironment)?.optBoolean(key, fallback)
+                            ?: false
                     }
                 }
             }
@@ -63,13 +63,50 @@ class NinchatSiteConfig {
         return if (found) value else null
     }
 
+    fun isTrue(key: String): Boolean {
+        return siteConfig?.let { config ->
+            preferredEnvironments?.let { environmentList ->
+                environmentList.any {
+                    config.optJSONObject(it)?.has(key) == true &&
+                            siteConfig?.optJSONObject(it)?.optBoolean(key, false) == true
+                }
+            }
+        } ?: false
+    }
+
+    fun isFalse(key: String): Boolean {
+        return siteConfig?.let {config ->
+            preferredEnvironments?.let { environmentList ->
+                environmentList.any {
+                    config.optJSONObject(it)?.has(key) == true &&
+                            listOf("null", "false", "").contains(
+                                config.optJSONObject(it)?.optString(key, "false")
+                            )
+                }
+            }
+        } ?: false
+    }
+
+    fun hasValue(key: String): Boolean {
+        return siteConfig?.let { config ->
+            preferredEnvironments?.let { environmentList ->
+                environmentList.any {
+                    config.optJSONObject(it)
+                        ?.has(key) == true && !siteConfig?.optJSONObject(it)?.optString(key, "")
+                        .isNullOrEmpty()
+                }
+            }
+        } ?: false
+    }
+
     fun getString(key: String): String? {
         var value: String? = null
-        siteConfig?.let {
+        siteConfig?.let { config ->
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
-                    if (siteConfig?.optJSONObject(currentEnvironment)?.has(key) == true) {
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optString(key, "null")
+                    if (config.optJSONObject(currentEnvironment)?.has(key) == true) {
+                        value =
+                            config.optJSONObject(currentEnvironment)?.optString(key, "null")
                         // workaround value can be null which when parsing will be interpreted as "null" string in Java with quote
                         if ("null" == value || "false" == value) {
                             value = null
@@ -93,121 +130,129 @@ class NinchatSiteConfig {
     }
 
     fun getAudienceAutoQueue(): String? =
-            getString("audienceAutoQueue")
+        getString("audienceAutoQueue")
 
     fun getRealmId(): String? =
-            getString("audienceRealmId")
+        getString("audienceRealmId")
 
     fun getWelcomeText(): String =
-            getString("welcome") ?: "welcome"
+        getString("welcome") ?: "welcome"
 
     fun getNoQueuesText(): String =
-            getString("noQueuesText") ?: ""
+        getString("noQueuesText") ?: ""
 
     fun getCloseWindowText(): String =
-            getTranslation("Close window")
+        getTranslation("Close window")
 
     fun getUserName(): String? =
-            getString("userName")
+        getString("userName")
 
     fun getAgentName(): String? =
-            getString("agentName")
+        getString("agentName")
 
     fun getSendButtonText(): String? =
-            getString("sendButtonText")
+        getString("sendButtonText")
 
     fun getSubmitButtonText(): String =
-            getTranslation("Submit")
+        getTranslation("Submit")
 
-    fun isAttachmentsEnabled(): Boolean =
-            getBoolean("supportFiles") ?: false
+    fun showUserAvatar(fallback: Boolean = false): Boolean =
+        getBoolean("userAvatar", fallback = fallback) ?: false
 
-    fun isVideoEnabled(): Boolean =
-            getBoolean("supportVideo") ?: false
+    fun showAgentAvatar(fallback: Boolean = false): Boolean =
+        getBoolean("agentAvatar", fallback = fallback) ?: false
 
-    fun showUserAvatar(): Boolean =
-            getBoolean("userAvatar") ?: false
+    fun hideAgentAvatar(): Boolean =
+        isFalse("agentAvatar")
 
-    fun showAgentAvatar(): Boolean =
-            getBoolean("agentAvatar") ?: false
+    fun hideUserAvatar(): Boolean =
+        isFalse("userAvatar")
 
     fun getAgentAvatar(): String? =
-            getString("agentAvatar")
+        getString("agentAvatar")
 
     fun getUserAvatar(): String? =
-            getString("userAvatar")
+        getString("userAvatar")
 
     fun getConversationEndedText(): String =
-            getTranslation("Conversation ended")
+        getTranslation("Conversation ended")
 
     fun getChatCloseText(): String =
-            getTranslation("Close chat")
+        getTranslation("Close chat")
 
     fun getChatCloseConfirmationText(): String =
-            getString("closeConfirmText") ?: ""
+        getString("closeConfirmText") ?: ""
 
     fun getContinueChatText(): String =
-            getTranslation("Continue chat")
+        getTranslation("Continue chat")
 
     fun getEnterMessageText(): String =
-            getTranslation("Enter your message")
+        getTranslation("Enter your message")
 
     fun getVideoChatTitleText(): String =
-            getTranslation("You are invited to a video chat")
+        getTranslation("You are invited to a video chat")
 
     fun getVideoChatDescriptionText(): String =
-            getTranslation("wants to video chat with you")
+        getTranslation("wants to video chat with you")
 
     fun getVideoCallAcceptText(): String =
-            getTranslation("Accept")
+        getTranslation("Accept")
 
     fun getVideoCallDeclineText(): String =
-            getTranslation("Decline")
+        getTranslation("Decline")
 
     fun getVideoCallMetaMessageText(): String =
-            getTranslation("You are invited to a video chat")
+        getTranslation("You are invited to a video chat")
 
     fun getVideoCallAcceptedText(): String =
-            getTranslation("Video chat answered")
+        getTranslation("Video chat answered")
 
     fun getVideoCallRejectedText(): String =
-            getTranslation("Video chat declined")
+        getTranslation("Video chat declined")
 
     fun getMOTDText(): String =
-            getString("motd") ?: ""
+        getString("motd") ?: ""
 
     fun getInQueueMessageText(): String? =
-            getString("inQueueText")
+        getString("inQueueText")
 
     fun showRating(): Boolean =
-            getBoolean("audienceRating") ?: false
+        getBoolean("audienceRating") ?: false
 
     fun getFeedbackTitleText(): String =
-            getTranslation("How was our customer service?")
+        getTranslation("How was our customer service?")
 
     fun getFeedbackPositiveText(): String =
-            getTranslation("Good")
+        getTranslation("Good")
 
     fun getFeedbackNeutralText(): String =
-            getTranslation("Okay")
+        getTranslation("Okay")
 
     fun getFeedbackNegativeText(): String =
-            getTranslation("Poor")
+        getTranslation("Poor")
 
     fun getFeedbackSkipText(): String =
-            getTranslation("Skip")
+        getTranslation("Skip")
 
     fun getQueueName(name: String, closed: Boolean = false): String {
         return if (closed) {
-            replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}} (closed)"), name);
+            replacePlaceholder(
+                getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}} (closed)"),
+                name
+            )
         } else {
-            replacePlaceholder(getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"), name);
+            replacePlaceholder(
+                getTranslation("Join audience queue {{audienceQueue.queue_attrs.name}}"),
+                name
+            )
         }
     }
 
     fun getChatStarted(name: String?): String =
-            replacePlaceholder(getTranslation("Audience in queue {{queue}} accepted."), name
-                    ?: "");
+        replacePlaceholder(
+            getTranslation("Audience in queue {{queue}} accepted."), name
+                ?: ""
+        )
 
     fun getQueueStatus(name: String?, position: Long = 0): String {
         val key = if (position == 1L) {
@@ -226,39 +271,50 @@ class NinchatSiteConfig {
 
 
     fun getQuestionnaireName(): String? =
-            getString("questionnaireName")
+        getString("questionnaireName")
+
+    fun getPostQuestionnaireTitleBarDisplay(): String? =
+        getString("postAudienceQuestionnaireTitlebar")
 
     fun getQuestionnaireAvatar(): String? =
-            getString("questionnaireAvatar")
+        getString("questionnaireAvatar")
 
     fun getAudienceRegisteredText(): String? =
-            getString("audienceRegisteredText")
+        getString("audienceRegisteredText")
 
     fun getAudienceRegisteredClosedText(): String? =
-            getString("audienceRegisteredClosedText")
+        getString("audienceRegisteredClosedText")
+
+    fun getRatingInfoText(): String? =
+        getString("ratingInfoText")
 
     fun getPreAudienceQuestionnaire(): JSONArray? =
-            getArray("preAudienceQuestionnaire")
+        getArray("preAudienceQuestionnaire")
 
     fun getPostAudienceQuestionnaire(): JSONArray? =
-            getArray("postAudienceQuestionnaire")
+        getArray("postAudienceQuestionnaire")
 
     fun getPreAudienceQuestionnaireStyle(): String =
-            getString("preAudienceQuestionnaireStyle")
-                    ?: "form" // default style is form
+        getString("preAudienceQuestionnaireStyle")
+            ?: "form" // default style is form
 
     fun getPostAudienceQuestionnaireStyle(): String =
-            getString("postAudienceQuestionnaireStyle")
-                    ?: "form" // default style is form
+        getString("postAudienceQuestionnaireStyle")
+            ?: "form" // default style is form
 
+    fun getTitlebarCloseText(): String =
+        getTranslation("Close")
 
     internal fun getTranslation(translationKey: String = "translations", key: String): String? {
         var value: String? = null
-        siteConfig?.let {
+        siteConfig?.let { config ->
             preferredEnvironments?.let {
                 for (currentEnvironment in it) {
-                    if (siteConfig?.optJSONObject(currentEnvironment)?.optJSONObject(translationKey)?.has(key) == true) {
-                        value = siteConfig?.optJSONObject(currentEnvironment)?.optJSONObject(translationKey)?.optString(key)
+                    if (config.optJSONObject(currentEnvironment)?.optJSONObject(translationKey)
+                            ?.has(key) == true
+                    ) {
+                        value = config.optJSONObject(currentEnvironment)
+                            ?.optJSONObject(translationKey)?.optString(key)
                     }
                 }
             }
@@ -268,7 +324,7 @@ class NinchatSiteConfig {
 
     // todo (pallab) move to translator package
     fun getTranslation(key: String = ""): String =
-            getTranslation("translations", key) ?: key
+        getTranslation("translations", key) ?: key
 
     // todo (pallab) move to translator or general util/helper package
     fun replacePlaceholder(origin: String?, replacement: String): String {

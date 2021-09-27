@@ -3,6 +3,8 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presen
 import android.content.Context
 import android.content.Intent
 import android.os.Handler
+import android.os.Looper
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.client.Props
 import com.ninchat.sdk.NinchatSessionManager
@@ -16,26 +18,34 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.N
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.NinchatQuestionnaireListAdapter
+import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.lang.Exception
 
 class NinchatQuestionnairePresenter(
-        val viewCallback: INinchatQuestionnairePresenter,
+    val viewCallback: INinchatQuestionnairePresenter,
 ) {
     private val model = NinchatQuestionnaireModel()
 
     fun renderCurrentView(intent: Intent?) {
         model.update(intent)
         viewCallback.renderQuestionnaireList(
-                questionnaireList = model.questionnaireList,
-                preAnswers = if (model.questionnaireType == NinchatQuestionnaireConstants.preAudienceQuestionnaire) model.preAnswers() else listOf(),
-                queueId = model.queueId,
-                isFormLike = model.isFormLike)
+            questionnaireList = model.questionnaireList,
+            preAnswers = if (model.questionnaireType == NinchatQuestionnaireConstants.preAudienceQuestionnaire) model.preAnswers() else listOf(),
+            queueId = model.queueId,
+            isFormLike = model.isFormLike
+        )
     }
 
-    fun handleDataSetChange(mRecyclerView: RecyclerView?, myAdapter: NinchatQuestionnaireListAdapter, withError: Boolean) {
+    fun handleDataSetChange(
+        mRecyclerView: RecyclerView?,
+        myAdapter: NinchatQuestionnaireListAdapter,
+        withError: Boolean
+    ) {
         if (withError) {
             // if it was triggered by error then only call notify dataset change since list is still same
             myAdapter.notifyDataSetChanged()
@@ -51,7 +61,10 @@ class NinchatQuestionnairePresenter(
         adapter.showThankYou(isComplete)
     }
 
-    fun showNextQuestionnaire(adapter: NinchatQuestionnaireListAdapter, onNextQuestionnaire: OnNextQuestionnaire) {
+    fun showNextQuestionnaire(
+        adapter: NinchatQuestionnaireListAdapter,
+        onNextQuestionnaire: OnNextQuestionnaire
+    ) {
         adapter.showNextQuestionnaire(onNextQuestionnaire)
     }
 
@@ -90,18 +103,19 @@ class NinchatQuestionnairePresenter(
         // send audience metadata
         NinchatSessionManager.getInstance()?.session?.let {
             // even if the error occurred,
-            NinchatScopeHandler.getIOScope().launch(CoroutineExceptionHandler(handler = { _, _ -> viewCallback.onAudienceRegisterError() })) {
-                val id = NinchatRegisterAudience.execute(
+            NinchatScopeHandler.getIOScope()
+                .launch(CoroutineExceptionHandler(handler = { _, _ -> viewCallback.onAudienceRegisterError() })) {
+                    val id = NinchatRegisterAudience.execute(
                         currentSession = it,
                         queueId = model.queueId,
                         audienceMetadata = audienceMetadata
-                )
-                if (id == -1L) {
-                    viewCallback.onAudienceRegisterError()
-                } else {
-                    NinchatSessionManager.getInstance()?.ninchatState?.actionId = id
+                    )
+                    if (id == -1L) {
+                        viewCallback.onAudienceRegisterError()
+                    } else {
+                        NinchatSessionManager.getInstance()?.ninchatState?.actionId = id
+                    }
                 }
-            }
         }
     }
 
@@ -115,40 +129,54 @@ class NinchatQuestionnairePresenter(
         }
         NinchatSessionManager.getInstance()?.session?.let {
             // even if the error occurred,
-            NinchatScopeHandler.getIOScope().launch(CoroutineExceptionHandler(handler = { _, _ -> viewCallback.onCompletePostAudienceQuestionnaire() })) {
-                val id = NinchatSendPostAudienceQuestionnaire.execute(
+            NinchatScopeHandler.getIOScope()
+                .launch(CoroutineExceptionHandler(handler = { _, _ -> viewCallback.onCompletePostAudienceQuestionnaire() })) {
+                    val id = NinchatSendPostAudienceQuestionnaire.execute(
                         currentSession = it,
                         channelId = NinchatSessionManager.getInstance().ninchatState?.channelId,
                         message = payload.toString(2)
-                )
-                if (id == -1L) {
-                    viewCallback.onCompletePostAudienceQuestionnaire()
-                } else {
-                    NinchatSessionManager.getInstance()?.ninchatState?.actionId = id
+                    )
+                    if (id == -1L) {
+                        viewCallback.onCompletePostAudienceQuestionnaire()
+                    } else {
+                        NinchatSessionManager.getInstance()?.ninchatState?.actionId = id
+                    }
                 }
-            }
         }
     }
 
     fun handlePostAudienceQuestionnaire(callback: () -> Unit) {
         NinchatSessionManager.getInstance()?.session?.let {
-            NinchatScopeHandler.getIOScope().launch(CoroutineExceptionHandler(handler = { _, _ -> callback() })) {
-                NinchatPartChannel.execute(
+            NinchatScopeHandler.getIOScope()
+                .launch(CoroutineExceptionHandler(handler = { _, _ -> callback() })) {
+                    NinchatPartChannel.execute(
                         currentSession = it,
-                        channelId = NinchatSessionManager.getInstance().ninchatState?.channelId)
-
-                NinchatDeleteUser.execute(currentSession = it)
-                Handler().postDelayed({
-                    it.close()
-                    callback()
-                }, 500)
-            }
+                        channelId = NinchatSessionManager.getInstance().ninchatState?.channelId
+                    )
+                    NinchatDeleteUser.execute(currentSession = it)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        it.close()
+                        callback()
+                    }, 400)
+                }
         }
+    }
+
+    fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
+        if (isPostAudienceQuestionnaire()) {
+            NinchatTitlebarView.showTitlebarForPostAudienceQuestionnaire(view, callback = {
+                viewCallback.onCompletePostAudienceQuestionnaire()
+            })
+        } else {
+            NinchatTitlebarView.showTitlebarForPreAudienceQuestionnaire(view, callback = callback)
+        }
+
     }
 
     fun isComplete(): Boolean = model.fromComplete
     fun queueId(): String? = model.queueId
-    fun isPostAudienceQuestionnaire(): Boolean = model.questionnaireType == NinchatQuestionnaireConstants.postAudienceQuestionnaire
+    fun isPostAudienceQuestionnaire(): Boolean =
+        model.questionnaireType == NinchatQuestionnaireConstants.postAudienceQuestionnaire
 
     companion object {
         val REQUEST_CODE = NinchatQuestionnairePresenter::class.java.hashCode() and 0xffff
@@ -162,7 +190,13 @@ class NinchatQuestionnairePresenter(
 }
 
 interface INinchatQuestionnairePresenter {
-    fun renderQuestionnaireList(questionnaireList: List<JSONObject>, preAnswers: List<Pair<String, Any>>, queueId: String?, isFormLike: Boolean)
+    fun renderQuestionnaireList(
+        questionnaireList: List<JSONObject>,
+        preAnswers: List<Pair<String, Any>>,
+        queueId: String?,
+        isFormLike: Boolean
+    )
+
     fun onCompleteQuestionnaire()
     fun onAudienceRegisterError()
     fun onCompletePostAudienceQuestionnaire()

@@ -93,7 +93,7 @@ class NinchatState {
     }
 
     var queues = arrayListOf<NinchatQueue>()
-    fun getQueues(): List<NinchatQueue> {
+    fun getQueueList(): List<NinchatQueue> {
         return queues.map { it }
     }
 
@@ -101,6 +101,7 @@ class NinchatState {
         queues.add(ninchatQueue)
     }
 
+    var skippedReview = false
 
     fun dispose() {
         userId = null
@@ -123,5 +124,6 @@ class NinchatState {
         files.clear()
         members.clear()
         queues.clear()
+        skippedReview = false
     }
 }

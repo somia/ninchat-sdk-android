@@ -17,6 +17,8 @@ import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity
+import com.ninchat.sdk.ninchattitlebar.model.shouldShowTitlebar
+import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.misc.Parameter
@@ -30,9 +32,9 @@ interface INinchatQueuePresenter {
 }
 
 class NinchatQueuePresenter(
-        val ninchatQueueModel: NinchatQueueModel,
-        val callback: INinchatQueuePresenter?,
-        val mContext: Context,
+    val ninchatQueueModel: NinchatQueueModel,
+    val callback: INinchatQueuePresenter?,
+    val mContext: Context,
 ) {
 
     fun hasSession(): Boolean {
@@ -41,37 +43,55 @@ class NinchatQueuePresenter(
 
     fun updateQueueView(view: View) {
         // update queue text
-        view.ninchat_queue_activity_queue_status.text = Misc.toRichText(ninchatQueueModel.getQueueStatus(), view.ninchat_queue_activity_queue_status)
-        view.ninchat_queue_activity_queue_message.text = Misc.toRichText(ninchatQueueModel.getInQueueMessageText(), view.ninchat_queue_activity_queue_message)
-        view.ninchat_queue_activity_close_button.text = Misc.toRichText(ninchatQueueModel.getChatCloseText(), view.ninchat_queue_activity_close_button)
+        view.ninchat_queue_activity_queue_status.text = Misc.toRichText(
+            ninchatQueueModel.getQueueStatus(),
+            view.ninchat_queue_activity_queue_status
+        )
+        view.ninchat_queue_activity_queue_message.text = Misc.toRichText(
+            ninchatQueueModel.getInQueueMessageText(),
+            view.ninchat_queue_activity_queue_message
+        )
+        view.ninchat_queue_activity_close_button.text = Misc.toRichText(
+            ninchatQueueModel.getChatCloseText(),
+            view.ninchat_queue_activity_close_button
+        )
 
         // update queue visibility
-        view.ninchat_queue_activity_queue_status.visibility = if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
-        view.ninchat_queue_activity_queue_message.visibility = if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
-        view.ninchat_queue_activity_close_button.visibility = if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
+        view.ninchat_queue_activity_queue_status.visibility =
+            if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
+        view.ninchat_queue_activity_queue_message.visibility =
+            if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
+        view.ninchat_queue_activity_close_button.visibility =
+            if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
     }
 
     fun updateQueueId(intent: Intent?) {
         // update queue id
         val queueId = intent?.getStringExtra(NinchatQueueModel.QUEUE_ID)
-        if(ninchatQueueModel.queueId == queueId)return
+        if (ninchatQueueModel.queueId == queueId) return
         ninchatQueueModel.queueId = queueId
         if (!ninchatQueueModel.isAlreadyInQueueList()) {
             // if not already in queue then try to describe the queue
             NinchatScopeHandler.getIOScope().launch {
                 NinchatDescribeQueue.execute(
-                        currentSession = NinchatSessionManager.getInstance()?.session,
-                        queueId = queueId
+                    currentSession = NinchatSessionManager.getInstance()?.session,
+                    queueId = queueId
                 )
             }
         }
-
     }
 
     fun showQueueAnimation(view: ImageView?) {
         // show rotate animation
         view?.run {
-            animation = RotateAnimation(0f, 359f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f).apply {
+            animation = RotateAnimation(
+                0f,
+                359f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f
+            ).apply {
                 interpolator = LinearInterpolator()
                 repeatCount = Animation.INFINITE
                 duration = 3000
@@ -106,7 +126,7 @@ class NinchatQueuePresenter(
         NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
             NinchatScopeHandler.getIOScope().launch {
                 NinchatDeleteUser.execute(
-                        currentSession = ninchatSessionManager.session
+                    currentSession = ninchatSessionManager.session
                 )
             }
         }
@@ -129,6 +149,13 @@ class NinchatQueuePresenter(
         }
     }
 
+    fun mayBeAttachTitlebar(view: View, callback: () -> Unit) {
+        if(shouldShowTitlebar()) {
+            // since default close button visibility is "visible" -> make it invisible when we are show titlebar
+            view.ninchat_queue_activity_close_button.visibility = View.INVISIBLE
+        }
+        NinchatTitlebarView.showTitlebarForInQueueView(view = view.ninchat_titlebar, callback = callback)
+    }
 
     companion object {
         fun getLaunchIntentForChatActivity(context: Context?, isClosed: Boolean): Intent {
