@@ -107,9 +107,6 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
                 NinchatMessage.Type.END -> {
                     // get end message id from here since it require calling messageIds
                     val endMessageId = getLastMessageId(true) + END_MESSAGE_ID_SUFFIX
-                    if (newList.any { current -> current.endsWith(END_MESSAGE_ID_SUFFIX) }) {
-                        continue
-                    }
                     newList.add(endMessageId)
                     messageMap[endMessageId] = pendingMessage.message!!
                 }

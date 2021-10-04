@@ -131,6 +131,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
     }
 
     private void animateSpinner() {
+        if (inCall) return;
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             final RotateAnimation animation = new RotateAnimation(0f, 359f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
             animation.setInterpolator(new LinearInterpolator());
@@ -159,7 +160,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             final ImageView spinner = videoContainer.findViewById(R.id.video_call_spinner);
             final Animation animation = spinner.getAnimation();
-            if(animation != null){
+            if (animation != null) {
                 animation.cancel();
                 animation.reset();
             }

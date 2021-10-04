@@ -161,6 +161,9 @@ class NinchatButtonViewPresenter(
         }
         return buttonCount == 1
     }
+
+    fun imageButton(): Boolean = model.showPreviousImageButton || model.showNextImageButton
+
 }
 
 interface INinchatButtonViewPresenter {

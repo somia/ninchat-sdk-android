@@ -430,8 +430,7 @@ class NinchatSessionManagerHelper {
                 } catch (e: Exception) {
                     return
                 }
-                val isAudienceTransfer =
-                    params.getSafe<String>("event_cause") == "audience_transfer"
+                val isAudienceTransfer = params.getSafe<String>("event_cause") == "audience_transfer"
                 ninchatSessionManager.contextWeakReference?.get()?.let { mContext ->
                     if (!isAudienceTransfer && (closed || suspended)) {
                         LocalBroadcastManager.getInstance(mContext)
@@ -443,7 +442,6 @@ class NinchatSessionManagerHelper {
 
         @JvmStatic
         fun jitsiDiscovered(params: Props) {
-            Log.e("jitsiDiscover", params.marshalJSON())
             val jitsiRoom = params.getSafe<String>("jitsi_room")
             val jitsiToken = params.getSafe<String>("jitsi_token")
 

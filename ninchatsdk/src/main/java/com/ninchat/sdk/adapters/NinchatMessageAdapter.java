@@ -78,7 +78,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             }
             String userAvatar = null;
             final NinchatUser user = sessionManager.getMember(ninchatMessage.getSenderId());
-            if (user != null && sessionManager.ninchatState.getSiteConfig().isTrue("agentAvatar")) {
+            if (user != null) {
                 boolean showUserAvatar = ninchatMessage.isRemoteMessage() ?
                         sessionManager.ninchatState.getSiteConfig().isTrue("agentAvatar") :
                         sessionManager.ninchatState.getSiteConfig().isTrue("userAvatar");
@@ -140,7 +140,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             } else {
                 final int width = file.getWidth();
                 final int height = file.getHeight();
-                final int density = (int) itemView.getResources().getDisplayMetrics().density;
+                final int density = (int)itemView.getResources().getDisplayMetrics().density;
                 image.setVisibility(View.VISIBLE);
                 image.setBackgroundResource(isContinuedMessage ? repeatedMessageBackground : firstMessageBackground);
                 GlideWrapper.loadImage(image.getContext(), file.getThumbnailUrl(), image, R.color.ninchat_colorPrimaryDark, width * density, height * density);
