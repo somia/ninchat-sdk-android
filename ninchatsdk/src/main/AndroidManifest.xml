@@ -28,7 +28,6 @@
             android:theme="@style/NinchatTheme"
             android:configChanges="orientation|screenSize"
             android:windowSoftInputMode="adjustResize"
-            android:supportsPictureInPicture="true"
             />
         <activity
             android:name=".ninchatreview.view.NinchatReviewActivity"

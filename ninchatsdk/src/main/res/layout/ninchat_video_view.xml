@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/ninchat_chat_activity_video_view_jitsi_height"
         android:layout_alignParentTop="true"
-        android:background="@android:color/white"
         android:visibility="gone"
         tools:visibility="visible">
         <!-- Note: A org.jitsi.meet.sdk.JitsiMeetView will be added here and so add tools:ignore="UselessParent" -->
