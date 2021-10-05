@@ -35,13 +35,13 @@ class NinchatJitsiIntegration(val view: JitsiMeetView? = null) {
             .setFeatureFlag("invite.enabled", false)
             .setFeatureFlag("kick-out.enabled", false)
             .setFeatureFlag("live-streaming.enabled", false)
-            .setFeatureFlag("meeting-name.enabled", false)
+            .setFeatureFlag("meeting-name.enabled", true)
             .setFeatureFlag("meeting-password.enabled", false)
             .setFeatureFlag("notifications.enabled", false)
             .setFeatureFlag("recording.enabled", false)
-            .setFeatureFlag("welcomepage.enabled", false)
+            .setFeatureFlag("welcomepage.enabled", true)
             .setFeatureFlag("video-share.enabled", false)
-            .setFeatureFlag("toolbox.alwaysVisible", false)
+            .setFeatureFlag("toolbox.alwaysVisible", true)
             .setFeatureFlag("fullscreen.enabled'", true)
             .setFeatureFlag("help.enabled", false)
             .setFeatureFlag("lobby-mode.enabled", false)
@@ -49,7 +49,7 @@ class NinchatJitsiIntegration(val view: JitsiMeetView? = null) {
             .build()
 
         view!!.join(options)
-        jitsiVideoView.addView(view, height, width)
+        jitsiVideoView.addView(view, width, height)
     }
 
     fun onDestroy() = view?.leave()

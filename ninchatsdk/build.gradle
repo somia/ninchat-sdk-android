@@ -90,7 +90,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     implementation 'com.airbnb.android:paris:1.7.3'
-    implementation ('org.jitsi.react:jitsi-meet-sdk:3.8.0') { transitive = true }
+    implementation ('org.jitsi.react:jitsi-meet-sdk:3.10.0') { transitive = true }
 }
 
 apply plugin: 'maven'

@@ -7,7 +7,10 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
 import android.app.AlertDialog;
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.facebook.react.modules.core.PermissionListener
 import com.ninchat.sdk.NinchatSessionManager
@@ -44,7 +47,11 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     }
     private val p2pView by lazy {
         NinchatP2PIntegration(videoContainer, onToggleFullScreen = {
-
+            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            } else {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            }
         })
     }
     private val groupView by lazy {
