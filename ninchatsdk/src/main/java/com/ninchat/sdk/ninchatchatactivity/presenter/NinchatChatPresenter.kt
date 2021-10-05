@@ -124,7 +124,7 @@ class NinchatChatPresenter() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 when (intent?.action) {
                     Broadcast.CHANNEL_CLOSED -> {
-                        if (intent.action == Broadcast.CHANNEL_CLOSED) {
+                        if (intent.action == Broadcast.CHANNEL_CLOSED && !layoutModel.chatClosed) {
                             NinchatSessionManager.getInstance()
                                 ?.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
                                     override fun onMessageAdapter(adapter: NinchatMessageAdapter) {
@@ -193,8 +193,8 @@ class NinchatChatPresenter() {
     fun loadMessageHistory() {
         NinchatSessionManager.getInstance()?.let { currentSessionManager ->
             currentSessionManager.messageAdapter?.let {
+                it.removeChatCloseMessage()
                 if (layoutModel.chatClosed) it.addEndMessage()
-                else it.removeChatCloseMessage()
             }
             currentSessionManager.loadChannelHistory(
                 currentSessionManager.messageAdapter?.getLastMessageId(true)
@@ -245,12 +245,13 @@ class NinchatChatPresenter() {
                 );
             }
         }
-
     }
+
 
     companion object {
         val REQUEST_CODE = NinchatChatActivity::class.java.hashCode() and 0xffff
         val PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() and 0xffff
         val CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE = "WebRTCVideoAudio".hashCode() and 0xffff
+        val JITSI_CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE = "JitsiWebRTCVideoAudio".hashCode() and 0xffff
     }
 }
