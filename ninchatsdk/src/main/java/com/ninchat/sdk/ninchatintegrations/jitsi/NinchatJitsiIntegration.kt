@@ -1,16 +1,15 @@
 package com.ninchat.sdk.ninchatintegrations.jitsi
 
+import android.view.View
 import android.widget.FrameLayout
+import kotlinx.android.synthetic.main.activity_ninchat_chat.*
+import kotlinx.android.synthetic.main.ninchat_video_view.view.*
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
 import org.jitsi.meet.sdk.JitsiMeetView
 import java.net.URL
 
-class NinchatJitsiIntegration(val view: JitsiMeetView? = null) {
+class NinchatJitsiIntegration(val videoContainer: View, val view: JitsiMeetView? = null) {
     var options: JitsiMeetConferenceOptions? = null
-
-    fun dispose() {
-        this.view?.leave()
-    }
 
     // Current only one message type
     fun handleWebRTCMessage(
@@ -52,5 +51,15 @@ class NinchatJitsiIntegration(val view: JitsiMeetView? = null) {
         jitsiVideoView.addView(view, width, height)
     }
 
-    fun onDestroy() = view?.leave()
+    fun onDestroy() {
+        videoContainer.visibility = View.GONE
+        videoContainer.ninchat_jitsi_layout.visibility = View.GONE
+        view?.leave()
+    }
+
+    fun hangUp() {
+        videoContainer.visibility = View.GONE
+        videoContainer.ninchat_jitsi_layout.visibility = View.GONE
+        view?.leave()
+    }
 }
