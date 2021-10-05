@@ -145,6 +145,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     public void call() {
         videoContainer.setVisibility(View.VISIBLE);
+        videoContainer.findViewById(R.id.ninchat_video_layout).setVisibility(View.VISIBLE);
         animateSpinner();
         NinchatSendMessage.executeAsync(
                 NinchatScopeHandler.getIOScope(),
@@ -173,6 +174,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             try {
                 offer = new JSONObject(payload);
                 videoContainer.setVisibility(View.VISIBLE);
+                videoContainer.findViewById(R.id.ninchat_video_layout).setVisibility(View.VISIBLE);
                 animateSpinner();
             } catch (final JSONException e) {
                 NinchatSessionManager.getInstance().sessionError(e);
@@ -191,10 +193,12 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
                             NinchatSessionManager.getInstance().getSession(), aLong -> null);
                 } else {
                     videoContainer.setVisibility(View.GONE);
+                    videoContainer.findViewById(R.id.ninchat_video_layout).setVisibility(View.GONE);
                     return true;
                 }
             } catch (final JSONException e) {
                 videoContainer.setVisibility(View.GONE);
+                videoContainer.findViewById(R.id.ninchat_video_layout).setVisibility(View.GONE);
                 return true;
             }
         } else if (NinchatMessageTypes.WEBRTC_SERVERS_PARSED.equals(messageType)) {
@@ -601,6 +605,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         PeerConnectionFactory.stopInternalTracingCapture();
         PeerConnectionFactory.shutdownInternalTracer();
         videoContainer.setVisibility(View.GONE);
+        videoContainer.findViewById(R.id.ninchat_video_layout).setVisibility(View.GONE);
         resetMediaButtons();
     }
 
