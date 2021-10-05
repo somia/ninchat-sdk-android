@@ -10,7 +10,6 @@ import android.app.AlertDialog;
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.facebook.react.modules.core.PermissionListener
 import com.ninchat.sdk.NinchatSessionManager
@@ -21,6 +20,7 @@ import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
 import com.ninchat.sdk.managers.IOrientationManager
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter.Companion.CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE
+import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter.Companion.JITSI_CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter.Companion.PICK_PHOTO_VIDEO_REQUEST_CODE
 import com.ninchat.sdk.ninchatintegrations.jitsi.NinchatJitsiIntegration
 import com.ninchat.sdk.ninchatintegrations.p2p.NinchatP2PIntegration
@@ -35,9 +35,11 @@ import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.dialog_close_chat.*
 import kotlinx.android.synthetic.main.dialog_video_call_consent.*
 import kotlinx.android.synthetic.main.ninchat_video_view.*
+import kotlinx.android.synthetic.main.ninchat_video_view.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface
 import org.jitsi.meet.sdk.JitsiMeetView
 
@@ -55,13 +57,17 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         })
     }
     private val groupView by lazy {
-        NinchatJitsiIntegration(JitsiMeetView(this))
+        NinchatJitsiIntegration(videoContainer, JitsiMeetView(this))
     }
 
     private val broadcastReceiver = presenter.activityBroadcastReceiver(
         onChatClosed = {
+            if (!presenter.layoutModel.chatClosed) {
+                if (presenter.layoutModel.isGroupCall) groupView.hangUp()
+                else p2pView.hangUp()
+            }
             presenter.layoutModel.chatClosed = true
-            send_message_container.isEnabled = false
+            disable()
         },
         onHideKeyboard = {
             hideKeyBoardForce()
@@ -104,7 +110,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     @JvmName("OnCloseChat")
     fun chatClosed(onCloseChat: OnCloseChat) {
         presenter.layoutModel.chatClosed = true
-        send_message_container.isEnabled = false
+        disable()
         if (presenter.layoutModel.showRatingView) {
             startActivityForResult(
                 NinchatReviewPresenter.getLaunchIntent(this@NinchatChatActivity),
@@ -123,8 +129,17 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         }
         ninchat_message_send_button.setOnClickListener { onSendButtonClicked() }
         ninchat_message_send_button_icon.setOnClickListener { onSendButtonClicked() }
-        if(presenter.layoutModel.isGroupCall) {
-            presenter.loadJitsi()
+        val chatClosed = intent.extras?.getBoolean(Parameter.CHAT_IS_CLOSED, false) ?: false
+        if (!chatClosed && presenter.layoutModel.isGroupCall) {
+            if(hasVideoCallPermissions()){
+                handleVisibility()
+                presenter.loadJitsi()
+            } else {
+                requestPermissions(
+                    arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),
+                    JITSI_CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE
+                );
+            }
         }
     }
 
@@ -153,8 +168,10 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     }
 
     override fun onDestroy() {
-        p2pView.onDestroy()
-        groupView.onDestroy()
+        if (presenter.layoutModel.isGroupCall)
+            p2pView.onDestroy()
+        else
+            groupView.onDestroy()
         super.onDestroy()
     }
 
@@ -194,19 +211,25 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 showChatCloseDialog()
             }
         }
-        videoContainer?.apply {
-            if(presenter.layoutModel.isGroupCall) {
-                visibility = View.VISIBLE
-                ninchat_jitsi_layout.visibility = View.VISIBLE
-            } else {
-                ninchat_video_layout.visibility = View.VISIBLE
-            }
+        if (presenter.layoutModel.chatClosed) {
+            disable()
         }
-
     }
 
-    override fun requestPermissions(p0: Array<out String>?, p1: Int, p2: PermissionListener?) {
-        TODO("Not yet implemented")
+    override fun requestPermissions(permissions: Array<out String>?, requestCode: Int, listener: PermissionListener?) {
+        JitsiMeetActivityDelegate.requestPermissions(this, permissions, requestCode, listener)
+    }
+
+    private fun disable() {
+        listOf(
+            attachment,
+            video_call,
+            ninchat_message_send_button_icon,
+            ninchat_message_send_button,
+            ninchat_message_input
+        ).onEach {
+            it.isEnabled = false
+        }
     }
 
     override fun onOrientationChange(orientation: Int) {
@@ -227,6 +250,17 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                     presenter.sendPickUpAnswer(true)
                 } else {
                     presenter.sendPickUpAnswer(false)
+                    showError(
+                        R.id.ninchat_chat_error,
+                        R.string.ninchat_chat_error_no_video_call_permissions
+                    )
+                }
+            }
+            JITSI_CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE -> {
+                if (hasVideoCallPermissions()) {
+                    handleVisibility()
+                    presenter.loadJitsi()
+                } else {
                     showError(
                         R.id.ninchat_chat_error,
                         R.string.ninchat_chat_error_no_video_call_permissions
@@ -343,13 +377,20 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         jitsiToken: String?,
         jitsiServerPrefix: String?
     ) {
-        groupView.handleWebRTCMessage(jitsiRoom = jitsiRoom,
+        groupView.handleWebRTCMessage(
+            jitsiRoom = jitsiRoom,
             jitsiToken = jitsiToken,
             jitsiVideoView = ninchat_jitsi_layout,
-            serverAddress = NinchatSessionManager.getInstance()?.ninchatState?.serverAddress ?: "api.ninchat.com",
+            serverAddress = NinchatSessionManager.getInstance()?.ninchatState?.serverAddress
+                ?: "api.ninchat.com",
             width = ninchat_jitsi_layout.measuredWidth,
             height = ninchat_jitsi_layout.measuredHeight,
         )
+    }
+
+    fun handleVisibility() {
+        videoContainer.visibility = View.VISIBLE
+        videoContainer.ninchat_jitsi_layout.visibility = View.VISIBLE
     }
 
     private fun hasVideoCallPermissions(): Boolean {
