@@ -10,6 +10,9 @@ import android.app.AlertDialog;
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.hardware.SensorManager
+import android.view.OrientationEventListener
+import android.view.Surface
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.facebook.react.modules.core.PermissionListener
 import com.ninchat.sdk.NinchatSessionManager
@@ -18,6 +21,7 @@ import com.ninchat.sdk.activities.NinchatBaseActivity
 import com.ninchat.sdk.events.OnCloseChat
 import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
 import com.ninchat.sdk.managers.IOrientationManager
+import com.ninchat.sdk.managers.OrientationManager
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter.Companion.CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter.Companion.JITSI_CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE
@@ -26,6 +30,7 @@ import com.ninchat.sdk.ninchatintegrations.jitsi.NinchatJitsiIntegration
 import com.ninchat.sdk.ninchatintegrations.p2p.NinchatP2PIntegration
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel
 import com.ninchat.sdk.ninchatreview.presenter.NinchatReviewPresenter
+import com.ninchat.sdk.ninchattitlebar.model.shouldShowTitlebar
 import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import com.ninchat.sdk.utils.misc.Broadcast
@@ -42,6 +47,9 @@ import org.greenrobot.eventbus.ThreadMode
 import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface
 import org.jitsi.meet.sdk.JitsiMeetView
+import android.provider.Settings.System.ACCELEROMETER_ROTATION
+import java.lang.Exception
+import android.provider.Settings;
 
 class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMeetActivityInterface {
     private val presenter by lazy {
@@ -58,6 +66,10 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     }
     private val groupView by lazy {
         NinchatJitsiIntegration(videoContainer, JitsiMeetView(this))
+    }
+    private val orientationManager by lazy {
+        OrientationManager(this, this, SensorManager.SENSOR_DELAY_UI)
+
     }
 
     private val broadcastReceiver = presenter.activityBroadcastReceiver(
@@ -109,6 +121,10 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     @Subscribe(threadMode = ThreadMode.MAIN)
     @JvmName("OnCloseChat")
     fun chatClosed(onCloseChat: OnCloseChat) {
+        if (presenter.layoutModel.isGroupCall)
+            groupView.onDestroy()
+        else
+            p2pView.onDestroy()
         presenter.layoutModel.chatClosed = true
         disable()
         if (presenter.layoutModel.showRatingView) {
@@ -131,7 +147,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         ninchat_message_send_button_icon.setOnClickListener { onSendButtonClicked() }
         val chatClosed = intent.extras?.getBoolean(Parameter.CHAT_IS_CLOSED, false) ?: false
         if (!chatClosed && presenter.layoutModel.isGroupCall) {
-            if(hasVideoCallPermissions()){
+            if (hasVideoCallPermissions()) {
                 handleVisibility()
                 presenter.loadJitsi()
             } else {
@@ -145,6 +161,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     override fun onStart() {
         super.onStart()
+        orientationManager.enable()
         EventBus.getDefault().register(this)
         LocalBroadcastManager.getInstance(this).let {
             it.registerReceiver(broadcastReceiver, IntentFilter().apply {
@@ -161,6 +178,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     override fun onStop() {
         super.onStop()
+        orientationManager.disable()
         EventBus.getDefault().unregister(this)
         LocalBroadcastManager.getInstance(this).apply {
             unregisterReceiver(broadcastReceiver)
@@ -169,9 +187,10 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     override fun onDestroy() {
         if (presenter.layoutModel.isGroupCall)
-            p2pView.onDestroy()
-        else
             groupView.onDestroy()
+        else
+            p2pView.onDestroy()
+        orientationManager.disable()
         super.onDestroy()
     }
 
@@ -216,7 +235,11 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         }
     }
 
-    override fun requestPermissions(permissions: Array<out String>?, requestCode: Int, listener: PermissionListener?) {
+    override fun requestPermissions(
+        permissions: Array<out String>?,
+        requestCode: Int,
+        listener: PermissionListener?
+    ) {
         JitsiMeetActivityDelegate.requestPermissions(this, permissions, requestCode, listener)
     }
 
@@ -233,7 +256,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     }
 
     override fun onOrientationChange(orientation: Int) {
-        TODO("Not yet implemented")
+        handleOrientationChange(orientation)
     }
 
     override fun onRequestPermissionsResult(
@@ -398,8 +421,37 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 checkCallingOrSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun handleOrientationChange(currentOrientation: Int) {
+        if (!presenter.layoutModel.isGroupCall) return
+        if (!shouldShowTitlebar()) return
 
+        try {
+            if (Settings.System.getInt(
+                    applicationContext.contentResolver,
+                    ACCELEROMETER_ROTATION,
+                    0
+                ) !== 1
+            ) return
+        } catch (e: Exception) {
+            // pass
+        }
+        if (currentOrientation === android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else if (currentOrientation === android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
+        val rotation = windowManager.defaultDisplay.rotation
+        when (rotation) {
+            Surface.ROTATION_0, Surface.ROTATION_180 -> {
+                ninchat_titlebar.visibility =View.VISIBLE
+            }
+            Surface.ROTATION_270, Surface.ROTATION_90 -> {
+                ninchat_titlebar.visibility = View.GONE
+            }
+        }
+    }
 }
+
 
 fun Activity.quit(intent: Intent?) {
     val data = intent ?: Intent()
