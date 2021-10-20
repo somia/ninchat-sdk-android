@@ -47,7 +47,7 @@ class NinchatBotWriting(
         itemView.ninchat_chat_message_bot_text.visibility = View.VISIBLE
         itemView.ninchat_chat_message_bot_text.text = label
 
-        if (shouldShowTitlebar() || presenter.hideAvatar()) {
+        if (shouldShowTitlebar()) {
             return
         }
         itemView.ninchat_chat_message_bot_avatar.visibility = View.VISIBLE
