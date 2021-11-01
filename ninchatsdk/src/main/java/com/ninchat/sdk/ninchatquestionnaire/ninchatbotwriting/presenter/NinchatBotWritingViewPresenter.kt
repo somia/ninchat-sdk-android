@@ -38,9 +38,6 @@ class NinchatBotWritingViewPresenter(
 
     fun isLoaded(): Boolean = model.loaded == true
 
-    fun hideAvatar() =
-        NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.hideAgentAvatar() ?: false
-
     fun setLoaded() {
         model.loaded = true
     }
