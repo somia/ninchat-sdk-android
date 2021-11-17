@@ -78,7 +78,7 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
 
         session.setOnSessionEvent { params: Props ->
             val event = params.getString("event")
-            var errorType = params.getSafe<String>("error_type")
+            val errorType = params.getSafe<String>("error_type")
             when (event) {
                 "session_created" -> {
                     handleSessionCreate(params, ninchatSiteConfig)
