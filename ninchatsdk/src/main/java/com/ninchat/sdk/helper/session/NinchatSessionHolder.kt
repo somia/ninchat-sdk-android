@@ -78,6 +78,7 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
 
         session.setOnSessionEvent { params: Props ->
             val event = params.getString("event")
+            val errorType = params.getSafe<String>("error_type")
             when (event) {
                 "session_created" -> {
                     handleSessionCreate(params, ninchatSiteConfig)
@@ -97,6 +98,9 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
                     // ignore
                 }
                 else -> {
+                    if (errorType == "user_not_found") {
+                        dispose()
+                    }
                     Handler(Looper.getMainLooper()).post {
                         listener?.onSessionInitFailed()
                     }
