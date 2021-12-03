@@ -27,24 +27,24 @@ import org.json.JSONObject
 import java.lang.Exception
 
 class NinchatQuestionnairePresenter(
-        val viewCallback: INinchatQuestionnairePresenter,
+    val viewCallback: INinchatQuestionnairePresenter,
 ) {
     private val model = NinchatQuestionnaireModel()
 
     fun renderCurrentView(intent: Intent?) {
         model.update(intent)
         viewCallback.renderQuestionnaireList(
-                questionnaireList = model.questionnaireList,
-                preAnswers = if (model.questionnaireType == NinchatQuestionnaireConstants.preAudienceQuestionnaire) model.preAnswers() else listOf(),
-                queueId = model.queueId,
-                isFormLike = model.isFormLike
+            questionnaireList = model.questionnaireList,
+            preAnswers = if (model.questionnaireType == NinchatQuestionnaireConstants.preAudienceQuestionnaire) model.preAnswers() else listOf(),
+            queueId = model.queueId,
+            isFormLike = model.isFormLike
         )
     }
 
     fun handleDataSetChange(
-            mRecyclerView: RecyclerView?,
-            myAdapter: NinchatQuestionnaireListAdapter,
-            withError: Boolean
+        mRecyclerView: RecyclerView?,
+        myAdapter: NinchatQuestionnaireListAdapter,
+        withError: Boolean
     ) {
         if (withError) {
             // if it was triggered by error then only call notify dataset change since list is still same
@@ -62,8 +62,8 @@ class NinchatQuestionnairePresenter(
     }
 
     fun showNextQuestionnaire(
-            adapter: NinchatQuestionnaireListAdapter,
-            onNextQuestionnaire: OnNextQuestionnaire
+        adapter: NinchatQuestionnaireListAdapter,
+        onNextQuestionnaire: OnNextQuestionnaire
     ) {
         adapter.showNextQuestionnaire(onNextQuestionnaire)
     }
@@ -104,18 +104,18 @@ class NinchatQuestionnairePresenter(
         NinchatSessionManager.getInstance()?.session?.let {
             // even if the error occurred,
             NinchatScopeHandler.getIOScope()
-                    .launch(CoroutineExceptionHandler(handler = { _, _ -> viewCallback.onAudienceRegisterError() })) {
-                        val id = NinchatRegisterAudience.execute(
-                                currentSession = it,
-                                queueId = model.queueId,
-                                audienceMetadata = audienceMetadata
-                        )
-                        if (id == -1L) {
-                            viewCallback.onAudienceRegisterError()
-                        } else {
-                            NinchatSessionManager.getInstance()?.ninchatState?.actionId = id
-                        }
+                .launch(CoroutineExceptionHandler(handler = { _, _ -> viewCallback.onAudienceRegisterError() })) {
+                    val id = NinchatRegisterAudience.execute(
+                        currentSession = it,
+                        queueId = model.queueId,
+                        audienceMetadata = audienceMetadata
+                    )
+                    if (id == -1L) {
+                        viewCallback.onAudienceRegisterError()
+                    } else {
+                        NinchatSessionManager.getInstance()?.ninchatState?.actionId = id
                     }
+                }
         }
     }
 
@@ -130,35 +130,35 @@ class NinchatQuestionnairePresenter(
         NinchatSessionManager.getInstance()?.session?.let {
             // even if the error occurred,
             NinchatScopeHandler.getIOScope()
-                    .launch(CoroutineExceptionHandler(handler = { _, _ -> viewCallback.onCompletePostAudienceQuestionnaire() })) {
-                        val id = NinchatSendPostAudienceQuestionnaire.execute(
-                                currentSession = it,
-                                channelId = NinchatSessionManager.getInstance().ninchatState?.channelId,
-                                message = payload.toString(2)
-                        )
-                        if (id == -1L) {
-                            viewCallback.onCompletePostAudienceQuestionnaire()
-                        } else {
-                            NinchatSessionManager.getInstance()?.ninchatState?.actionId = id
-                        }
+                .launch(CoroutineExceptionHandler(handler = { _, _ -> viewCallback.onCompletePostAudienceQuestionnaire() })) {
+                    val id = NinchatSendPostAudienceQuestionnaire.execute(
+                        currentSession = it,
+                        channelId = NinchatSessionManager.getInstance().ninchatState?.channelId,
+                        message = payload.toString(2)
+                    )
+                    if (id == -1L) {
+                        viewCallback.onCompletePostAudienceQuestionnaire()
+                    } else {
+                        NinchatSessionManager.getInstance()?.ninchatState?.actionId = id
                     }
+                }
         }
     }
 
     fun handlePostAudienceQuestionnaire(callback: () -> Unit) {
         NinchatSessionManager.getInstance()?.session?.let {
             NinchatScopeHandler.getIOScope()
-                    .launch(CoroutineExceptionHandler(handler = { _, _ -> callback() })) {
-                        NinchatPartChannel.execute(
-                                currentSession = it,
-                                channelId = NinchatSessionManager.getInstance().ninchatState?.channelId
-                        )
-                        NinchatDeleteUser.execute(currentSession = it)
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            it.close()
-                            callback()
-                        }, 400)
-                    }
+                .launch(CoroutineExceptionHandler(handler = { _, _ -> callback() })) {
+                    NinchatPartChannel.execute(
+                        currentSession = it,
+                        channelId = NinchatSessionManager.getInstance().ninchatState?.channelId
+                    )
+                    NinchatDeleteUser.execute(currentSession = it)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        it.close()
+                        callback()
+                    }, 400)
+                }
         }
     }
 
@@ -176,7 +176,7 @@ class NinchatQuestionnairePresenter(
     fun isComplete(): Boolean = model.fromComplete
     fun queueId(): String? = model.queueId
     fun isPostAudienceQuestionnaire(): Boolean =
-            model.questionnaireType == NinchatQuestionnaireConstants.postAudienceQuestionnaire
+        model.questionnaireType == NinchatQuestionnaireConstants.postAudienceQuestionnaire
 
     fun savePreAudienceQuestionnaireMessage() {
         val answer = model.answers?.answerList?.findLast { it -> it.first == "message" }
@@ -196,10 +196,10 @@ class NinchatQuestionnairePresenter(
 
 interface INinchatQuestionnairePresenter {
     fun renderQuestionnaireList(
-            questionnaireList: List<JSONObject>,
-            preAnswers: List<Pair<String, Any>>,
-            queueId: String?,
-            isFormLike: Boolean
+        questionnaireList: List<JSONObject>,
+        preAnswers: List<Pair<String, Any>>,
+        queueId: String?,
+        isFormLike: Boolean
     )
 
     fun onCompleteQuestionnaire()
