@@ -181,7 +181,6 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
         val intent = Intent().apply {
             putExtra(NinchatQuestionnaireModel.QUEUE_ID, presenter.queueId())
             putExtra(NinchatQuestionnaireModel.OPEN_QUEUE, openQueue)
-            putExtra(NinchatQuestionnaireModel.OPEN_QUEUE, openQueue)
         }
         presenter.savePreAudienceQuestionnaireMessage()
         setResult(RESULT_OK, intent)
