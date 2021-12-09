@@ -176,11 +176,6 @@ class NinchatQuestionnairePresenter(
     fun isPostAudienceQuestionnaire(): Boolean =
         model.questionnaireType == NinchatQuestionnaireConstants.postAudienceQuestionnaire
 
-    fun savePreAudienceQuestionnaireMessage() {
-        val answer = model.answers?.answerList?.findLast { it -> it.first == "message" }
-        NinchatSessionManager.getInstance()?.ninchatState?.message = answer?.second ?: ""
-    }
-
     companion object {
         val REQUEST_CODE = NinchatQuestionnairePresenter::class.java.hashCode() and 0xffff
         fun getLaunchIntent(context: Context?, queueId: String?, questionnaireType: Int): Intent {
