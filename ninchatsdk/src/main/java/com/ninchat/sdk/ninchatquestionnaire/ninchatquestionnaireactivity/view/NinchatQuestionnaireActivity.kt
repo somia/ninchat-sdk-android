@@ -2,7 +2,6 @@ package com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -182,6 +181,7 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
             putExtra(NinchatQuestionnaireModel.QUEUE_ID, presenter.queueId())
             putExtra(NinchatQuestionnaireModel.OPEN_QUEUE, openQueue)
         }
+        presenter.savePreAudienceQuestionnaireMessage()
         setResult(RESULT_OK, intent)
         finish()
     }

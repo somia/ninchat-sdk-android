@@ -17,6 +17,7 @@ import com.ninchat.sdk.models.NinchatWebRTCServerInfo
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeChannel
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
 import com.ninchat.sdk.networkdispatchers.NinchatRequestAudience
+import com.ninchat.sdk.networkdispatchers.NinchatSendMessage
 import com.ninchat.sdk.ninchatactivity.presenter.NinchatActivityPresenter
 import com.ninchat.sdk.ninchatqueuelist.model.NinchatQueue
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
@@ -25,7 +26,9 @@ import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import com.ninchat.sdk.utils.misc.Parameter
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler.getIOScope
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.util.*
 
 class NinchatSessionManagerHelper {
@@ -320,6 +323,22 @@ class NinchatSessionManagerHelper {
                         adapter.addMetaMessage("", currentSession.chatStarted)
                     }
                 })
+                sessionManager.ninchatState?.message?.let { message ->
+                    if (message.isNotEmpty()) {
+                        val data = JSONObject().apply {
+                            put("text", message)
+                        }
+                        getIOScope().launch(CoroutineExceptionHandler(handler = { _, _ -> {} })) {
+                            NinchatSendMessage.execute(
+                                    currentSession = sessionManager.session,
+                                    channelId = sessionManager.ninchatState?.channelId,
+                                    messageType = NinchatMessageTypes.TEXT,
+                                    message = data.toString()
+                            )
+                        }
+                    }
+                    sessionManager.ninchatState?.message = ""
+                }
                 currentSession.contextWeakReference?.get()?.let { mContext ->
                     val i = Intent(Broadcast.CHANNEL_JOINED)
                     i.putExtra(Parameter.CHAT_IS_CLOSED, isClosed)

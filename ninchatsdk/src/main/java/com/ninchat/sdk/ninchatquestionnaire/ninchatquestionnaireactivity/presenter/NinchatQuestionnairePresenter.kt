@@ -21,10 +21,8 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.view.Nincha
 import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.json.JSONObject
-import java.lang.Exception
 
 class NinchatQuestionnairePresenter(
     val viewCallback: INinchatQuestionnairePresenter,
@@ -177,6 +175,11 @@ class NinchatQuestionnairePresenter(
     fun queueId(): String? = model.queueId
     fun isPostAudienceQuestionnaire(): Boolean =
         model.questionnaireType == NinchatQuestionnaireConstants.postAudienceQuestionnaire
+
+    fun savePreAudienceQuestionnaireMessage() {
+        val answer = model.answers?.answerList?.findLast { it -> it.first == "message" }
+        NinchatSessionManager.getInstance()?.ninchatState?.message = answer?.second ?: ""
+    }
 
     companion object {
         val REQUEST_CODE = NinchatQuestionnairePresenter::class.java.hashCode() and 0xffff
