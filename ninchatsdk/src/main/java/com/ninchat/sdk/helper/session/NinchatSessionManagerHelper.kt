@@ -323,21 +323,23 @@ class NinchatSessionManagerHelper {
                         adapter.addMetaMessage("", currentSession.chatStarted)
                     }
                 })
-                sessionManager.ninchatState?.message?.let { message ->
-                    if (message.isNotEmpty()) {
-                        val data = JSONObject().apply {
-                            put("text", message)
-                        }
-                        getIOScope().launch(CoroutineExceptionHandler(handler = { _, _ -> {} })) {
-                            NinchatSendMessage.execute(
-                                    currentSession = sessionManager.session,
-                                    channelId = sessionManager.ninchatState?.channelId,
-                                    messageType = NinchatMessageTypes.TEXT,
-                                    message = data.toString()
-                            )
-                        }
+                // may be send "message" from pre_answer
+                val isAudienceTransfer = params.getSafe<Props>("channel_attrs")?.getSafe<String>("audience_transferred")
+                val isTargetAudience = params.getSafe<Props>("channel_attrs")?.getSafe<String>("requester_id") == sessionManager.ninchatState?.sessionCredentials?.userId
+                val message = params.getSafe<Props>("audience_metadata")?.getSafe<Props>("pre_answers")?.getSafe<String>("message")
+                if(isAudienceTransfer.isNullOrEmpty() && isTargetAudience && !message.isNullOrEmpty() ) {
+                    val data = JSONObject().apply {
+                        put("text", message)
                     }
-                    sessionManager.ninchatState?.message = ""
+
+                    getIOScope().launch(CoroutineExceptionHandler(handler = { _, _ -> {} })) {
+                        NinchatSendMessage.execute(
+                                currentSession = sessionManager.session,
+                                channelId = sessionManager.ninchatState?.channelId,
+                                messageType = NinchatMessageTypes.TEXT,
+                                message = data.toString()
+                        )
+                    }
                 }
                 currentSession.contextWeakReference?.get()?.let { mContext ->
                     val i = Intent(Broadcast.CHANNEL_JOINED)
