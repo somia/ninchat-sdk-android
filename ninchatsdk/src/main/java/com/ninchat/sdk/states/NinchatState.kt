@@ -103,8 +103,6 @@ class NinchatState {
 
     var skippedReview = false
 
-    var message = ""
-
     fun dispose() {
         userId = null
         channelId = null
@@ -127,6 +125,5 @@ class NinchatState {
         members.clear()
         queues.clear()
         skippedReview = false
-        message = ""
     }
 }
