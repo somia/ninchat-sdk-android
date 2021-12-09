@@ -346,6 +346,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_CONTENT))) {
                     if (NinchatMessageTypes.HANG_UP.equals(messageType)) {
                         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
+                        handleTitlebarView(true);
                     }
                 }
             }
@@ -373,7 +374,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
-        handleTitlebarView();
+        handleTitlebarView(false);
     }
 
     public void onToggleAudio(final View view) {
@@ -671,6 +672,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     // Reinitialize webRTC on hangup for possible new connection
     private void hangUp() {
         toggleFullScreen = false;
+        handleTitlebarView(true);
         NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         if (sessionManager != null && webRTCView != null) {
             webRTCView.hangUp();
@@ -728,9 +730,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         }
     }
 
-    private void handleTitlebarView() {
-        if (webRTCView == null || !webRTCView.isInCall()) return;
+    private void handleTitlebarView(boolean pendingHangup) {
         if (!shouldShowTitlebar()) return;
+        boolean inActiveVideoCall = webRTCView != null && (webRTCView.isInCall() && !pendingHangup);
         int rotation = getWindowManager().getDefaultDisplay().getRotation();
         switch (rotation) {
             case Surface.ROTATION_0:
@@ -739,7 +741,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
                 return;
             case Surface.ROTATION_270:
             case Surface.ROTATION_90:
-                findViewById(R.id.ninchat_chat_root).findViewById(R.id.ninchat_titlebar).setVisibility(View.GONE);
+                if(inActiveVideoCall)
+                    findViewById(R.id.ninchat_chat_root).findViewById(R.id.ninchat_titlebar).setVisibility(View.GONE);
+                else
+                    findViewById(R.id.ninchat_chat_root).findViewById(R.id.ninchat_titlebar).setVisibility(View.VISIBLE);
                 return;
         }
     }
@@ -747,6 +752,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     @Override
     public void onOrientationChange(int orientation) {
         handleOrientationChange(orientation);
-        handleTitlebarView();
+        handleTitlebarView(false);
     }
 }
