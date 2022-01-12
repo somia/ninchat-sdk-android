@@ -294,6 +294,7 @@ class NinchatQuestionnaireJsonUtil {
                         NinchatQuestionnaireType.isTextArea(json) ||
                         NinchatQuestionnaireType.isSelect(json) ||
                         NinchatQuestionnaireType.isLikeRT(json) ||
+                        NinchatQuestionnaireType.isHyperlinkElement(json) ||
                         NinchatQuestionnaireType.isRadio(json) -> {
                     !json.optString("result").isNullOrBlank()
                 }
@@ -314,6 +315,7 @@ class NinchatQuestionnaireJsonUtil {
                         NinchatQuestionnaireType.isTextArea(json) ||
                         NinchatQuestionnaireType.isSelect(json) ||
                         NinchatQuestionnaireType.isLikeRT(json) ||
+                        NinchatQuestionnaireType.isHyperlinkElement(json) ||
                         NinchatQuestionnaireType.isRadio(json) -> {
                     matchPattern(currentInput = json.optString("result"),
                             pattern = json.optString("pattern"))
