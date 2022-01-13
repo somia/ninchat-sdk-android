@@ -10,6 +10,7 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.view.NinchatBotWri
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbutton.view.NinchatButtonViewHolder
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckboxlist.view.NinchatCheckBoxListView
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.view.NinchatDropDownSelectViewHolder
+import com.ninchat.sdk.ninchatquestionnaire.ninchathyperlink.view.NinchatHyperLinkViewHolder
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.view.NinchatInputFieldViewHolder
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.view.QuestionnaireActivityCallback
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.presenter.INinchatConversationListPresenter
@@ -145,6 +146,16 @@ class NinchatQuestionnaireListAdapter(
                     enabled = presenter.isLast(position)
                 )
             }
+            NinchatQuestionnaireType.isHyperlinkElement(currentElement) -> {
+                val view = LayoutInflater.from(parent.context)
+                        .inflate(R.layout.href_item, parent, false)
+                NinchatHyperLinkViewHolder(
+                        itemView = view,
+                        jsonObject = currentElement,
+                        position = position,
+                        enabled = presenter.isLast(position)
+                )
+            }
             NinchatQuestionnaireType.isBotElement(currentElement) -> {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.bot_item_conversation_view, parent, false)
@@ -199,6 +210,10 @@ class NinchatQuestionnaireListAdapter(
                 enabled = presenter.isLast(position)
             )
             is NinchatButtonViewHolder -> viewHolder.update(
+                jsonObject = currentElement,
+                enabled = presenter.isLast(position)
+            )
+            is NinchatHyperLinkViewHolder -> viewHolder.update(
                 jsonObject = currentElement,
                 enabled = presenter.isLast(position)
             )
