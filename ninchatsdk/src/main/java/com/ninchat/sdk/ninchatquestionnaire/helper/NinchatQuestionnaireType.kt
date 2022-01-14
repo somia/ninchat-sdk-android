@@ -61,8 +61,7 @@ class NinchatQuestionnaireType {
 
         fun isElement(element: JSONObject?): Boolean =
                 element?.has("elements") == true || element?.has("element") == true
-
-
+        
         fun isLogic(element: JSONObject?): Boolean =
                 element?.has(NinchatQuestionnaireConstants.logic) == true
 

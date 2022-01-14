@@ -17,15 +17,17 @@ data class NinchatHyperlinkViewModel(
         this.hasLabel = currentLabel.isNotEmpty()
         this.hrefAttribute = jsonObject?.optString(NinchatQuestionnaireConstants.href) ?: ""
         this.label = if (this.hasLabel) currentLabel else this.hrefAttribute
+        this.isSelected = jsonObject?.optBoolean("result") ?: false
         this.translate()
     }
 
-    fun update(enabled: Boolean) {
+    fun update(jsonObject: JSONObject?, enabled: Boolean) {
         this.enabled = enabled
+        this.isSelected = jsonObject?.optBoolean("result") ?: false
     }
 
     private fun translate() {
         label = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getTranslation(label)
-                    ?: label
+                ?: label
     }
 }

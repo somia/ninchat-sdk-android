@@ -8,6 +8,7 @@ class NinchatHyperLinkViewPresenter(
         position: Int,
         enabled: Boolean,
         val viewCallback: INinchatHyperLinkPresenter,
+        val updateCallback: HyperLinkClickListener,
 ) {
     private val model = NinchatHyperlinkViewModel(
             enabled = enabled,
@@ -25,15 +26,26 @@ class NinchatHyperLinkViewPresenter(
     }
 
     fun updateCurrentView(jsonObject: JSONObject?, enabled: Boolean) {
-        model.update(enabled = enabled)
+        model.update(jsonObject = jsonObject, enabled = enabled)
         viewCallback.onUpdateView(
                 isSelected = model.isSelected,
                 enabled = model.enabled,
         )
+    }
+
+    fun onLinkClicked() {
+        model.isSelected = true
+        viewCallback.onClickedView()
+        updateCallback.onUpdate(value = true, position = model.position)
     }
 }
 
 interface INinchatHyperLinkPresenter {
     fun onRenderView(label: String, isSelected: Boolean, enabled: Boolean)
     fun onUpdateView(isSelected: Boolean, enabled: Boolean)
+    fun onClickedView()
+}
+
+interface HyperLinkClickListener {
+    fun onUpdate(value: Boolean, position: Int)
 }

@@ -153,7 +153,8 @@ class NinchatQuestionnaireListAdapter(
                         itemView = view,
                         jsonObject = currentElement,
                         position = position,
-                        enabled = presenter.isLast(position)
+                        enabled = presenter.isLast(position),
+                        hyperLinkClickListener = presenter,
                 )
             }
             NinchatQuestionnaireType.isBotElement(currentElement) -> {

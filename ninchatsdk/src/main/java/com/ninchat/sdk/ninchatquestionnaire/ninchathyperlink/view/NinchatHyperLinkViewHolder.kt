@@ -4,6 +4,7 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.R
+import com.ninchat.sdk.ninchatquestionnaire.ninchathyperlink.presenter.HyperLinkClickListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchathyperlink.presenter.INinchatHyperLinkPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchathyperlink.presenter.NinchatHyperLinkViewPresenter
 import kotlinx.android.synthetic.main.href_item.view.*
@@ -13,6 +14,7 @@ class NinchatHyperLinkViewHolder(
         itemView: View,
         jsonObject: JSONObject?,
         position: Int,
+        hyperLinkClickListener: HyperLinkClickListener,
         enabled: Boolean,
 ) : RecyclerView.ViewHolder(itemView), INinchatHyperLinkPresenter {
     private val presenter = NinchatHyperLinkViewPresenter(
@@ -20,10 +22,18 @@ class NinchatHyperLinkViewHolder(
             position = position,
             enabled = enabled,
             viewCallback = this,
+            updateCallback = hyperLinkClickListener,
     )
 
     init {
         presenter.renderCurrentView()
+        attachHandler()
+    }
+
+    private fun attachHandler() {
+        itemView.setOnClickListener {
+            presenter.onLinkClicked()
+        }
     }
 
     fun update(jsonObject: JSONObject?, enabled: Boolean) {
@@ -49,5 +59,9 @@ class NinchatHyperLinkViewHolder(
         } else {
             itemView.href_item.style(R.style.NinchatTheme_Questionnaire_Radio)
         }
+    }
+
+    override fun onClickedView() {
+        itemView.href_item.style(R.style.NinchatTheme_Questionnaire_Radio_Selected)
     }
 }

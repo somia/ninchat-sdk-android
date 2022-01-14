@@ -83,8 +83,7 @@ class NinchatQuestionnaireNormalizer {
                                 NinchatQuestionnaireType.isCheckBox(it) ||
                                 NinchatQuestionnaireType.isRadio(it) ||
                                 NinchatQuestionnaireType.isSelect(it) ||
-                                NinchatQuestionnaireType.isLikeRT(it) ||
-                                NinchatQuestionnaireType.isHyperlinkElement(it) )
+                                NinchatQuestionnaireType.isLikeRT(it) )
                                 {
                                     it.putOpt("fireEvent", true)
                             }
