@@ -9,6 +9,12 @@ import com.ninchat.sdk.ninchatquestionnaire.ninchathyperlink.presenter.INinchatH
 import com.ninchat.sdk.ninchatquestionnaire.ninchathyperlink.presenter.NinchatHyperLinkViewPresenter
 import kotlinx.android.synthetic.main.href_item.view.*
 import org.json.JSONObject
+import androidx.core.content.ContextCompat.startActivity
+
+import android.content.Intent
+import android.net.Uri
+import android.webkit.URLUtil
+
 
 class NinchatHyperLinkViewHolder(
         itemView: View,
@@ -42,26 +48,57 @@ class NinchatHyperLinkViewHolder(
         }
     }
 
-    override fun onRenderView(label: String, isSelected: Boolean, enabled: Boolean) {
-        itemView.href_item.text = label
+    override fun onRenderView(label: String, isSelected: Boolean, enabled: Boolean, hasLabel: Boolean) {
         itemView.isEnabled = enabled
-        if (isSelected) {
-            itemView.href_item.style(R.style.NinchatTheme_Questionnaire_Radio_Selected)
-        } else {
-            itemView.href_item.style(R.style.NinchatTheme_Questionnaire_Radio)
+        itemView.ninchat_href_item.style(when {
+            !enabled -> R.style.NinchatTheme_Questionnaire_HyperLink_Unfocused
+            isSelected -> R.style.NinchatTheme_Questionnaire_HyperLink_Selected
+            else -> R.style.NinchatTheme_Questionnaire_HyperLink
+
+        })
+        listOf(
+                Pair(itemView.ninchat_href_item.ninchat_href_text, !isSelected && hasLabel),
+                Pair(itemView.ninchat_href_item.ninchat_href_button, !isSelected && !hasLabel),
+                Pair(itemView.ninchat_href_item.ninchat_href_text_selected, isSelected && hasLabel),
+                Pair(itemView.ninchat_href_item.ninchat_href_button_selected, isSelected && !hasLabel)).forEach {
+            it.first.visibility = if (it.second) View.VISIBLE else View.GONE
+            it.first.text = label
         }
     }
 
-    override fun onUpdateView(isSelected: Boolean, enabled: Boolean) {
+    override fun onUpdateView(isSelected: Boolean, enabled: Boolean, hasLabel: Boolean) {
         itemView.isEnabled = enabled
-        if (isSelected) {
-            itemView.href_item.style(R.style.NinchatTheme_Questionnaire_Radio_Selected)
-        } else {
-            itemView.href_item.style(R.style.NinchatTheme_Questionnaire_Radio)
+        itemView.ninchat_href_item.style(when {
+            !enabled -> R.style.NinchatTheme_Questionnaire_HyperLink_Unfocused
+            isSelected -> R.style.NinchatTheme_Questionnaire_HyperLink_Selected
+            else -> R.style.NinchatTheme_Questionnaire_HyperLink
+
+        })
+        listOf(
+                Pair(itemView.ninchat_href_item.ninchat_href_text, !isSelected && hasLabel),
+                Pair(itemView.ninchat_href_item.ninchat_href_button, !isSelected && !hasLabel),
+                Pair(itemView.ninchat_href_item.ninchat_href_text_selected, isSelected && hasLabel),
+                Pair(itemView.ninchat_href_item.ninchat_href_button_selected, isSelected && !hasLabel)).forEach {
+            it.first.visibility = if (it.second) View.VISIBLE else View.GONE
         }
     }
 
-    override fun onClickedView() {
-        itemView.href_item.style(R.style.NinchatTheme_Questionnaire_Radio_Selected)
+    override fun onClickedView(hasLabel: Boolean, uri: String) {
+        itemView.ninchat_href_item.style(R.style.NinchatTheme_Questionnaire_HyperLink_Selected)
+        listOf(
+                Pair(itemView.ninchat_href_item.ninchat_href_text, false),
+                Pair(itemView.ninchat_href_item.ninchat_href_button, false),
+                Pair(itemView.ninchat_href_item.ninchat_href_text_selected, hasLabel),
+                Pair(itemView.ninchat_href_item.ninchat_href_button_selected, !hasLabel)).forEach {
+            it.first.visibility = if (it.second) View.VISIBLE else View.GONE
+        }
+
+        if (!URLUtil.isValidUrl(uri)) {
+            return
+        }
+        startActivity(itemView.context, Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse(uri)
+        }, null)
+
     }
 }

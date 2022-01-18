@@ -1,5 +1,8 @@
 package com.ninchat.sdk.ninchatquestionnaire.ninchathyperlink.presenter
 
+import android.content.Intent
+import android.net.Uri
+import androidx.core.content.ContextCompat.startActivity
 import com.ninchat.sdk.ninchatquestionnaire.ninchathyperlink.model.NinchatHyperlinkViewModel
 import org.json.JSONObject
 
@@ -22,6 +25,7 @@ class NinchatHyperLinkViewPresenter(
                 label = model.label,
                 isSelected = model.isSelected,
                 enabled = model.enabled,
+                hasLabel = model.hasLabel
         )
     }
 
@@ -30,20 +34,21 @@ class NinchatHyperLinkViewPresenter(
         viewCallback.onUpdateView(
                 isSelected = model.isSelected,
                 enabled = model.enabled,
+                hasLabel = model.hasLabel
         )
     }
 
     fun onLinkClicked() {
         model.isSelected = true
-        viewCallback.onClickedView()
+        viewCallback.onClickedView(hasLabel = model.hasLabel, uri = model.hrefAttribute)
         updateCallback.onUpdate(value = true, position = model.position)
     }
 }
 
 interface INinchatHyperLinkPresenter {
-    fun onRenderView(label: String, isSelected: Boolean, enabled: Boolean)
-    fun onUpdateView(isSelected: Boolean, enabled: Boolean)
-    fun onClickedView()
+    fun onRenderView(label: String, isSelected: Boolean, enabled: Boolean, hasLabel: Boolean)
+    fun onUpdateView(isSelected: Boolean, enabled: Boolean, hasLabel: Boolean)
+    fun onClickedView(hasLabel: Boolean, uri: String)
 }
 
 interface HyperLinkClickListener {
