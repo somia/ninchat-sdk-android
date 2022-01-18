@@ -21,6 +21,7 @@ class NinchatQuestionnaireConstants {
         const val queue = "queue"
         const val logic = "logic"
         const val type = "type"
+        const val href = "href"
         const val thankYouText = "thankYouText"
         const val required = "required"
         const val redirects = "redirects"
