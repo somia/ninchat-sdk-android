@@ -51,7 +51,6 @@ class NinchatHyperLinkViewHolder(
     override fun onRenderView(label: String, isSelected: Boolean, enabled: Boolean, hasLabel: Boolean) {
         itemView.isEnabled = enabled
         itemView.ninchat_href_item.style(when {
-            !enabled -> R.style.NinchatTheme_Questionnaire_HyperLink_Unfocused
             isSelected -> R.style.NinchatTheme_Questionnaire_HyperLink_Selected
             else -> R.style.NinchatTheme_Questionnaire_HyperLink
 
@@ -69,7 +68,6 @@ class NinchatHyperLinkViewHolder(
     override fun onUpdateView(isSelected: Boolean, enabled: Boolean, hasLabel: Boolean) {
         itemView.isEnabled = enabled
         itemView.ninchat_href_item.style(when {
-            !enabled -> R.style.NinchatTheme_Questionnaire_HyperLink_Unfocused
             isSelected -> R.style.NinchatTheme_Questionnaire_HyperLink_Selected
             else -> R.style.NinchatTheme_Questionnaire_HyperLink
 
