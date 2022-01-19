@@ -70,7 +70,6 @@ class NinchatHyperLinkViewHolder(
         itemView.ninchat_href_item.style(when {
             isSelected -> R.style.NinchatTheme_Questionnaire_HyperLink_Selected
             else -> R.style.NinchatTheme_Questionnaire_HyperLink
-
         })
         listOf(
                 Pair(itemView.ninchat_href_item.ninchat_href_text, !isSelected && hasLabel),
