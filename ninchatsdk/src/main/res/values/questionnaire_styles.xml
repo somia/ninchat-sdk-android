@@ -209,4 +209,30 @@
         <item name="android:paddingRight">0dp</item>
     </style>
 
+    <style name="NinchatTheme.Questionnaire.HyperLink" parent="NinchatTheme.Questionnaire.Radio"/>
+
+    <style name="NinchatTheme.Questionnaire.HyperLink.Selected" parent="NinchatTheme.Questionnaire.Radio.Selected"/>
+
+    <style name="NinchatTheme.Questionnaire.HyperLink.Text" parent="NinchatTheme.Questionnaire">
+        <item name="android:drawableEnd">@drawable/ninchat_icon_external_link</item>
+        <item name="android:drawablePadding">5dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_hyperlink_text</item>
+        <item name="android:autoLink">none</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.HyperLink.Text.Selected" parent="NinchatTheme.Questionnaire.HyperLink.Text">
+        <item name="android:drawableEnd">@drawable/ninchat_icon_external_link_selected</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_hyperlink_text_selected</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.HyperLink.Button" parent="NinchatTheme.Questionnaire.HyperLink.Text">
+        <item name="android:drawableEnd">@drawable/null_</item>
+        <item name="android:textColor">@color/ninchat_color_questionnaire_hyperlink_text</item>
+    </style>
+
+    <style name="NinchatTheme.Questionnaire.HyperLink.Button.Selected" parent="NinchatTheme.Questionnaire.HyperLink.Button">
+        <item name="android:textColor">@color/ninchat_color_questionnaire_hyperlink_text_selected</item>
+    </style>
+
 </resources>
