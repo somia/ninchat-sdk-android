@@ -20,7 +20,9 @@ class NinchatRadioButtonPresenter(
         viewCallback.renderView(
                 label = model.label ?: "",
                 isSelected = model.isSelected,
-                enabled = model.enabled
+                enabled = model.enabled,
+                isHrefElement = model.hasHrefAttribute(),
+                hasLabel = model.hasLabel,
         )
     }
 
@@ -30,16 +32,18 @@ class NinchatRadioButtonPresenter(
         viewCallback.updateView(
                 label = model.label ?: "",
                 isSelected = model.isSelected,
-                enabled = model.enabled
+                enabled = model.enabled,
+                isHrefElement = model.hasHrefAttribute(),
+                hasLabel = model.hasLabel,
         )
     }
 
     override fun onToggleSelection() {
         model.isSelected = !model.isSelected
         if (model.isSelected) {
-            viewCallback.onSelected()
+            viewCallback.onSelected(isHrefElement = model.hasHrefAttribute(), hasLabel = model.hasLabel, uri = model.hrefAttribute)
         } else {
-            viewCallback.onUnSelected()
+            viewCallback.onUnSelected(isHrefElement = model.hasHrefAttribute(), hasLabel = model.hasLabel)
         }
     }
 
@@ -48,8 +52,8 @@ class NinchatRadioButtonPresenter(
 }
 
 interface INinchatRadioButtonPresenter {
-    fun renderView(label: String, isSelected: Boolean, enabled: Boolean)
-    fun updateView(label: String, isSelected: Boolean, enabled: Boolean)
-    fun onSelected()
-    fun onUnSelected()
+    fun renderView(label: String, isSelected: Boolean, enabled: Boolean, isHrefElement: Boolean, hasLabel: Boolean)
+    fun updateView(label: String, isSelected: Boolean, enabled: Boolean, isHrefElement: Boolean, hasLabel: Boolean)
+    fun onSelected(isHrefElement: Boolean, hasLabel: Boolean, uri: String)
+    fun onUnSelected(isHrefElement: Boolean, hasLabel: Boolean)
 }
