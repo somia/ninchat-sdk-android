@@ -77,13 +77,19 @@ class NinchatConversationListPresenter(
 
         val index = model.getIndex(elementName = model.selectedElement.lastOrNull()?.first)
         val nextTargetName = getNextElement(currentIndex = index + 1, 1000)
-        if (nextTargetName == "_complete") {
-            rootActivityCallback.onComplete(answerList = getAnswerList())
-            return
-        }
-        if (nextTargetName == "_register") {
-            rootActivityCallback.onRegistered(answerList = getAnswerList())
-            return
+        when (nextTargetName) {
+            "_complete" -> {
+                rootActivityCallback.onComplete(answerList = getAnswerList())
+                return
+            }
+            "_register" -> {
+                rootActivityCallback.onRegistered(answerList = getAnswerList())
+                return
+            }
+            "_close" -> {
+                rootActivityCallback.onFinishQuestionnaire(openQueue = false)
+                return
+            }
         }
         // otherwise simply load next element by target name or if there is no target then treat as _complete
         nextTargetName?.let {
