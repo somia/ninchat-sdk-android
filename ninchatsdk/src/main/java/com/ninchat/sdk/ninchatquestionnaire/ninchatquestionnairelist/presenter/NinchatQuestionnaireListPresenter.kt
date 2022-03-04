@@ -80,8 +80,8 @@ open class NinchatQuestionnaireListPresenter(
                     model.updateTagsAndQueueId(logicElement = currentElement?.optJSONObject("logic"))
                     val nextTargetElement = currentElement?.optJSONObject("logic")?.optString("target")
                     when {
-                        // is a _complete or _register element
-                        nextTargetElement in listOf("_register", "_complete") -> nextTargetElement
+                        // is a _complete or _register or _close element
+                        nextTargetElement in listOf("_register", "_complete", "_close") -> nextTargetElement
                         // matched target is found in the questionnaire
                         model.getIndex(elementName = nextTargetElement) != -1 -> nextTargetElement
                         // there is no matched element for the target. simple try to load next element
