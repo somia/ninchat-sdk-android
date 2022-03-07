@@ -121,8 +121,8 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
             onAudienceRegisterError()
             return
         }
-        // else show thank you text
-        presenter.showThankYouText(currentAdapter, isComplete = presenter.isComplete())
+        // else handle end of questionnaire with a thank you or _register element
+        presenter.handleEndOfQuestionnaire(currentAdapter, isComplete = presenter.isComplete())
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

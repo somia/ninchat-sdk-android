@@ -243,8 +243,21 @@ class NinchatQuestionnaireListAdapter(
         notifyItemRangeChanged(position, totalItemCount)
     }
 
-    fun showThankYou(isComplete: Boolean = false) {
-        presenter.addThankYouView(isComplete)
+    fun handleEndOfQuestionnaire(isComplete: Boolean = false) {
+        if (isComplete) {
+            if (presenter.hasCompletedText()) {
+                presenter.applyRegisteredView()
+            } else {
+                presenter.addThankYouView(isComplete)
+            }
+            return
+        }
+        // came from _register event
+        if (presenter.hasRegisteredText()) {
+            presenter.applyRegisteredView()
+        } else {
+            presenter.addThankYouView(isComplete)
+        }
     }
 
     fun showNextQuestionnaire(onNextQuestionnaire: OnNextQuestionnaire) {
