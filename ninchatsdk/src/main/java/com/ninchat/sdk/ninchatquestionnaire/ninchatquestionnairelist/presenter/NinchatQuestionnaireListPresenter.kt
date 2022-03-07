@@ -117,6 +117,12 @@ open class NinchatQuestionnaireListPresenter(
         return model.answerList.plus(uniquePreAnswers)
     }
 
+    fun hasRegisteredText(): Boolean =
+            model.getIndex("_registered") != -1
+
+    fun hasCompletedText(): Boolean =
+            model.getIndex("_completed") != -1
+
     override fun onCompleteLoading(target: String?, thankYouText: String?, loaded: Boolean, position: Int) {
         model.answerList.getOrNull(position)?.apply {
             putOpt("loaded", true)
@@ -128,6 +134,14 @@ open class NinchatQuestionnaireListPresenter(
     }
 
     open fun addThankYouView(isComplete: Boolean) {
+        TODO("implement me")
+    }
+
+    open fun applyRegisteredView() {
+        TODO("implement me")
+    }
+
+    open fun applyCompletedView() {
         TODO("implement me")
     }
 
