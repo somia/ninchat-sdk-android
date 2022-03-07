@@ -11,8 +11,8 @@ import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
 import com.ninchat.sdk.events.OnItemFocus
 import com.ninchat.sdk.events.OnNextQuestionnaire
-import com.ninchat.sdk.events.OnPostAudienceQuestionnaire
-import com.ninchat.sdk.events.OnSubmitQuestionnaireAnswers
+import com.ninchat.sdk.events.OnSubmitPostAudienceQuestionnaire
+import com.ninchat.sdk.events.OnSubmitPreAudienceQuestionnaireAnswers
 import com.ninchat.sdk.helper.NinchatQuestionnaireItemDecoration
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.INinchatQuestionnairePresenter
@@ -115,21 +115,21 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    @JvmName("OnSubmitQuestionnaireAnswers")
-    fun onSubmitQuestionnaireAnswers(result: OnSubmitQuestionnaireAnswers) {
+    @JvmName("OnSubmitPreAudienceQuestionnaireAnswers")
+    fun onSubmitPreAudienceQuestionnaireAnswers(result: OnSubmitPreAudienceQuestionnaireAnswers) {
         if (result.withError) {
             onAudienceRegisterError()
             return
         }
         // else handle end of questionnaire with a thank you or _register element
-        presenter.handleEndOfQuestionnaire(currentAdapter, isComplete = presenter.isComplete())
+        presenter.handleEndOfPreAudienceQuestionnaire(currentAdapter, isComplete = presenter.isComplete())
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    @JvmName("OnPostAudienceQuestionnaire")
-    fun onSubmitPostQuestionnaireAnswers(result: OnPostAudienceQuestionnaire) {
-        // else show thank you text
-        onCompletePostAudienceQuestionnaire()
+    @JvmName("OnSubmitPostAudienceQuestionnaire")
+    fun onSubmitPostAudienceQuestionnaire(result: OnSubmitPostAudienceQuestionnaire) {
+        // else handle end of post audience questionnaire
+        presenter.handleEndOfPostAudienceQuestionnaire(currentAdapter)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -168,6 +168,14 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
             presenter.mayeBeCompleteQuestionnaire()
     }
 
+    override fun onClose() {
+        if (presenter.isPostAudienceQuestionnaire()) {
+            onCompletePostAudienceQuestionnaire()
+        } else {
+            onFinishQuestionnaire(false)
+        }
+    }
+
     override fun onDataSetChange(withError: Boolean) {
         presenter.handleDataSetChange(
             questionnaire_form_rview as RecyclerView,
@@ -195,6 +203,7 @@ class NinchatQuestionnaireActivity : NinchatBaseActivity(), INinchatQuestionnair
 interface QuestionnaireActivityCallback {
     fun onRegistered(answerList: List<JSONObject>)
     fun onComplete(answerList: List<JSONObject>)
+    fun onClose()
     fun onDataSetChange(withError: Boolean)
     fun onFinishQuestionnaire(openQueue: Boolean)
     fun scrollTo(position: Int)

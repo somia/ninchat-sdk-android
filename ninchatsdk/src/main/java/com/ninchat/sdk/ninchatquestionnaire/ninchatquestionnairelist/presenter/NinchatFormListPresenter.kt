@@ -38,7 +38,11 @@ class NinchatFormListPresenter(
         } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
     }
 
-    override fun applyCompletedView() {
+    override fun applyCompletedView(skipView: Boolean) {
+        if(skipView) {
+            rootActivityCallback.onClose()
+            return
+        }
         val index = model.getIndex(elementName = "_completed")
         val nextTargetName = getNextElement(currentIndex = index, 1000)
         // otherwise simply load next element by target name or if there is no target then treat as _complete
@@ -82,7 +86,7 @@ class NinchatFormListPresenter(
                 return
             }
             "_close" -> {
-                rootActivityCallback.onFinishQuestionnaire(openQueue = false)
+                rootActivityCallback.onClose()
                 return
             }
         }

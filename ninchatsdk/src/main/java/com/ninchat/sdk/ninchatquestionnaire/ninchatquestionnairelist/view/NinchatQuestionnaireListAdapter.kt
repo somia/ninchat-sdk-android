@@ -243,20 +243,21 @@ class NinchatQuestionnaireListAdapter(
         notifyItemRangeChanged(position, totalItemCount)
     }
 
-    fun handleEndOfQuestionnaire(isComplete: Boolean = false) {
-        if (isComplete) {
-            if (presenter.hasCompletedText()) {
-                presenter.applyRegisteredView()
-            } else {
-                presenter.addThankYouView(isComplete)
-            }
-            return
-        }
-        // came from _register event
-        if (presenter.hasRegisteredText()) {
+    fun handleEndOfPreAudienceQuestionnaire(isComplete: Boolean = false) {
+        // came from _register or _complete event
+        if (presenter.hasRegisteredText() && !isComplete) {
             presenter.applyRegisteredView()
         } else {
             presenter.addThankYouView(isComplete)
+        }
+    }
+
+    fun handleEndOfPostAudienceQuestionnaire() {
+        // came from _register or _complete event
+        if (presenter.hasCompletedText()) {
+            presenter.applyCompletedView(false)
+        } else {
+            presenter.applyCompletedView(true)
         }
     }
 

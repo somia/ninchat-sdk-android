@@ -141,7 +141,7 @@ open class NinchatQuestionnaireListPresenter(
         TODO("implement me")
     }
 
-    open fun applyCompletedView() {
+    open fun applyCompletedView(skipView: Boolean) {
         TODO("implement me")
     }
 

@@ -55,8 +55,12 @@ class NinchatQuestionnairePresenter(
         }
     }
 
-    fun handleEndOfQuestionnaire(adapter: NinchatQuestionnaireListAdapter, isComplete: Boolean) {
-        adapter.handleEndOfQuestionnaire(isComplete)
+    fun handleEndOfPreAudienceQuestionnaire(adapter: NinchatQuestionnaireListAdapter, isComplete: Boolean) {
+        adapter.handleEndOfPreAudienceQuestionnaire(isComplete)
+    }
+
+    fun handleEndOfPostAudienceQuestionnaire(adapter: NinchatQuestionnaireListAdapter) {
+        adapter.handleEndOfPostAudienceQuestionnaire()
     }
 
     fun showNextQuestionnaire(
