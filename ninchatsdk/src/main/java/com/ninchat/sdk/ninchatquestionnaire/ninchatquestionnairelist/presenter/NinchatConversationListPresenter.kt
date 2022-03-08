@@ -109,7 +109,7 @@ class NinchatConversationListPresenter(
                 return
             }
             "_close" -> {
-                rootActivityCallback.onFinishQuestionnaire(openQueue = false)
+                rootActivityCallback.onClose()
                 return
             }
         }
