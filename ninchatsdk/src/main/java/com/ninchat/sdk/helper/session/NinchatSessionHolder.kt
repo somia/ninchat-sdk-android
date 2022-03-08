@@ -10,7 +10,7 @@ import com.ninchat.client.Props
 import com.ninchat.client.Session
 import com.ninchat.sdk.NinchatSDKEventListener
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.events.OnSubmitQuestionnaireAnswers
+import com.ninchat.sdk.events.OnSubmitPreAudienceQuestionnaireAnswers
 import com.ninchat.sdk.helper.message.NinchatMessageService
 import com.ninchat.sdk.helper.propsparser.NinchatPropsParser
 import com.ninchat.sdk.helper.propsparser.getSafe
@@ -132,11 +132,11 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
                     params
                 )
                 "audience_registered" -> EventBus.getDefault()
-                    .post(OnSubmitQuestionnaireAnswers(false))
+                    .post(OnSubmitPreAudienceQuestionnaireAnswers(false))
                 "error" -> {
                     when (NinchatSessionManager.getInstance()?.ninchatState?.actionId) {
                         currentActionId -> {
-                            EventBus.getDefault().post(OnSubmitQuestionnaireAnswers(true))
+                            EventBus.getDefault().post(OnSubmitPreAudienceQuestionnaireAnswers(true))
                         }
                     }
                 }

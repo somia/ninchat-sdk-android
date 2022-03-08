@@ -55,8 +55,12 @@ class NinchatQuestionnairePresenter(
         }
     }
 
-    fun showThankYouText(adapter: NinchatQuestionnaireListAdapter, isComplete: Boolean) {
-        adapter.showThankYou(isComplete)
+    fun handleEndOfPreAudienceQuestionnaire(adapter: NinchatQuestionnaireListAdapter, isComplete: Boolean) {
+        adapter.handleEndOfPreAudienceQuestionnaire(isComplete)
+    }
+
+    fun handleEndOfPostAudienceQuestionnaire(adapter: NinchatQuestionnaireListAdapter) {
+        adapter.handleEndOfPostAudienceQuestionnaire()
     }
 
     fun showNextQuestionnaire(
@@ -91,6 +95,7 @@ class NinchatQuestionnairePresenter(
         viewCallback.onCompleteQuestionnaire()
     }
 
+    // Is it from _complete or from _register. fromComplete = true means it comes from _complete
     fun mayBeRegisterAudience(fromComplete: Boolean = false) {
         model.fromComplete = fromComplete
         val questionnaireAnswers = model.getAnswersAsProps()

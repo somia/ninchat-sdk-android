@@ -50,6 +50,28 @@ class NinchatConversationListPresenter(
         } ?: rootActivityCallback.onFinishQuestionnaire(openQueue = false)
     }
 
+    override fun applyRegisteredView() {
+        val index = model.getIndex(elementName = "_registered")
+        val nextTargetName = getNextElement(currentIndex = index, 1000)
+        // otherwise simply load next element by target name or if there is no target then treat as _complete
+        nextTargetName?.let {
+            addBotWritingView(nextTarget = nextTargetName, thankYouText = null)
+        } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
+    }
+
+    override fun applyCompletedView(skipView: Boolean) {
+        if(skipView) {
+            rootActivityCallback.onClose()
+            return
+        }
+        val index = model.getIndex(elementName = "_completed")
+        val nextTargetName = getNextElement(currentIndex = index, 1000)
+        // otherwise simply load next element by target name or if there is no target then treat as _complete
+        nextTargetName?.let {
+            addBotWritingView(nextTarget = nextTargetName, thankYouText = null)
+        } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
+    }
+
     override fun showNext(onNextQuestionnaire: OnNextQuestionnaire?) {
         // if a thank you text
         if (onNextQuestionnaire?.moveType == OnNextQuestionnaire.thankYou) {
@@ -87,7 +109,7 @@ class NinchatConversationListPresenter(
                 return
             }
             "_close" -> {
-                rootActivityCallback.onFinishQuestionnaire(openQueue = false)
+                rootActivityCallback.onClose()
                 return
             }
         }

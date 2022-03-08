@@ -5,7 +5,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.client.Payload
 import com.ninchat.client.Props
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.events.OnPostAudienceQuestionnaire
+import com.ninchat.sdk.events.OnSubmitPostAudienceQuestionnaire
 import com.ninchat.sdk.helper.propsparser.getSafe
 import com.ninchat.sdk.ninchatmedia.model.NinchatFile
 import com.ninchat.sdk.models.NinchatMessage
@@ -91,7 +91,7 @@ class NinchatMessageService {
                 }
 
                 if (ninchatSessionManager.ninchatState?.actionId == currentActionId) {
-                    EventBus.getDefault().post(OnPostAudienceQuestionnaire())
+                    EventBus.getDefault().post(OnSubmitPostAudienceQuestionnaire())
                 }
                 if (messageType != NinchatMessageTypes.TEXT && messageType != NinchatMessageTypes.FILE) {
                     return
