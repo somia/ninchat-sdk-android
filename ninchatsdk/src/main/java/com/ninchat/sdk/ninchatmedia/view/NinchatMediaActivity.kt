@@ -105,14 +105,16 @@ class NinchatMediaActivity : NinchatBaseActivity(), INinchatMediaPresenter {
 
     private fun animateSpinner(): RotateAnimation? {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            val animation = RotateAnimation(0f, 359f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f)
-            animation.interpolator = LinearInterpolator()
-            animation.repeatCount = Animation.INFINITE
-            animation.duration = 3000
-            val spinner: ImageView = ninchat_loading_image_preview_spinner
-            spinner.visibility = View.VISIBLE
-            spinner.animation = animation
-            return animation
+            val spinnerAnimation = RotateAnimation(0f, 359f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f).apply {
+                interpolator = LinearInterpolator()
+                repeatCount = Animation.INFINITE
+                duration = 3000
+            }
+            val spinner: ImageView = ninchat_loading_image_preview_spinner.apply {
+                visibility = View.VISIBLE
+                animation = spinnerAnimation
+            }
+            return spinnerAnimation
         }
         return null
     }
