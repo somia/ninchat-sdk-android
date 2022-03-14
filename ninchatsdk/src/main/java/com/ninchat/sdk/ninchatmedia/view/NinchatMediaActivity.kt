@@ -1,12 +1,18 @@
 package com.ninchat.sdk.ninchatmedia.view
 
 import android.app.DownloadManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.LinearInterpolator
+import android.view.animation.RotateAnimation
+import android.widget.ImageView
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
 import com.ninchat.sdk.helper.glidewrapper.GlideWrapper
 import com.ninchat.sdk.ninchatmedia.model.NinchatMediaModel
+import com.ninchat.sdk.ninchatmedia.presenter.INinchatMediaCallback
 import com.ninchat.sdk.ninchatmedia.presenter.INinchatMediaPresenter
 import com.ninchat.sdk.ninchatmedia.presenter.NinchatMediaPresenter
 import kotlinx.android.synthetic.main.activity_ninchat_media.*
@@ -62,7 +68,21 @@ class NinchatMediaActivity : NinchatBaseActivity(), INinchatMediaPresenter {
             if (ninchatFile.isVideo) {
                 ninchatMediaPresenter.playVideo(ninchat_media_video, ninchatFile.url)
             } else {
-                GlideWrapper.loadImage(this, ninchatFile.url, ninchat_media_image)
+                ninchat_loading_image_preview.visibility = View.VISIBLE
+                ninchat_loading_image_preview_text.text = ninchatMediaPresenter.getLoadingText
+                val spinner = animateSpinner()
+
+                GlideWrapper.loadImage(this, ninchatFile.url, ninchat_media_image, object : INinchatMediaCallback {
+                    override fun onLoadError() {
+                        spinner?.cancel()
+                        showError(R.id.ninchat_media_error, R.string.ninchat_chat_error_downloading_preview)
+                    }
+
+                    override fun onLoadSuccess() {
+                        spinner?.cancel()
+                        ninchat_loading_image_preview.visibility = View.GONE
+                    }
+                })
             }
             ninchat_media_name.text = ninchatFile.name
             ninchat_media_download.visibility = if (ninchatFile.isDownloaded || ninchatFile.isVideo) View.GONE else View.VISIBLE
@@ -81,4 +101,22 @@ class NinchatMediaActivity : NinchatBaseActivity(), INinchatMediaPresenter {
 
     // helper class for test
     internal fun getMediaPresenter() = ninchatMediaPresenter
+
+
+    private fun animateSpinner(): RotateAnimation? {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+            val spinnerAnimation = RotateAnimation(0f, 359f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f).apply {
+                interpolator = LinearInterpolator()
+                repeatCount = Animation.INFINITE
+                duration = 3000
+            }
+            val spinner: ImageView = ninchat_loading_image_preview_spinner.apply {
+                visibility = View.VISIBLE
+                animation = spinnerAnimation
+            }
+            return spinnerAnimation
+        }
+        return null
+    }
+
 }

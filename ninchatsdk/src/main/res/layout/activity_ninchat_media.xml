@@ -13,14 +13,44 @@
         tools:src="@drawable/ninchat_logo"
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
-        android:layout_centerInParent="true"/>
-    
+        tools:visibility="gone"
+        android:layout_centerInParent="true" />
+
+    <LinearLayout
+        android:id="@+id/ninchat_loading_image_preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:visibility="visible"
+        tools:visibility="visible">
+
+
+        <ImageView
+            android:id="@+id/ninchat_loading_image_preview_spinner"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:scaleType="fitCenter"
+            android:layout_gravity="center"
+            android:src="@drawable/ninchat_file_preview_loader" />
+
+        <TextView
+            android:layout_marginTop="30dp"
+            android:gravity="center"
+            android:id="@+id/ninchat_loading_image_preview_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            tools:text="Loading image" />
+    </LinearLayout>
+
     <VideoView
         android:id="@+id/ninchat_media_video"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/ninchat_media_top"

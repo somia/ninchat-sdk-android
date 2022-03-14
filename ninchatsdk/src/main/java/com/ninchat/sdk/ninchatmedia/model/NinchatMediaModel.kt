@@ -16,4 +16,7 @@ class NinchatMediaModel {
     companion object {
         const val FILE_ID = "fileId"
     }
+
+    fun translate() = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getTranslation("Loading image")
+            ?: "Loading image"
 }
