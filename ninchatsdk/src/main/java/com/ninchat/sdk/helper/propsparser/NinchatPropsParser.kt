@@ -150,11 +150,14 @@ class NinchatPropsParser {
                     ?.getSafe<String>("video") == "member"
                 val supportFiles = currentQueue.getSafe<Props>("queue_attrs")
                     ?.getSafe<String>("upload") == "member"
+                val isGroup = currentQueue.getSafe<Props>("queue_attrs")
+                    ?.getSafe<String>("video") == "group"
                 val ninchatQueue = NinchatQueue(
                     it.key,
                     name = queueName,
                     supportVideos = supportVideos,
-                    supportFiles = supportFiles
+                    supportFiles = supportFiles,
+                    isGroup = isGroup
                 )
                 ninchatQueue.position = queuePosition
                 ninchatQueue.isClosed = queueClosed
