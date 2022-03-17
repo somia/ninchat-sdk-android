@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.view.View
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
-import com.ninchat.sdk.activities.NinchatChatActivity
+import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.presenter.INinchatQueuePresenter
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
@@ -67,7 +67,7 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == NinchatChatActivity.REQUEST_CODE) {
+        if (requestCode == NinchatChatPresenter.REQUEST_CODE) {
             // check data is null or not. Can through exception
             val currentQueueId = data?.getStringExtra(Parameter.QUEUE_ID)
             if (currentQueueId.isNullOrEmpty()) {
@@ -83,6 +83,7 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
                 this.onClose(ninchat_queue_activity)
             })
         }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     fun onClose(view: View) {
@@ -94,7 +95,7 @@ class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
     override fun onChannelJoined(isClosed: Boolean) {
         val intent =
             NinchatQueuePresenter.getLaunchIntentForChatActivity(applicationContext, isClosed)
-        startActivityForResult(intent, NinchatChatActivity.REQUEST_CODE)
+        startActivityForResult(intent, NinchatChatPresenter.REQUEST_CODE)
     }
 
     override fun onQueueUpdate() {

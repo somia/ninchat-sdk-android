@@ -11,10 +11,10 @@ import android.view.animation.RotateAnimation
 import android.widget.ImageView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.activities.NinchatChatActivity
 import com.ninchat.sdk.helper.session.NinchatSessionManagerHelper
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
 import com.ninchat.sdk.networkdispatchers.NinchatDescribeQueue
+import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.view.NinchatQueueActivity
 import com.ninchat.sdk.ninchattitlebar.model.shouldShowTitlebar
