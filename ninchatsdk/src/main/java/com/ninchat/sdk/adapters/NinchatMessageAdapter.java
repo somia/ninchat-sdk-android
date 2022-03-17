@@ -30,8 +30,9 @@ import android.widget.TextView;
 import com.ninchat.sdk.GlideApp;
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.activities.NinchatChatActivity;
+import com.ninchat.sdk.events.OnCloseChat;
 import com.ninchat.sdk.helper.glidewrapper.GlideWrapper;
+import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity;
 import com.ninchat.sdk.ninchatchatmessage.INinchatMessageList;
 import com.ninchat.sdk.ninchatchatmessage.NinchatMessageList;
 import com.ninchat.sdk.ninchatmedia.presenter.NinchatMediaPresenter;
@@ -43,6 +44,7 @@ import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
 import com.ninchat.sdk.utils.misc.Misc;
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler;
 
+import org.greenrobot.eventbus.EventBus;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -192,15 +194,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 final String closeText =
                         NinchatSessionManager.getInstance().ninchatState.getSiteConfig().getChatCloseText();
                 closeButton.setText(closeText);
-                closeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        final NinchatChatActivity activity = activityWeakReference.get();
-                        if (activity != null) {
-                            activity.chatClosed();
-                        }
-                    }
-                });
+                closeButton.setOnClickListener(v -> EventBus.getDefault().post(new OnCloseChat()));
                 itemView.findViewById(R.id.ninchat_chat_message_end).setVisibility(View.VISIBLE);
             } else if (data.getType().equals(NinchatMessage.Type.WRITING)) {
                 itemView.findViewById(R.id.ninchat_chat_message_meta_container).setVisibility(View.GONE);
@@ -387,6 +381,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         ninchatMessageList.addMetaMessage(messageId, message);
     }
 
+    public void addEndMessage() {
+        ninchatMessageList.addEndMessage();
+    }
+
     public void clear() {
         ninchatMessageList.clear();
     }
@@ -406,17 +404,6 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 }
             });
         }
-    }
-
-    public void close(final NinchatChatActivity activity) {
-        activityWeakReference = new WeakReference<>(activity);
-
-        // Disable text input after chat has ended
-        EditText editText = activity.findViewById(R.id.message);
-        editText.setEnabled(false);
-        LinearLayout linearLayout = activity.findViewById(R.id.send_message_container);
-        linearLayout.setOnClickListener(null);
-        ninchatMessageList.addEndMessage();
     }
 
     @Override
