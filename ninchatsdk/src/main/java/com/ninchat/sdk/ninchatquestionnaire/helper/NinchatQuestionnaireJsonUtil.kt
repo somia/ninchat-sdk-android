@@ -384,7 +384,7 @@ class NinchatQuestionnaireJsonUtil {
                     }
                     .mapNotNull {
                         when {
-                            NinchatQuestionnaireType.isLogic(it) || NinchatQuestionnaireType.isButton(it) || NinchatQuestionnaireType.isText(it) -> null
+                            NinchatQuestionnaireType.isLogic(it) || NinchatQuestionnaireType.isButton(it) || NinchatQuestionnaireType.isText(it) || NinchatQuestionnaireType.isHyperlinkElement(it)-> null
                             it.optString("result").isNullOrBlank() -> null
                             // ignore any result that is false
                             it.optString("result", "") == "false" -> null
