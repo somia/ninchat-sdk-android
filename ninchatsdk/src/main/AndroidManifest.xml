@@ -19,21 +19,24 @@
     <application>
         <activity
             android:name=".ninchatactivity.view.NinchatActivity"
-            android:theme="@style/NinchatTheme" />
+            android:theme="@style/NinchatTheme"
+            android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".ninchatqueue.view.NinchatQueueActivity"
-            android:theme="@style/NinchatTheme" />
+            android:theme="@style/NinchatTheme"
+            android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".activities.NinchatChatActivity"
             android:theme="@style/NinchatTheme"
             android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".ninchatreview.view.NinchatReviewActivity"
-            android:theme="@style/NinchatTheme" />
+            android:theme="@style/NinchatTheme"
+            android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".ninchatmedia.view.NinchatMediaActivity"
-            android:theme="@style/NinchatTheme" />
-
+            android:theme="@style/NinchatTheme"
+            android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".ninchatquestionnaire.ninchatquestionnaireactivity.view.NinchatQuestionnaireActivity"
             android:theme="@style/NinchatTheme.Questionnaire"
