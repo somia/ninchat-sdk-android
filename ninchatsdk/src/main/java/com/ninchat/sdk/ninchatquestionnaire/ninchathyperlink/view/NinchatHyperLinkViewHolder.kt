@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat.startActivity
 import android.content.Intent
 import android.net.Uri
 import android.webkit.URLUtil
+import com.ninchat.sdk.ninchatquestionnaire.ninchathyperlink.presenter.OnClickListener
 
 
 class NinchatHyperLinkViewHolder(
@@ -35,10 +36,11 @@ class NinchatHyperLinkViewHolder(
         presenter.renderCurrentView()
         attachHandler()
     }
+    private val onClickListener = OnClickListener(intervalInMs = 2000)
 
     private fun attachHandler() {
         itemView.setOnClickListener {
-            presenter.onLinkClicked()
+            onClickListener.onClickListener { presenter.onLinkClicked() }
         }
     }
 
