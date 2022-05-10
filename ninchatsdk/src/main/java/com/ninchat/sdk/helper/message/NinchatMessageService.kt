@@ -32,10 +32,14 @@ class NinchatMessageService {
                 if (ninchatSessionManager.ninchatState?.channelId.isNullOrBlank()) {
                     return
                 }
+                if (ninchatSessionManager.ninchatState?.channelId != params?.getSafe<String>("channel_id")) {
+                    return
+                }
                 val currentActionId = params?.getSafe<Long>("action_id")
                 val messageType = params?.getSafe<String>("message_type")
                 val sender = params?.getSafe<String>("message_user_id")
                 val messageId = params?.getSafe<String>("message_id")
+                val senderName = params?.getSafe<String>("message_user_name")
                 val timestampMs = 1000L * ((params?.getSafe<Double>("message_time") ?: 0)).toLong()
                 val builder = StringBuilder()
                 payload?.let { currentPayload ->
@@ -68,6 +72,7 @@ class NinchatMessageService {
                                 }
                                 ninchatSessionManager.messageAdapter?.add(messageId, NinchatMessage(MULTICHOICE,
                                         sender,
+                                        senderName,
                                         message.getString("label"),
                                         message,
                                         messageOptions,
@@ -80,6 +85,7 @@ class NinchatMessageService {
                         if (simpleButtonChoice) {
                             ninchatSessionManager.messageAdapter?.add(messageId, NinchatMessage(MULTICHOICE,
                                     sender,
+                                    senderName,
                                     null,
                                     null,
                                     messageOptions,
@@ -111,7 +117,7 @@ class NinchatMessageService {
                                         filetype = guessMimeTypeFromFileName(filename)
                                     }
                                     val fileId = currentFile.optString("file_id")
-                                    val ninchatFile = NinchatFile(messageId, fileId, filename, filesize, filetype, timestampMs, sender, sender != ninchatSessionManager.ninchatState?.userId)
+                                    val ninchatFile = NinchatFile(messageId, fileId, filename, filesize, filetype, timestampMs, sender, senderName, sender != ninchatSessionManager.ninchatState?.userId)
                                     ninchatSessionManager.ninchatState?.addFile(fileId, ninchatFile)
                                     if (ninchatFile.url == null || ninchatFile.urlExpiry == null || ninchatFile.urlExpiry?.before(Date()) == true) {
                                         getIOScope().launch {
@@ -123,7 +129,7 @@ class NinchatMessageService {
                                     }
                                 }
                             } else {
-                                ninchatSessionManager.messageAdapter?.add(messageId, NinchatMessage(message.getString("text"), null, sender, timestampMs, sender != ninchatSessionManager.ninchatState?.userId))
+                                ninchatSessionManager.messageAdapter?.add(messageId, NinchatMessage(message.getString("text"), null, sender, senderName, timestampMs, sender != ninchatSessionManager.ninchatState?.userId))
                             }
                         }
                     }
