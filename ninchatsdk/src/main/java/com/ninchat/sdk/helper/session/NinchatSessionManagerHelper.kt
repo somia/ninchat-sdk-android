@@ -283,6 +283,7 @@ class NinchatSessionManagerHelper {
                             null,
                             fileId,
                             currentFile.sender,
+                            currentFile.senderName,
                             currentFile.timestamp,
                             currentFile.isRemote
                         )
