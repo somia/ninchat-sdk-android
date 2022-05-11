@@ -623,7 +623,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         hangUp();
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
         localBroadcastManager.unregisterReceiver(channelClosedReceiver);
@@ -636,6 +635,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         if (orientationManager != null) {
             orientationManager.disable();
         }
+        super.onDestroy();
     }
 
     @Override

@@ -30,6 +30,7 @@ public final class NinchatMessage {
 
     private Type type;
     private String sender;
+    private String senderName;
     private String message;
     private String fileId;
     private Date timestamp;
@@ -38,28 +39,29 @@ public final class NinchatMessage {
     private List<NinchatOption> options;
 
     public NinchatMessage(final Type type, long timestamp) {
-        this(type, null, null, null, timestamp, false);
+        this(type, null, null, null, null, timestamp, false);
     }
 
     public NinchatMessage(final Type type, final String data, long timestamp) {
-        this(type, type == Type.WRITING ? null : data, null, type == Type.WRITING ? data : null, timestamp, true);
+        this(type, type == Type.WRITING ? null : data, null, type == Type.WRITING ? data : null, null, timestamp, true);
     }
 
-    public NinchatMessage(final Type type, final String sender, final String label, final JSONObject data, final ArrayList<NinchatOption> options, long timestamp) {
-        this(type, label, null, sender, timestamp, true);
+    public NinchatMessage(final Type type, final String sender, final String senderName, final String label, final JSONObject data, final ArrayList<NinchatOption> options, long timestamp) {
+        this(type, label, null, sender,senderName, timestamp, true);
         this.data = data;
         this.options = options;
     }
 
-    public NinchatMessage(final String message, final String fileId, final String sender, long timestamp, final boolean isRemoteMessage) {
-        this(Type.MESSAGE, message, fileId, sender, timestamp, isRemoteMessage);
+    public NinchatMessage(final String message, final String fileId, final String sender, final String senderName, long timestamp, final boolean isRemoteMessage) {
+        this(Type.MESSAGE, message, fileId, sender, senderName, timestamp, isRemoteMessage);
     }
 
-    private NinchatMessage(final Type type, final String message, final String fileId, final String sender, long timestamp, final boolean isRemoteMessage) {
+    private NinchatMessage(final Type type, final String message, final String fileId, final String sender, final String senderName, long timestamp, final boolean isRemoteMessage) {
         this.type = type;
         this.message = message;
         this.fileId = fileId;
         this.sender = sender;
+        this.senderName = senderName;
         this.timestamp = new Date(timestamp);
         this.isRemoteMessage = isRemoteMessage;
     }
@@ -72,9 +74,10 @@ public final class NinchatMessage {
         return fileId;
     }
 
-    public String getSender() {
+    public String getSender(boolean isAgent) {
         final NinchatUser member = NinchatSessionManager.getInstance().getMember(sender);
-        return member == null ? NinchatSessionManager.getInstance().getUserName() : member.getName();
+        return member == null ? isAgent ? this.senderName :
+                NinchatSessionManager.getInstance().getUserName() : member.getName();
     }
 
     public String getSenderId() {
