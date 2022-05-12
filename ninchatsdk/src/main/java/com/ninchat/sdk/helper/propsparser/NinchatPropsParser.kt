@@ -94,7 +94,7 @@ class NinchatPropsParser {
             val parser = NinchatPropVisitor()
             return try {
                 props?.accept(parser)
-                parser.properties.keys.firstOrNull()
+                parser.properties.keys.maxOrNull()
             } catch (e: Exception) {
                 null
             }
