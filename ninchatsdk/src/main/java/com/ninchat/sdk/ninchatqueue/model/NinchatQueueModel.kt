@@ -48,6 +48,10 @@ class NinchatQueueModel {
         return NinchatSessionManager.getInstance()?.ninchatSessionHolder?.hasChannel() ?: false
     }
 
+    fun isInQueue(): Boolean {
+        return NinchatSessionManager.getInstance()?.ninchatSessionHolder?.isInQueue() ?: false
+    }
+
     fun isAlreadyInQueueList(): Boolean {
         return NinchatSessionManager.getInstance()?.ninchatState?.getQueueList()
             ?.any { currentQueue -> currentQueue.id == queueId }
