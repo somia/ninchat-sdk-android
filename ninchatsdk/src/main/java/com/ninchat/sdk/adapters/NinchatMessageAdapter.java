@@ -107,8 +107,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             itemView.findViewById(headerId).setVisibility(View.GONE);
 
             final TextView sender = itemView.findViewById(senderId);
-            String senderNameOverride = NinchatSessionManager.getInstance().getName(senderId == R.id.ninchat_chat_message_agent_name);
-            sender.setText(senderNameOverride != null ? senderNameOverride : ninchatMessage.getSender());
+            final Boolean isAgent = senderId == R.id.ninchat_chat_message_agent_name;
+            String senderNameOverride = NinchatSessionManager.getInstance().getName(isAgent);
+            sender.setText(senderNameOverride != null ? senderNameOverride : ninchatMessage.getSender(isAgent));
 
             final TextView timestamp = itemView.findViewById(timestampId);
             timestamp.setText(TIMESTAMP_FORMATTER.format(ninchatMessage.getTimestamp()));
@@ -216,7 +217,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
                 String agentNameOverride = NinchatSessionManager.getInstance().getName(true);
                 final TextView agentName = itemView.findViewById(R.id.ninchat_chat_message_agent_name);
-                agentName.setText(agentNameOverride != null ? agentNameOverride : data.getSender());
+                agentName.setText(agentNameOverride != null ? agentNameOverride : data.getSender(true));
 
                 itemView.findViewById(R.id.ninchat_chat_message_agent_wrapper)
                         .setBackgroundResource(isContinuedMessage ?
@@ -244,7 +245,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
                 String agentNameOverride = NinchatSessionManager.getInstance().getName(true);
                 final TextView agentName = itemView.findViewById(R.id.ninchat_chat_message_agent_name);
-                agentName.setText(agentNameOverride != null ? agentNameOverride : data.getSender());
+                agentName.setText(agentNameOverride != null ? agentNameOverride : data.getSender(true));
 
                 itemView.findViewById(R.id.ninchat_chat_message_agent_wrapper)
                         .setBackgroundResource(isContinuedMessage ?

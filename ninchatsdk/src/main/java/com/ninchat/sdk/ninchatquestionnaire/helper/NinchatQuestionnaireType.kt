@@ -32,6 +32,9 @@ class NinchatQuestionnaireType {
         fun isBotElement(jsonObject: JSONObject): Boolean =
                 "botElement" == jsonObject.optString("element")
 
+        fun isHyperlinkElement(jsonObject: JSONObject): Boolean =
+                "a" == jsonObject.optString("element")
+
         fun isEoF(jsonObject: JSONObject): Boolean =
                 "eof" == jsonObject.optString("element")
 
@@ -58,8 +61,7 @@ class NinchatQuestionnaireType {
 
         fun isElement(element: JSONObject?): Boolean =
                 element?.has("elements") == true || element?.has("element") == true
-
-
+        
         fun isLogic(element: JSONObject?): Boolean =
                 element?.has(NinchatQuestionnaireConstants.logic) == true
 

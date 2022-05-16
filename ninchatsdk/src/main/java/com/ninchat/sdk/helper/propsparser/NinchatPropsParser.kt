@@ -94,7 +94,7 @@ class NinchatPropsParser {
             val parser = NinchatPropVisitor()
             return try {
                 props?.accept(parser)
-                parser.properties.keys.firstOrNull()
+                parser.properties.keys.maxOrNull()
             } catch (e: Exception) {
                 null
             }
@@ -166,6 +166,7 @@ class NinchatPropsParser {
         fun getUsersFromChannel(props: Props?): List<Pair<String, NinchatUser>> {
             val parser = NinchatPropVisitor()
             val channelMembers = props?.getSafe<Props>("channel_members")
+            val channelId = props?.getSafe<String>("channel_id")
             channelMembers?.accept(parser)
             // only get list of queues that are open
             return parser.properties.map {
@@ -175,7 +176,7 @@ class NinchatPropsParser {
                 val avatar = userAttr?.getSafe<String>("iconurl")
                 val guest = userAttr?.getSafe<Boolean>("guest") ?: false
                 val jobTitle = userAttr?.getSafe<Props>("info")?.getSafe<String>("job_title")
-                Pair(it.key, NinchatUser(displayName, realName, avatar, guest, jobTitle))
+                Pair(it.key, NinchatUser(displayName, realName, avatar, guest, jobTitle,channelId))
             }
         }
 

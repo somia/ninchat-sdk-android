@@ -19,6 +19,11 @@ interface INinchatMediaPresenter {
     fun onDownloadComplete()
 }
 
+interface INinchatMediaCallback {
+    fun onLoadError()
+    fun onLoadSuccess()
+}
+
 class NinchatMediaPresenter(
         val ninchatMediaModel: NinchatMediaModel,
         val callback: INinchatMediaPresenter?,
@@ -80,6 +85,8 @@ class NinchatMediaPresenter(
             }
         }
     }
+
+    val getLoadingText = ninchatMediaModel.translate()
 
     companion object {
         @JvmStatic

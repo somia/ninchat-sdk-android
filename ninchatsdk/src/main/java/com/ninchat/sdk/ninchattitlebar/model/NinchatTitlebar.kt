@@ -21,7 +21,10 @@ data class NinchatTitleBarInfo(
 // Chat, rating view
 fun getTitleBarInfoFromAgent(): NinchatTitleBarInfo? {
     return NinchatSessionManager.getInstance()?.let { session ->
-        val user = session.ninchatState?.members?.entries?.find { !it.value.isGuest }?.value
+        val channelId = session.ninchatState?.channelId
+        val user = session.ninchatState?.members?.entries?.find {
+            !it.value.isGuest && channelId == it.value.channelId
+        }?.value
         val name = user?.name ?: session.ninchatState.siteConfig.getAgentName()
         val hasName = !name.isNullOrEmpty()
         val jobTitle = user?.jobTitle

@@ -193,7 +193,7 @@ public final class NinchatSessionManager {
 
     public NinchatUser getMember(final String userId) {
         if (ninchatState.getUserId() != null && ninchatState.getUserId().equals(userId)) {
-            return new NinchatUser(getUserName(), getUserName(), null, true, "");
+            return new NinchatUser(getUserName(), getUserName(), null, true, "", ninchatState.getChannelId());
         }
         return ninchatState.getMember(userId);
     }

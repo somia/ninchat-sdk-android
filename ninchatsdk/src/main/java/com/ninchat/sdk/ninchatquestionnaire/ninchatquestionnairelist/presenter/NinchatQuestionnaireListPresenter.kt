@@ -4,9 +4,9 @@ import com.ninchat.sdk.events.OnNextQuestionnaire
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireJsonUtil
 import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireType
 import com.ninchat.sdk.ninchatquestionnaire.ninchatbotwriting.presenter.BotWritingCompleteListener
-import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckbox.presenter.CheckboxUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatcheckboxlist.presenter.CheckboxListUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatdropdownselect.presenter.DropDownSelectUpdateListener
+import com.ninchat.sdk.ninchatquestionnaire.ninchathyperlink.presenter.HyperLinkClickListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatinputfieldviewholder.presenter.InputFieldUpdateListener
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnairelist.model.NinchatQuestionnaireListModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatradiobuttonlist.presenter.ButtonListUpdateListener
@@ -15,7 +15,7 @@ import org.json.JSONObject
 open class NinchatQuestionnaireListPresenter(
         questionnaireList: List<JSONObject>,
         preAnswers: List<Pair<String, Any>>,
-) : InputFieldUpdateListener, ButtonListUpdateListener, DropDownSelectUpdateListener, CheckboxListUpdateListener, BotWritingCompleteListener {
+) : InputFieldUpdateListener, ButtonListUpdateListener, DropDownSelectUpdateListener, CheckboxListUpdateListener, BotWritingCompleteListener, HyperLinkClickListener {
 
     var model = NinchatQuestionnaireListModel(
             questionnaireList = questionnaireList,
@@ -62,6 +62,12 @@ open class NinchatQuestionnaireListPresenter(
         }
     }
 
+    override fun onUpdate(value: Boolean, position: Int) {
+        model.answerList.getOrNull(position)?.apply {
+            putOpt("result", value)
+        }
+    }
+
     // A sentinel value to make sure we don't fall into infinite loop
     protected fun getNextElement(currentIndex: Int, sentinel: Int): String? {
         if (sentinel < 0) return null
@@ -74,8 +80,8 @@ open class NinchatQuestionnaireListPresenter(
                     model.updateTagsAndQueueId(logicElement = currentElement?.optJSONObject("logic"))
                     val nextTargetElement = currentElement?.optJSONObject("logic")?.optString("target")
                     when {
-                        // is a _complete or _register element
-                        nextTargetElement in listOf("_register", "_complete") -> nextTargetElement
+                        // is a _complete or _register or _close element
+                        nextTargetElement in listOf("_register", "_complete", "_close") -> nextTargetElement
                         // matched target is found in the questionnaire
                         model.getIndex(elementName = nextTargetElement) != -1 -> nextTargetElement
                         // there is no matched element for the target. simple try to load next element
@@ -111,6 +117,12 @@ open class NinchatQuestionnaireListPresenter(
         return model.answerList.plus(uniquePreAnswers)
     }
 
+    fun hasRegisteredText(): Boolean =
+            model.getIndex("_registered") != -1
+
+    fun hasCompletedText(): Boolean =
+            model.getIndex("_completed") != -1
+
     override fun onCompleteLoading(target: String?, thankYouText: String?, loaded: Boolean, position: Int) {
         model.answerList.getOrNull(position)?.apply {
             putOpt("loaded", true)
@@ -122,6 +134,14 @@ open class NinchatQuestionnaireListPresenter(
     }
 
     open fun addThankYouView(isComplete: Boolean) {
+        TODO("implement me")
+    }
+
+    open fun applyRegisteredView() {
+        TODO("implement me")
+    }
+
+    open fun applyCompletedView(skipView: Boolean) {
         TODO("implement me")
     }
 

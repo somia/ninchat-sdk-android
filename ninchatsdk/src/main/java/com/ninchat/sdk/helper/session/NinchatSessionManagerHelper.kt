@@ -74,6 +74,10 @@ class NinchatSessionManagerHelper {
                 currentSession.ninchatState?.queueId = queueId
                 if (currentSession.ninchatSessionHolder?.isResumedSession() == true) {
                     currentSession.audienceEnqueued(queueId)
+                    if (currentSession.ninchatSessionHolder?.isInQueue() == true) {
+                        // already in queue
+                        return
+                    }
                     if (currentSession.ninchatSessionHolder?.hasChannel() == true) {
                         val currentChannelId =
                             getChannelIdFromUserChannel(currentSession.ninchatState?.userChannels)
@@ -84,10 +88,6 @@ class NinchatSessionManagerHelper {
                             )
                             currentSession.ninchatState.actionId = actionId
                         }
-                        return
-                    }
-                    if (currentSession.ninchatSessionHolder?.isInQueue() == true) {
-                        // already in queue
                         return
                     }
                 }
@@ -283,6 +283,7 @@ class NinchatSessionManagerHelper {
                             null,
                             fileId,
                             currentFile.sender,
+                            currentFile.senderName,
                             currentFile.timestamp,
                             currentFile.isRemote
                         )

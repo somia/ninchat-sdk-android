@@ -14,7 +14,7 @@ class NinchatUserTest {
         val realName = "real-name"
         val avatar = "test-avater"
         val isGuest = true
-        val user = NinchatUser(displayName, realName, avatar, isGuest)
+        val user = NinchatUser(displayName, realName, avatar, isGuest, "", "")
 
         Assert.assertEquals(avatar, user.avatar)
         Assert.assertEquals(isGuest, user.isGuest)
@@ -24,7 +24,7 @@ class NinchatUserTest {
     @Test
     fun `shoud return display name getName when display name is provided`() {
         val displayName = "display-name"
-        val user = NinchatUser(displayName, "real-name", "test-avater", true)
+        val user = NinchatUser(displayName, "real-name", "test-avater", true, "", "")
         Assert.assertEquals(displayName, user.name)
     }
 }

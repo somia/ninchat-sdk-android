@@ -9,13 +9,20 @@ public final class NinchatUser {
     private String avatar;
     private boolean guest;
     private String jobTitle;
+    private String channelId;
 
-    public NinchatUser(final String displayName, final String realName, final String avatar, final boolean guest, final String jobTitle) {
+    public NinchatUser(final String displayName,
+                       final String realName,
+                       final String avatar,
+                       final boolean guest,
+                       final String jobTitle,
+                       final String channelId) {
         this.displayName = displayName;
         this.realName = realName;
         this.avatar = avatar;
         this.guest = guest;
         this.jobTitle = jobTitle;
+        this.channelId = channelId;
     }
 
     public String getName() {
@@ -33,4 +40,5 @@ public final class NinchatUser {
     public boolean isGuest() {
         return guest;
     }
+    public String getChannelId() { return channelId; }
 }

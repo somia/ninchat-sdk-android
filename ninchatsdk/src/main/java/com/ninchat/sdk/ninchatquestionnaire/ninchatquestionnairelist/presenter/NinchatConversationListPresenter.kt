@@ -50,6 +50,28 @@ class NinchatConversationListPresenter(
         } ?: rootActivityCallback.onFinishQuestionnaire(openQueue = false)
     }
 
+    override fun applyRegisteredView() {
+        val index = model.getIndex(elementName = "_registered")
+        val nextTargetName = getNextElement(currentIndex = index, 1000)
+        // otherwise simply load next element by target name or if there is no target then treat as _complete
+        nextTargetName?.let {
+            addBotWritingView(nextTarget = nextTargetName, thankYouText = null)
+        } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
+    }
+
+    override fun applyCompletedView(skipView: Boolean) {
+        if(skipView) {
+            rootActivityCallback.onClose()
+            return
+        }
+        val index = model.getIndex(elementName = "_completed")
+        val nextTargetName = getNextElement(currentIndex = index, 1000)
+        // otherwise simply load next element by target name or if there is no target then treat as _complete
+        nextTargetName?.let {
+            addBotWritingView(nextTarget = nextTargetName, thankYouText = null)
+        } ?: rootActivityCallback.onComplete(answerList = getAnswerList())
+    }
+
     override fun showNext(onNextQuestionnaire: OnNextQuestionnaire?) {
         // if a thank you text
         if (onNextQuestionnaire?.moveType == OnNextQuestionnaire.thankYou) {
@@ -77,13 +99,19 @@ class NinchatConversationListPresenter(
 
         val index = model.getIndex(elementName = model.selectedElement.lastOrNull()?.first)
         val nextTargetName = getNextElement(currentIndex = index + 1, 1000)
-        if (nextTargetName == "_complete") {
-            rootActivityCallback.onComplete(answerList = getAnswerList())
-            return
-        }
-        if (nextTargetName == "_register") {
-            rootActivityCallback.onRegistered(answerList = getAnswerList())
-            return
+        when (nextTargetName) {
+            "_complete" -> {
+                rootActivityCallback.onComplete(answerList = getAnswerList())
+                return
+            }
+            "_register" -> {
+                rootActivityCallback.onRegistered(answerList = getAnswerList())
+                return
+            }
+            "_close" -> {
+                rootActivityCallback.onClose()
+                return
+            }
         }
         // otherwise simply load next element by target name or if there is no target then treat as _complete
         nextTargetName?.let {

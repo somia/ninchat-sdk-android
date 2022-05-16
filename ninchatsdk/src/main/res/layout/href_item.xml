@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ninchat_href_item"
+    style="@style/NinchatTheme.Questionnaire.HyperLink"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/ninchat_href_text"
+        style="@style/NinchatTheme.Questionnaire.HyperLink.Text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:text="A compound text box label " />
+
+    <TextView
+        android:id="@+id/ninchat_href_text_selected"
+        style="@style/NinchatTheme.Questionnaire.HyperLink.Text.Selected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:text="A compound text box label" />
+
+    <TextView
+        android:id="@+id/ninchat_href_button"
+        style="@style/NinchatTheme.Questionnaire.HyperLink.Button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        tools:text="https://google.com" />
+
+    <TextView
+        android:id="@+id/ninchat_href_button_selected"
+        style="@style/NinchatTheme.Questionnaire.HyperLink.Button.Selected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:text="A compound text box label " />
+
+</LinearLayout>

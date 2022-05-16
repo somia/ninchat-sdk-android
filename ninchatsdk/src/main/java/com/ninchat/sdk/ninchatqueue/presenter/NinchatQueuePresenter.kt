@@ -58,11 +58,11 @@ class NinchatQueuePresenter(
 
         // update queue visibility
         view.ninchat_queue_activity_queue_status.visibility =
-            if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
+            if (ninchatQueueModel.hasChannel() && !ninchatQueueModel.isInQueue()) View.INVISIBLE else View.VISIBLE
         view.ninchat_queue_activity_queue_message.visibility =
-            if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
+            if (ninchatQueueModel.hasChannel() && !ninchatQueueModel.isInQueue()) View.INVISIBLE else View.VISIBLE
         view.ninchat_queue_activity_close_button.visibility =
-            if (ninchatQueueModel.hasChannel()) View.INVISIBLE else View.VISIBLE
+            if (ninchatQueueModel.hasChannel() && !ninchatQueueModel.isInQueue()) View.INVISIBLE else View.VISIBLE
     }
 
     fun updateQueueId(intent: Intent?) {

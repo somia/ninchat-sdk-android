@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/NinchatTheme.Questionnaire.Radio"
+<RelativeLayout
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/single_radio_item"
-    tools:text="Option" />
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/radio_button_item"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+
+    <TextView
+        android:id="@+id/single_radio_item"
+        style="@style/NinchatTheme.Questionnaire.Radio"
+        android:visibility="gone"
+        tools:visibility="visible"
+        tools:text="Option" />
+
+    <include layout="@layout/href_item"
+        android:visibility="gone"
+        tools:visibility="gone"
+        android:id="@+id/single_href_radio_item" />
+
+</RelativeLayout>
