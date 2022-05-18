@@ -190,6 +190,8 @@
         <item name="android:drawableStart">@drawable/ninchat_icon_chat_info_icon</item>
         <item name="android:drawablePadding">5dp</item>
         <item name="android:gravity">center</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
         <item name="android:textColor">@color/ninchat_color_info_text</item>
     </style>
 
