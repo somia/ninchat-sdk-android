@@ -14,6 +14,7 @@ class NinchatState {
     val DEFAULT_USER_AGENT = "ninchat-sdk-android/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; ${Build.MANUFACTURER} ${Build.MODEL})"
 
     var userId: String? = null
+    var userName: String? = null
     var channelId: String? = null
     var siteSecret: String? = null
     var requestCode: Int = 0
@@ -105,6 +106,7 @@ class NinchatState {
 
     fun dispose() {
         userId = null
+        userName = null
         channelId = null
         queueId = null
         currentSessionState = Misc.NEW_SESSION

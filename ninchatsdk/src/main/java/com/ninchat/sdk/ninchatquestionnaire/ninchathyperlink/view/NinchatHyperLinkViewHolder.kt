@@ -53,7 +53,7 @@ class NinchatHyperLinkViewHolder(
     override fun onRenderView(label: String, isSelected: Boolean, enabled: Boolean, hasLabel: Boolean) {
         itemView.isEnabled = enabled
         itemView.ninchat_href_item.style(when {
-            isSelected -> R.style.NinchatTheme_Questionnaire_HyperLink_Selected
+            isSelected -> R.style.NinchatTheme_Questionnaire_HyperLink
             else -> R.style.NinchatTheme_Questionnaire_HyperLink
 
         })
@@ -70,7 +70,7 @@ class NinchatHyperLinkViewHolder(
     override fun onUpdateView(isSelected: Boolean, enabled: Boolean, hasLabel: Boolean) {
         itemView.isEnabled = enabled
         itemView.ninchat_href_item.style(when {
-            isSelected -> R.style.NinchatTheme_Questionnaire_HyperLink_Selected
+            isSelected -> R.style.NinchatTheme_Questionnaire_HyperLink
             else -> R.style.NinchatTheme_Questionnaire_HyperLink
         })
         listOf(
@@ -83,7 +83,7 @@ class NinchatHyperLinkViewHolder(
     }
 
     override fun onClickedView(hasLabel: Boolean, uri: String) {
-        itemView.ninchat_href_item.style(R.style.NinchatTheme_Questionnaire_HyperLink_Selected)
+        itemView.ninchat_href_item.style(R.style.NinchatTheme_Questionnaire_HyperLink)
         listOf(
                 Pair(itemView.ninchat_href_item.ninchat_href_text, false),
                 Pair(itemView.ninchat_href_item.ninchat_href_button, false),

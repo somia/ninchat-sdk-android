@@ -274,6 +274,9 @@ public final class NinchatSessionManager {
     }
 
     public String getUserName() {
+        if(this.ninchatState != null && this.ninchatState.getUserName() != null) {
+            return this.ninchatState.getUserName();
+        }
         if (this.ninchatConfiguration != null && this.ninchatConfiguration.getUserName() != null) {
             return this.ninchatConfiguration.getUserName();
         }
