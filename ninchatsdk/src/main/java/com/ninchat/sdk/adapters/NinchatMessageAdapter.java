@@ -89,7 +89,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 return;
             }
             if (!TextUtils.isEmpty(userAvatar)) {
-                GlideWrapper.loadImageAsCircle(itemView.getContext(), userAvatar, avatar);
+
+                GlideWrapper.loadImageAsCircle(itemView.getContext(), userAvatar, avatar, ninchatMessage.isRemoteMessage() ? R.drawable.ninchat_chat_avatar_left : R.drawable.ninchat_chat_avatar_right);
             }
             final boolean showAvatars = ninchatMessage.isRemoteMessage() ?
                     !sessionManager.ninchatState.getSiteConfig().hideAgentAvatar() :

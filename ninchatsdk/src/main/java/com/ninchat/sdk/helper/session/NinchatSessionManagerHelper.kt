@@ -328,6 +328,10 @@ class NinchatSessionManagerHelper {
                 val isAudienceTransfer = params.getSafe<Props>("channel_attrs")?.getSafe<String>("audience_transferred")
                 val isTargetAudience = params.getSafe<Props>("channel_attrs")?.getSafe<String>("requester_id") == sessionManager.ninchatState?.sessionCredentials?.userId
                 val message = params.getSafe<Props>("audience_metadata")?.getSafe<Props>("pre_answers")?.getSafe<String>("message")
+                val userName = params.getSafe<Props>("audience_metadata")?.getSafe<Props>("pre_answers")?.getSafe<String>("userName")
+                if(!userName.isNullOrEmpty()) {
+                    currentSession.ninchatState.userName = userName
+                }
                 if(isAudienceTransfer.isNullOrEmpty() && isTargetAudience && !message.isNullOrEmpty() ) {
                     val data = JSONObject().apply {
                         put("text", message)
