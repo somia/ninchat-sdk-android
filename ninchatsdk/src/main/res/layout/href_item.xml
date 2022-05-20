@@ -16,7 +16,7 @@
 
     <TextView
         android:id="@+id/ninchat_href_text_selected"
-        style="@style/NinchatTheme.Questionnaire.HyperLink.Text.Selected"
+        style="@style/NinchatTheme.Questionnaire.HyperLink.Text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
@@ -32,7 +32,7 @@
 
     <TextView
         android:id="@+id/ninchat_href_button_selected"
-        style="@style/NinchatTheme.Questionnaire.HyperLink.Button.Selected"
+        style="@style/NinchatTheme.Questionnaire.HyperLink.Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
