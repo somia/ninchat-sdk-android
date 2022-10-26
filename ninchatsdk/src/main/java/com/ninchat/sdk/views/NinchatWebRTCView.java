@@ -382,8 +382,13 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     @Override
     public void onConnectionChange(PeerConnection.PeerConnectionState newState) {
-        if (newState == PeerConnection.PeerConnectionState.FAILED) {
+        if (newState == PeerConnection.PeerConnectionState.FAILED || newState == PeerConnection.PeerConnectionState.CLOSED) {
             new Handler(Looper.getMainLooper()).post(() -> hangUp(true));
+        } else if (newState == PeerConnection.PeerConnectionState.CONNECTED) {
+            new Handler(Looper.getMainLooper()).post(() -> {
+                // show controls button
+                videoContainer.findViewById(R.id.video_call_media_controls).setVisibility(View.VISIBLE);
+            });
         }
     }
 
@@ -661,6 +666,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
         microphoneImage.setImageResource(R.drawable.ninchat_icon_video_microphone_on);
         audioImage.setImageResource(R.drawable.ninchat_icon_video_sound_on);
         videoImage.setImageResource(R.drawable.ninchat_icon_video_camera_on);
+        videoContainer.findViewById(R.id.video_call_media_controls).setVisibility(View.GONE);
     }
 
     public void onResume() {
