@@ -151,11 +151,14 @@
             tools:visibility="visible" />
 
         <LinearLayout
+            android:id="@+id/video_call_media_controls"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible"
             android:padding="@dimen/ninchat_chat_activity_video_control_padding">
 
             <ImageView
