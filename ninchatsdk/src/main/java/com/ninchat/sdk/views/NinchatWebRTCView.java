@@ -277,6 +277,7 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             }
         } catch (final Exception e) {
             // TODO: Show error?
+            Log.e("WebRTC", e.getMessage());
         }
     }
 
