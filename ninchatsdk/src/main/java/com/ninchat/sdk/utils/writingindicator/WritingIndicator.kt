@@ -25,10 +25,10 @@ class WritingIndicator() {
             val timeElapseInMs = now - lastWritingInMs
             val isWriting = (lastMessageLength > 0 && timeElapseInMs < inactiveTimeoutInMs)
             notifyBackend(isWriting = isWriting)
-            handler?.postDelayed(updateTextTask, intervalInMs)
+            updateTextTask?.let { handler?.postDelayed(it, intervalInMs) }
         }
         handler = Handler()
-        handler?.post(updateTextTask)
+        handler?.post(updateTextTask!!)
     }
 
     @JvmName("updateLastWritingTime")
@@ -39,7 +39,7 @@ class WritingIndicator() {
 
     @JvmName("dispose")
     fun dispose() {
-        handler?.removeCallbacks(updateTextTask)
+        updateTextTask?.let { handler?.removeCallbacks(it) }
         wasWriting = false
     }
 
