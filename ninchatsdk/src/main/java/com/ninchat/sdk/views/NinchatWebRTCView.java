@@ -389,6 +389,8 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
             new Handler(Looper.getMainLooper()).post(() -> {
                 // show controls button
                 videoContainer.findViewById(R.id.video_call_media_controls).setVisibility(View.VISIBLE);
+                // remove spinner
+                removeSpinner();
             });
         }
     }
@@ -450,21 +452,6 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     @Override
     public void onAddStream(MediaStream mediaStream) {
-        final List<VideoTrack> videoTracks = mediaStream.videoTracks;
-        if (videoTracks.size() == 0) {
-            return;
-        }
-        remoteVideoTrack = videoTracks.get(0);
-        for (final VideoSink remoteSink : remoteSinks) {
-            remoteVideoTrack.addSink(remoteSink);
-        }
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                removeSpinner();
-            }
-        });
-
     }
 
     @Override
@@ -484,7 +471,16 @@ public final class NinchatWebRTCView implements PeerConnection.Observer, SdpObse
 
     @Override
     public void onAddTrack(RtpReceiver rtpReceiver, MediaStream[] mediaStreams) {
-
+        for(MediaStream stream : mediaStreams) {
+            final List<VideoTrack> videoTracks = stream.videoTracks;
+            if (videoTracks.size() == 0) {
+                return;
+            }
+            remoteVideoTrack = videoTracks.get(0);
+            for (final VideoSink remoteSink : remoteSinks) {
+                remoteVideoTrack.addSink(remoteSink);
+            }
+        }
     }
 
     @Override
