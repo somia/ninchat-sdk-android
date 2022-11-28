@@ -62,7 +62,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
-    implementation 'org.webrtc:google-webrtc:1.0.26885'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'org.greenrobot:eventbus:3.2.0'
@@ -90,6 +89,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
+    implementation 'com.github.webrtc-sdk:android:104.5112.05'
     implementation 'com.airbnb.android:paris:1.7.3'
 
 }
