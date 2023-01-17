@@ -28,11 +28,14 @@ def calculateVersionName = {
 
 android {
     compileSdkVersion 33
-
     defaultConfig {
         minSdkVersion 23
         targetSdkVersion 33
         versionName calculateVersionName()
+        versionCode 1
+
+        buildConfigField 'String', 'VERSION_NAME', "\"${versionName}\""
+        buildConfigField 'int', 'VERSION_CODE', "1"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
@@ -89,8 +92,9 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    implementation 'com.github.webrtc-sdk:android:104.5112.05'
+    // implementation 'com.github.webrtc-sdk:android:104.5112.05'
     implementation 'com.airbnb.android:paris:1.7.3'
+    implementation ('org.jitsi.react:jitsi-meet-sdk:7.0.1') { transitive = true }
 
 }
 
