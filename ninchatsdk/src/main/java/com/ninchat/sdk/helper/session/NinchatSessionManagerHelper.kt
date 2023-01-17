@@ -202,12 +202,16 @@ class NinchatSessionManagerHelper {
                 }
                 val supportVideos = queueAttributes?.getSafe<String>("video") == "member"
                 val supportFiles = queueAttributes?.getSafe<String>("upload") == "member"
+                val isGroup = queueAttributes.getSafe<String>("video") == "group"
                 if (currentSession.getQueue(queueId) == null) {
                     val queueName = queueAttributes?.getString("name")
                     currentSession.ninchatState.addQueue(
                         NinchatQueue(
-                            queueId, name = queueName,
-                            supportFiles = supportFiles, supportVideos = supportVideos
+                            queueId,
+                            name = queueName,
+                            supportFiles = supportFiles,
+                            supportVideos = supportVideos,
+                            isGroup = isGroup
                         )
                     )
                 }
