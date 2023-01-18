@@ -385,15 +385,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         }
     }
 
-    private void addIntentToList(final List<Intent> intents, final Intent intent) {
-        for (final ResolveInfo resInfo : getPackageManager().queryIntentActivities(intent, 0)) {
-            String packageName = resInfo.activityInfo.packageName;
-            Intent targetedIntent = new Intent(intent);
-            targetedIntent.setPackage(packageName);
-            intents.add(targetedIntent);
-        }
-    }
-
     public void openImagePicker(final View view) {
         startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), NinchatChatPresenter.PICK_PHOTO_VIDEO_REQUEST_CODE);
     }
