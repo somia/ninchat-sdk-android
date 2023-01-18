@@ -1,10 +1,14 @@
 package com.ninchat.sdk.utils.misc
 
+import android.content.ContentResolver
 import android.content.Context
+import android.database.Cursor
 import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
+import android.provider.OpenableColumns
 import android.text.Html
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
@@ -66,6 +70,21 @@ class Misc {
                 } catch (err: Exception) {
                     Log.e("NinchatSDK", err.message ?: "Error getting ninchat background")
                     null
+                }
+            }
+        }
+
+        @JvmStatic
+        fun getFileName(uri: Uri, mContentResolver: ContentResolver): String {
+            val cursor: Cursor = mContentResolver
+                .query(uri, null, null, null, null, null) ?: return ""
+
+            cursor.use {
+                val nameIndex: Int = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (it.moveToFirst()) {
+                    return it.getString(nameIndex)
+                } else {
+                    return ""
                 }
             }
         }
