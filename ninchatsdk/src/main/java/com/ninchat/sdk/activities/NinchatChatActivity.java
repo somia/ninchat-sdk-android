@@ -1,6 +1,7 @@
 package com.ninchat.sdk.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -24,9 +25,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.provider.Settings;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,6 @@ import android.widget.TextView;
 
 import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
-import com.ninchat.sdk.adapters.NinchatMessageAdapter;
 import com.ninchat.sdk.helper.glidewrapper.GlideWrapper;
 import com.ninchat.sdk.managers.IOrientationManager;
 import com.ninchat.sdk.managers.OrientationManager;
@@ -48,12 +46,12 @@ import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
 import com.ninchat.sdk.networkdispatchers.NinchatPartChannel;
 import com.ninchat.sdk.networkdispatchers.NinchatSendFile;
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
+import com.ninchat.sdk.ninchatchatactivity.NinchatChatPresenter;
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel;
 import com.ninchat.sdk.ninchatreview.presenter.NinchatReviewPresenter;
 import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView;
 import com.ninchat.sdk.states.NinchatState;
 import com.ninchat.sdk.utils.misc.NinchatLinearLayoutManager;
-import com.ninchat.sdk.utils.writingindicator.WritingIndicator;
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
 import com.ninchat.sdk.utils.misc.Broadcast;
 import com.ninchat.sdk.utils.misc.Misc;
@@ -79,11 +77,10 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
 
     protected static final int CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE = "WebRTCVideoAudio".hashCode() & 0xffff;
     protected static final int PICK_PHOTO_VIDEO_REQUEST_CODE = "PickPhotoVideo".hashCode() & 0xffff;
-    private OrientationManager orientationManager;
     private boolean historyLoaded = false;
     private boolean toggleFullScreen = false;
     private int rootViewHeight = 0;
-    private WritingIndicator writingIndicator = new WritingIndicator();
+    private NinchatChatPresenter presenter = new NinchatChatPresenter();
 
     @Override
     protected int getLayoutRes() {
@@ -152,6 +149,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @SuppressLint("Range")
     public String getFileName(Uri uri) {
         final Cursor cursor = getContentResolver()
                 .query(uri, null, null, null, null, null);
@@ -464,24 +462,9 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         } catch (final JSONException e) {
             sessionManager.sessionError(e);
         }
-        writingIndicator.notifyBackend(false);
+        presenter.getWritingIndicator().notifyBackend(false);
         messageView.setText(null);
     }
-
-    private TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            writingIndicator.updateLastWritingTime(s.length());
-        }
-    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -506,9 +489,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
 
         // start with orientation toggled false
         toggleFullScreen = false;
-        orientationManager = new OrientationManager(this, this, SensorManager.SENSOR_DELAY_UI);
-        orientationManager.enable();
-
+        presenter.initialize(this, this);
         videoContainer = findViewById(R.id.videoContainer);
         webRTCView = new NinchatWebRTCView(videoContainer);
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
@@ -522,8 +503,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         final EditText message = findViewById(R.id.message);
         final String enterMessageText = sessionManager.ninchatState.getSiteConfig().getEnterMessageText();
         message.setHint(enterMessageText);
-        message.addTextChangedListener(textWatcher);
-        writingIndicator.initiate();
+        message.addTextChangedListener(presenter.getTextWatcher());
+        presenter.getWritingIndicator().initiate();
         final Button closeButton = findViewById(R.id.ninchat_chat_close);
         final String closeText = sessionManager.ninchatState.getSiteConfig().getChatCloseText();
         closeButton.setText(closeText);
@@ -629,12 +610,8 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         localBroadcastManager.unregisterReceiver(transferReceiver);
         localBroadcastManager.unregisterReceiver(webRTCMessageReceiver);
 
-        if (writingIndicator != null) {
-            writingIndicator.dispose();
-        }
-        if (orientationManager != null) {
-            orientationManager.disable();
-        }
+        presenter.getWritingIndicator().dispose();
+        presenter.getOrientationManager().disable();
         super.onDestroy();
     }
 
@@ -741,7 +718,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
                 return;
             case Surface.ROTATION_270:
             case Surface.ROTATION_90:
-                if(inActiveVideoCall)
+                if (inActiveVideoCall)
                     findViewById(R.id.ninchat_chat_root).findViewById(R.id.ninchat_titlebar).setVisibility(View.GONE);
                 else
                     findViewById(R.id.ninchat_chat_root).findViewById(R.id.ninchat_titlebar).setVisibility(View.VISIBLE);
