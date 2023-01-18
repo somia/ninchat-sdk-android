@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.BuildConfig
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.helper.NinchatImageGetter
+import com.ninchat.sdk.states.NinchatState
 
 class Misc {
     companion object {
@@ -87,6 +88,15 @@ class Misc {
                     return ""
                 }
             }
+        }
+
+        @JvmStatic
+        fun shouldPartChannel(state: NinchatState?): Boolean {
+            //1. there is no post audience questionnaire
+            //2. Or if user click skipped rating
+            return state?.let {
+                it.skippedReview || !it.hasQuestionnaire(false)
+            } ?: false
         }
     }
 }

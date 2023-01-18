@@ -1,7 +1,6 @@
 package com.ninchat.sdk.activities;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -12,12 +11,9 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.graphics.drawable.Drawable;
-import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -90,19 +86,12 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         finish();
     }
 
-    private boolean shouldPartChannel(final NinchatState state) {
-        if (state == null) return false;
-        //1. there is no post audience questionnaire
-        //2. Or if user click skipped rating
-        return !state.hasQuestionnaire(false) || state.getSkippedReview();
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
         if (requestCode == NinchatReviewModel.REQUEST_CODE) {
             // coming from ninchat review
-            if (sessionManager != null && shouldPartChannel(sessionManager.ninchatState)) {
+            if (sessionManager != null && Misc.shouldPartChannel(sessionManager.ninchatState)) {
                 NinchatPartChannel.executeAsync(
                         NinchatScopeHandler.getIOScope(),
                         sessionManager.getSession(),
