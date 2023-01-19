@@ -1,4 +1,4 @@
-package com.ninchat.sdk.ninchatchatactivity
+package com.ninchat.sdk.ninchatchatactivity.presenter
 
 import android.hardware.SensorManager
 import android.text.Editable
@@ -8,6 +8,7 @@ import com.ninchat.sdk.activities.NinchatChatActivity
 import com.ninchat.sdk.managers.IOrientationManager
 import com.ninchat.sdk.managers.OrientationManager
 import com.ninchat.sdk.networkdispatchers.NinchatDiscoverJitsi
+import com.ninchat.sdk.ninchatchatactivity.model.NinchatChatModel
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import com.ninchat.sdk.utils.writingindicator.WritingIndicator
 import kotlinx.coroutines.CoroutineExceptionHandler
