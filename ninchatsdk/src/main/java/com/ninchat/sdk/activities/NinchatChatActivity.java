@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -36,18 +35,17 @@ import com.ninchat.sdk.NinchatSessionManager;
 import com.ninchat.sdk.R;
 import com.ninchat.sdk.helper.glidewrapper.GlideWrapper;
 import com.ninchat.sdk.managers.IOrientationManager;
-import com.ninchat.sdk.managers.OrientationManager;
 import com.ninchat.sdk.models.NinchatUser;
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser;
 import com.ninchat.sdk.networkdispatchers.NinchatPartChannel;
 import com.ninchat.sdk.networkdispatchers.NinchatSendFile;
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage;
-import com.ninchat.sdk.ninchatchatactivity.NinchatChatModel;
-import com.ninchat.sdk.ninchatchatactivity.NinchatChatPresenter;
+import com.ninchat.sdk.ninchatchatactivity.model.NinchatChatModel;
+import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter;
+import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatBroadcastManager;
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel;
 import com.ninchat.sdk.ninchatreview.presenter.NinchatReviewPresenter;
 import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView;
-import com.ninchat.sdk.states.NinchatState;
 import com.ninchat.sdk.utils.misc.NinchatLinearLayoutManager;
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes;
 import com.ninchat.sdk.utils.misc.Broadcast;
@@ -60,7 +58,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
-import java.util.List;
 
 import static android.provider.Settings.System.ACCELEROMETER_ROTATION;
 import static com.ninchat.sdk.ninchattitlebar.model.NinchatTitlebarKt.shouldShowTitlebar;
@@ -72,6 +69,18 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
 
     private NinchatChatModel mChatModel = new NinchatChatModel();
     private NinchatChatPresenter presenter = new NinchatChatPresenter(mChatModel);
+    private NinchatChatBroadcastManager mBroadcastManager = new NinchatChatBroadcastManager(
+            NinchatChatActivity.this,
+            () -> {
+                chatClosed = true;
+                hideKeyboard();
+                return null;
+            },
+            (intent) -> {
+                quit(intent);
+                return null;
+            }
+    );
 
     @Override
     protected int getLayoutRes() {
@@ -155,37 +164,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     }
 
     protected boolean chatClosed = false;
-
-    protected BroadcastReceiver channelClosedReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (Broadcast.CHANNEL_CLOSED.equals(action)) {
-                NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
-                if (!chatClosed && sessionManager != null)
-                    sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.close(NinchatChatActivity.this));
-                chatClosed = true;
-                hideKeyboard();
-            }
-        }
-    };
-
-    protected BroadcastReceiver transferReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if (Broadcast.AUDIENCE_ENQUEUED.equals(action)) {
-                NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
-                NinchatPartChannel.executeAsync(
-                        NinchatScopeHandler.getIOScope(),
-                        sessionManager.getSession(),
-                        sessionManager.ninchatState.getChannelId(),
-                        aLong -> null
-                );
-                quit(intent);
-            }
-        }
-    };
 
     public void onCloseChat(final View view) {
         NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
@@ -452,8 +430,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         videoContainer = findViewById(R.id.videoContainer);
         webRTCView = new NinchatWebRTCView(videoContainer);
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.registerReceiver(channelClosedReceiver, new IntentFilter(Broadcast.CHANNEL_CLOSED));
-        localBroadcastManager.registerReceiver(transferReceiver, new IntentFilter(Broadcast.AUDIENCE_ENQUEUED));
+        mBroadcastManager.register(localBroadcastManager);
         localBroadcastManager.registerReceiver(webRTCMessageReceiver, new IntentFilter(Broadcast.WEBRTC_MESSAGE));
         final RecyclerView messages = findViewById(R.id.message_list);
         final NinchatLinearLayoutManager linearLayoutManager = new NinchatLinearLayoutManager(getApplicationContext());
@@ -565,8 +542,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
     protected void onDestroy() {
         hangUp();
         final LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(this);
-        localBroadcastManager.unregisterReceiver(channelClosedReceiver);
-        localBroadcastManager.unregisterReceiver(transferReceiver);
+        mBroadcastManager.unregister(localBroadcastManager);
         localBroadcastManager.unregisterReceiver(webRTCMessageReceiver);
 
         presenter.getWritingIndicator().dispose();

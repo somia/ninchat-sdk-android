@@ -5,14 +5,12 @@ import android.os.Bundle
 import android.view.View
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
-import com.ninchat.sdk.activities.NinchatChatActivity
-import com.ninchat.sdk.ninchatchatactivity.NinchatChatPresenter
+import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.presenter.INinchatQueuePresenter
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
 import com.ninchat.sdk.utils.misc.Parameter
 import kotlinx.android.synthetic.main.activity_ninchat_queue.*
-import kotlinx.android.synthetic.main.activity_ninchat_queue.view.*
 
 class NinchatQueueActivity : NinchatBaseActivity(), INinchatQueuePresenter {
     var queueId: String? = null
