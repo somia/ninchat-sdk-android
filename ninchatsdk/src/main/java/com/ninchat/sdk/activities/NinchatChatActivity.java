@@ -61,6 +61,7 @@ import java.io.InputStream;
 
 import static android.provider.Settings.System.ACCELEROMETER_ROTATION;
 import static com.ninchat.sdk.ninchattitlebar.model.NinchatTitlebarKt.shouldShowTitlebar;
+import static com.ninchat.sdk.utils.keyboard.NinchatKeyboardKt.hideKeyBoardForce;
 
 /**
  * Created by Jussi Pekonen (jussi.pekonen@qvik.fi) on 22/08/2018.
@@ -73,7 +74,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
             NinchatChatActivity.this,
             () -> {
                 chatClosed = true;
-                hideKeyboard();
+                hideKeyBoardForce(NinchatChatActivity.this);
                 return null;
             },
             (intent) -> {
@@ -210,7 +211,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         final String continueChatText = sessionManager.ninchatState.getSiteConfig().getContinueChatText();
         decline.setText(continueChatText);
         decline.setOnClickListener(v -> dialog.dismiss());
-        hideKeyboard();
+        hideKeyBoardForce(NinchatChatActivity.this);
         if (chatClosed) {
             dialog.dismiss();
             chatClosed();
@@ -308,7 +309,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
                         sendPickUpAnswer(false);
                         dialog.dismiss();
                     });
-                    hideKeyboard();
+                    hideKeyBoardForce(NinchatChatActivity.this);
                     sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.addMetaMessage(intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_ID), sessionManager.ninchatState.getSiteConfig().getVideoCallMetaMessageText()));
                 } else if (webRTCView.handleWebRTCMessage(messageType, intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_CONTENT))) {
                     if (NinchatMessageTypes.HANG_UP.equals(messageType)) {
@@ -319,15 +320,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
             }
         }
     };
-
-    private void hideKeyboard() {
-        final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        try {
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        } catch (final Exception e) {
-            // Ignore
-        }
-    }
 
     public void onVideoHangUp(final View view) {
         hangUp();
@@ -500,7 +492,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
             if (!chatClosed && mChatModel.getHistoryLoaded()) {
                 sessionManager.getOnInitializeMessageAdapter(adapter -> adapter.close(NinchatChatActivity.this));
                 chatClosed = true;
-                hideKeyboard();
+                hideKeyBoardForce(NinchatChatActivity.this);
             }
 
             // Initialize closed chat with recent messages only

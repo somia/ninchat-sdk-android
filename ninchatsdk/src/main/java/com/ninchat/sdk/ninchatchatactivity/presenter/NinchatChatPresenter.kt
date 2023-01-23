@@ -1,13 +1,10 @@
 package com.ninchat.sdk.ninchatchatactivity.presenter
 
-import android.content.Context
 import android.content.pm.ActivityInfo
 import android.hardware.SensorManager
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.inputmethod.InputMethodManager
-import androidx.core.content.getSystemService
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.activities.NinchatChatActivity
 import com.ninchat.sdk.managers.IOrientationManager
@@ -69,16 +66,6 @@ class NinchatChatPresenter(
         }
     }
 
-    private fun hideKeyboard(mActivity: NinchatChatActivity) {
-        val inputMethodManager =
-            mActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-
-        try {
-            inputMethodManager.hideSoftInputFromWindow(mActivity.currentFocus?.windowToken, 0)
-        } catch (e: java.lang.Exception) {
-            // Ignore
-        }
-    }
     fun loadJitsi() {
         NinchatSessionManager.getInstance()?.let { currentSessionManager ->
             NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
