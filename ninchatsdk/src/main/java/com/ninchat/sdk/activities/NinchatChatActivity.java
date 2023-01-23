@@ -19,7 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.Surface;
 import android.view.View;
@@ -604,22 +603,6 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
         }
     }
 
-    private void handleOrientationChange(int currentOrientation) {
-        if (mChatModel.getToggleFullScreen()) {
-            return;
-        }
-        try {
-            if (Settings.System.getInt(getApplicationContext().getContentResolver(), ACCELEROMETER_ROTATION, 0) != 1)
-                return;
-        } catch (Exception e) {
-            // pass
-        }
-        if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        } else if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
-    }
 
     private void handleTitlebarView(boolean pendingHangup) {
         if (!shouldShowTitlebar()) return;
@@ -642,7 +625,7 @@ public final class NinchatChatActivity extends NinchatBaseActivity implements IO
 
     @Override
     public void onOrientationChange(int orientation) {
-        handleOrientationChange(orientation);
+        this.presenter.handleOrientationChange(orientation, this);
         handleTitlebarView(false);
     }
 }

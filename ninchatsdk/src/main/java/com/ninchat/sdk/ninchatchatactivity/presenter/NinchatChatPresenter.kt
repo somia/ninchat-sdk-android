@@ -1,8 +1,13 @@
 package com.ninchat.sdk.ninchatchatactivity.presenter
 
+import android.content.Context
+import android.content.pm.ActivityInfo
 import android.hardware.SensorManager
+import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.getSystemService
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.activities.NinchatChatActivity
 import com.ninchat.sdk.managers.IOrientationManager
@@ -42,6 +47,38 @@ class NinchatChatPresenter(
         NinchatSessionManager.getInstance()?.sessionError(Exception(exception))
     }
 
+    fun handleOrientationChange(currentOrientation: Int, mActivity: NinchatChatActivity) {
+        if (model.toggleFullScreen) {
+            return
+        }
+        try {
+            if (Settings.System.getInt(
+                    mActivity.applicationContext.contentResolver,
+                    Settings.System.ACCELEROMETER_ROTATION,
+                    0
+                ) != 1
+            ) return
+        } catch (e: java.lang.Exception) {
+            // pass
+        }
+
+        if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+            mActivity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            mActivity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
+    }
+
+    private fun hideKeyboard(mActivity: NinchatChatActivity) {
+        val inputMethodManager =
+            mActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        try {
+            inputMethodManager.hideSoftInputFromWindow(mActivity.currentFocus?.windowToken, 0)
+        } catch (e: java.lang.Exception) {
+            // Ignore
+        }
+    }
     fun loadJitsi() {
         NinchatSessionManager.getInstance()?.let { currentSessionManager ->
             NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
