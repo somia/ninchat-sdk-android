@@ -7,7 +7,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.activities.NinchatChatActivity
 import com.ninchat.sdk.managers.IOrientationManager
 import com.ninchat.sdk.managers.OrientationManager
 import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
@@ -15,6 +14,7 @@ import com.ninchat.sdk.networkdispatchers.NinchatDiscoverJitsi
 import com.ninchat.sdk.networkdispatchers.NinchatPartChannel
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage
 import com.ninchat.sdk.ninchatchatactivity.model.NinchatChatModel
+import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler

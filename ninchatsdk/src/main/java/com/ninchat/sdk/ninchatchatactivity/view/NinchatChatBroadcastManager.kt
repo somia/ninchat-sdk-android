@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.activities.NinchatChatActivity
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.networkdispatchers.NinchatPartChannel
 import com.ninchat.sdk.utils.misc.Broadcast

@@ -33,7 +33,7 @@
             android:theme="@style/NinchatTheme"
             android:configChanges="orientation|screenSize"/>
         <activity
-            android:name=".activities.NinchatChatActivity"
+            android:name=".ninchatchatactivity.view.NinchatChatActivity"
             android:theme="@style/NinchatTheme"
             android:configChanges="orientation|screenSize"/>
         <activity
