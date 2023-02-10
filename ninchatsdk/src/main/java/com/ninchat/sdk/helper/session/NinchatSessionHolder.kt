@@ -172,7 +172,7 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
 
     fun isGroupVideo(): Boolean {
         return NinchatSessionManager.getInstance()
-            ?.getQueue(ninchatState.queueId)?.isGroup == true
+            ?.ninchatState?.isGroupVideoChannel ?: false
     }
 
     fun dispose() {

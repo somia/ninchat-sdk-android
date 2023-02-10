@@ -202,7 +202,6 @@ class NinchatSessionManagerHelper {
                 }
                 val supportVideos = queueAttributes?.getSafe<String>("video") == "member"
                 val supportFiles = queueAttributes?.getSafe<String>("upload") == "member"
-                val isGroup = queueAttributes.getSafe<String>("video") == "group"
                 if (currentSession.getQueue(queueId) == null) {
                     val queueName = queueAttributes?.getString("name")
                     currentSession.ninchatState.addQueue(
@@ -211,7 +210,6 @@ class NinchatSessionManagerHelper {
                             name = queueName,
                             supportFiles = supportFiles,
                             supportVideos = supportVideos,
-                            isGroup = isGroup
                         )
                     )
                 }
@@ -333,6 +331,10 @@ class NinchatSessionManagerHelper {
                 val isTargetAudience = params.getSafe<Props>("channel_attrs")?.getSafe<String>("requester_id") == sessionManager.ninchatState?.sessionCredentials?.userId
                 val message = params.getSafe<Props>("audience_metadata")?.getSafe<Props>("pre_answers")?.getSafe<String>("message")
                 val userName = params.getSafe<Props>("audience_metadata")?.getSafe<Props>("pre_answers")?.getSafe<String>("userName")
+                val isGroupVideoChannel = params.getSafe<Props>("channel_attrs")?.getSafe<String>("video") == "group"
+                // store whether this channel is a group video channel
+                sessionManager.ninchatState.isGroupVideoChannel = isGroupVideoChannel
+
                 if(!userName.isNullOrEmpty()) {
                     currentSession.ninchatState.userName = userName
                 }
@@ -456,6 +458,10 @@ class NinchatSessionManagerHelper {
                     return
                 }
                 val isAudienceTransfer = params.getSafe<String>("event_cause") == "audience_transfer"
+                val isGroupVideoChannel = channelAttributes?.getSafe<String>("video") == "group"
+                // store whether this channel is a group video channel
+                ninchatSessionManager.ninchatState.isGroupVideoChannel = isGroupVideoChannel
+
                 ninchatSessionManager.contextWeakReference?.get()?.let { mContext ->
                     if (!isAudienceTransfer && (closed || suspended)) {
                         LocalBroadcastManager.getInstance(mContext)
