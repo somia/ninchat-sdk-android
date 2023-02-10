@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/ninchat_chat_background_tiled"
     android:keepScreenOn="true"
-    tools:context=".activities.NinchatChatActivity">
+    tools:context=".ninchatchatactivity.view.NinchatChatActivity">
 
     <LinearLayout
         android:id="@+id/send_message_container"

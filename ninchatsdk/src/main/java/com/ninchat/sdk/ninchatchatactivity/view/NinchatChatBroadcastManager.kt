@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.activities.NinchatChatActivity
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.networkdispatchers.NinchatPartChannel
 import com.ninchat.sdk.utils.misc.Broadcast
@@ -17,7 +16,8 @@ import kotlinx.coroutines.launch
 class NinchatChatBroadcastManager(
     val ninchatChatActivity: NinchatChatActivity,
     val onChannelClosed: () -> Unit,
-    val onTransfer: (intent: Intent) -> Unit
+    val onTransfer: (intent: Intent) -> Unit,
+    val onP2PVideoCallInvitation: (intent: Intent) -> Unit
 ) {
     private val channelClosedReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -49,6 +49,14 @@ class NinchatChatBroadcastManager(
         }
     }
 
+    private val webrtcP2PCallInvitation = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (Broadcast.WEBRTC_MESSAGE == intent.action) {
+                onP2PVideoCallInvitation(intent)
+            }
+        }
+    }
+
     fun register(localBroadcastManager: LocalBroadcastManager) {
         localBroadcastManager.registerReceiver(channelClosedReceiver,
             IntentFilter(Broadcast.CHANNEL_CLOSED)
@@ -56,10 +64,13 @@ class NinchatChatBroadcastManager(
         localBroadcastManager.registerReceiver(transferReceiver,
             IntentFilter(Broadcast.AUDIENCE_ENQUEUED)
         )
+        localBroadcastManager.registerReceiver(webrtcP2PCallInvitation,
+            IntentFilter(Broadcast.WEBRTC_MESSAGE)
+        )
     }
 
     fun unregister(localBroadcastManager: LocalBroadcastManager) {
-        listOf(channelClosedReceiver, transferReceiver).forEach {
+        listOf(channelClosedReceiver, transferReceiver, webrtcP2PCallInvitation).forEach {
             localBroadcastManager.unregisterReceiver(it)
         }
     }
