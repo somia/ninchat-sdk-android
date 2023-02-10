@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -56,7 +57,8 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
         onShow = {
             // Update video height and cache current rootview height
             p2pIntegration.setLayoutParams(
-                newHeight = resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height_small).roundToInt(),
+                newHeight = resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height_small)
+                    .roundToInt(),
                 newWidth = -1
             )
             // push messages on top of soft keyboard
@@ -69,7 +71,8 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
         },
         onHidden = {
             p2pIntegration.setLayoutParams(
-                newHeight = resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height).roundToInt(),
+                newHeight = resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height)
+                    .roundToInt(),
                 newWidth = -1,
             )
         }
@@ -249,10 +252,18 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
         if (resources.getBoolean(R.bool.ninchat_chat_background_not_tiled)) {
             ninchat_chat_root.setBackgroundResource(sessionManager.ninchatChatBackground)
         } else {
-            getNinchatChatBackground(applicationContext, sessionManager.ninchatChatBackground)?.let {
+            getNinchatChatBackground(
+                applicationContext,
+                sessionManager.ninchatChatBackground
+            )?.let {
                 ninchat_chat_root.background = it
             }
         }
+
+        Log.d(
+            "NinchatChatActivity",
+            if (sessionManager.ninchatSessionHolder.isGroupVideo()) "group video" else "p2p video"
+        )
         // start with orientation toggled false
         model.toggleFullScreen = false
         presenter.initialize(this@NinchatChatActivity, this@NinchatChatActivity)
@@ -273,21 +284,23 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
         presenter.writingIndicator.initiate()
         ninchat_chat_close.apply {
             text = sessionManager.ninchatState.siteConfig.getChatCloseText()
-            if(!shouldShowTitlebar()) {
+            if (!shouldShowTitlebar()) {
                 visibility = View.VISIBLE
             }
         }
         send_button.apply {
             val sendButtonText = sessionManager.ninchatState.siteConfig.getSendButtonText()
-            if(sendButtonText != null) {
+            if (sendButtonText != null) {
                 text = sendButtonText
             } else {
                 visibility = View.GONE
                 send_button_icon.visibility = View.VISIBLE
             }
         }
-        attachment.visibility = if(sessionManager.ninchatSessionHolder.supportFiles()) View.VISIBLE else View.GONE
-        video_call.visibility = if(sessionManager.ninchatSessionHolder.supportVideos() && resources.getBoolean(R.bool.ninchat_allow_user_initiated_video_calls))View.VISIBLE else View.GONE
+        attachment.visibility =
+            if (sessionManager.ninchatSessionHolder.supportFiles()) View.VISIBLE else View.GONE
+        video_call.visibility =
+            if (sessionManager.ninchatSessionHolder.supportVideos() && resources.getBoolean(R.bool.ninchat_allow_user_initiated_video_calls)) View.VISIBLE else View.GONE
         if (intent.extras?.getBoolean(Parameter.CHAT_IS_CLOSED) == true) {
             initializeClosedChat(message_list)
         } else {
@@ -315,6 +328,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
         }
 
     }
+
     override fun onResume() {
         super.onResume()
         // Refresh the message list, just in case

@@ -16,6 +16,7 @@ class NinchatState {
     var userId: String? = null
     var userName: String? = null
     var channelId: String? = null
+    var isGroupVideoChannel: Boolean = false
     var siteSecret: String? = null
     var requestCode: Int = 0
     var queueId: String? = null
@@ -108,6 +109,7 @@ class NinchatState {
         userId = null
         userName = null
         channelId = null
+        isGroupVideoChannel = false
         queueId = null
         currentSessionState = Misc.NEW_SESSION
         userChannels = null
