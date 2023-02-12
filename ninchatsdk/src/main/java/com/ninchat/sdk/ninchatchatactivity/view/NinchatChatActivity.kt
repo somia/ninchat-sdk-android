@@ -27,6 +27,7 @@ import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import com.ninchat.sdk.utils.misc.NinchatLinearLayoutManager
 import com.ninchat.sdk.utils.misc.Parameter
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
+import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlin.math.roundToInt
 
 class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
@@ -267,7 +268,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
         // start with orientation toggled false
         model.toggleFullScreen = false
         presenter.initialize(this@NinchatChatActivity, this@NinchatChatActivity)
-        p2pIntegration = NinchatP2PIntegration(videoContainer)
+        p2pIntegration = NinchatP2PIntegration(ninchat_p2p_video_view.findViewById(R.id.ninchat_p2p_video_view))
         mBroadcastManager.register(LocalBroadcastManager.getInstance(applicationContext))
         message_list.layoutManager = NinchatLinearLayoutManager(
             applicationContext

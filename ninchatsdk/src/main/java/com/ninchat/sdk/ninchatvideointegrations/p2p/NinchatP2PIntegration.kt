@@ -7,8 +7,6 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.net.Uri
-import android.provider.MediaStore
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +16,6 @@ import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.networkdispatchers.NinchatSendFile
-import com.ninchat.sdk.networkdispatchers.NinchatSendFile.Companion.executeAsync
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatVideoChatConsentDialogue
@@ -30,14 +27,13 @@ import com.ninchat.sdk.utils.misc.Misc.Companion.center
 import com.ninchat.sdk.utils.misc.Misc.Companion.getFileName
 import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
-import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler.getIOScope
 import com.ninchat.sdk.views.NinchatWebRTCView
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
+import kotlinx.android.synthetic.main.ninchat_p2p_video_container.view.*
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.InputStream
 
 class NinchatP2PIntegration(
     private val videoContainer: View,
