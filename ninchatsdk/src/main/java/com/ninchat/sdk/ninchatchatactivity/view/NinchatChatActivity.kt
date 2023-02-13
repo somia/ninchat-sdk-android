@@ -23,6 +23,7 @@ import com.ninchat.sdk.ninchattitlebar.view.NinchatTitlebarView.Companion.showTi
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.NinchatGroupCallIntegration
 import com.ninchat.sdk.ninchatvideointegrations.p2p.NinchatP2PIntegration
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
+import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Misc.Companion.getNinchatChatBackground
 import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import com.ninchat.sdk.utils.misc.NinchatLinearLayoutManager
@@ -58,6 +59,12 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
                 activity = this@NinchatChatActivity,
             )
         },
+        onJitsiDiscovered = {
+            val jitsiRoom = it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_ROOM) ?: ""
+            val jitsiToken = it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_TOKEN) ?: ""
+            val jitsiServerPrefix = it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER_PREFIX) ?: ""
+            Log.d("NinchatChatActivity", "onJitsiDiscovered  $jitsiRoom $jitsiToken $jitsiServerPrefix" )
+        }
     )
     private val softKeyboardViewHandler = SoftKeyboardViewHandler(
         onShow = {

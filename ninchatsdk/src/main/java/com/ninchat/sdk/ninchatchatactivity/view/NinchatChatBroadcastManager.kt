@@ -17,7 +17,8 @@ class NinchatChatBroadcastManager(
     val ninchatChatActivity: NinchatChatActivity,
     val onChannelClosed: () -> Unit,
     val onTransfer: (intent: Intent) -> Unit,
-    val onP2PVideoCallInvitation: (intent: Intent) -> Unit
+    val onP2PVideoCallInvitation: (intent: Intent) -> Unit,
+    val onJitsiDiscovered: (intent: Intent) -> Unit
 ) {
     private val channelClosedReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -57,6 +58,14 @@ class NinchatChatBroadcastManager(
         }
     }
 
+    private val jitsiDiscoveredReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (Broadcast.JITSI_DISCOVERED_MESSAGE == intent.action) {
+                onJitsiDiscovered(intent)
+            }
+        }
+    }
+
     fun register(localBroadcastManager: LocalBroadcastManager) {
         localBroadcastManager.registerReceiver(channelClosedReceiver,
             IntentFilter(Broadcast.CHANNEL_CLOSED)
@@ -67,10 +76,13 @@ class NinchatChatBroadcastManager(
         localBroadcastManager.registerReceiver(webrtcP2PCallInvitation,
             IntentFilter(Broadcast.WEBRTC_MESSAGE)
         )
+        localBroadcastManager.registerReceiver(jitsiDiscoveredReceiver,
+            IntentFilter(Broadcast.JITSI_DISCOVERED_MESSAGE)
+        )
     }
 
     fun unregister(localBroadcastManager: LocalBroadcastManager) {
-        listOf(channelClosedReceiver, transferReceiver, webrtcP2PCallInvitation).forEach {
+        listOf(channelClosedReceiver, transferReceiver, webrtcP2PCallInvitation, jitsiDiscoveredReceiver).forEach {
             localBroadcastManager.unregisterReceiver(it)
         }
     }
