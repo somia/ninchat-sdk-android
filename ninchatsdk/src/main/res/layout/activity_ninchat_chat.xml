@@ -117,15 +117,32 @@
         tools:text="Close"
         tools:visibility="gone" />
 
-    <include
-        android:id="@+id/ninchat_p2p_video_view"
-        android:layout_below="@+id/ninchat_titlebar"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/ninchat_chat_activity_video_view_height"
-        layout="@layout/ninchat_p2p_video_container"
-        android:visibility="gone"
+        android:id="@+id/conference_or_p2p_view_container"
+        android:layout_below="@+id/ninchat_titlebar"
+        android:visibility="visible"
         tools:visibility="visible"
-    />
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/ninchat_p2p_video_view"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ninchat_chat_activity_video_view_height"
+            layout="@layout/ninchat_p2p_video_container"
+            android:visibility="gone"
+            tools:visibility="gone"
+        />
+
+        <include
+            android:id="@+id/ninchat_conference_view"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/ninchat_conference_join_or_leave_view_height"
+            layout="@layout/ninchat_join_end_conference"
+            android:visibility="gone"
+            tools:visibility="visible"
+        />
+    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/message_list"
@@ -133,7 +150,7 @@
         android:layout_height="wrap_content"
         android:layout_alignWithParentIfMissing="true"
         android:layout_above="@id/send_message_container"
-        android:layout_below="@id/ninchat_p2p_video_view"
+        android:layout_below="@id/conference_or_p2p_view_container"
         android:overScrollMode="never"
         tools:itemCount="2"
         tools:listitem="@layout/item_chat_message" />
