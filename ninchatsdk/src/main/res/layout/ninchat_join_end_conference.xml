@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/join_or_end_conference"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/ninchat_color_background_top"
+    android:fadeScrollbars="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/conference_icon"
+            style="@style/NinchatTheme.Conference.VideoIcon"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            tools:src="@drawable/ninchat_icon_video_conference" />
+
+        <TextView
+            android:id="@+id/conference_title"
+            style="@style/NinchatTheme.Conference.TitleText"
+            tools:text="Video meeting" />
+
+        <TextView
+            android:id="@+id/conference_join_button"
+            style="@style/NinchatTheme.Conference.Join"
+            tools:text="Join meeting" />
+
+        <TextView
+            android:id="@+id/conference_description"
+            style="@style/NinchatTheme.Conference.DescriptionText"
+            android:textColor="@color/ninchat_color_text_bottom"
+            tools:text="Continue to join video meeting. You can toggle text chat from the top. Longer text can is scrollable, flows below chat backlog" />
+
+
+    </LinearLayout>
+
+</ScrollView>
