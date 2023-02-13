@@ -305,6 +305,15 @@ class NinchatSiteConfig {
     fun getTitlebarCloseText(): String =
         getTranslation("Close")
 
+    fun getConferenceTitleText(): String =
+        getTranslation("Video meeting")
+
+    fun getConferenceButtonText(): String =
+        getTranslation("Join video meeting")
+
+    fun getConferenceDescriptionText(): String =
+        getTranslation("Continue to join video meeting. You can toggle text chat from the top.")
+
     internal fun getTranslation(translationKey: String = "translations", key: String): String? {
         var value: String? = null
         siteConfig?.let { config ->
