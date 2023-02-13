@@ -33,4 +33,12 @@ class NinchatGroupCallIntegration(
         model.update(endConference = chatClosed)
         presenter.renderView(videoContainer = videoContainer)
     }
+
+    fun startJitsi(
+        jitsiRoom: String,
+        jitsiToken: String,
+        jitsiServerPrefix: String,
+    ) {
+
+    }
 }

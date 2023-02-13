@@ -63,7 +63,11 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
             val jitsiRoom = it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_ROOM) ?: ""
             val jitsiToken = it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_TOKEN) ?: ""
             val jitsiServerPrefix = it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER_PREFIX) ?: ""
-            Log.d("NinchatChatActivity", "onJitsiDiscovered  $jitsiRoom $jitsiToken $jitsiServerPrefix" )
+            groupIntegration?.startJitsi(
+                jitsiRoom = jitsiRoom,
+                jitsiToken = jitsiToken,
+                jitsiServerPrefix = jitsiServerPrefix,
+            )
         }
     )
     private val softKeyboardViewHandler = SoftKeyboardViewHandler(
