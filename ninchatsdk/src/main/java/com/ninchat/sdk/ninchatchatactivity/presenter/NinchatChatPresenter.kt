@@ -48,6 +48,7 @@ class NinchatChatPresenter(
             writingIndicator.updateLastWritingTime(s.length)
         }
     }
+
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
         NinchatSessionManager.getInstance()?.sessionError(Exception(exception))
     }
@@ -71,17 +72,6 @@ class NinchatChatPresenter(
             mActivity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         } else if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             mActivity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        }
-    }
-
-    fun loadJitsi() {
-        NinchatSessionManager.getInstance()?.let { currentSessionManager ->
-            NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
-                NinchatDiscoverJitsi.execute(
-                    currentSession = currentSessionManager.session,
-                    channelId = currentSessionManager.ninchatState?.channelId,
-                );
-            }
         }
     }
 
