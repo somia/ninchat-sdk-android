@@ -312,7 +312,7 @@ class NinchatSiteConfig {
         getTranslation("Join video meeting")
 
     fun getConferenceDescriptionText(): String =
-        getTranslation("translations", "meeting description") ?: ""
+        getString("videoMeetingInfoText") ?: ""
 
     internal fun getTranslation(translationKey: String = "translations", key: String): String? {
         var value: String? = null
