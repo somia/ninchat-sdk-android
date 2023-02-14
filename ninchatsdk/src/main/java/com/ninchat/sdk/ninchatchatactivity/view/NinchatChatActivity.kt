@@ -287,7 +287,8 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
         presenter.initialize(this@NinchatChatActivity, this@NinchatChatActivity)
         if (model.isGroupCall) {
             groupIntegration = NinchatGroupCallIntegration(
-                videoContainer = conference_or_p2p_view_container.findViewById(R.id.ninchat_conference_view),
+                joinConferenceView = conference_or_p2p_view_container.findViewById(R.id.ninchat_conference_view),
+                jitsiVideoView = conference_or_p2p_view_container.findViewById(R.id.jitsi_view),
                 chatClosed = model.chatClosed
             )
         } else {

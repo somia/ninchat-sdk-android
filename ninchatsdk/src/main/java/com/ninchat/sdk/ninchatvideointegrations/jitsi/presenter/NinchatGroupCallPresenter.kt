@@ -1,6 +1,5 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter
 
-import android.util.Log
 import android.view.View
 import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.NinchatSessionManager
@@ -20,14 +19,14 @@ class NinchatGroupCallPresenter(
         NinchatSessionManager.getInstance()?.sessionError(Exception(exception))
     }
 
-    fun renderView(videoContainer: View) {
-        videoContainer.visibility = View.VISIBLE
-        videoContainer.conference_title.text = model.conferenceTitle
-        videoContainer.conference_join_button.text = model.conferenceButtonText
-        videoContainer.conference_description.text =
-            Misc.toRichText(model.conferenceDescription, videoContainer.conference_description)
+    fun renderView(joinConferenceView: View) {
+        joinConferenceView.visibility = View.VISIBLE
+        joinConferenceView.conference_title.text = model.conferenceTitle
+        joinConferenceView.conference_join_button.text = model.conferenceButtonText
+        joinConferenceView.conference_description.text =
+            Misc.toRichText(model.conferenceDescription, joinConferenceView.conference_description)
 
-        videoContainer.conference_join_button.style(
+        joinConferenceView.conference_join_button.style(
             if (model.endConference) {
                 R.style.NinchatTheme_Conference_Ended
             } else {

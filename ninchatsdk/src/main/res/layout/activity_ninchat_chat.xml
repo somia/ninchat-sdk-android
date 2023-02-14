@@ -142,7 +142,17 @@
             android:visibility="gone"
             tools:visibility="visible"
         />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:id="@+id/jitsi_view"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_height="match_parent"
+        />
     </RelativeLayout>
+
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/message_list"
