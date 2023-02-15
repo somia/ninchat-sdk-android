@@ -114,7 +114,7 @@ class Broadcast {
         const val WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type"
         const val WEBRTC_MESSAGE_JITSI_ROOM = WEBRTC_MESSAGE + ".jitsi.room"
         const val WEBRTC_MESSAGE_JITSI_TOKEN = WEBRTC_MESSAGE + ".jitsi.token"
-        const val WEBRTC_MESSAGE_JITSI_SERVER_PREFIX = WEBRTC_MESSAGE + ".jitsi.server.prefix"
+        const val WEBRTC_MESSAGE_JITSI_SERVER = WEBRTC_MESSAGE + ".jitsi.server"
         const val WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content"
         const val CLOSE_NINCHAT_ACTIVITY = BuildConfig.LIBRARY_PACKAGE_NAME + ".closeActivity"
     }
