@@ -207,4 +207,41 @@
         <item name="android:textColorHint">@color/ninchat_color_textarea_text_hint</item>
     </style>
 
+    <style name="NinchatTheme.Conference.VideoIcon" parent="NinchatTheme">
+        <item name="android:layout_width">@dimen/ninchat_conference_video_icon_size</item>
+        <item name="android:layout_height">@dimen/ninchat_conference_video_icon_size</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:src">@drawable/ninchat_icon_video_conference</item>
+    </style>
+
+    <style name="NinchatTheme.Conference.TitleText" parent="NinchatTheme">
+        <item name="android:textSize">@dimen/ninchat_conference_title_text_size</item>
+        <item name="android:textColor">@color/ninchat_color_text_normal</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="NinchatTheme.Conference.DescriptionText" parent="NinchatTheme.Conference.TitleText">
+        <item name="android:textSize">@dimen/ninchat_conference_description_text_size</item>
+    </style>
+
+    <style name="NinchatTheme.Conference.Join" parent="NinchatTheme.MultiChoice">
+        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/ninchat_button_height</item>
+        <item name="android:width">250dp</item>
+        <item name="android:background">@drawable/ninchat_chat_primary_button</item>
+        <item name="android:textColor">@color/ninchat_color_button_primary_text</item>
+    </style>
+
+    <style name="NinchatTheme.Conference.Ended" parent="NinchatTheme.Conference.Join">
+        <item name="android:background">@drawable/ninchat_chat_disable_button</item>
+        <item name="android:textColor">@color/ninchat_color_button_primary_text</item>
+    </style>
+
 </resources>
