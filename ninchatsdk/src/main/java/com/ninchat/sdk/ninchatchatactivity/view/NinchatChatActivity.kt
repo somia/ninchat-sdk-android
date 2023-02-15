@@ -4,11 +4,11 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.react.modules.core.PermissionListener
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
@@ -30,9 +30,12 @@ import com.ninchat.sdk.utils.misc.NinchatLinearLayoutManager
 import com.ninchat.sdk.utils.misc.Parameter
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
+import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
+import org.jitsi.meet.sdk.JitsiMeetActivityInterface
+import org.jitsi.meet.sdk.JitsiMeetView
 import kotlin.math.roundToInt
 
-class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
+class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMeetActivityInterface {
     private var p2pIntegration: NinchatP2PIntegration? = null
     private var groupIntegration: NinchatGroupCallIntegration? = null
     private val model = NinchatChatModel().apply {
@@ -62,11 +65,11 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
         onJitsiDiscovered = {
             val jitsiRoom = it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_ROOM) ?: ""
             val jitsiToken = it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_TOKEN) ?: ""
-            val jitsiServerPrefix = it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER_PREFIX) ?: ""
+            val jitsiServerAddress = it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER) ?: ""
             groupIntegration?.startJitsi(
                 jitsiRoom = jitsiRoom,
                 jitsiToken = jitsiToken,
-                jitsiServerPrefix = jitsiServerPrefix,
+                jitsiServerAddress = jitsiServerAddress,
             )
         }
     )
@@ -139,6 +142,12 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun requestPermissions( permissions: Array<out String>?,
+                                     requestCode: Int,
+                                     listener: PermissionListener?) {
+        JitsiMeetActivityDelegate.requestPermissions(this, permissions, requestCode, listener)
     }
 
     fun onCloseChat(view: View?) {
@@ -278,17 +287,14 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
             }
         }
 
-        Log.d(
-            "NinchatChatActivity",
-            if (sessionManager.ninchatSessionHolder.isGroupVideo()) "group video" else "p2p video"
-        )
         // start with orientation toggled false
         model.toggleFullScreen = false
         presenter.initialize(this@NinchatChatActivity, this@NinchatChatActivity)
         if (model.isGroupCall) {
             groupIntegration = NinchatGroupCallIntegration(
                 joinConferenceView = conference_or_p2p_view_container.findViewById(R.id.ninchat_conference_view),
-                jitsiVideoView = conference_or_p2p_view_container.findViewById(R.id.jitsi_view),
+                jitsiFrameLayout = conference_or_p2p_view_container.findViewById(R.id.jitsi_frame_layout),
+                jitsiMeetView = JitsiMeetView(this),
                 chatClosed = model.chatClosed
             )
         } else {
