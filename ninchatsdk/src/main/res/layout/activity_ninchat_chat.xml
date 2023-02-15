@@ -21,9 +21,9 @@
         <EditText
             android:id="@+id/message"
             style="@style/NinchatTheme.Backlog.CommandView"
-            android:imeOptions="actionDone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:imeOptions="actionDone"
             tools:hint="Enter your message" />
 
         <LinearLayout
@@ -118,41 +118,39 @@
         tools:visibility="gone" />
 
     <RelativeLayout
-        android:layout_width="match_parent"
         android:id="@+id/conference_or_p2p_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/ninchat_titlebar"
         android:visibility="visible"
-        tools:visibility="visible"
-        android:layout_height="wrap_content">
+        tools:visibility="visible">
 
         <include
             android:id="@+id/ninchat_p2p_video_view"
+            layout="@layout/ninchat_p2p_video_container"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ninchat_chat_activity_video_view_height"
-            layout="@layout/ninchat_p2p_video_container"
             android:visibility="gone"
-            tools:visibility="gone"
-        />
+            tools:visibility="gone" />
 
         <include
             android:id="@+id/ninchat_conference_view"
+            layout="@layout/ninchat_join_end_conference"
             android:layout_width="match_parent"
             android:layout_height="@dimen/ninchat_conference_join_or_leave_view_height"
-            layout="@layout/ninchat_join_end_conference"
             android:visibility="gone"
-            tools:visibility="visible"
-        />
+            tools:visibility="gone" />
 
         <FrameLayout
+            android:id="@+id/jitsi_frame_layout"
+            android:layout_below="@+id/ninchat_conference_view"
             android:layout_width="match_parent"
-            android:id="@+id/jitsi_view"
-            android:visibility="gone"
-            tools:visibility="visible"
             android:layout_height="match_parent"
-        />
+            android:background="@color/amp_dark_blue"
+            android:layout_alignWithParentIfMissing="true"
+            android:visibility="gone"
+            tools:visibility="visible" />
     </RelativeLayout>
-
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/message_list"
