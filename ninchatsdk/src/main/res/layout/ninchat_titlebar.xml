@@ -25,6 +25,16 @@
         android:visibility="gone"
         tools:visibility="gone" />
 
+    <ImageView
+        android:id="@+id/ninchat_titlebar_toggle_chat"
+        style="@style/NinchatTheme.Button.ToggleVideo.Titlebar"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/ninchat_icon_toggle_chat_bubble"
+        android:visibility="visible"
+        tools:visibility="visible" />
+
     <Button
         android:id="@+id/ninchat_titlebar_chat_close"
         style="@style/NinchatTheme.Button.Close.Titlebar"
