@@ -10,7 +10,11 @@ import kotlinx.android.synthetic.main.ninchat_titlebar_with_agent_info.view.*
 
 class NinchatTitlebarView {
     companion object {
-        private fun showTitlebarPlaceholder(view: View, callback: () -> Unit) {
+        private fun showTitlebarPlaceholder(
+            view: View,
+            callback: () -> Unit,
+            onToggleChat: () -> Unit
+        ) {
             if (!shouldShowTitlebar()) return
 
             view.ninchat_titlebar_with_placeholder.visibility = View.VISIBLE
@@ -21,12 +25,16 @@ class NinchatTitlebarView {
                 it.setOnClickListener { callback() }
                 it.text = chatCloseText()
             }
+            view.ninchat_titlebar_toggle_chat?.let {
+                it.setOnClickListener { onToggleChat() }
+            }
         }
 
         private fun showTitlebarWithAgentInfo(
             view: View,
             data: NinchatTitleBarInfo,
-            callback: () -> Unit
+            callback: () -> Unit,
+            onToggleChat: () -> Unit
         ) {
             if (!shouldShowTitlebar()) return
 
@@ -60,6 +68,9 @@ class NinchatTitlebarView {
                 it.setOnClickListener { callback() }
                 it.text = chatCloseText()
             }
+            view.ninchat_titlebar_toggle_chat?.let {
+                it.setOnClickListener { onToggleChat() }
+            }
         }
 
         fun showTitlebarForPreAudienceQuestionnaire(view: View, callback: () -> Unit) {
@@ -68,10 +79,10 @@ class NinchatTitlebarView {
             //2: if no questionnaire name and no questionnaire avatar
             if (!titleBarInfo.hasName || (!titleBarInfo.hasName && !titleBarInfo.hasAvatar)) {
                 // show placeholder
-                showTitlebarPlaceholder(view, callback = callback)
+                showTitlebarPlaceholder(view, callback = callback, onToggleChat = {})
                 return
             }
-            showTitlebarWithAgentInfo(view = view, data = titleBarInfo, callback = callback)
+            showTitlebarWithAgentInfo(view = view, data = titleBarInfo, callback = callback, onToggleChat = {})
         }
 
         fun showTitlebarForPostAudienceQuestionnaire(view: View, callback: () -> Unit) {
@@ -85,22 +96,22 @@ class NinchatTitlebarView {
             //2: if no questionnaire name and no questionnaire avatar
             if (!titleBarInfo.hasName || (!titleBarInfo.hasName && !titleBarInfo.hasAvatar)) {
                 // show placeholder
-                showTitlebarPlaceholder(view, callback = callback)
+                showTitlebarPlaceholder(view, callback = callback, onToggleChat = {})
                 return
             }
-            showTitlebarWithAgentInfo(view = view, data = titleBarInfo, callback = callback)
+            showTitlebarWithAgentInfo(view = view, data = titleBarInfo, callback = callback, onToggleChat = {})
         }
 
-        fun showTitlebarForBacklog(view: View, callback: () -> Unit) {
+        fun showTitlebarForBacklog(view: View, callback: () -> Unit, onToggleChat: () -> Unit) {
             val titleBarInfo = getTitleBarInfoFromAgent() ?: return
             //1: if no name
             //2: if no name and no avatar
             if (!titleBarInfo.hasName || (!titleBarInfo.hasName && !titleBarInfo.hasAvatar)) {
                 // show placeholder
-                showTitlebarPlaceholder(view, callback = callback)
+                showTitlebarPlaceholder(view, callback = callback, onToggleChat = onToggleChat)
                 return
             }
-            showTitlebarWithAgentInfo(view = view, data = titleBarInfo, callback = callback)
+            showTitlebarWithAgentInfo(view = view, data = titleBarInfo, callback = callback, onToggleChat = onToggleChat)
         }
 
         fun showTitlebarForReview(view: View, callback: () -> Unit) {
@@ -109,14 +120,14 @@ class NinchatTitlebarView {
             //2: if no name and no avatar
             if (!titleBarInfo.hasName || (!titleBarInfo.hasName && !titleBarInfo.hasAvatar)) {
                 // show placeholder
-                showTitlebarPlaceholder(view, callback = callback)
+                showTitlebarPlaceholder(view, callback = callback, onToggleChat = {})
                 return
             }
-            showTitlebarWithAgentInfo(view = view, data = titleBarInfo, callback = callback)
+            showTitlebarWithAgentInfo(view = view, data = titleBarInfo, callback = callback, onToggleChat = {})
         }
 
         fun showTitlebarForInQueueView(view: View, callback: () -> Unit) {
-            showTitlebarPlaceholder(view, callback = callback)
+            showTitlebarPlaceholder(view, callback = callback, onToggleChat = {})
         }
     }
 

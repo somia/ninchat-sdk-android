@@ -3,9 +3,13 @@ package com.ninchat.sdk.ninchatchatactivity.view
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.core.view.isVisible
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.react.modules.core.PermissionListener
@@ -65,12 +69,28 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         onJitsiDiscovered = {
             val jitsiRoom = it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_ROOM) ?: ""
             val jitsiToken = it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_TOKEN) ?: ""
-            val jitsiServerAddress = it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER) ?: ""
-            groupIntegration?.startJitsi(
-                jitsiRoom = jitsiRoom,
-                jitsiToken = jitsiToken,
-                jitsiServerAddress = jitsiServerAddress,
-            )
+            val jitsiServerAddress =
+                it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER) ?: ""
+
+            runOnUiThread {
+                val height = applicationContext.resources.displayMetrics.heightPixels;
+                val width = applicationContext.resources.displayMetrics.widthPixels;
+                val titlebarHeight = ninchat_titlebar.measuredHeight
+                val heightParent = conference_or_p2p_view_container.measuredHeight
+                val heightParentMeasured = conference_or_p2p_view_container.height
+                Log.e(
+                    "onJitsiDiscovered",
+                    "$height $width $titlebarHeight $heightParent $heightParentMeasured"
+                )
+                groupIntegration?.startJitsi(
+                    jitsiRoom = jitsiRoom,
+                    jitsiToken = jitsiToken,
+                    jitsiServerAddress = jitsiServerAddress,
+                    fullHeight = 1961,
+                    fullWidth = width,
+                )
+            }
+
         }
     )
     private val softKeyboardViewHandler = SoftKeyboardViewHandler(
@@ -95,6 +115,15 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                     .roundToInt(),
                 newWidth = -1,
             )
+        },
+        onHeightChange = { height ->
+            val h1 = applicationContext.resources.displayMetrics.heightPixels;
+            val w1 = applicationContext.resources.displayMetrics.widthPixels;
+            val t1 = ninchat_titlebar.measuredHeight
+            val p1 = conference_or_p2p_view_container.measuredHeight
+            // Update video height and cache current rootview height
+            Log.e("height change", "$height $h1 $w1 $t1 $p1")
+            // groupIntegration?.changeHeight(p1)
         }
     )
 
@@ -144,9 +173,11 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun requestPermissions( permissions: Array<out String>?,
-                                     requestCode: Int,
-                                     listener: PermissionListener?) {
+    override fun requestPermissions(
+        permissions: Array<out String>?,
+        requestCode: Int,
+        listener: PermissionListener?
+    ) {
         JitsiMeetActivityDelegate.requestPermissions(this, permissions, requestCode, listener)
     }
 
@@ -158,6 +189,21 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             },
             isChatClosed = model.chatClosed
         )
+    }
+
+    fun onToggleChat(view: View?) {
+        chat_message_list_and_editor.also {mLayout ->
+            if(mLayout.visibility == View.VISIBLE) {
+                mLayout.animate().translationY(mLayout.height.toFloat()).setDuration(300).withEndAction {
+                    mLayout.visibility = View.GONE
+                    conference_or_p2p_view_container.visibility = View.VISIBLE
+                }.start()
+            } else {
+                conference_or_p2p_view_container.visibility = View.GONE
+                mLayout.visibility = View.VISIBLE
+                mLayout.animate().translationY(0f).setDuration(300).start()
+            }
+        }
     }
 
     private fun hangUp() {
@@ -317,7 +363,8 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         presenter.writingIndicator.initiate()
         ninchat_chat_close.apply {
             text = sessionManager.ninchatState.siteConfig.getChatCloseText()
-            if (!shouldShowTitlebar()) {
+            // if it is a group chat, then close button should be hidden
+            if (!model.isGroupCall && !shouldShowTitlebar()) {
                 visibility = View.VISIBLE
             }
         }
@@ -339,9 +386,14 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         } else {
             initializeChat(message_list)
         }
-        showTitlebarForBacklog(ninchat_chat_root.findViewById(R.id.ninchat_titlebar)) {
-            onCloseChat(null)
-        }
+        showTitlebarForBacklog(view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar),
+            callback = {
+                onCloseChat(null)
+            },
+            onToggleChat = {
+                onToggleChat(null)
+            }
+        )
         // Set up a soft keyboard visibility listener so video call container height can be adjusted
         softKeyboardViewHandler.register(window.decorView.findViewById<View>(android.R.id.content))
     }
