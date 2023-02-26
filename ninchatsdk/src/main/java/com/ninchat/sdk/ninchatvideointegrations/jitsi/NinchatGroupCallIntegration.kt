@@ -1,12 +1,16 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.NinchatGroupCallPresenter
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.OnClickListener
 import kotlinx.android.synthetic.main.ninchat_join_end_conference.view.*
+import org.jitsi.meet.sdk.BroadcastIntentHelper
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
 import org.jitsi.meet.sdk.JitsiMeetUserInfo
 import org.jitsi.meet.sdk.JitsiMeetView
@@ -83,13 +87,21 @@ class NinchatGroupCallIntegration(
         presenter.toggleChatButtonVisibility(view = view, show = true)
         joinConferenceView.visibility = View.GONE
         jitsiFrameLayout.visibility = View.VISIBLE
-        //jitsiMeetView.join(options)
+        jitsiMeetView.join(options)
 
         Log.d("Custom Config", "$fullWidth $fullHeight")
-        //jitsiFrameLayout.addView(jitsiMeetView)
+        jitsiFrameLayout.addView(jitsiMeetView)
     }
 
-    fun disposeJitsi() {
+    fun hangUp(context: Context) {
+        LocalBroadcastManager.getInstance(context).sendBroadcast(BroadcastIntentHelper.buildHangUpIntent())
+    }
+
+    fun disposeJitsi(view: View) {
+        joinConferenceView.visibility = View.VISIBLE
+        jitsiFrameLayout.visibility = View.GONE
+        jitsiFrameLayout.removeView(jitsiMeetView)
+        presenter.toggleChatButtonVisibility(view = view, show = false)
         jitsiMeetView?.dispose()
     }
 }

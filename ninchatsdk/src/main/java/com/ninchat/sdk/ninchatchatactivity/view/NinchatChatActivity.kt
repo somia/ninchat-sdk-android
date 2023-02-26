@@ -33,6 +33,7 @@ import com.ninchat.sdk.utils.misc.Parameter
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
+import org.jitsi.meet.sdk.BroadcastEvent
 import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface
 import org.jitsi.meet.sdk.JitsiMeetView
@@ -90,7 +91,22 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                     view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar),
                 )
             }
-
+        },
+        onJitsiConferenceEvents = { intent ->
+            if (intent == null) return@NinchatChatBroadcastManager
+            val event = BroadcastEvent(intent)
+            Log.e("JITSI EVENT", "${event.type}")
+            when (event.type) {
+                BroadcastEvent.Type.CONFERENCE_TERMINATED -> {
+                    Log.e("JITSI EVENT", "CONFERENCE_TERMINATED")
+                    groupIntegration?.disposeJitsi( view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar))
+                    chat_message_list_and_editor.also {messageLayout ->
+                        messageLayout.visibility = View.VISIBLE
+                        messageLayout.animate().translationY(0f).setDuration(300).start()
+                    }
+                    // show chat messages and command view
+                }
+            }
         }
     )
     private val softKeyboardViewHandler = SoftKeyboardViewHandler(
@@ -122,7 +138,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             val t1 = ninchat_titlebar.measuredHeight
             val p1 = conference_or_p2p_view_container.measuredHeight
             // Update video height and cache current rootview height
-            Log.e("height change", "$height $h1 $w1 $t1 $p1")
+            // Log.e("height change", "$height $h1 $w1 $t1 $p1")
             // groupIntegration?.changeHeight(p1)
         }
     )
@@ -223,6 +239,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         val sessionManager = NinchatSessionManager.getInstance()
         if (sessionManager != null) {
             p2pIntegration?.hangUp()
+            groupIntegration?.hangUp(context = applicationContext)
         }
     }
 
