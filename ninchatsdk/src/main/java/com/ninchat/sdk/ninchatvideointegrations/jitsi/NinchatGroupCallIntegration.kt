@@ -53,7 +53,8 @@ class NinchatGroupCallIntegration(
         jitsiToken: String,
         jitsiServerAddress: String,
         fullHeight: Int,
-        fullWidth: Int
+        fullWidth: Int,
+        view: View
     ) {
         Log.d("JitsiMeet", "jitsiMeetServerAddress: $jitsiServerAddress $jitsiRoom $jitsiToken ")
         val options: JitsiMeetConferenceOptions = JitsiMeetConferenceOptions.Builder()
@@ -79,9 +80,10 @@ class NinchatGroupCallIntegration(
             .setFeatureFlag("server-url-change.enabled", false)
             .build()
 
+        presenter.toggleChatButtonVisibility(view = view, show = true)
         joinConferenceView.visibility = View.GONE
         jitsiFrameLayout.visibility = View.VISIBLE
-        jitsiMeetView.join(options)
+        //jitsiMeetView.join(options)
 
         Log.d("Custom Config", "$fullWidth $fullHeight")
         //jitsiFrameLayout.addView(jitsiMeetView)
@@ -89,11 +91,5 @@ class NinchatGroupCallIntegration(
 
     fun disposeJitsi() {
         jitsiMeetView?.dispose()
-    }
-
-    fun changeHeight(currentHeight: Int) {
-        jitsiFrameLayout.layoutParams?.apply {
-            height = currentHeight
-        }
     }
 }

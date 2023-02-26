@@ -85,6 +85,6 @@ fun shouldShowTitlebar(): Boolean {
     } ?: false
 }
 
-fun showShowToggleChatButton(): Boolean {
+fun showOverrideTitlebarView(): Boolean {
     return NinchatSessionManager.getInstance()?.ninchatSessionHolder?.isGroupVideo() ?: false
 }

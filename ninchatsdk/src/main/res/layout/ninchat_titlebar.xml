@@ -32,7 +32,7 @@
         android:layout_height="45dp"
         android:layout_marginRight="10dp"
         android:src="@drawable/ninchat_icon_toggle_chat_bubble"
-        android:visibility="visible"
+        android:visibility="gone"
         tools:visibility="visible" />
 
     <Button

@@ -3,13 +3,11 @@ package com.ninchat.sdk.ninchatchatactivity.view
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.content.res.Resources
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.core.view.isVisible
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.react.modules.core.PermissionListener
@@ -34,6 +32,7 @@ import com.ninchat.sdk.utils.misc.NinchatLinearLayoutManager
 import com.ninchat.sdk.utils.misc.Parameter
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
+import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
 import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface
 import org.jitsi.meet.sdk.JitsiMeetView
@@ -88,6 +87,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                     jitsiServerAddress = jitsiServerAddress,
                     fullHeight = 1961,
                     fullWidth = width,
+                    view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar),
                 )
             }
 
@@ -192,16 +192,27 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     }
 
     fun onToggleChat(view: View?) {
-        chat_message_list_and_editor.also {mLayout ->
-            if(mLayout.visibility == View.VISIBLE) {
-                mLayout.animate().translationY(mLayout.height.toFloat()).setDuration(300).withEndAction {
-                    mLayout.visibility = View.GONE
-                    conference_or_p2p_view_container.visibility = View.VISIBLE
-                }.start()
+        model.showChatView = !model.showChatView
+        chat_message_list_and_editor.also { messageLayout ->
+            if (!model.showChatView) {
+                messageLayout.animate().translationY(messageLayout.height.toFloat())
+                    .setDuration(300).withEndAction {
+                        messageLayout.visibility = View.GONE
+                        conference_or_p2p_view_container.apply {
+                            layoutParams = layoutParams.also {
+                                it.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                            }
+                        }
+                    }.start()
             } else {
-                conference_or_p2p_view_container.visibility = View.GONE
-                mLayout.visibility = View.VISIBLE
-                mLayout.animate().translationY(0f).setDuration(300).start()
+                conference_or_p2p_view_container.apply {
+                    layoutParams = layoutParams.also {
+                        it.height =
+                            applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_conference_small_screen_height)
+                    }
+                }
+                messageLayout.visibility = View.VISIBLE
+                messageLayout.animate().translationY(0f).setDuration(300).start()
             }
         }
     }

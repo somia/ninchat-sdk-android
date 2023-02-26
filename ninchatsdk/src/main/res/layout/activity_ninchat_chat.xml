@@ -64,10 +64,8 @@
             android:layout_height="match_parent"
             android:layout_alignWithParentIfMissing="true"
             android:visibility="gone"
-            android:background="@color/gph_dark_red"
             tools:visibility="visible" />
     </RelativeLayout>
-
 
     <!--Chat message list and editor view group-->
     <RelativeLayout
@@ -77,7 +75,7 @@
         android:visibility="visible"
         tools:visibility="visible"
         android:layout_alignWithParentIfMissing="true"
-        android:layout_below="@id/ninchat_titlebar">
+        android:layout_below="@id/conference_or_p2p_view_container">
 
 
         <androidx.recyclerview.widget.RecyclerView

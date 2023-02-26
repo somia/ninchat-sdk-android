@@ -7,6 +7,7 @@ data class NinchatChatModel(
     var toggleFullScreen: Boolean = false,
     var chatClosed: Boolean = false,
     var isGroupCall: Boolean = false,
+    var showChatView: Boolean = false,
 ) {
     fun parse() {
         isGroupCall = NinchatSessionManager.getInstance()?.ninchatSessionHolder?.isGroupVideo() ?: false

@@ -10,6 +10,7 @@ import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallMode
 import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.android.synthetic.main.ninchat_join_end_conference.view.*
+import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 
@@ -46,6 +47,10 @@ class NinchatGroupCallPresenter(
                 );
             }
         }
+    }
+
+    fun toggleChatButtonVisibility(view: View, show: Boolean) {
+        view.ninchat_titlebar_toggle_chat.visibility = if (show) View.VISIBLE else View.GONE
     }
 
     fun onClickHandler() {

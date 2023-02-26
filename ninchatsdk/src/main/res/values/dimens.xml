@@ -119,5 +119,6 @@
     <dimen name="ninchat_conference_title_text_size">20dp</dimen>
     <dimen name="ninchat_conference_description_text_size">15dp</dimen>
     <dimen name="ninchat_conference_join_or_leave_view_height">256dp</dimen>
+    <dimen name="ninchat_conference_small_screen_height">150dp</dimen>
 
 </resources>
