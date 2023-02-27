@@ -89,6 +89,7 @@ class NinchatGroupCallIntegration(
             .setFeatureFlag("server-url-change.enabled", false)
             .build()
 
+
         presenter.toggleChatButtonVisibility(view = view, show = true)
         joinConferenceView.visibility = View.GONE
         jitsiFrameLayout.visibility = View.VISIBLE
@@ -98,6 +99,9 @@ class NinchatGroupCallIntegration(
         jitsiFrameLayout.addView(jitsiMeetView)
     }
 
+    fun onNewMessage(view: View, messageCount: Int) {
+        presenter.onNewMessage(view = view, messageCount = messageCount)
+    }
     fun hangUp(context: Context) {
         LocalBroadcastManager.getInstance(context).sendBroadcast(BroadcastIntentHelper.buildHangUpIntent())
     }

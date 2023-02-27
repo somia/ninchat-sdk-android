@@ -79,11 +79,6 @@
         <item name="android:textColor">@color/ninchat_color_titlebar_close_button</item>
     </style>
 
-    <style name="NinchatTheme.Button.ToggleVideo.Titlebar" parent="NinchatTheme.MultiChoice">
-        <item name="android:background">@drawable/ninchat_chat_secondary_button</item>
-        <item name="android:textColor">@color/ninchat_color_button_secondary_text</item>
-    </style>
-
     <style name="NinchatTheme.Button.Send" parent="NinchatTheme.Button.Close">
         <item name="android:height">@dimen/ninchat_send_button_height</item>
         <item name="android:layout_height">@dimen/ninchat_send_button_height</item>

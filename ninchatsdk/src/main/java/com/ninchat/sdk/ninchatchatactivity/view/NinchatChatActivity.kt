@@ -15,6 +15,8 @@ import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
+import com.ninchat.sdk.events.OnNewMessage
+import com.ninchat.sdk.events.OnSubmitPreAudienceQuestionnaireAnswers
 import com.ninchat.sdk.managers.IOrientationManager
 import com.ninchat.sdk.ninchatchatactivity.model.NinchatChatModel
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
@@ -33,6 +35,9 @@ import com.ninchat.sdk.utils.misc.Parameter
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import org.jitsi.meet.sdk.BroadcastEvent
 import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface
@@ -82,6 +87,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                     "onJitsiDiscovered",
                     "$height $width $titlebarHeight $heightParent $heightParentMeasured"
                 )
+                model.showChatView = false
                 groupIntegration?.startJitsi(
                     jitsiRoom = jitsiRoom,
                     jitsiToken = jitsiToken,
@@ -229,6 +235,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 }
                 messageLayout.visibility = View.VISIBLE
                 messageLayout.animate().translationY(0f).setDuration(300).start()
+                groupIntegration?.onNewMessage(view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar), messageCount = 0)
             }
         }
     }
@@ -342,6 +349,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        EventBus.getDefault().register(this)
         // If the app is killed in the background sessionManager is not initialized the SDK must
         // be exited and the NinchatSession needs to be initialzed again
         val sessionManager = NinchatSessionManager.getInstance() ?: run {
@@ -470,6 +478,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         softKeyboardViewHandler.unregister()
         presenter.writingIndicator.dispose()
         presenter.orientationManager.disable()
+        EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
 
@@ -484,6 +493,16 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         presenter.sendMessage(send_message_container)
     }
 
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    @JvmName("OnNewMessage")
+    fun onNewMessage(onNewMessage: OnNewMessage) {
+        if(model.showChatView) {
+           return
+        }
+        // show indicator that a new chat message has appeared
+        groupIntegration?.onNewMessage(view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar), messageCount = 1)
+    }
     override val layoutRes: Int
         get() = R.layout.activity_ninchat_chat
 

@@ -5,6 +5,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.client.Payload
 import com.ninchat.client.Props
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.events.OnNewMessage
 import com.ninchat.sdk.events.OnSubmitPostAudienceQuestionnaire
 import com.ninchat.sdk.helper.propsparser.getSafe
 import com.ninchat.sdk.ninchatmedia.model.NinchatFile
@@ -91,6 +92,8 @@ class NinchatMessageService {
                                     messageOptions,
                                     timestampMs))
                         }
+                        // A UI compose message
+                        EventBus.getDefault().post(OnNewMessage())
                     } catch (_: Exception) {
                         // pass
                     }
@@ -133,6 +136,8 @@ class NinchatMessageService {
                             }
                         }
                     }
+                    // file or text message
+                    EventBus.getDefault().post(OnNewMessage())
                 }
             }
         }
