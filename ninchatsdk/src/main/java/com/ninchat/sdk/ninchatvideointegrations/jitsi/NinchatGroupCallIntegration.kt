@@ -52,6 +52,11 @@ class NinchatGroupCallIntegration(
         )
     }
 
+    fun onChatClosed(context: Context) {
+        hangUp(context = context)
+        updateView(chatClosed = true)
+    }
+
     fun startJitsi(
         jitsiRoom: String,
         jitsiToken: String,

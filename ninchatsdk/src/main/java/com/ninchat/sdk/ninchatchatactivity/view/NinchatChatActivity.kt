@@ -50,7 +50,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         ninchatChatActivity = this@NinchatChatActivity,
         onChannelClosed = {
             model.chatClosed = true
-            groupIntegration?.updateView(chatClosed = model.chatClosed)
+            groupIntegration?.onChatClosed( context = applicationContext )
             hideKeyBoardForce()
         },
         onTransfer = {
@@ -325,7 +325,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                         }
                     })
                     model.chatClosed = true
-                    groupIntegration?.updateView(chatClosed = true)
+                    groupIntegration?.onChatClosed(context = applicationContext)
                     hideKeyBoardForce()
                 }
 
