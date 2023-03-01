@@ -27,6 +27,7 @@ class NinchatGroupCallIntegration(
     private val joinConferenceView: View,
     private val jitsiFrameLayout: FrameLayout,
     private val jitsiMeetView: JitsiMeetView,
+    private val mActivity: NinchatChatActivity,
     chatClosed: Boolean = false,
 ) {
     private val model = NinchatGroupCallModel(endConference = chatClosed).apply {
@@ -59,8 +60,8 @@ class NinchatGroupCallIntegration(
         )
     }
 
-    fun onChatClosed(mActivity: NinchatChatActivity) {
-        hangUp(mActivity = mActivity)
+    fun onChatClosed() {
+        hangUp()
 
         // update the UI to disable the join button
         mActivity.findViewById<ScrollView>(R.id.ninchat_conference_view)?.run {
@@ -124,19 +125,20 @@ class NinchatGroupCallIntegration(
         presenter.onNewMessage(view = view, messageCount = messageCount)
     }
 
-    fun hangUp(mActivity: NinchatChatActivity) {
-        LocalBroadcastManager.getInstance(mActivity.applicationContext)
-            .sendBroadcast(BroadcastIntentHelper.buildHangUpIntent())
-
+    fun hangUp() {
         // Update UI after hangup
-        onHangup(mActivity = mActivity)
+        onHangup()
+
+        LocalBroadcastManager
+            .getInstance(mActivity.applicationContext)
+            .sendBroadcast(BroadcastIntentHelper.buildHangUpIntent())
     }
 
-    fun onHangup(mActivity: NinchatChatActivity) {
-        joinConferenceView.visibility = View.VISIBLE
-        jitsiFrameLayout.visibility = View.GONE
-        jitsiFrameLayout.removeView(jitsiMeetView)
-        mActivity.findViewById<RelativeLayout>(R.id.ninchat_chat_root)?.run {
+    fun onHangup() {
+        jitsiMeetView.dispose()
+        mActivity.findViewById<RelativeLayout>(R.id.ninchat_chat_root)?.apply {
+            jitsi_frame_layout.removeView(jitsiMeetView)
+
             ninchat_p2p_video_view.visibility = View.GONE
             jitsi_frame_layout.visibility = View.GONE
             ninchat_conference_view.visibility = View.VISIBLE
@@ -167,13 +169,5 @@ class NinchatGroupCallIntegration(
         jitsiFrameLayout.updateViewLayout(jitsiMeetView, lm)
         jitsiMeetView.requestLayout()
         //jitsiFrameLayout.addView(jitsiMeetView, 0, lm)
-    }
-
-    fun disposeJitsi(view: View) {
-        joinConferenceView.visibility = View.VISIBLE
-        jitsiFrameLayout.visibility = View.GONE
-        jitsiFrameLayout.removeView(jitsiMeetView)
-        presenter.toggleChatButtonVisibility(view = view, show = false)
-        jitsiMeetView?.dispose()
     }
 }

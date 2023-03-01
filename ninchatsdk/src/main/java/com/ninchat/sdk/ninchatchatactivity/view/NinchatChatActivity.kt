@@ -62,7 +62,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             // p2p updates
             p2pIntegration?.onChatCloses()
             // group updates
-            groupIntegration?.onChatClosed(mActivity = this@NinchatChatActivity)
+            groupIntegration?.onChatClosed()
         },
         onTransfer = {
             quit(it)
@@ -103,6 +103,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 fullWidth = width,
                 view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar),
             )
+
         },
         onJitsiConferenceEvents = { intent ->
             if (intent == null) return@NinchatChatBroadcastManager
@@ -110,13 +111,10 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             Log.e("JITSI EVENT", "${event.type}")
             when (event.type) {
                 BroadcastEvent.Type.CONFERENCE_TERMINATED -> {
-                    Log.e("JITSI EVENT", "CONFERENCE_TERMINATED")
-                    groupIntegration?.disposeJitsi(view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar))
-                    chat_message_list_and_editor.also { messageLayout ->
-                        messageLayout.visibility = View.VISIBLE
-                        messageLayout.animate().translationY(0f).setDuration(300).start()
-                    }
-                    // show chat messages and command view
+                    groupIntegration?.onHangup()
+                }
+                BroadcastEvent.Type.READY_TO_CLOSE -> {
+                    groupIntegration?.onHangup()
                 }
             }
         }
@@ -258,18 +256,11 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         }
     }
 
-    private fun hangUp() {
+    fun onVideoHangUp(view: View?) {
         model.toggleFullScreen = false
         p2pIntegration?.handleTitlebarView(true, this)
-        val sessionManager = NinchatSessionManager.getInstance()
-        if (sessionManager != null) {
-            p2pIntegration?.hangUp()
-            groupIntegration?.hangUp(mActivity = this@NinchatChatActivity)
-        }
-    }
-
-    fun onVideoHangUp(view: View?) {
-        hangUp()
+        p2pIntegration?.hangUp()
+        groupIntegration?.hangUp()
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
     }
 
@@ -286,6 +277,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     fun chatClosed() {
         onVideoHangUp(null)
+
         val showRatings =
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.showRating() ?: false
         if (showRatings) {
@@ -350,7 +342,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                         }
                     })
                     model.chatClosed = true
-                    groupIntegration?.onChatClosed(mActivity = this@NinchatChatActivity)
+                    groupIntegration?.onChatClosed()
                     hideKeyBoardForce()
                 }
 
@@ -396,6 +388,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 joinConferenceView = conference_or_p2p_view_container.findViewById(R.id.ninchat_conference_view),
                 jitsiFrameLayout = conference_or_p2p_view_container.findViewById(R.id.jitsi_frame_layout),
                 jitsiMeetView = JitsiMeetView(this),
+                mActivity = this@NinchatChatActivity,
                 chatClosed = model.chatClosed
             )
         } else {
@@ -457,7 +450,8 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                     minOf(displayMetrics.widthPixels, displayMetrics.heightPixels)
                 }
                 val statusBarHeight = getStatusBarHeight()
-                val badJabe = if(isPortrait) statusBarHeight else (statusBarHeight+getNavigationBarHeight())
+                val badJabe =
+                    if (isPortrait) statusBarHeight else (statusBarHeight + getNavigationBarHeight())
                 groupIntegration?.updateLayout(
                     fullWidth = 0,
                     fullHeight = displayHeight - badJabe
@@ -507,7 +501,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     }
 
     override fun onDestroy() {
-        hangUp()
+        onVideoHangUp(null)
         val localBroadcastManager = LocalBroadcastManager.getInstance(applicationContext)
         mBroadcastManager.unregister(localBroadcastManager)
         softKeyboardViewHandler.unregister()
