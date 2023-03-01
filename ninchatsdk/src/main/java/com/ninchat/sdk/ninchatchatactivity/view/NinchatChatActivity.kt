@@ -3,11 +3,15 @@ package com.ninchat.sdk.ninchatchatactivity.view
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.graphics.PixelFormat
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
+import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.RelativeLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.react.modules.core.PermissionListener
@@ -16,7 +20,6 @@ import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.events.OnNewMessage
-import com.ninchat.sdk.events.OnSubmitPreAudienceQuestionnaireAnswers
 import com.ninchat.sdk.managers.IOrientationManager
 import com.ninchat.sdk.ninchatchatactivity.model.NinchatChatModel
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
@@ -55,7 +58,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         ninchatChatActivity = this@NinchatChatActivity,
         onChannelClosed = {
             model.chatClosed = true
-            groupIntegration?.onChatClosed( context = applicationContext )
+            groupIntegration?.onChatClosed(context = applicationContext)
             hideKeyBoardForce()
         },
         onTransfer = {
@@ -77,26 +80,26 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             val jitsiServerAddress =
                 it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER) ?: ""
 
-            runOnUiThread {
-                val height = applicationContext.resources.displayMetrics.heightPixels;
-                val width = applicationContext.resources.displayMetrics.widthPixels;
-                val titlebarHeight = ninchat_titlebar.measuredHeight
-                val heightParent = conference_or_p2p_view_container.measuredHeight
-                val heightParentMeasured = conference_or_p2p_view_container.height
-                Log.e(
-                    "onJitsiDiscovered",
-                    "$height $width $titlebarHeight $heightParent $heightParentMeasured"
-                )
-                model.showChatView = false
-                groupIntegration?.startJitsi(
-                    jitsiRoom = jitsiRoom,
-                    jitsiToken = jitsiToken,
-                    jitsiServerAddress = jitsiServerAddress,
-                    fullHeight = 1961,
-                    fullWidth = width,
-                    view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar),
-                )
-            }
+            val width = applicationContext.resources.displayMetrics.widthPixels;
+
+
+            // Get the display metrics
+            val displayMetrics = DisplayMetrics()
+            windowManager.defaultDisplay.getMetrics(displayMetrics)
+
+// Calculate the visible display height
+            var height = displayMetrics.heightPixels
+            val statusBarHeight = getStatusBarHeight()
+
+            model.showChatView = false
+            groupIntegration?.startJitsi(
+                jitsiRoom = jitsiRoom,
+                jitsiToken = jitsiToken,
+                jitsiServerAddress = jitsiServerAddress,
+                fullHeight = height - getStatusBarHeight(),
+                fullWidth = width,
+                view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar),
+            )
         },
         onJitsiConferenceEvents = { intent ->
             if (intent == null) return@NinchatChatBroadcastManager
@@ -105,8 +108,8 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             when (event.type) {
                 BroadcastEvent.Type.CONFERENCE_TERMINATED -> {
                     Log.e("JITSI EVENT", "CONFERENCE_TERMINATED")
-                    groupIntegration?.disposeJitsi( view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar))
-                    chat_message_list_and_editor.also {messageLayout ->
+                    groupIntegration?.disposeJitsi(view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar))
+                    chat_message_list_and_editor.also { messageLayout ->
                         messageLayout.visibility = View.VISIBLE
                         messageLayout.animate().translationY(0f).setDuration(300).start()
                     }
@@ -165,7 +168,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             presenter.onActivityClose()
             quit(data)
         } else if (requestCode == NinchatChatPresenter.PICK_PHOTO_VIDEO_REQUEST_CODE && resultCode == RESULT_OK) {
-            p2pIntegration?.onAlbumSelected(data!!, applicationContext)
+            presenter.onAlbumSelected(data!!, applicationContext)
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -217,25 +220,37 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         model.showChatView = !model.showChatView
         chat_message_list_and_editor.also { messageLayout ->
             if (!model.showChatView) {
-                messageLayout.animate().translationY(messageLayout.height.toFloat())
-                    .setDuration(300).withEndAction {
-                        messageLayout.visibility = View.GONE
-                        conference_or_p2p_view_container.apply {
-                            layoutParams = layoutParams.also {
-                                it.height = ViewGroup.LayoutParams.WRAP_CONTENT
-                            }
-                        }
-                    }.start()
+                messageLayout.layoutParams.height = 0
+                val params = messageLayout.layoutParams as RelativeLayout.LayoutParams
+                params.height = ViewGroup.LayoutParams.MATCH_PARENT
+                params.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                params.addRule(RelativeLayout.BELOW, R.id.conference_or_p2p_view_container)
+                messageLayout.layoutParams = params
             } else {
-                conference_or_p2p_view_container.apply {
-                    layoutParams = layoutParams.also {
-                        it.height =
-                            applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_conference_small_screen_height)
+                val params = messageLayout.layoutParams as RelativeLayout.LayoutParams
+                params.height = ViewGroup.LayoutParams.MATCH_PARENT
+                params.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                params.addRule(RelativeLayout.BELOW, R.id.ninchat_titlebar)
+                params.topMargin =
+                    applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_conference_small_screen_height)
+                messageLayout.layoutParams = params
+
+                val sessionManager = NinchatSessionManager.getInstance()
+                if (resources.getBoolean(R.bool.ninchat_chat_background_not_tiled)) {
+                    chat_message_list_and_editor.setBackgroundResource(sessionManager.ninchatChatBackground)
+                } else {
+                    getNinchatChatBackground(
+                        applicationContext,
+                        sessionManager.ninchatChatBackground
+                    )?.let {
+                        chat_message_list_and_editor.background = it
                     }
                 }
-                messageLayout.visibility = View.VISIBLE
-                messageLayout.animate().translationY(0f).setDuration(300).start()
-                groupIntegration?.onNewMessage(view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar), messageCount = 0)
+
+                groupIntegration?.onNewMessage(
+                    view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar),
+                    messageCount = 0
+                )
             }
         }
     }
@@ -349,6 +364,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.setFormat(PixelFormat.TRANSLUCENT);
         EventBus.getDefault().register(this)
         // If the app is killed in the background sessionManager is not initialized the SDK must
         // be exited and the NinchatSession needs to be initialzed again
@@ -427,6 +443,22 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 onCloseChat(null)
             },
             onToggleChat = {
+                val display = windowManager.defaultDisplay
+                val displayMetrics = DisplayMetrics()
+                display.getMetrics(displayMetrics)
+                val isPortrait =
+                    display.rotation == Surface.ROTATION_0 || display.rotation == Surface.ROTATION_180
+                val displayHeight = if (isPortrait) {
+                    maxOf(displayMetrics.widthPixels, displayMetrics.heightPixels)
+                } else {
+                    minOf(displayMetrics.widthPixels, displayMetrics.heightPixels)
+                }
+                val statusBarHeight = getStatusBarHeight()
+                val badJabe = if(isPortrait) statusBarHeight else (statusBarHeight+getNavigationBarHeight())
+                groupIntegration?.updateLayout(
+                    fullWidth = 0,
+                    fullHeight = displayHeight - badJabe
+                )
                 onToggleChat(null)
             }
         )
@@ -497,13 +529,35 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     @Subscribe(threadMode = ThreadMode.MAIN)
     @JvmName("OnNewMessage")
     fun onNewMessage(onNewMessage: OnNewMessage) {
-        if(model.showChatView) {
-           return
+        if (model.showChatView) {
+            return
         }
         // show indicator that a new chat message has appeared
-        groupIntegration?.onNewMessage(view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar), messageCount = 1)
+        groupIntegration?.onNewMessage(
+            view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar),
+            messageCount = 1
+        )
     }
+
     override val layoutRes: Int
         get() = R.layout.activity_ninchat_chat
+
+    private fun getStatusBarHeight(): Int {
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        return if (resourceId > 0) {
+            resources.getDimensionPixelSize(resourceId)
+        } else {
+            0
+        }
+    }
+
+    private fun getNavigationBarHeight(): Int {
+        var result = 0
+        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        if (resourceId > 0) {
+            result = resources.getDimensionPixelSize(resourceId)
+        }
+        return result
+    }
 
 }

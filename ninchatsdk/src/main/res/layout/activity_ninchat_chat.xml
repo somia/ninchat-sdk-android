@@ -56,13 +56,12 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/ninchat_conference_join_or_leave_view_height"
             android:visibility="gone"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
 
         <FrameLayout
             android:id="@+id/jitsi_frame_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignWithParentIfMissing="true"
             android:visibility="gone"
             tools:visibility="visible" />
     </RelativeLayout>
@@ -72,11 +71,10 @@
         android:id="@+id/chat_message_list_and_editor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="visible"
-        tools:visibility="visible"
         android:layout_alignWithParentIfMissing="true"
-        android:layout_below="@id/conference_or_p2p_view_container">
-
+        android:layout_below="@id/conference_or_p2p_view_container"
+        android:visibility="visible"
+        tools:visibility="gone">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/message_list"
@@ -101,9 +99,9 @@
             <EditText
                 android:id="@+id/message"
                 style="@style/NinchatTheme.Backlog.CommandView"
-                android:imeOptions="actionDone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:imeOptions="actionDone"
                 tools:hint="Enter your message" />
 
             <LinearLayout

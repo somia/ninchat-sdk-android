@@ -15,7 +15,6 @@ import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
-import com.ninchat.sdk.networkdispatchers.NinchatSendFile
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatVideoChatConsentDialogue
@@ -24,7 +23,6 @@ import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Misc.Companion.center
-import com.ninchat.sdk.utils.misc.Misc.Companion.getFileName
 import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import com.ninchat.sdk.views.NinchatWebRTCView
@@ -178,28 +176,6 @@ class NinchatP2PIntegration(
                 activity.ninchat_chat_root.ninchat_titlebar.visibility =
                     if (inActiveVideoCall) View.GONE else View.VISIBLE
                 return
-            }
-        }
-    }
-
-
-    fun onAlbumSelected(data: Intent, context: Context) {
-        NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
-            data.data?.let { uri ->
-                val fileName = getFileName(uri, context.contentResolver)
-                context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                    val buffer = ByteArray(inputStream.available())
-                    inputStream.read(buffer)
-
-                    NinchatScopeHandler.getIOScope().launch {
-                        NinchatSendFile.execute(
-                            currentSession = ninchatSessionManager.session,
-                            channelId = ninchatSessionManager.ninchatState.channelId,
-                            fileName = fileName,
-                            data = buffer,
-                        )
-                    }
-                }
             }
         }
     }

@@ -1,7 +1,6 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
@@ -93,17 +92,39 @@ class NinchatGroupCallIntegration(
         presenter.toggleChatButtonVisibility(view = view, show = true)
         joinConferenceView.visibility = View.GONE
         jitsiFrameLayout.visibility = View.VISIBLE
-        jitsiMeetView.join(options)
-
         Log.d("Custom Config", "$fullWidth $fullHeight")
-        jitsiFrameLayout.addView(jitsiMeetView)
+
+        jitsiMeetView.join(options)
+        val lm = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        ).also {
+            it.height = fullHeight
+        }
+        jitsiFrameLayout.addView(jitsiMeetView, 0, lm)
+        // jitsiFrameLayout.addView(jitsiMeetView, fullWidth, fullHeight)
     }
 
     fun onNewMessage(view: View, messageCount: Int) {
         presenter.onNewMessage(view = view, messageCount = messageCount)
     }
+
     fun hangUp(context: Context) {
-        LocalBroadcastManager.getInstance(context).sendBroadcast(BroadcastIntentHelper.buildHangUpIntent())
+        LocalBroadcastManager.getInstance(context)
+            .sendBroadcast(BroadcastIntentHelper.buildHangUpIntent())
+    }
+
+    fun updateLayout(fullWidth: Int, fullHeight: Int) {
+
+        val lm = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        ).also {
+            it.height = fullHeight
+        }
+        jitsiFrameLayout.updateViewLayout(jitsiMeetView, lm)
+        jitsiMeetView.requestLayout()
+        //jitsiFrameLayout.addView(jitsiMeetView, 0, lm)
     }
 
     fun disposeJitsi(view: View) {

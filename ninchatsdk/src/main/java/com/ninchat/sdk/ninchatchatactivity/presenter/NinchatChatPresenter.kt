@@ -1,5 +1,7 @@
 package com.ninchat.sdk.ninchatchatactivity.presenter
 
+import android.content.Context
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.hardware.SensorManager
 import android.provider.Settings
@@ -9,10 +11,7 @@ import android.view.View
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.managers.IOrientationManager
 import com.ninchat.sdk.managers.OrientationManager
-import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
-import com.ninchat.sdk.networkdispatchers.NinchatDiscoverJitsi
-import com.ninchat.sdk.networkdispatchers.NinchatPartChannel
-import com.ninchat.sdk.networkdispatchers.NinchatSendMessage
+import com.ninchat.sdk.networkdispatchers.*
 import com.ninchat.sdk.ninchatchatactivity.model.NinchatChatModel
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
@@ -114,6 +113,27 @@ class NinchatChatPresenter(
                     NinchatDeleteUser.execute(
                         currentSession = NinchatSessionManager.getInstance().session,
                     )
+                }
+            }
+        }
+    }
+
+    fun onAlbumSelected(data: Intent, context: Context) {
+        NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
+            data.data?.let { uri ->
+                val fileName = Misc.getFileName(uri, context.contentResolver)
+                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    val buffer = ByteArray(inputStream.available())
+                    inputStream.read(buffer)
+
+                    NinchatScopeHandler.getIOScope().launch {
+                        NinchatSendFile.execute(
+                            currentSession = ninchatSessionManager.session,
+                            channelId = ninchatSessionManager.ninchatState.channelId,
+                            fileName = fileName,
+                            data = buffer,
+                        )
+                    }
                 }
             }
         }
