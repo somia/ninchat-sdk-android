@@ -3,11 +3,19 @@ package com.ninchat.sdk.ninchatvideointegrations.jitsi
 import android.content.Context
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.RelativeLayout
+import android.widget.ScrollView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.airbnb.paris.extensions.style
+import com.ninchat.sdk.R
+import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.NinchatGroupCallPresenter
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.OnClickListener
+import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlinx.android.synthetic.main.ninchat_join_end_conference.view.*
 import org.jitsi.meet.sdk.BroadcastIntentHelper
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
@@ -51,9 +59,16 @@ class NinchatGroupCallIntegration(
         )
     }
 
-    fun onChatClosed(context: Context) {
-        hangUp(context = context)
-        updateView(chatClosed = true)
+    fun onChatClosed(mActivity: NinchatChatActivity) {
+        hangUp(mActivity = mActivity)
+
+        // update the UI to disable the join button
+        mActivity.findViewById<ScrollView>(R.id.ninchat_conference_view)?.run {
+            joinConferenceView.conference_join_button.style(
+                R.style.NinchatTheme_Conference_Ended
+            )
+            joinConferenceView.conference_join_button.isEnabled = false
+        }
     }
 
     fun startJitsi(
@@ -109,9 +124,36 @@ class NinchatGroupCallIntegration(
         presenter.onNewMessage(view = view, messageCount = messageCount)
     }
 
-    fun hangUp(context: Context) {
-        LocalBroadcastManager.getInstance(context)
+    fun hangUp(mActivity: NinchatChatActivity) {
+        LocalBroadcastManager.getInstance(mActivity.applicationContext)
             .sendBroadcast(BroadcastIntentHelper.buildHangUpIntent())
+
+        // Update UI after hangup
+        onHangup(mActivity = mActivity)
+    }
+
+    fun onHangup(mActivity: NinchatChatActivity) {
+        joinConferenceView.visibility = View.VISIBLE
+        jitsiFrameLayout.visibility = View.GONE
+        jitsiFrameLayout.removeView(jitsiMeetView)
+        mActivity.findViewById<RelativeLayout>(R.id.ninchat_chat_root)?.run {
+            ninchat_p2p_video_view.visibility = View.GONE
+            jitsi_frame_layout.visibility = View.GONE
+            ninchat_conference_view.visibility = View.VISIBLE
+            ninchat_titlebar.findViewById<ImageView>(R.id.ninchat_titlebar_toggle_chat)?.run {
+                visibility = View.GONE
+            }
+            chat_message_list_and_editor.run {
+                // should be below conference view
+                val params = layoutParams as RelativeLayout.LayoutParams
+                params.height = ViewGroup.LayoutParams.MATCH_PARENT
+                params.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                params.addRule(RelativeLayout.BELOW, R.id.conference_or_p2p_view_container)
+                layoutParams = params
+
+                visibility = View.VISIBLE
+            }
+        }
     }
 
     fun updateLayout(fullWidth: Int, fullHeight: Int) {

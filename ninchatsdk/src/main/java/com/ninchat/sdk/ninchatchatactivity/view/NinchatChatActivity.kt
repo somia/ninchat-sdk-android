@@ -57,9 +57,12 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     private val mBroadcastManager = NinchatChatBroadcastManager(
         ninchatChatActivity = this@NinchatChatActivity,
         onChannelClosed = {
-            model.chatClosed = true
-            groupIntegration?.onChatClosed(context = applicationContext)
-            hideKeyBoardForce()
+            // common updates
+            presenter.onChatClosed(mActivity = this@NinchatChatActivity)
+            // p2p updates
+            p2pIntegration?.onChatCloses()
+            // group updates
+            groupIntegration?.onChatClosed(mActivity = this@NinchatChatActivity)
         },
         onTransfer = {
             quit(it)
@@ -261,7 +264,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         val sessionManager = NinchatSessionManager.getInstance()
         if (sessionManager != null) {
             p2pIntegration?.hangUp()
-            groupIntegration?.hangUp(context = applicationContext)
+            groupIntegration?.hangUp(mActivity = this@NinchatChatActivity)
         }
     }
 
@@ -347,7 +350,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                         }
                     })
                     model.chatClosed = true
-                    groupIntegration?.onChatClosed(context = applicationContext)
+                    groupIntegration?.onChatClosed(mActivity = this@NinchatChatActivity)
                     hideKeyBoardForce()
                 }
 

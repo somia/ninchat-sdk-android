@@ -14,6 +14,7 @@ import com.ninchat.sdk.managers.OrientationManager
 import com.ninchat.sdk.networkdispatchers.*
 import com.ninchat.sdk.ninchatchatactivity.model.NinchatChatModel
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
+import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
@@ -137,6 +138,12 @@ class NinchatChatPresenter(
                 }
             }
         }
+    }
+
+
+    fun onChatClosed(mActivity: NinchatChatActivity) {
+        model.chatClosed = true
+        mActivity.hideKeyBoardForce()
     }
 
     companion object {

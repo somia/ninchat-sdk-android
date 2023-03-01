@@ -201,6 +201,10 @@ class NinchatP2PIntegration(
     fun toggleVideo() {
         webRTCView.toggleVideo()
     }
+
+    fun onChatCloses() {
+        this.hangUp()
+    }
 }
 
 
