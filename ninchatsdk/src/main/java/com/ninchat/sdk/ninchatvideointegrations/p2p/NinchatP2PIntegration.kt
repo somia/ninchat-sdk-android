@@ -2,7 +2,6 @@ package com.ninchat.sdk.ninchatvideointegrations.p2p
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -202,7 +201,7 @@ class NinchatP2PIntegration(
         webRTCView.toggleVideo()
     }
 
-    fun onChatCloses() {
+    fun onChannelClosed() {
         this.hangUp()
     }
 }

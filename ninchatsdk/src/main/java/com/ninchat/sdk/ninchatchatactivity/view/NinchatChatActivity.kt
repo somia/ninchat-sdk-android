@@ -58,11 +58,11 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         ninchatChatActivity = this@NinchatChatActivity,
         onChannelClosed = {
             // common updates
-            presenter.onChatClosed(mActivity = this@NinchatChatActivity)
+            presenter.onChannelClosed(mActivity = this@NinchatChatActivity)
             // p2p updates
-            p2pIntegration?.onChatCloses()
+            p2pIntegration?.onChannelClosed()
             // group updates
-            groupIntegration?.onChatClosed()
+            groupIntegration?.onChannelClosed()
         },
         onTransfer = {
             quit(it)
@@ -256,11 +256,15 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         }
     }
 
+
     fun onVideoHangUp(view: View?) {
         model.toggleFullScreen = false
+        // handle p2p hangup
         p2pIntegration?.handleTitlebarView(true, this)
         p2pIntegration?.hangUp()
+        // handle group hangup
         groupIntegration?.hangUp()
+
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
     }
 
@@ -277,7 +281,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     fun chatClosed() {
         onVideoHangUp(null)
-
         val showRatings =
             NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.showRating() ?: false
         if (showRatings) {
@@ -342,7 +345,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                         }
                     })
                     model.chatClosed = true
-                    groupIntegration?.onChatClosed()
+                    groupIntegration?.onChannelClosed()
                     hideKeyBoardForce()
                 }
 

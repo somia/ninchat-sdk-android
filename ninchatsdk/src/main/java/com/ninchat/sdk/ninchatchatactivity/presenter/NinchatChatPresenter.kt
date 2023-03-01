@@ -141,7 +141,7 @@ class NinchatChatPresenter(
     }
 
 
-    fun onChatClosed(mActivity: NinchatChatActivity) {
+    fun onChannelClosed(mActivity: NinchatChatActivity) {
         model.chatClosed = true
         mActivity.hideKeyBoardForce()
     }

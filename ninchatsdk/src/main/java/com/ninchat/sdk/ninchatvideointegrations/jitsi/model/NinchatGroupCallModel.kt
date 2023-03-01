@@ -6,7 +6,8 @@ data class NinchatGroupCallModel(
     var conferenceTitle: String = "",
     var conferenceButtonText: String = "",
     var conferenceDescription: String = "",
-    var endConference: Boolean = false
+    var endConference: Boolean = false,
+    var wasRunning: Boolean = false
 ) {
 
     fun parse() {

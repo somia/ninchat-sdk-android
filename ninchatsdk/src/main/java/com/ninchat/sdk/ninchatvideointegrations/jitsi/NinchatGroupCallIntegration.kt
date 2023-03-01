@@ -60,16 +60,21 @@ class NinchatGroupCallIntegration(
         )
     }
 
-    fun onChatClosed() {
+    fun onChannelClosed() {
+        model.endConference = true
         hangUp()
+    }
 
-        // update the UI to disable the join button
-        mActivity.findViewById<ScrollView>(R.id.ninchat_conference_view)?.run {
-            joinConferenceView.conference_join_button.style(
-                R.style.NinchatTheme_Conference_Ended
-            )
-            joinConferenceView.conference_join_button.isEnabled = false
+    fun hangUp() {
+        LocalBroadcastManager.getInstance(mActivity.applicationContext)
+            .sendBroadcast(BroadcastIntentHelper.buildHangUpIntent())
+
+        // wait for the jitsi event to update the view
+        // if jitsi is not running what should we do ? -> if was not running then call onHangup manually to propagate UI updates
+        if(model.wasRunning) {
+            return
         }
+        onHangup()
     }
 
     fun startJitsi(
@@ -118,6 +123,7 @@ class NinchatGroupCallIntegration(
             it.height = fullHeight
         }
         jitsiFrameLayout.addView(jitsiMeetView, 0, lm)
+        model.wasRunning = true
         // jitsiFrameLayout.addView(jitsiMeetView, fullWidth, fullHeight)
     }
 
@@ -125,23 +131,12 @@ class NinchatGroupCallIntegration(
         presenter.onNewMessage(view = view, messageCount = messageCount)
     }
 
-    fun hangUp() {
-        // Update UI after hangup
-        onHangup()
-
-        LocalBroadcastManager
-            .getInstance(mActivity.applicationContext)
-            .sendBroadcast(BroadcastIntentHelper.buildHangUpIntent())
-    }
-
     fun onHangup() {
-        jitsiMeetView.dispose()
         mActivity.findViewById<RelativeLayout>(R.id.ninchat_chat_root)?.apply {
             jitsi_frame_layout.removeView(jitsiMeetView)
 
             ninchat_p2p_video_view.visibility = View.GONE
             jitsi_frame_layout.visibility = View.GONE
-            ninchat_conference_view.visibility = View.VISIBLE
             ninchat_titlebar.findViewById<ImageView>(R.id.ninchat_titlebar_toggle_chat)?.run {
                 visibility = View.GONE
             }
@@ -155,7 +150,16 @@ class NinchatGroupCallIntegration(
 
                 visibility = View.VISIBLE
             }
+            ninchat_conference_view.apply {
+                visibility = View.VISIBLE
+                conference_join_button.isEnabled = model.endConference == false
+                conference_join_button.style(
+                    if (model.endConference) R.style.NinchatTheme_Conference_Ended else R.style.NinchatTheme_Conference_Join
+                )
+            }
         }
+        jitsiMeetView.dispose()
+        model.wasRunning = false
     }
 
     fun updateLayout(fullWidth: Int, fullHeight: Int) {
