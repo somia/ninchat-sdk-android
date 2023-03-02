@@ -6,7 +6,6 @@ import android.view.View
 class SoftKeyboardViewHandler(
     private val onHidden: () -> Unit,
     private val onShow: () -> Unit,
-    private val onHeightChange: (currentHeight: Int) -> Unit,
 ) {
     private var previousHeight = -1
     private lateinit var rootView: View
@@ -34,6 +33,5 @@ class SoftKeyboardViewHandler(
         if (previousHeight != height) {
             previousHeight = height
         }
-        onHeightChange(height)
     }
 }

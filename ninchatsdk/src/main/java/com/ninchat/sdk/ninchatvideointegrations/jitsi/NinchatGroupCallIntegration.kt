@@ -1,13 +1,11 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi
 
-import android.content.Context
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.RelativeLayout
-import android.widget.ScrollView
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.R
@@ -71,7 +69,7 @@ class NinchatGroupCallIntegration(
 
         // wait for the jitsi event to update the view
         // if jitsi is not running what should we do ? -> if was not running then call onHangup manually to propagate UI updates
-        if(model.wasRunning) {
+        if (model.wasRunning) {
             return
         }
         onHangup()
@@ -173,5 +171,45 @@ class NinchatGroupCallIntegration(
         jitsiFrameLayout.updateViewLayout(jitsiMeetView, lm)
         jitsiMeetView.requestLayout()
         //jitsiFrameLayout.addView(jitsiMeetView, 0, lm)
+    }
+
+    fun onSoftKeyboardVisibilityChanged(showChatView: Boolean, isVisible: Boolean) {
+        // 1: was video ongoing
+        if (!model.wasRunning) {
+            mActivity.findViewById<RelativeLayout>(R.id.ninchat_chat_root)?.apply {
+                ninchat_conference_view.layoutParams.height =
+                    if (isVisible) mActivity.resources.getDimension(R.dimen.ninchat_conference_small_screen_height)
+                        .toInt() else mActivity.resources.getDimension(R.dimen.ninchat_conference_join_or_leave_view_height)
+                        .toInt()
+                ninchat_conference_view.requestLayout()
+
+                val params =
+                    chat_message_list_and_editor.layoutParams as RelativeLayout.LayoutParams
+                params.height = ViewGroup.LayoutParams.MATCH_PARENT
+                params.width = ViewGroup.LayoutParams.WRAP_CONTENT
+                params.addRule(RelativeLayout.BELOW, R.id.conference_or_p2p_view_container)
+                chat_message_list_and_editor.layoutParams = params
+
+            }
+            return
+        }
+
+        // 2: if video is running but chat view hidden then don't do something
+        if (!showChatView) {
+            return
+        }
+        mActivity.findViewById<RelativeLayout>(R.id.ninchat_chat_root)?.apply {
+            val params = chat_message_list_and_editor.layoutParams as RelativeLayout.LayoutParams
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT
+            params.width = ViewGroup.LayoutParams.WRAP_CONTENT
+            params.addRule(
+                RelativeLayout.BELOW,
+                if (isVisible) R.id.ninchat_titlebar else R.id.ninchat_titlebar
+            )
+            params.topMargin =
+                if(isVisible) 0 else mActivity.resources.getDimensionPixelSize(R.dimen.ninchat_conference_small_screen_height)
+            chat_message_list_and_editor.layoutParams = params
+
+        }
     }
 }

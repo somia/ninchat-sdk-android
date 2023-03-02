@@ -9,6 +9,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.managers.IOrientationManager
 import com.ninchat.sdk.managers.OrientationManager
 import com.ninchat.sdk.networkdispatchers.*
@@ -17,6 +18,7 @@ import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Misc
+import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import com.ninchat.sdk.utils.writingindicator.WritingIndicator
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
@@ -76,7 +78,7 @@ class NinchatChatPresenter(
     }
 
     fun sendMessage(view: View) {
-        if(model.chatClosed) return
+        if (model.chatClosed) return
         view.message?.text?.toString()?.let { message ->
             if (message.isEmpty()) {
                 return
@@ -100,7 +102,7 @@ class NinchatChatPresenter(
 
     fun onActivityClose() {
         NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
-            if(Misc.shouldPartChannel(ninchatSessionManager.ninchatState)) {
+            if (Misc.shouldPartChannel(ninchatSessionManager.ninchatState)) {
                 NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
                     NinchatPartChannel.execute(
                         currentSession = ninchatSessionManager.session,
@@ -144,6 +146,17 @@ class NinchatChatPresenter(
     fun onChannelClosed(mActivity: NinchatChatActivity) {
         model.chatClosed = true
         mActivity.hideKeyBoardForce()
+    }
+
+    fun onSoftKeyboardVisibilityChanged(isVisible: Boolean = true) {
+        if (!isVisible) return
+        // push messages on top of soft keyboard
+        NinchatSessionManager.getInstance()
+            ?.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
+                override fun onMessageAdapter(adapter: NinchatMessageAdapter) {
+                    adapter.scrollToBottom(true)
+                }
+            })
     }
 
     companion object {

@@ -121,36 +121,15 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     )
     private val softKeyboardViewHandler = SoftKeyboardViewHandler(
         onShow = {
-            // Update video height and cache current rootview height
-            p2pIntegration?.setLayoutParams(
-                newHeight = resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height_small)
-                    .roundToInt(),
-                newWidth = -1
-            )
-            // push messages on top of soft keyboard
-            NinchatSessionManager.getInstance()
-                ?.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
-                    override fun onMessageAdapter(adapter: NinchatMessageAdapter) {
-                        adapter.scrollToBottom(true)
-                    }
-                })
+            p2pIntegration?.onSoftKeyboardVisibilityChanged(isVisible = true)
+            groupIntegration?.onSoftKeyboardVisibilityChanged(isVisible = true, showChatView = model.showChatView)
+            presenter.onSoftKeyboardVisibilityChanged(isVisible = true)
         },
         onHidden = {
-            p2pIntegration?.setLayoutParams(
-                newHeight = resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height)
-                    .roundToInt(),
-                newWidth = -1,
-            )
+            p2pIntegration?.onSoftKeyboardVisibilityChanged(isVisible = false)
+            groupIntegration?.onSoftKeyboardVisibilityChanged(isVisible = false, showChatView = model.showChatView)
+            presenter.onSoftKeyboardVisibilityChanged(isVisible = false)
         },
-        onHeightChange = { height ->
-            val h1 = applicationContext.resources.displayMetrics.heightPixels;
-            val w1 = applicationContext.resources.displayMetrics.widthPixels;
-            val t1 = ninchat_titlebar.measuredHeight
-            val p1 = conference_or_p2p_view_container.measuredHeight
-            // Update video height and cache current rootview height
-            // Log.e("height change", "$height $h1 $w1 $t1 $p1")
-            // groupIntegration?.changeHeight(p1)
-        }
     )
 
     override fun onOrientationChange(orientation: Int) {
@@ -396,7 +375,10 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             )
         } else {
             p2pIntegration =
-                NinchatP2PIntegration(conference_or_p2p_view_container.findViewById(R.id.ninchat_p2p_video_view))
+                NinchatP2PIntegration(
+                    videoContainer = conference_or_p2p_view_container.findViewById(R.id.ninchat_p2p_video_view),
+                    mActivity = this@NinchatChatActivity,
+                )
         }
         mBroadcastManager.register(LocalBroadcastManager.getInstance(applicationContext))
         message_list.layoutManager = NinchatLinearLayoutManager(

@@ -9,6 +9,7 @@ import android.content.res.Configuration
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import com.ninchat.sdk.NinchatSessionManager
@@ -16,6 +17,7 @@ import com.ninchat.sdk.R
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
+import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatVideoChatConsentDialogue
 import com.ninchat.sdk.ninchattitlebar.model.shouldShowTitlebar
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
@@ -34,6 +36,7 @@ import org.json.JSONObject
 
 class NinchatP2PIntegration(
     private val videoContainer: View,
+    private val mActivity: NinchatChatActivity,
 ) {
     private val webRTCView: NinchatWebRTCView = NinchatWebRTCView(videoContainer)
 
@@ -68,11 +71,10 @@ class NinchatP2PIntegration(
 
     }
 
-
-    fun setLayoutParams(newHeight: Int, newWidth: Int) {
-        videoContainer.layoutParams?.apply {
-            height = newHeight.takeIf { it > 0 } ?: height
-            width = newWidth.takeIf { it > 0 } ?: width
+    fun onSoftKeyboardVisibilityChanged(isVisible: Boolean) {
+        mActivity.findViewById<RelativeLayout>(R.id.ninchat_chat_root)?.apply {
+            ninchat_p2p_video_view.layoutParams.height = if( isVisible ) mActivity.resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height_small).toInt() else mActivity.resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height).toInt()
+            ninchat_p2p_video_view.requestLayout()
         }
     }
 
