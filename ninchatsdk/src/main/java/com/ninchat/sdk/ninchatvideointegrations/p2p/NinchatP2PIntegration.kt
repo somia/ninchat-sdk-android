@@ -181,6 +181,10 @@ class NinchatP2PIntegration(
         }
     }
 
+    fun handleOrientationChange(pendingHangup: Boolean, activity: Activity) {
+        handleTitlebarView(pendingHangup = pendingHangup, activity = activity)
+    }
+
     fun call() {
         webRTCView.call()
     }

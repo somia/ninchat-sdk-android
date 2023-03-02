@@ -30,19 +30,6 @@ class NinchatChatPresenter(
     val model: NinchatChatModel,
 ) {
     val writingIndicator = WritingIndicator()
-    lateinit var orientationManager: OrientationManager
-
-    fun initialize(ninchatChatActivity: NinchatChatActivity, callback: IOrientationManager) {
-        orientationManager = OrientationManager(
-            callback,
-            ninchatChatActivity,
-            SensorManager.SENSOR_DELAY_NORMAL
-        ).apply {
-            enable()
-        }
-
-    }
-
     val textWatcher: TextWatcher = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
@@ -56,6 +43,7 @@ class NinchatChatPresenter(
     }
 
     fun handleOrientationChange(currentOrientation: Int, mActivity: NinchatChatActivity) {
+        // if user manually toggle to full screen then don't change orientation
         if (model.toggleFullScreen) {
             return
         }

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.PixelFormat
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -21,6 +22,7 @@ import com.ninchat.sdk.activities.NinchatBaseActivity
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.events.OnNewMessage
 import com.ninchat.sdk.managers.IOrientationManager
+import com.ninchat.sdk.managers.OrientationManager
 import com.ninchat.sdk.ninchatchatactivity.model.NinchatChatModel
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
 import com.ninchat.sdk.ninchatreview.model.NinchatReviewModel
@@ -132,8 +134,11 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         },
     )
 
+    lateinit var orientationManager : OrientationManager
+
     override fun onOrientationChange(orientation: Int) {
         presenter.handleOrientationChange(orientation, this@NinchatChatActivity)
+        p2pIntegration?.handleOrientationChange( pendingHangup = false, activity = this@NinchatChatActivity )
     }
 
     private fun quit(data: Intent?) {
@@ -364,7 +369,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
         // start with orientation toggled false
         model.toggleFullScreen = false
-        presenter.initialize(this@NinchatChatActivity, this@NinchatChatActivity)
         if (model.isGroupCall) {
             groupIntegration = NinchatGroupCallIntegration(
                 joinConferenceView = conference_or_p2p_view_container.findViewById(R.id.ninchat_conference_view),
@@ -446,6 +450,10 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         )
         // Set up a soft keyboard visibility listener so video call container height can be adjusted
         softKeyboardViewHandler.register(window.decorView.findViewById<View>(android.R.id.content))
+        // setup orientation manager
+        orientationManager = OrientationManager(callback = this, activity = this, rate = SensorManager.SENSOR_DELAY_NORMAL).apply {
+            enable()
+        }
     }
 
     private fun initializeChat(messages: RecyclerView) {
@@ -491,7 +499,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         mBroadcastManager.unregister(localBroadcastManager)
         softKeyboardViewHandler.unregister()
         presenter.writingIndicator.dispose()
-        presenter.orientationManager.disable()
+        orientationManager.disable()
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
