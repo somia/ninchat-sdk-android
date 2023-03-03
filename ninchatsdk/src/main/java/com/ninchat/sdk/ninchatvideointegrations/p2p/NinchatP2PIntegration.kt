@@ -9,6 +9,7 @@ import android.content.res.Configuration
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
@@ -29,6 +30,7 @@ import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import com.ninchat.sdk.views.NinchatWebRTCView
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
+import kotlinx.android.synthetic.main.ninchat_p2p_video_container.*
 import kotlinx.android.synthetic.main.ninchat_p2p_video_container.view.*
 import kotlinx.coroutines.launch
 import org.json.JSONException
@@ -73,7 +75,10 @@ class NinchatP2PIntegration(
 
     fun onSoftKeyboardVisibilityChanged(isVisible: Boolean) {
         mActivity.findViewById<RelativeLayout>(R.id.ninchat_chat_root)?.apply {
-            ninchat_p2p_video_view.layoutParams.height = if( isVisible ) mActivity.resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height_small).toInt() else mActivity.resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height).toInt()
+            ninchat_p2p_video_view.layoutParams.height =
+                if (isVisible) mActivity.resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height_small)
+                    .toInt() else mActivity.resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height)
+                    .toInt()
             ninchat_p2p_video_view.requestLayout()
         }
     }
@@ -181,8 +186,24 @@ class NinchatP2PIntegration(
         }
     }
 
-    fun handleOrientationChange(pendingHangup: Boolean, activity: Activity) {
+
+    fun handleOrientationChange(
+        currentOrientation: Int,
+        pendingHangup: Boolean,
+        activity: Activity
+    ) {
         handleTitlebarView(pendingHangup = pendingHangup, activity = activity)
+        if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+            activity.ninchat_p2p_video_view.layoutParams.apply {
+                height =
+                    mActivity.resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height)
+                        .toInt()
+            }
+        } else if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            activity.ninchat_p2p_video_view.layoutParams.apply {
+                height = LinearLayout.LayoutParams.MATCH_PARENT
+            }
+        }
     }
 
     fun call() {

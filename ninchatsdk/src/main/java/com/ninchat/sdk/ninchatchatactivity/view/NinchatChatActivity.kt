@@ -124,21 +124,35 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     private val softKeyboardViewHandler = SoftKeyboardViewHandler(
         onShow = {
             p2pIntegration?.onSoftKeyboardVisibilityChanged(isVisible = true)
-            groupIntegration?.onSoftKeyboardVisibilityChanged(isVisible = true, showChatView = model.showChatView)
+            groupIntegration?.onSoftKeyboardVisibilityChanged(
+                isVisible = true,
+                showChatView = model.showChatView
+            )
             presenter.onSoftKeyboardVisibilityChanged(isVisible = true)
         },
         onHidden = {
             p2pIntegration?.onSoftKeyboardVisibilityChanged(isVisible = false)
-            groupIntegration?.onSoftKeyboardVisibilityChanged(isVisible = false, showChatView = model.showChatView)
+            groupIntegration?.onSoftKeyboardVisibilityChanged(
+                isVisible = false,
+                showChatView = model.showChatView
+            )
             presenter.onSoftKeyboardVisibilityChanged(isVisible = false)
         },
     )
 
-    lateinit var orientationManager : OrientationManager
+    lateinit var orientationManager: OrientationManager
 
     override fun onOrientationChange(orientation: Int) {
+        // if user manually toggle to full screen then don't change orientation
+        if (model.toggleFullScreen) {
+            return
+        }
         presenter.handleOrientationChange(orientation, this@NinchatChatActivity)
-        p2pIntegration?.handleOrientationChange( pendingHangup = false, activity = this@NinchatChatActivity )
+        p2pIntegration?.handleOrientationChange(
+            currentOrientation = orientation,
+            pendingHangup = false,
+            activity = this@NinchatChatActivity
+        )
     }
 
     private fun quit(data: Intent?) {
@@ -254,13 +268,14 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     fun onToggleFullScreen(view: View?) {
         model.toggleFullScreen = !model.toggleFullScreen
-        requestedOrientation =
-            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            } else {
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            }
-        p2pIntegration?.handleTitlebarView(false, this@NinchatChatActivity)
+        val nextOrientation =
+            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT else ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        requestedOrientation = nextOrientation
+        p2pIntegration?.handleOrientationChange(
+            currentOrientation = nextOrientation,
+            pendingHangup = false,
+            activity = this@NinchatChatActivity
+        )
     }
 
     fun chatClosed() {
@@ -451,7 +466,11 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         // Set up a soft keyboard visibility listener so video call container height can be adjusted
         softKeyboardViewHandler.register(window.decorView.findViewById<View>(android.R.id.content))
         // setup orientation manager
-        orientationManager = OrientationManager(callback = this, activity = this, rate = SensorManager.SENSOR_DELAY_NORMAL).apply {
+        orientationManager = OrientationManager(
+            callback = this,
+            activity = this,
+            rate = SensorManager.SENSOR_DELAY_NORMAL
+        ).apply {
             enable()
         }
     }

@@ -43,10 +43,6 @@ class NinchatChatPresenter(
     }
 
     fun handleOrientationChange(currentOrientation: Int, mActivity: NinchatChatActivity) {
-        // if user manually toggle to full screen then don't change orientation
-        if (model.toggleFullScreen) {
-            return
-        }
         try {
             if (Settings.System.getInt(
                     mActivity.applicationContext.contentResolver,
@@ -57,7 +53,7 @@ class NinchatChatPresenter(
         } catch (e: java.lang.Exception) {
             // pass
         }
-
+        mActivity.hideKeyBoardForce()
         if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
             mActivity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         } else if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
