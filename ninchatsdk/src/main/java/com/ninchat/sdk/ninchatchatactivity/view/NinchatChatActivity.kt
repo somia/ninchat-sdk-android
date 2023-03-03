@@ -215,6 +215,8 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         )
     }
 
+
+    // only happen for group video call
     fun onToggleChat(view: View?) {
         model.showChatView = !model.showChatView
         chat_message_list_and_editor.also { messageLayout ->

@@ -199,9 +199,15 @@ class NinchatP2PIntegration(
                     mActivity.resources.getDimension(R.dimen.ninchat_chat_activity_video_view_height)
                         .toInt()
             }
+            activity.fullscreen_on_off.apply {
+                setImageResource(R.drawable.ninchat_icon_video_toggle_full)
+            }
         } else if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             activity.ninchat_p2p_video_view.layoutParams.apply {
                 height = LinearLayout.LayoutParams.MATCH_PARENT
+            }
+            activity.fullscreen_on_off.apply {
+                setImageResource(R.drawable.ninchat_icon_video_toggle_normal)
             }
         }
     }
