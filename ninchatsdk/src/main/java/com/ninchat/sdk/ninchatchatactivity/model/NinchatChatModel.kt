@@ -7,7 +7,6 @@ data class NinchatChatModel(
     var toggleFullScreen: Boolean = false,
     var chatClosed: Boolean = false,
     var isGroupCall: Boolean = false,
-    var showChatView: Boolean = true,
     var hasNewMessage: Boolean = false,
 ) {
     fun parse() {

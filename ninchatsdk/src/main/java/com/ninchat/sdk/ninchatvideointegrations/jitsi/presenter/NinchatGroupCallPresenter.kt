@@ -2,7 +2,6 @@ package com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter
 
 import android.view.View
 import android.widget.FrameLayout
-import androidx.core.content.ContextCompat
 import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
@@ -31,7 +30,7 @@ class NinchatGroupCallPresenter(
             Misc.toRichText(model.conferenceDescription, joinConferenceView.conference_description)
 
         joinConferenceView.conference_join_button.style(
-            if (model.endConference) {
+            if (model.chatClosed) {
                 R.style.NinchatTheme_Conference_Ended
             } else {
                 R.style.NinchatTheme_Conference_Join
@@ -50,19 +49,16 @@ class NinchatGroupCallPresenter(
         }
     }
 
-    fun toggleChatButtonVisibility(view: View, show: Boolean) {
-        view.ninchat_titlebar_toggle_chat.visibility = if (show) View.VISIBLE else View.GONE
-    }
 
-    fun onNewMessage(view: View, messageCount: Int) {
+    fun onNewMessage(view: View, hasUnreadMessage: Boolean) {
         view.ninchat_titlebar_toggle_chat.apply {
-            setBackgroundResource(if (messageCount > 0) R.drawable.ninchat_chat_primary_button else R.drawable.ninchat_chat_secondary_button)
-            setImageResource(if (messageCount > 0) R.drawable.ninchat_icon_toggle_chat_bubble_new_message else R.drawable.ninchat_icon_toggle_chat_bubble)
+            setBackgroundResource(if (hasUnreadMessage) R.drawable.ninchat_chat_primary_button else R.drawable.ninchat_chat_secondary_button)
+            setImageResource(if (hasUnreadMessage) R.drawable.ninchat_icon_toggle_chat_bubble_new_message else R.drawable.ninchat_icon_toggle_chat_bubble)
         }
     }
 
     fun onClickHandler() {
-        if (model.endConference) {
+        if (model.chatClosed) {
             return // do nothing
         }
         loadJitsi()

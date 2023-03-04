@@ -35,6 +35,7 @@
         <activity
             android:name=".ninchatchatactivity.view.NinchatChatActivity"
             android:theme="@style/NinchatTheme"
+            android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".ninchatreview.view.NinchatReviewActivity"

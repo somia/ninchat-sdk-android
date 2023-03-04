@@ -37,6 +37,7 @@
         android:id="@+id/conference_or_p2p_view_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/gph_dark_red"
         android:layout_alignWithParentIfMissing="true"
         android:layout_below="@+id/ninchat_titlebar"
         android:visibility="visible"
@@ -61,7 +62,7 @@
         <FrameLayout
             android:id="@+id/jitsi_frame_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:visibility="gone"
             tools:visibility="visible" />
     </RelativeLayout>

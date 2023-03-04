@@ -47,7 +47,6 @@ import org.jitsi.meet.sdk.BroadcastEvent
 import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface
 import org.jitsi.meet.sdk.JitsiMeetView
-import kotlin.math.roundToInt
 
 class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMeetActivityInterface {
     private var p2pIntegration: NinchatP2PIntegration? = null
@@ -85,25 +84,12 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             val jitsiServerAddress =
                 it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER) ?: ""
 
-            val width = applicationContext.resources.displayMetrics.widthPixels;
 
-
-            // Get the display metrics
-            val displayMetrics = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(displayMetrics)
-
-// Calculate the visible display height
-            var height = displayMetrics.heightPixels
-            val statusBarHeight = getStatusBarHeight()
-
-            model.showChatView = false
             groupIntegration?.startJitsi(
                 jitsiRoom = jitsiRoom,
                 jitsiToken = jitsiToken,
                 jitsiServerAddress = jitsiServerAddress,
-                fullHeight = height - getStatusBarHeight(),
-                fullWidth = width,
-                view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar),
+                fullHeight = getDisplayHeight(),
             )
 
         },
@@ -112,10 +98,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             val event = BroadcastEvent(intent)
             Log.e("JITSI EVENT", "${event.type}")
             when (event.type) {
-                BroadcastEvent.Type.CONFERENCE_TERMINATED -> {
-                    groupIntegration?.onHangup()
-                }
-                BroadcastEvent.Type.READY_TO_CLOSE -> {
+                BroadcastEvent.Type.CONFERENCE_TERMINATED, BroadcastEvent.Type.READY_TO_CLOSE -> {
                     groupIntegration?.onHangup()
                 }
             }
@@ -126,7 +109,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             p2pIntegration?.onSoftKeyboardVisibilityChanged(isVisible = true)
             groupIntegration?.onSoftKeyboardVisibilityChanged(
                 isVisible = true,
-                showChatView = model.showChatView
             )
             presenter.onSoftKeyboardVisibilityChanged(isVisible = true)
         },
@@ -134,7 +116,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             p2pIntegration?.onSoftKeyboardVisibilityChanged(isVisible = false)
             groupIntegration?.onSoftKeyboardVisibilityChanged(
                 isVisible = false,
-                showChatView = model.showChatView
             )
             presenter.onSoftKeyboardVisibilityChanged(isVisible = false)
         },
@@ -215,47 +196,10 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         )
     }
 
-
     // only happen for group video call
     fun onToggleChat(view: View?) {
-        model.showChatView = !model.showChatView
-        chat_message_list_and_editor.also { messageLayout ->
-            if (!model.showChatView) {
-                messageLayout.layoutParams.height = 0
-                val params = messageLayout.layoutParams as RelativeLayout.LayoutParams
-                params.height = ViewGroup.LayoutParams.MATCH_PARENT
-                params.width = ViewGroup.LayoutParams.WRAP_CONTENT
-                params.addRule(RelativeLayout.BELOW, R.id.conference_or_p2p_view_container)
-                messageLayout.layoutParams = params
-            } else {
-                val params = messageLayout.layoutParams as RelativeLayout.LayoutParams
-                params.height = ViewGroup.LayoutParams.MATCH_PARENT
-                params.width = ViewGroup.LayoutParams.WRAP_CONTENT
-                params.addRule(RelativeLayout.BELOW, R.id.ninchat_titlebar)
-                params.topMargin =
-                    applicationContext.resources.getDimensionPixelSize(R.dimen.ninchat_conference_small_screen_height)
-                messageLayout.layoutParams = params
-
-                val sessionManager = NinchatSessionManager.getInstance()
-                if (resources.getBoolean(R.bool.ninchat_chat_background_not_tiled)) {
-                    chat_message_list_and_editor.setBackgroundResource(sessionManager.ninchatChatBackground)
-                } else {
-                    getNinchatChatBackground(
-                        applicationContext,
-                        sessionManager.ninchatChatBackground
-                    )?.let {
-                        chat_message_list_and_editor.background = it
-                    }
-                }
-
-                groupIntegration?.onNewMessage(
-                    view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar),
-                    messageCount = 0
-                )
-            }
-        }
+        groupIntegration?.onToggleChat(mActivity = this@NinchatChatActivity)
     }
-
 
     fun onVideoHangUp(view: View?) {
         model.toggleFullScreen = false
@@ -268,6 +212,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
     }
 
+    // only happen for p2p chat
     fun onToggleFullScreen(view: View?) {
         model.toggleFullScreen = !model.toggleFullScreen
         val nextOrientation =
@@ -363,7 +308,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.setFormat(PixelFormat.TRANSLUCENT);
         EventBus.getDefault().register(this)
         // If the app is killed in the background sessionManager is not initialized the SDK must
         // be exited and the NinchatSession needs to be initialzed again
@@ -388,8 +332,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         model.toggleFullScreen = false
         if (model.isGroupCall) {
             groupIntegration = NinchatGroupCallIntegration(
-                joinConferenceView = conference_or_p2p_view_container.findViewById(R.id.ninchat_conference_view),
-                jitsiFrameLayout = conference_or_p2p_view_container.findViewById(R.id.jitsi_frame_layout),
                 jitsiMeetView = JitsiMeetView(this),
                 mActivity = this@NinchatChatActivity,
                 chatClosed = model.chatClosed
@@ -445,28 +387,11 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 onCloseChat(null)
             },
             onToggleChat = {
-                val display = windowManager.defaultDisplay
-                val displayMetrics = DisplayMetrics()
-                display.getMetrics(displayMetrics)
-                val isPortrait =
-                    display.rotation == Surface.ROTATION_0 || display.rotation == Surface.ROTATION_180
-                val displayHeight = if (isPortrait) {
-                    maxOf(displayMetrics.widthPixels, displayMetrics.heightPixels)
-                } else {
-                    minOf(displayMetrics.widthPixels, displayMetrics.heightPixels)
-                }
-                val statusBarHeight = getStatusBarHeight()
-                val badJabe =
-                    if (isPortrait) statusBarHeight else (statusBarHeight + getNavigationBarHeight())
-                groupIntegration?.updateLayout(
-                    fullWidth = 0,
-                    fullHeight = displayHeight - badJabe
-                )
-                onToggleChat(null)
+                groupIntegration?.onToggleChat(mActivity = this@NinchatChatActivity)
             }
         )
         // Set up a soft keyboard visibility listener so video call container height can be adjusted
-        softKeyboardViewHandler.register(window.decorView.findViewById<View>(android.R.id.content))
+        softKeyboardViewHandler.register(findViewById(android.R.id.content))
         // setup orientation manager
         orientationManager = OrientationManager(
             callback = this,
@@ -540,35 +465,27 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     @Subscribe(threadMode = ThreadMode.MAIN)
     @JvmName("OnNewMessage")
     fun onNewMessage(onNewMessage: OnNewMessage) {
-        if (model.showChatView) {
-            return
-        }
         // show indicator that a new chat message has appeared
-        groupIntegration?.onNewMessage(
-            view = ninchat_chat_root.findViewById(R.id.ninchat_titlebar),
-            messageCount = 1
-        )
+        groupIntegration?.onNewMessage(view = ninchat_titlebar)
     }
 
     override val layoutRes: Int
         get() = R.layout.activity_ninchat_chat
 
-    private fun getStatusBarHeight(): Int {
+
+    private fun getDisplayHeight(): Int {
+        // Get the display metrics
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        // Calculate the visible display height
+        var height = displayMetrics.heightPixels
         val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-        return if (resourceId > 0) {
+        val statusBarHeight = if (resourceId > 0) {
             resources.getDimensionPixelSize(resourceId)
         } else {
             0
         }
-    }
-
-    private fun getNavigationBarHeight(): Int {
-        var result = 0
-        val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-        if (resourceId > 0) {
-            result = resources.getDimensionPixelSize(resourceId)
-        }
-        return result
+        return height - statusBarHeight
     }
 
 }

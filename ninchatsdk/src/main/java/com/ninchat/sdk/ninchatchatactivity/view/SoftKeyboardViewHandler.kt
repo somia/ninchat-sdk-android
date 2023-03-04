@@ -9,6 +9,7 @@ class SoftKeyboardViewHandler(
 ) {
     private var previousHeight = -1
     private lateinit var rootView: View
+    private var wasOpen = false
 
     fun register(rootView: View) {
         this.rootView = rootView
@@ -25,10 +26,17 @@ class SoftKeyboardViewHandler(
         val currentOrientation = rootView.resources.configuration.orientation
         if (heightDifference > 0 && currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
             // soft keyboard is hidden
-            onHidden()
+            if(wasOpen) {
+                onHidden()
+                wasOpen = false
+            }
+
         } else if (heightDifference < 0 && currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
             // softkeyboard is shown
-            onShow()
+            if(!wasOpen) {
+                onShow()
+                wasOpen = true
+            }
         }
         if (previousHeight != height) {
             previousHeight = height
