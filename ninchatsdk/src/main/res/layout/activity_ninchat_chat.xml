@@ -59,12 +59,14 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <FrameLayout
+
+        <org.jitsi.meet.sdk.JitsiMeetView
             android:id="@+id/jitsi_frame_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
             tools:visibility="visible" />
+
     </RelativeLayout>
 
     <!--Chat message list and editor view group-->

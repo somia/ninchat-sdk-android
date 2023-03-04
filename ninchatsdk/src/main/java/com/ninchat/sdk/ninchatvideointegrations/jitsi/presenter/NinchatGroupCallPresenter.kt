@@ -21,7 +21,7 @@ class NinchatGroupCallPresenter(
         NinchatSessionManager.getInstance()?.sessionError(Exception(exception))
     }
 
-    fun renderView(joinConferenceView: View, jitsiFrameLayout: FrameLayout) {
+    fun renderView(joinConferenceView: View, jitsiFrameLayout: View) {
         joinConferenceView.visibility = View.VISIBLE
         jitsiFrameLayout.visibility = View.GONE
         joinConferenceView.conference_title.text = model.conferenceTitle
