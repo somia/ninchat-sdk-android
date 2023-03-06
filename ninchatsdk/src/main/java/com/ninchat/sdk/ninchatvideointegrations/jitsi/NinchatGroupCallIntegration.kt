@@ -41,10 +41,7 @@ class NinchatGroupCallIntegration(
     private val onClickListener = OnClickListener(intervalInMs = 2000)
 
     init {
-        presenter.renderView(
-            joinConferenceView = mActivity.ninchat_conference_view,
-            jitsiFrameLayout = mActivity.jitsi_frame_layout
-        )
+        presenter.initialView(mActivity = mActivity)
         attachHandler()
     }
 
