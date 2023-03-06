@@ -32,149 +32,157 @@
         tools:text="Close"
         tools:visibility="gone" />
 
-    <!--Both P2P and conference view in a group-->
-    <RelativeLayout
-        android:id="@+id/conference_or_p2p_view_container"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/gph_dark_red"
-        android:layout_alignWithParentIfMissing="true"
+        android:layout_height="match_parent"
+        android:id="@+id/content_view"
+        android:weightSum="3"
         android:layout_below="@+id/ninchat_titlebar"
-        android:visibility="visible"
-        tools:visibility="visible">
-
-        <include
-            android:id="@+id/ninchat_p2p_video_view"
-            layout="@layout/ninchat_p2p_video_container"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/ninchat_chat_activity_video_view_height"
-            android:visibility="gone"
-            tools:visibility="gone" />
-
-        <include
-            android:id="@+id/ninchat_conference_view"
-            layout="@layout/ninchat_join_end_conference"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/ninchat_conference_join_or_leave_view_height"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-
-        <org.jitsi.meet.sdk.JitsiMeetView
-            android:id="@+id/jitsi_frame_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-    </RelativeLayout>
-
-    <!--Chat message list and editor view group-->
-    <RelativeLayout
-        android:id="@+id/chat_message_list_and_editor"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:layout_alignWithParentIfMissing="true"
-        android:layout_below="@id/conference_or_p2p_view_container"
-        android:visibility="visible"
-        tools:visibility="gone">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/message_list"
+        android:orientation="vertical"
+        android:baselineAligned="true">
+        <!--Both P2P and conference view in a group-->
+        <RelativeLayout
+            android:layout_weight="0.9"
+            android:id="@+id/conference_or_p2p_view_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignWithParentIfMissing="true"
-            android:layout_above="@id/send_message_container"
-            android:overScrollMode="never"
-            tools:itemCount="2"
-            tools:listitem="@layout/item_chat_message" />
+            android:layout_height="0dp"
+            android:visibility="visible"
+            tools:visibility="visible">
 
-        <LinearLayout
-            android:id="@+id/send_message_container"
+            <include
+                android:id="@+id/ninchat_p2p_video_view"
+                layout="@layout/ninchat_p2p_video_container"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/ninchat_chat_activity_video_view_height"
+                android:visibility="gone"
+                tools:visibility="gone" />
+
+            <include
+                android:id="@+id/ninchat_conference_view"
+                layout="@layout/ninchat_join_end_conference"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+
+            <FrameLayout
+                android:id="@+id/jitsi_frame_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+        </RelativeLayout>
+
+        <!--Chat message list and editor view group-->
+        <RelativeLayout
+            android:layout_weight="2.1"
+            android:id="@+id/chat_message_list_and_editor"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginTop="5dp"
-            android:background="@drawable/ninchat_chat_command_input_divider"
-            android:onClick="onEditTextClick"
-            android:orientation="vertical">
+            android:layout_height="0dp"
+            android:visibility="visible"
+            tools:visibility="visible">
 
-            <EditText
-                android:id="@+id/message"
-                style="@style/NinchatTheme.Backlog.CommandView"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/message_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:imeOptions="actionDone"
-                tools:hint="Enter your message" />
+                android:layout_alignWithParentIfMissing="true"
+                android:layout_above="@id/send_message_container"
+                android:overScrollMode="never"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_chat_message" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/ninchat_chat_activity_action_bar_height"
-                android:layout_gravity="end"
-                android:orientation="horizontal">
+                android:id="@+id/send_message_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/ninchat_chat_command_input_divider"
+                android:onClick="onEditTextClick"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/video_call"
-                    android:layout_width="@dimen/ninchat_chat_activity_action_icon_size"
-                    android:layout_height="@dimen/ninchat_chat_activity_action_icon_size"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding"
-                    android:adjustViewBounds="true"
-                    android:onClick="onVideoCall"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ninchat_icon_textarea_camera"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
+                <EditText
+                    android:id="@+id/message"
+                    style="@style/NinchatTheme.Backlog.CommandView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
+                    tools:hint="Enter your message" />
 
-                <ImageView
-                    android:id="@+id/attachment"
-                    android:layout_width="@dimen/ninchat_chat_activity_action_icon_size"
-                    android:layout_height="@dimen/ninchat_chat_activity_action_icon_size"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding"
-                    android:adjustViewBounds="true"
-                    android:onClick="onAttachmentClick"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ninchat_icon_textarea_attachment"
-                    android:visibility="gone"
-                    tools:visibility="visible" />
-
-                <RelativeLayout
-                    android:id="@+id/send_button_icon"
-                    android:layout_width="@dimen/ninchat_send_button_height"
-                    android:layout_height="@dimen/ninchat_send_button_height"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding"
-                    android:background="@drawable/ninchat_textarea_submit_button"
-                    android:onClick="onSendClick"
-                    android:visibility="gone"
-                    tools:visibility="visible">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/ninchat_chat_activity_action_bar_height"
+                    android:layout_gravity="end"
+                    android:orientation="horizontal">
 
                     <ImageView
+                        android:id="@+id/video_call"
                         android:layout_width="@dimen/ninchat_chat_activity_action_icon_size"
                         android:layout_height="@dimen/ninchat_chat_activity_action_icon_size"
-                        android:layout_centerInParent="true"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding"
                         android:adjustViewBounds="true"
+                        android:onClick="onVideoCall"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/ninchat_icon_textarea_submit_button" />
+                        android:src="@drawable/ninchat_icon_textarea_camera"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
 
-                </RelativeLayout>
+                    <ImageView
+                        android:id="@+id/attachment"
+                        android:layout_width="@dimen/ninchat_chat_activity_action_icon_size"
+                        android:layout_height="@dimen/ninchat_chat_activity_action_icon_size"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding"
+                        android:adjustViewBounds="true"
+                        android:onClick="onAttachmentClick"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ninchat_icon_textarea_attachment"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
 
-                <Button
-                    android:id="@+id/send_button"
-                    style="@style/NinchatTheme.Button.Send"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding"
-                    android:onClick="onSendClick"
-                    tools:text="Send" />
+                    <RelativeLayout
+                        android:id="@+id/send_button_icon"
+                        android:layout_width="@dimen/ninchat_send_button_height"
+                        android:layout_height="@dimen/ninchat_send_button_height"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding"
+                        android:background="@drawable/ninchat_textarea_submit_button"
+                        android:onClick="onSendClick"
+                        android:visibility="gone"
+                        tools:visibility="visible">
+
+                        <ImageView
+                            android:layout_width="@dimen/ninchat_chat_activity_action_icon_size"
+                            android:layout_height="@dimen/ninchat_chat_activity_action_icon_size"
+                            android:layout_centerInParent="true"
+                            android:adjustViewBounds="true"
+                            android:scaleType="fitCenter"
+                            android:src="@drawable/ninchat_icon_textarea_submit_button" />
+
+                    </RelativeLayout>
+
+                    <Button
+                        android:id="@+id/send_button"
+                        style="@style/NinchatTheme.Button.Send"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="@dimen/ninchat_chat_activity_action_bar_padding"
+                        android:onClick="onSendClick"
+                        tools:text="Send" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
+        </RelativeLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 
     <!--Error view to show any error message-->

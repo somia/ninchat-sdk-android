@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.airbnb.paris.extensions.style
@@ -104,24 +105,14 @@ class NinchatGroupCallIntegration(
 
 
         Log.d("Custom Config", "$fullHeight")
-        val newViewLayout = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT
-        ).also {
-            it.height = fullHeight
-        }
-        mActivity.ninchat_chat_root.apply {
-            hideKeyBoardForce()
-            jitsi_frame_layout.addView(jitsiMeetView, 0, newViewLayout)
-            ninchat_titlebar.ninchat_titlebar_toggle_chat.visibility = View.VISIBLE
-            ninchat_conference_view.visibility = View.GONE
-            jitsi_frame_layout.visibility = View.VISIBLE
-            chat_message_list_and_editor.visibility = View.GONE
-        }
+        mActivity.jitsi_frame_layout.addView(
+            jitsiMeetView,
+            0,
+            mActivity.jitsi_frame_layout.layoutParams.apply {
+                height = fullHeight
+            })
         jitsiMeetView.join(options)
-        model.onGoingVideoCall = true
-        model.chatClosed = false
-        model.showChatView = false
+        onStartVideo()
     }
 
     fun onNewMessage(view: View) {
@@ -131,33 +122,59 @@ class NinchatGroupCallIntegration(
         )
     }
 
+    private fun onStartVideo() {
+        model.onGoingVideoCall = true
+        model.chatClosed = false
+        model.showChatView = false
+        mActivity.ninchat_chat_root?.apply {
+            ninchat_titlebar.ninchat_titlebar_toggle_chat.visibility = View.VISIBLE
+            ninchat_conference_view.visibility = View.GONE
+            jitsi_frame_layout.visibility = View.VISIBLE
+            chat_message_list_and_editor.layoutParams =
+                chat_message_list_and_editor.layoutParams.let {
+                    val layoutParams = it as LinearLayout.LayoutParams
+                    layoutParams.weight = 0f
+                    layoutParams
+                }
+            conference_or_p2p_view_container.layoutParams =
+                conference_or_p2p_view_container.layoutParams.let {
+                    val layoutParams = it as LinearLayout.LayoutParams
+                    layoutParams.weight = 3f
+                    layoutParams
+                }
+            hideKeyBoardForce()
+        }
+    }
+
     fun onHangup() {
         mActivity.ninchat_chat_root?.apply {
-            hideKeyBoardForce()
             jitsi_frame_layout.removeView(jitsiMeetView)
             ninchat_titlebar.ninchat_titlebar_toggle_chat.visibility = View.GONE
+            ninchat_conference_view.visibility = View.VISIBLE
+            jitsi_frame_layout.visibility = View.GONE
 
+            chat_message_list_and_editor.layoutParams =
+                chat_message_list_and_editor.layoutParams.let {
+                    val layoutParams = it as LinearLayout.LayoutParams
+                    layoutParams.weight = 2.1f
+                    layoutParams
+                }
+            conference_or_p2p_view_container.layoutParams =
+                conference_or_p2p_view_container.layoutParams.let {
+                    val layoutParams = it as LinearLayout.LayoutParams
+                    layoutParams.weight = 0.9f
+                    layoutParams
+                }
+
+            // update the button and style inside the conference view
             ninchat_conference_view.apply {
-                visibility = View.VISIBLE
                 conference_join_button.isEnabled = model.chatClosed == false
                 conference_join_button.style(
                     if (model.chatClosed) R.style.NinchatTheme_Conference_Ended else R.style.NinchatTheme_Conference_Join
                 )
-                layoutParams.height =
-                    mActivity.resources.getDimensionPixelSize(R.dimen.ninchat_conference_join_or_leave_view_height)
-            }
-            jitsi_frame_layout.visibility = View.GONE
 
-            chat_message_list_and_editor.apply {
-                // should be below conference view
-                val newParams = layoutParams as RelativeLayout.LayoutParams
-                newParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-                newParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
-                newParams.addRule(RelativeLayout.BELOW, R.id.conference_or_p2p_view_container)
-                newParams.topMargin = 0
-                layoutParams = newParams
-                visibility = View.VISIBLE
             }
+            hideKeyBoardForce()
         }
         jitsiMeetView.dispose()
         model.onGoingVideoCall = false
@@ -168,19 +185,18 @@ class NinchatGroupCallIntegration(
         // 1: was video ongoing
         if (!model.onGoingVideoCall) {
             mActivity.ninchat_chat_root?.apply {
-                ninchat_conference_view.layoutParams.height =
-                    if (isVisible) mActivity.resources.getDimension(R.dimen.ninchat_conference_small_screen_height)
-                        .toInt() else mActivity.resources.getDimension(R.dimen.ninchat_conference_join_or_leave_view_height)
-                        .toInt()
-
-                val newParams =
-                    chat_message_list_and_editor.layoutParams as RelativeLayout.LayoutParams
-                newParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-                newParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
-                newParams.addRule(RelativeLayout.BELOW, R.id.conference_or_p2p_view_container)
-                chat_message_list_and_editor.layoutParams = newParams
-
-                conference_or_p2p_view_container.requestLayout()
+                conference_or_p2p_view_container.layoutParams =
+                    conference_or_p2p_view_container.layoutParams.let {
+                        val layoutParams = it as LinearLayout.LayoutParams
+                        layoutParams.weight = 0.9f
+                        layoutParams
+                    }
+                chat_message_list_and_editor.layoutParams =
+                    chat_message_list_and_editor.layoutParams.let {
+                        val layoutParams = it as LinearLayout.LayoutParams
+                        layoutParams.weight = 2.1f
+                        layoutParams
+                    }
             }
             return
         }
@@ -190,16 +206,18 @@ class NinchatGroupCallIntegration(
             return
         }
         mActivity.ninchat_chat_root?.apply {
-            val newParams = chat_message_list_and_editor.layoutParams as RelativeLayout.LayoutParams
-            newParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-            newParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
-            newParams.addRule(
-                RelativeLayout.BELOW,
-                R.id.ninchat_titlebar
-            )
-            newParams.topMargin =
-                if (isVisible) 0 else mActivity.resources.getDimensionPixelSize(R.dimen.ninchat_conference_small_screen_height)
-            chat_message_list_and_editor.layoutParams = newParams
+            chat_message_list_and_editor.layoutParams =
+                chat_message_list_and_editor.layoutParams.let {
+                    val layoutParams = it as LinearLayout.LayoutParams
+                    layoutParams.weight = if (isVisible) 3f else 2.5f
+                    layoutParams
+                }
+            conference_or_p2p_view_container.layoutParams =
+                conference_or_p2p_view_container.layoutParams.let {
+                    val layoutParams = it as LinearLayout.LayoutParams
+                    layoutParams.weight = if (isVisible) 0f else 0.5f
+                    layoutParams
+                }
         }
     }
 
@@ -207,33 +225,24 @@ class NinchatGroupCallIntegration(
     fun onToggleChat(mActivity: NinchatChatActivity) {
         model.showChatView = !model.showChatView
 
-        mActivity.chat_message_list_and_editor.also { messageLayout ->
-            if (!model.showChatView) {
-                messageLayout.visibility = View.GONE
-            } else {
-                messageLayout.visibility = View.VISIBLE
-                val params = messageLayout.layoutParams as RelativeLayout.LayoutParams
-                params.height = ViewGroup.LayoutParams.MATCH_PARENT
-                params.width = ViewGroup.LayoutParams.WRAP_CONTENT
-                params.addRule(RelativeLayout.BELOW, R.id.ninchat_titlebar)
-                params.topMargin =
-                    mActivity.resources.getDimensionPixelSize(R.dimen.ninchat_conference_small_screen_height)
-                messageLayout.layoutParams = params
-
-                val sessionManager = NinchatSessionManager.getInstance()
-                if (mActivity.resources.getBoolean(R.bool.ninchat_chat_background_not_tiled)) {
-                    messageLayout.setBackgroundResource(sessionManager.ninchatChatBackground)
-                } else {
-                    Misc.getNinchatChatBackground(
-                        mActivity.applicationContext,
-                        sessionManager.ninchatChatBackground
-                    )?.let {
-                        messageLayout.background = it
-                    }
+        mActivity.ninchat_chat_root?.apply {
+            chat_message_list_and_editor.layoutParams =
+                chat_message_list_and_editor.layoutParams.let {
+                    val layoutParams = it as LinearLayout.LayoutParams
+                    layoutParams.weight = if (model.showChatView) 2.5f else 0f
+                    layoutParams
                 }
-                onNewMessage(view = mActivity.ninchat_titlebar)
+            conference_or_p2p_view_container.layoutParams =
+                conference_or_p2p_view_container.layoutParams.let {
+                    val layoutParams = it as LinearLayout.LayoutParams
+                    layoutParams.weight = if (model.showChatView) 0.5f else 3f
+                    layoutParams
+                }
+            if (model.showChatView) {
+                // update new message icon
+                onNewMessage(view = ninchat_titlebar)
             }
-            messageLayout.hideKeyBoardForce()
+            hideKeyBoardForce()
         }
     }
 }
