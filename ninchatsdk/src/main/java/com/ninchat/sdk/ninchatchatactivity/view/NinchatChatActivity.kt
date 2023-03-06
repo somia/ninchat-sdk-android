@@ -89,7 +89,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 jitsiRoom = jitsiRoom,
                 jitsiToken = jitsiToken,
                 jitsiServerAddress = jitsiServerAddress,
-                fullHeight = getDisplayHeight(),
             )
 
         },
@@ -132,8 +131,8 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         p2pIntegration?.handleOrientationChange(
             currentOrientation = orientation,
             pendingHangup = false,
-            activity = this@NinchatChatActivity
         )
+        groupIntegration?.handleOrientationChange(currentOrientation = orientation)
     }
 
     private fun quit(data: Intent?) {
@@ -221,7 +220,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         p2pIntegration?.handleOrientationChange(
             currentOrientation = nextOrientation,
             pendingHangup = false,
-            activity = this@NinchatChatActivity
         )
     }
 
@@ -472,20 +470,5 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     override val layoutRes: Int
         get() = R.layout.activity_ninchat_chat
 
-
-    private fun getDisplayHeight(): Int {
-        // Get the display metrics
-        val displayMetrics = DisplayMetrics()
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        // Calculate the visible display height
-        var height = displayMetrics.heightPixels
-        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
-        val statusBarHeight = if (resourceId > 0) {
-            resources.getDimensionPixelSize(resourceId)
-        } else {
-            0
-        }
-        return height - statusBarHeight
-    }
 
 }

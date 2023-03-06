@@ -193,9 +193,8 @@ class NinchatP2PIntegration(
     fun handleOrientationChange(
         currentOrientation: Int,
         pendingHangup: Boolean,
-        activity: Activity
     ) {
-        handleTitlebarView(pendingHangup = pendingHangup, activity = activity)
+        handleTitlebarView(pendingHangup = pendingHangup, activity = mActivity)
         if (!webRTCView.isInCall) {
             return
         }
@@ -218,7 +217,7 @@ class NinchatP2PIntegration(
                 }
             }
         } else if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-            activity.ninchat_p2p_video_view.layoutParams.apply {
+            mActivity.ninchat_p2p_video_view.layoutParams.apply {
                 height = LinearLayout.LayoutParams.MATCH_PARENT
             }
             mActivity.ninchat_chat_root?.apply {

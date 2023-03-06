@@ -1,7 +1,10 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter
 
+import android.content.pm.ActivityInfo
+import android.util.DisplayMetrics
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
@@ -71,5 +74,88 @@ class NinchatGroupCallPresenter(
             return // do nothing
         }
         loadJitsi()
+    }
+
+
+    fun getLayoutParams(
+        mActivity: NinchatChatActivity,
+    ): Pair<LinearLayout.LayoutParams, LinearLayout.LayoutParams> {
+        val conferenceViewWeightInLandscape = if (model.onGoingVideoCall) {
+            if (model.showChatView) 1.7f else 3.0f
+        } else {
+            1.7f
+        }
+
+
+        val conferenceViewWeightInPortrait = when {
+            model.onGoingVideoCall -> {
+                if (model.showChatView) {
+                    if (model.softkeyboardVisible) 0f else 0.9f
+                } else 3.0f
+            }
+            else -> {
+                0.9f
+            }
+        }
+
+        val conferenceView = mActivity.conference_or_p2p_view_container.layoutParams.let {
+            val params = it as LinearLayout.LayoutParams
+            when (model.currentOrientation) {
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> {
+                    params.width = 0
+                    params.height = LinearLayout.LayoutParams.MATCH_PARENT
+                    params.weight = conferenceViewWeightInLandscape
+                    params
+                }
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> {
+                    params.width = LinearLayout.LayoutParams.MATCH_PARENT
+                    params.height = 0
+                    params.weight = conferenceViewWeightInPortrait
+                    params
+                }
+                else -> {
+                    params
+                }
+            }
+            params
+        }
+        val commandView = mActivity.chat_message_list_and_editor.layoutParams.let {
+            val params = it as LinearLayout.LayoutParams
+            when (model.currentOrientation) {
+                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> {
+                    params.width = 0
+                    params.height = LinearLayout.LayoutParams.MATCH_PARENT
+                    params.weight = 3.0f - conferenceViewWeightInLandscape
+                    params
+                }
+                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> {
+                    params.width = LinearLayout.LayoutParams.MATCH_PARENT
+                    params.height = 0
+                    params.weight = 3.0f - conferenceViewWeightInPortrait
+                    params
+                }
+                else -> {
+                    params
+                }
+            }
+            params
+        }
+        return Pair(conferenceView, commandView)
+    }
+
+
+    fun getDisplayHeight(mActivity: NinchatChatActivity): Int {
+        // Get the display metrics
+        val displayMetrics = DisplayMetrics()
+        mActivity.windowManager.defaultDisplay.getMetrics(displayMetrics)
+        // Calculate the visible display height
+        var height = displayMetrics.heightPixels
+        val resourceId = mActivity.resources.getIdentifier("status_bar_height", "dimen", "android")
+        val statusBarHeight = if (resourceId > 0) {
+            mActivity.resources.getDimensionPixelSize(resourceId)
+        } else {
+            0
+        }
+        return height - statusBarHeight
     }
 }

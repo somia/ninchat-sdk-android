@@ -1,11 +1,13 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi
 
+import android.content.pm.ActivityInfo
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.core.view.updateLayoutParams
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.NinchatSessionManager
@@ -74,7 +76,6 @@ class NinchatGroupCallIntegration(
         jitsiRoom: String,
         jitsiToken: String,
         jitsiServerAddress: String,
-        fullHeight: Int,
     ) {
         val options: JitsiMeetConferenceOptions = JitsiMeetConferenceOptions.Builder()
             .setRoom("pallab-test-1")
@@ -101,6 +102,7 @@ class NinchatGroupCallIntegration(
             .build()
 
 
+        val fullHeight = presenter.getDisplayHeight(mActivity = mActivity)
         Log.d("Custom Config", "$fullHeight")
         mActivity.jitsi_frame_layout.addView(
             jitsiMeetView,
@@ -121,8 +123,8 @@ class NinchatGroupCallIntegration(
 
     private fun onStartVideo() {
         model.onGoingVideoCall = true
-        model.chatClosed = false
         model.showChatView = false
+        model.softkeyboardVisible = false
         mActivity.ninchat_chat_root?.apply {
             ninchat_titlebar.ninchat_titlebar_toggle_chat.visibility = View.VISIBLE
             ninchat_conference_view.visibility = View.GONE
@@ -144,6 +146,9 @@ class NinchatGroupCallIntegration(
     }
 
     fun onHangup() {
+        model.onGoingVideoCall = false
+        model.showChatView = true
+        model.softkeyboardVisible = false
         mActivity.ninchat_chat_root?.apply {
             jitsi_frame_layout.removeView(jitsiMeetView)
             ninchat_titlebar.ninchat_titlebar_toggle_chat.visibility = View.GONE
@@ -174,72 +179,62 @@ class NinchatGroupCallIntegration(
             hideKeyBoardForce()
         }
         jitsiMeetView.dispose()
-        model.onGoingVideoCall = false
-        model.showChatView = true
+
     }
 
     fun onSoftKeyboardVisibilityChanged(isVisible: Boolean) {
-        // 1: was video ongoing
-        if (!model.onGoingVideoCall) {
-            mActivity.ninchat_chat_root?.apply {
-                conference_or_p2p_view_container.layoutParams =
-                    conference_or_p2p_view_container.layoutParams.let {
-                        val layoutParams = it as LinearLayout.LayoutParams
-                        layoutParams.weight = 0.9f
-                        layoutParams
-                    }
-                chat_message_list_and_editor.layoutParams =
-                    chat_message_list_and_editor.layoutParams.let {
-                        val layoutParams = it as LinearLayout.LayoutParams
-                        layoutParams.weight = 2.1f
-                        layoutParams
-                    }
-            }
-            return
-        }
-
-        // 2: if video is running but chat view hidden then don't do something
-        if (!model.showChatView) {
-            return
-        }
+        model.softkeyboardVisible = isVisible
         mActivity.ninchat_chat_root?.apply {
-            chat_message_list_and_editor.layoutParams =
-                chat_message_list_and_editor.layoutParams.let {
-                    val layoutParams = it as LinearLayout.LayoutParams
-                    layoutParams.weight = if (isVisible) 3f else 2.5f
-                    layoutParams
-                }
-            conference_or_p2p_view_container.layoutParams =
-                conference_or_p2p_view_container.layoutParams.let {
-                    val layoutParams = it as LinearLayout.LayoutParams
-                    layoutParams.weight = if (isVisible) 0f else 0.5f
-                    layoutParams
-                }
+            // set updated layout parameter
+            val (conferenceViewParams, commandViewParams) = presenter.getLayoutParams(mActivity = mActivity)
+            conference_or_p2p_view_container.layoutParams = conferenceViewParams
+            chat_message_list_and_editor.layoutParams = commandViewParams
         }
     }
 
 
     fun onToggleChat(mActivity: NinchatChatActivity) {
         model.showChatView = !model.showChatView
-
         mActivity.ninchat_chat_root?.apply {
-            chat_message_list_and_editor.layoutParams =
-                chat_message_list_and_editor.layoutParams.let {
-                    val layoutParams = it as LinearLayout.LayoutParams
-                    layoutParams.weight = if (model.showChatView) 2.5f else 0f
-                    layoutParams
-                }
-            conference_or_p2p_view_container.layoutParams =
-                conference_or_p2p_view_container.layoutParams.let {
-                    val layoutParams = it as LinearLayout.LayoutParams
-                    layoutParams.weight = if (model.showChatView) 0.5f else 3f
-                    layoutParams
-                }
+            hideKeyBoardForce()
+            // set updated layout parameter
+            val (conferenceViewParams, commandViewParams) = presenter.getLayoutParams(mActivity = mActivity)
+            conference_or_p2p_view_container.layoutParams = conferenceViewParams
+            chat_message_list_and_editor.layoutParams = commandViewParams
             if (model.showChatView) {
                 // update new message icon
                 onNewMessage(view = ninchat_titlebar)
             }
-            hideKeyBoardForce()
         }
+    }
+
+    fun handleOrientationChange(currentOrientation: Int) {
+        model.currentOrientation = currentOrientation
+        mActivity.ninchat_chat_root?.apply {
+            // hide the keyboard
+            hideKeyBoardForce()
+            // fix the parent content view orientation
+            content_view.orientation =
+                if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
+
+            // set updated layout parameter
+            val (conferenceViewParams, commandViewParams) = presenter.getLayoutParams(mActivity = mActivity)
+            conference_or_p2p_view_container.layoutParams = conferenceViewParams
+            chat_message_list_and_editor.layoutParams = commandViewParams
+        }
+    }
+
+
+    // this method needs to be refactored
+    fun handleJitsiOrientation() {
+        if (!model.onGoingVideoCall) return
+        val lm = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        ).also {
+            it.height = mActivity.content_view.height
+        }
+        mActivity.jitsi_frame_layout.updateViewLayout(jitsiMeetView, lm)
+        // jitsiMeetView.requestLayout()
     }
 }
