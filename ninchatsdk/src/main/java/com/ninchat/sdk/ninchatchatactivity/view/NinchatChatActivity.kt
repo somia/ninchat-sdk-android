@@ -328,19 +328,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
         // start with orientation toggled false
         model.toggleFullScreen = false
-        if (model.isGroupCall) {
-            groupIntegration = NinchatGroupCallIntegration(
-                jitsiMeetView = JitsiMeetView(this),
-                mActivity = this@NinchatChatActivity,
-                chatClosed = model.chatClosed
-            )
-        } else {
-            p2pIntegration =
-                NinchatP2PIntegration(
-                    videoContainer = conference_or_p2p_view_container.findViewById(R.id.ninchat_p2p_video_view),
-                    mActivity = this@NinchatChatActivity,
-                )
-        }
         mBroadcastManager.register(LocalBroadcastManager.getInstance(applicationContext))
         message_list.layoutManager = NinchatLinearLayoutManager(
             applicationContext
@@ -397,6 +384,21 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             rate = SensorManager.SENSOR_DELAY_NORMAL
         ).apply {
             enable()
+        }
+
+        if (model.isGroupCall) {
+            groupIntegration = NinchatGroupCallIntegration(
+                jitsiMeetView = JitsiMeetView(this),
+                mActivity = this@NinchatChatActivity,
+                chatClosed = model.chatClosed,
+                currentOrientation = resources.configuration.orientation
+            )
+        } else {
+            p2pIntegration =
+                NinchatP2PIntegration(
+                    videoContainer = conference_or_p2p_view_container.findViewById(R.id.ninchat_p2p_video_view),
+                    mActivity = this@NinchatChatActivity,
+                )
         }
     }
 

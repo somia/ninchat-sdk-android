@@ -3,27 +3,17 @@ package com.ninchat.sdk.ninchatvideointegrations.jitsi
 import android.content.pm.ActivityInfo
 import android.util.Log
 import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import androidx.core.view.updateLayoutParams
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.airbnb.paris.extensions.style
-import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.R
-import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.NinchatGroupCallPresenter
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.OnClickListener
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
-import com.ninchat.sdk.utils.misc.Misc
-import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlinx.android.synthetic.main.ninchat_join_end_conference.*
-import kotlinx.android.synthetic.main.ninchat_join_end_conference.view.*
 import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
 import org.jitsi.meet.sdk.BroadcastIntentHelper
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
@@ -35,15 +25,16 @@ class NinchatGroupCallIntegration(
     private val jitsiMeetView: JitsiMeetView,
     private val mActivity: NinchatChatActivity,
     chatClosed: Boolean = false,
+    currentOrientation: Int,
 ) {
-    private val model = NinchatGroupCallModel(chatClosed = chatClosed).apply {
+    private val model = NinchatGroupCallModel(chatClosed = chatClosed, currentOrientation = currentOrientation).apply {
         parse()
     }
     private val presenter = NinchatGroupCallPresenter(model = model)
     private val onClickListener = OnClickListener(intervalInMs = 2000)
 
     init {
-        presenter.initialView(mActivity = mActivity)
+        presenter.renderInitialView(mActivity = mActivity)
         attachHandler()
     }
 
@@ -126,58 +117,34 @@ class NinchatGroupCallIntegration(
         model.showChatView = false
         model.softkeyboardVisible = false
         mActivity.ninchat_chat_root?.apply {
+            hideKeyBoardForce()
+
             ninchat_titlebar.ninchat_titlebar_toggle_chat.visibility = View.VISIBLE
             ninchat_conference_view.visibility = View.GONE
+            ninchat_p2p_video_view.visibility = View.GONE
             jitsi_frame_layout.visibility = View.VISIBLE
-            chat_message_list_and_editor.layoutParams =
-                chat_message_list_and_editor.layoutParams.let {
-                    val layoutParams = it as LinearLayout.LayoutParams
-                    layoutParams.weight = 0f
-                    layoutParams
-                }
-            conference_or_p2p_view_container.layoutParams =
-                conference_or_p2p_view_container.layoutParams.let {
-                    val layoutParams = it as LinearLayout.LayoutParams
-                    layoutParams.weight = 3f
-                    layoutParams
-                }
-            hideKeyBoardForce()
+
+            // set updated layout parameter
+            val (conferenceViewParams, commandViewParams) = presenter.getLayoutParams(mActivity = mActivity)
+            conference_or_p2p_view_container.layoutParams = conferenceViewParams
+            chat_message_list_and_editor.layoutParams = commandViewParams
+
+            presenter.onNewMessage(
+                view = ninchat_titlebar,
+                hasUnreadMessage = false
+            )
         }
+
     }
 
     fun onHangup() {
         model.onGoingVideoCall = false
         model.showChatView = true
         model.softkeyboardVisible = false
-        mActivity.ninchat_chat_root?.apply {
-            jitsi_frame_layout.removeView(jitsiMeetView)
-            ninchat_titlebar.ninchat_titlebar_toggle_chat.visibility = View.GONE
-            ninchat_conference_view.visibility = View.VISIBLE
-            jitsi_frame_layout.visibility = View.GONE
 
-            chat_message_list_and_editor.layoutParams =
-                chat_message_list_and_editor.layoutParams.let {
-                    val layoutParams = it as LinearLayout.LayoutParams
-                    layoutParams.weight = 2.1f
-                    layoutParams
-                }
-            conference_or_p2p_view_container.layoutParams =
-                conference_or_p2p_view_container.layoutParams.let {
-                    val layoutParams = it as LinearLayout.LayoutParams
-                    layoutParams.weight = 0.9f
-                    layoutParams
-                }
-
-            // update the button and style inside the conference view
-            ninchat_conference_view.apply {
-                conference_join_button.isEnabled = model.chatClosed == false
-                conference_join_button.style(
-                    if (model.chatClosed) R.style.NinchatTheme_Conference_Ended else R.style.NinchatTheme_Conference_Join
-                )
-
-            }
-            hideKeyBoardForce()
-        }
+        mActivity.hideKeyBoardForce()
+        mActivity.jitsi_frame_layout.removeView(jitsiMeetView)
+        presenter.renderInitialView(mActivity = mActivity)
         jitsiMeetView.dispose()
 
     }

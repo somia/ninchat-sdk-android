@@ -3,7 +3,6 @@ package com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter
 import android.content.pm.ActivityInfo
 import android.util.DisplayMetrics
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.NinchatSessionManager
@@ -11,6 +10,7 @@ import com.ninchat.sdk.R
 import com.ninchat.sdk.networkdispatchers.NinchatDiscoverJitsi
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
+import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
@@ -27,28 +27,31 @@ class NinchatGroupCallPresenter(
         NinchatSessionManager.getInstance()?.sessionError(Exception(exception))
     }
 
-    fun initialView(mActivity: NinchatChatActivity) {
+    fun renderInitialView(mActivity: NinchatChatActivity) {
         mActivity.ninchat_chat_root?.apply {
             ninchat_conference_view.visibility = View.VISIBLE
             ninchat_p2p_video_view.visibility = View.GONE
             jitsi_frame_layout.visibility = View.GONE
+            ninchat_titlebar.ninchat_titlebar_toggle_chat.visibility = View.GONE
+
             ninchat_conference_view.apply {
                 conference_title.text = model.conferenceTitle
                 conference_join_button.text = model.conferenceButtonText
                 conference_description.text =
                     Misc.toRichText(model.conferenceDescription, conference_description)
+                conference_join_button.isEnabled = model.chatClosed == false
                 conference_join_button.style(
-                    if (model.chatClosed) {
-                        R.style.NinchatTheme_Conference_Ended
-                    } else {
-                        R.style.NinchatTheme_Conference_Join
-                    }
+                    if (model.chatClosed) R.style.NinchatTheme_Conference_Ended else R.style.NinchatTheme_Conference_Join
                 )
-                visibility = View.VISIBLE
             }
-
+            // set updated layout parameter
+            val (conferenceViewParams, commandViewParams) = getLayoutParams(mActivity = mActivity)
+            conference_or_p2p_view_container.layoutParams = conferenceViewParams
+            chat_message_list_and_editor.layoutParams = commandViewParams
         }
+
     }
+
 
     fun loadJitsi() {
         NinchatSessionManager.getInstance()?.let { currentSessionManager ->
@@ -105,16 +108,11 @@ class NinchatGroupCallPresenter(
                     params.width = 0
                     params.height = LinearLayout.LayoutParams.MATCH_PARENT
                     params.weight = conferenceViewWeightInLandscape
-                    params
                 }
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> {
+                else -> {
                     params.width = LinearLayout.LayoutParams.MATCH_PARENT
                     params.height = 0
                     params.weight = conferenceViewWeightInPortrait
-                    params
-                }
-                else -> {
-                    params
                 }
             }
             params
@@ -126,16 +124,11 @@ class NinchatGroupCallPresenter(
                     params.width = 0
                     params.height = LinearLayout.LayoutParams.MATCH_PARENT
                     params.weight = 3.0f - conferenceViewWeightInLandscape
-                    params
                 }
-                ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> {
+                else -> {
                     params.width = LinearLayout.LayoutParams.MATCH_PARENT
                     params.height = 0
                     params.weight = 3.0f - conferenceViewWeightInPortrait
-                    params
-                }
-                else -> {
-                    params
                 }
             }
             params

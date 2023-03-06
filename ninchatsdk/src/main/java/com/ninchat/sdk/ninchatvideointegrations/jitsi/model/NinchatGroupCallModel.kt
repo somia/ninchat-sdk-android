@@ -12,7 +12,7 @@ data class NinchatGroupCallModel(
     var onGoingVideoCall: Boolean = false,
     var showChatView: Boolean = true,
     var softkeyboardVisible: Boolean = false,
-    var currentOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    var currentOrientation: Int
 ) {
 
     fun parse() {
