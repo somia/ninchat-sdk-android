@@ -93,13 +93,13 @@ class NinchatChatPresenter(
                         channelId = ninchatSessionManager.ninchatState?.channelId,
                     )
                 }
-            }
-            // delete user if the current user is a guest user
-            if (NinchatSessionManager.getInstance().isGuestMember) {
-                NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
-                    NinchatDeleteUser.execute(
-                        currentSession = NinchatSessionManager.getInstance().session,
-                    )
+                // delete user if the current user is a guest user
+                if (NinchatSessionManager.getInstance().isGuestMember) {
+                    NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
+                        NinchatDeleteUser.execute(
+                            currentSession = NinchatSessionManager.getInstance().session,
+                        )
+                    }
                 }
             }
         }
