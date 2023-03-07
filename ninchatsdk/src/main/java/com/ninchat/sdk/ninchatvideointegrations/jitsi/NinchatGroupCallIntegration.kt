@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.NinchatGroupCallPresenter
@@ -25,9 +26,10 @@ class NinchatGroupCallIntegration(
     private val jitsiMeetView: JitsiMeetView,
     private val mActivity: NinchatChatActivity,
     chatClosed: Boolean = false,
-    currentOrientation: Int,
 ) {
-    private val model = NinchatGroupCallModel(chatClosed = chatClosed, currentOrientation = currentOrientation).apply {
+    private val model = NinchatGroupCallModel(
+        chatClosed = chatClosed,
+    ).apply {
         parse()
     }
     private val presenter = NinchatGroupCallPresenter(model = model)
@@ -44,6 +46,11 @@ class NinchatGroupCallIntegration(
                 presenter.onClickHandler()
             }
         }
+        val params = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT
+        )
+        mActivity.jitsi_frame_layout.addView(jitsiMeetView, params)
     }
 
     fun onChannelClosed() {
@@ -73,6 +80,7 @@ class NinchatGroupCallIntegration(
             .setUserInfo(
                 JitsiMeetUserInfo().apply {
                     displayName = "Android Test"
+                    NinchatSessionManager.getInstance().userName
                 })
             //.setToken(jitsiToken)
             .setServerURL(URL("https://meet.jit.si"))
@@ -92,15 +100,6 @@ class NinchatGroupCallIntegration(
             .setFeatureFlag("filmstrip.enabled", true)
             .build()
 
-
-        val fullHeight = presenter.getDisplayHeight(mActivity = mActivity)
-        Log.d("Custom Config", "$fullHeight")
-        mActivity.jitsi_frame_layout.addView(
-            jitsiMeetView,
-            0,
-            mActivity.jitsi_frame_layout.layoutParams.apply {
-                height = fullHeight
-            })
         jitsiMeetView.join(options)
         onStartVideo()
     }
@@ -143,7 +142,7 @@ class NinchatGroupCallIntegration(
         model.softkeyboardVisible = false
 
         mActivity.hideKeyBoardForce()
-        mActivity.jitsi_frame_layout.removeView(jitsiMeetView)
+        // mActivity.jitsi_frame_layout.removeView(jitsiMeetView)
         presenter.renderInitialView(mActivity = mActivity)
         jitsiMeetView.dispose()
 
@@ -176,32 +175,39 @@ class NinchatGroupCallIntegration(
     }
 
     fun handleOrientationChange(currentOrientation: Int) {
-        model.currentOrientation = currentOrientation
         mActivity.ninchat_chat_root?.apply {
             // hide the keyboard
             hideKeyBoardForce()
+            val isLargeScreen = presenter.getScreenSize(mActivity = mActivity) == 0
             // fix the parent content view orientation
             content_view.orientation =
-                if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
+                if (isLargeScreen) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
 
             // set updated layout parameter
             val (conferenceViewParams, commandViewParams) = presenter.getLayoutParams(mActivity = mActivity)
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
         }
+        // handleJitsiOrientation(currentOrientation = currentOrientation)
     }
 
 
     // this method needs to be refactored
-    fun handleJitsiOrientation() {
+    fun handleJitsiOrientation(currentOrientation: Int) {
         if (!model.onGoingVideoCall) return
+
+        val isPortrait = currentOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        val confH = mActivity.conference_or_p2p_view_container.height
+        val confW = mActivity.conference_or_p2p_view_container.width
+
         val lm = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
-        ).also {
-            it.height = mActivity.content_view.height
-        }
+        )
+
+        val realH = mActivity.content_view.height
+        val realW = mActivity.content_view.width
         mActivity.jitsi_frame_layout.updateViewLayout(jitsiMeetView, lm)
-        // jitsiMeetView.requestLayout()
+        jitsiMeetView.requestLayout()
     }
 }

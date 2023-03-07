@@ -1,8 +1,13 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter
 
-import android.content.pm.ActivityInfo
+import android.content.res.Configuration
+import android.graphics.Insets
+import android.graphics.Rect
+import android.os.Build
 import android.util.DisplayMetrics
 import android.view.View
+import android.view.WindowInsets
+import android.view.WindowMetrics
 import android.widget.LinearLayout
 import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.NinchatSessionManager
@@ -10,7 +15,6 @@ import com.ninchat.sdk.R
 import com.ninchat.sdk.networkdispatchers.NinchatDiscoverJitsi
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
-import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
@@ -49,7 +53,6 @@ class NinchatGroupCallPresenter(
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
         }
-
     }
 
 
@@ -101,54 +104,101 @@ class NinchatGroupCallPresenter(
             }
         }
 
+        val isLargeScreen = getScreenSize(mActivity = mActivity) == 0
+
         val conferenceView = mActivity.conference_or_p2p_view_container.layoutParams.let {
             val params = it as LinearLayout.LayoutParams
-            when (model.currentOrientation) {
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> {
-                    params.width = 0
-                    params.height = LinearLayout.LayoutParams.MATCH_PARENT
-                    params.weight = conferenceViewWeightInLandscape
-                }
-                else -> {
-                    params.width = LinearLayout.LayoutParams.MATCH_PARENT
-                    params.height = 0
-                    params.weight = conferenceViewWeightInPortrait
-                }
+            if (isLargeScreen) {
+                params.width = 0
+                params.height = LinearLayout.LayoutParams.MATCH_PARENT
+                params.weight = conferenceViewWeightInLandscape
+            } else {
+                params.width = LinearLayout.LayoutParams.MATCH_PARENT
+                params.height = 0
+                params.weight = conferenceViewWeightInPortrait
             }
             params
         }
         val commandView = mActivity.chat_message_list_and_editor.layoutParams.let {
             val params = it as LinearLayout.LayoutParams
-            when (model.currentOrientation) {
-                ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> {
-                    params.width = 0
-                    params.height = LinearLayout.LayoutParams.MATCH_PARENT
-                    params.weight = 3.0f - conferenceViewWeightInLandscape
-                }
-                else -> {
-                    params.width = LinearLayout.LayoutParams.MATCH_PARENT
-                    params.height = 0
-                    params.weight = 3.0f - conferenceViewWeightInPortrait
-                }
+            if (isLargeScreen) {
+                params.width = 0
+                params.height = LinearLayout.LayoutParams.MATCH_PARENT
+                params.weight = 3.0f - conferenceViewWeightInLandscape
+            } else {
+                params.width = LinearLayout.LayoutParams.MATCH_PARENT
+                params.height = 0
+                params.weight = 3.0f - conferenceViewWeightInPortrait
             }
             params
         }
         return Pair(conferenceView, commandView)
     }
 
-
-    fun getDisplayHeight(mActivity: NinchatChatActivity): Int {
-        // Get the display metrics
-        val displayMetrics = DisplayMetrics()
-        mActivity.windowManager.defaultDisplay.getMetrics(displayMetrics)
-        // Calculate the visible display height
-        var height = displayMetrics.heightPixels
+    fun getStatusBarHeight(mActivity: NinchatChatActivity): Int {
         val resourceId = mActivity.resources.getIdentifier("status_bar_height", "dimen", "android")
-        val statusBarHeight = if (resourceId > 0) {
+        return if (resourceId > 0) {
             mActivity.resources.getDimensionPixelSize(resourceId)
         } else {
             0
         }
-        return height - statusBarHeight
+    }
+
+    fun getScreenWidth(activity: NinchatChatActivity): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val windowMetrics: WindowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
+            val bounds: Rect = windowMetrics.bounds
+            val insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(
+                WindowInsets.Type.systemBars()
+            )
+            if (activity.resources.configuration.orientation
+                === Configuration.ORIENTATION_LANDSCAPE
+                && activity.resources.configuration.smallestScreenWidthDp < 600
+            ) { // landscape and phone
+                val navigationBarSize = insets.right + insets.left
+                bounds.width() - navigationBarSize
+            } else { // portrait or tablet
+                bounds.width()
+            }
+        } else {
+            val outMetrics = DisplayMetrics()
+            activity.windowManager.defaultDisplay.getMetrics(outMetrics)
+            outMetrics.widthPixels
+        }
+    }
+
+    fun getScreenHeight(activity: NinchatChatActivity): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val windowMetrics: WindowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
+            val bounds = windowMetrics.bounds
+            val insets: Insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(
+                WindowInsets.Type.systemBars()
+            )
+            if (activity.resources.configuration.orientation
+                === Configuration.ORIENTATION_LANDSCAPE
+                && activity.resources.configuration.smallestScreenWidthDp < 600
+            ) { // landscape and phone
+                bounds.height()
+            } else { // portrait or tablet
+                val navigationBarSize: Int = insets.bottom
+                bounds.height() - navigationBarSize
+            }
+        } else {
+            val outMetrics = DisplayMetrics()
+            activity.windowManager.defaultDisplay.getMetrics(outMetrics)
+            outMetrics.heightPixels
+        }
+    }
+
+    fun getScreenSize(mActivity: NinchatChatActivity): Int {
+        val screenSize: Int = mActivity.resources.configuration.screenLayout and
+                Configuration.SCREENLAYOUT_SIZE_MASK
+
+        return when (screenSize) {
+            Configuration.SCREENLAYOUT_SIZE_SMALL, Configuration.SCREENLAYOUT_SIZE_NORMAL -> 1
+            Configuration.SCREENLAYOUT_SIZE_LARGE, Configuration.SCREENLAYOUT_SIZE_XLARGE -> 0
+            else -> 1
+        }
+
     }
 }

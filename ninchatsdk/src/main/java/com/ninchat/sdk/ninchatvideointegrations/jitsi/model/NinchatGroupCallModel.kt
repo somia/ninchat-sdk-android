@@ -12,13 +12,20 @@ data class NinchatGroupCallModel(
     var onGoingVideoCall: Boolean = false,
     var showChatView: Boolean = true,
     var softkeyboardVisible: Boolean = false,
-    var currentOrientation: Int
+    var curHeight: Int = -1,
+    var curWidth: Int = -1
 ) {
 
     fun parse() {
-        conferenceTitle = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getConferenceTitleText() ?: ""
-        conferenceButtonText = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getConferenceButtonText() ?: ""
-        conferenceDescription = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getConferenceDescriptionText() ?: ""
-    }
+        conferenceTitle =
+            NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getConferenceTitleText()
+                ?: ""
+        conferenceButtonText =
+            NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getConferenceButtonText()
+                ?: ""
+        conferenceDescription =
+            NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getConferenceDescriptionText()
+                ?: ""
 
+    }
 }

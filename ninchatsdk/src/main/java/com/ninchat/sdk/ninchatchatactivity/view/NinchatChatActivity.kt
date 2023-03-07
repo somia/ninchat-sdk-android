@@ -391,7 +391,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 jitsiMeetView = JitsiMeetView(this),
                 mActivity = this@NinchatChatActivity,
                 chatClosed = model.chatClosed,
-                currentOrientation = resources.configuration.orientation
             )
         } else {
             p2pIntegration =
