@@ -135,61 +135,6 @@ class NinchatGroupCallPresenter(
         return Pair(conferenceView, commandView)
     }
 
-    fun getStatusBarHeight(mActivity: NinchatChatActivity): Int {
-        val resourceId = mActivity.resources.getIdentifier("status_bar_height", "dimen", "android")
-        return if (resourceId > 0) {
-            mActivity.resources.getDimensionPixelSize(resourceId)
-        } else {
-            0
-        }
-    }
-
-    fun getScreenWidth(activity: NinchatChatActivity): Int {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val windowMetrics: WindowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
-            val bounds: Rect = windowMetrics.bounds
-            val insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(
-                WindowInsets.Type.systemBars()
-            )
-            if (activity.resources.configuration.orientation
-                === Configuration.ORIENTATION_LANDSCAPE
-                && activity.resources.configuration.smallestScreenWidthDp < 600
-            ) { // landscape and phone
-                val navigationBarSize = insets.right + insets.left
-                bounds.width() - navigationBarSize
-            } else { // portrait or tablet
-                bounds.width()
-            }
-        } else {
-            val outMetrics = DisplayMetrics()
-            activity.windowManager.defaultDisplay.getMetrics(outMetrics)
-            outMetrics.widthPixels
-        }
-    }
-
-    fun getScreenHeight(activity: NinchatChatActivity): Int {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val windowMetrics: WindowMetrics = activity.getWindowManager().getCurrentWindowMetrics()
-            val bounds = windowMetrics.bounds
-            val insets: Insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(
-                WindowInsets.Type.systemBars()
-            )
-            if (activity.resources.configuration.orientation
-                === Configuration.ORIENTATION_LANDSCAPE
-                && activity.resources.configuration.smallestScreenWidthDp < 600
-            ) { // landscape and phone
-                bounds.height()
-            } else { // portrait or tablet
-                val navigationBarSize: Int = insets.bottom
-                bounds.height() - navigationBarSize
-            }
-        } else {
-            val outMetrics = DisplayMetrics()
-            activity.windowManager.defaultDisplay.getMetrics(outMetrics)
-            outMetrics.heightPixels
-        }
-    }
-
     fun getScreenSize(mActivity: NinchatChatActivity): Int {
         val screenSize: Int = mActivity.resources.configuration.screenLayout and
                 Configuration.SCREENLAYOUT_SIZE_MASK

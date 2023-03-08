@@ -1,7 +1,6 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi
 
 import android.content.pm.ActivityInfo
-import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -11,6 +10,8 @@ import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.NinchatGroupCallPresenter
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.OnClickListener
+import com.ninchat.sdk.utils.display.getScreenHeight
+import com.ninchat.sdk.utils.display.getScreenWidth
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
@@ -49,7 +50,12 @@ class NinchatGroupCallIntegration(
         val params = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
-        )
+        )/*.apply {
+            height = mActivity.getScreenHeight()
+            width = mActivity.getScreenWidth()
+        }.apply {
+            height -= mActivity.ninchat_chat_root.ninchat_titlebar.height
+        }*/
         mActivity.jitsi_frame_layout.addView(jitsiMeetView, params)
     }
 
@@ -76,14 +82,14 @@ class NinchatGroupCallIntegration(
         jitsiServerAddress: String,
     ) {
         val options: JitsiMeetConferenceOptions = JitsiMeetConferenceOptions.Builder()
-            .setRoom("pallab-test-1")
+            .setRoom(jitsiRoom)
             .setUserInfo(
                 JitsiMeetUserInfo().apply {
-                    displayName = "Android Test"
-                    NinchatSessionManager.getInstance().userName
+                    displayName = NinchatSessionManager.getInstance().userName
                 })
-            //.setToken(jitsiToken)
-            .setServerURL(URL("https://meet.jit.si"))
+            .setToken(jitsiToken)
+            .setServerURL(URL(jitsiServerAddress))
+            //.setServerURL(URL("https://meet.jit.si"))
             .setFeatureFlag("pip.enabled", false)
             .setFeatureFlag("add-people.enabled", false)
             .setFeatureFlag("calendar.enabled", false)
@@ -195,19 +201,21 @@ class NinchatGroupCallIntegration(
     // this method needs to be refactored
     fun handleJitsiOrientation(currentOrientation: Int) {
         if (!model.onGoingVideoCall) return
-
         val isPortrait = currentOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        val confH = mActivity.conference_or_p2p_view_container.height
-        val confW = mActivity.conference_or_p2p_view_container.width
-
-        val lm = FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT
-        )
-
-        val realH = mActivity.content_view.height
-        val realW = mActivity.content_view.width
-        mActivity.jitsi_frame_layout.updateViewLayout(jitsiMeetView, lm)
+        val layoutParams = jitsiMeetView.layoutParams.let {
+            val params = it as FrameLayout.LayoutParams
+            params.height = mActivity.getScreenWidth()
+            params.width = mActivity.getScreenHeight()
+            params
+        }
+        //mActivity.jitsi_frame_layout.updateViewLayout(jitsiMeetView, layoutParams)
+        //mActivity.jitsi_frame_layout.requestLayout()
+        jitsiMeetView.layoutParams = jitsiMeetView.layoutParams.let {
+            val params = it as FrameLayout.LayoutParams
+            params.height = mActivity.getScreenWidth() - mActivity.ninchat_chat_root.ninchat_titlebar.height
+            params.width = mActivity.getScreenHeight()
+            params
+        }
         jitsiMeetView.requestLayout()
     }
 }
