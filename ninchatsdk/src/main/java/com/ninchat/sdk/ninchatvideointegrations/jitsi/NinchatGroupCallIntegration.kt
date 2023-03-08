@@ -103,6 +103,7 @@ class NinchatGroupCallIntegration(
             .setFeatureFlag("recording.enabled", false)
             .setFeatureFlag("server-url-change.enabled", false)
             .setFeatureFlag("filmstrip.enabled", true)
+            .setFeatureFlag("call-integration.enabled", false)
             .build()
 
         jitsiMeetView.join(options)
