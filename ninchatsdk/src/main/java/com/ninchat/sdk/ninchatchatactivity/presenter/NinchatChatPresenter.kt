@@ -1,5 +1,7 @@
 package com.ninchat.sdk.ninchatchatactivity.presenter
 
+import android.content.Context
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.hardware.SensorManager
 import android.provider.Settings
@@ -7,16 +9,16 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.managers.IOrientationManager
 import com.ninchat.sdk.managers.OrientationManager
-import com.ninchat.sdk.networkdispatchers.NinchatDeleteUser
-import com.ninchat.sdk.networkdispatchers.NinchatDiscoverJitsi
-import com.ninchat.sdk.networkdispatchers.NinchatPartChannel
-import com.ninchat.sdk.networkdispatchers.NinchatSendMessage
+import com.ninchat.sdk.networkdispatchers.*
 import com.ninchat.sdk.ninchatchatactivity.model.NinchatChatModel
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
+import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Misc
+import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import com.ninchat.sdk.utils.writingindicator.WritingIndicator
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
@@ -28,19 +30,6 @@ class NinchatChatPresenter(
     val model: NinchatChatModel,
 ) {
     val writingIndicator = WritingIndicator()
-    lateinit var orientationManager: OrientationManager
-
-    fun initialize(ninchatChatActivity: NinchatChatActivity, callback: IOrientationManager) {
-        orientationManager = OrientationManager(
-            callback,
-            ninchatChatActivity,
-            SensorManager.SENSOR_DELAY_NORMAL
-        ).apply {
-            enable()
-        }
-
-    }
-
     val textWatcher: TextWatcher = object : TextWatcher {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
@@ -48,14 +37,12 @@ class NinchatChatPresenter(
             writingIndicator.updateLastWritingTime(s.length)
         }
     }
+
     private val exceptionHandler = CoroutineExceptionHandler { _, exception ->
         NinchatSessionManager.getInstance()?.sessionError(Exception(exception))
     }
 
     fun handleOrientationChange(currentOrientation: Int, mActivity: NinchatChatActivity) {
-        if (model.toggleFullScreen) {
-            return
-        }
         try {
             if (Settings.System.getInt(
                     mActivity.applicationContext.contentResolver,
@@ -66,7 +53,7 @@ class NinchatChatPresenter(
         } catch (e: java.lang.Exception) {
             // pass
         }
-
+        mActivity.hideKeyBoardForce()
         if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
             mActivity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         } else if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
@@ -74,19 +61,8 @@ class NinchatChatPresenter(
         }
     }
 
-    fun loadJitsi() {
-        NinchatSessionManager.getInstance()?.let { currentSessionManager ->
-            NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
-                NinchatDiscoverJitsi.execute(
-                    currentSession = currentSessionManager.session,
-                    channelId = currentSessionManager.ninchatState?.channelId,
-                );
-            }
-        }
-    }
-
     fun sendMessage(view: View) {
-        if(model.chatClosed) return
+        if (model.chatClosed) return
         view.message?.text?.toString()?.let { message ->
             if (message.isEmpty()) {
                 return
@@ -110,23 +86,61 @@ class NinchatChatPresenter(
 
     fun onActivityClose() {
         NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
-            if(Misc.shouldPartChannel(ninchatSessionManager.ninchatState)) {
+            if (Misc.shouldPartChannel(ninchatSessionManager.ninchatState)) {
                 NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
                     NinchatPartChannel.execute(
                         currentSession = ninchatSessionManager.session,
                         channelId = ninchatSessionManager.ninchatState?.channelId,
                     )
                 }
-            }
-            // delete user if the current user is a guest user
-            if (NinchatSessionManager.getInstance().isGuestMember) {
-                NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
-                    NinchatDeleteUser.execute(
-                        currentSession = NinchatSessionManager.getInstance().session,
-                    )
+                // delete user if the current user is a guest user
+                if (NinchatSessionManager.getInstance().isGuestMember) {
+                    NinchatScopeHandler.getIOScope().launch(exceptionHandler) {
+                        NinchatDeleteUser.execute(
+                            currentSession = NinchatSessionManager.getInstance().session,
+                        )
+                    }
                 }
             }
         }
+    }
+
+    fun onAlbumSelected(data: Intent, context: Context) {
+        NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
+            data.data?.let { uri ->
+                val fileName = Misc.getFileName(uri, context.contentResolver)
+                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    val buffer = ByteArray(inputStream.available())
+                    inputStream.read(buffer)
+
+                    NinchatScopeHandler.getIOScope().launch {
+                        NinchatSendFile.execute(
+                            currentSession = ninchatSessionManager.session,
+                            channelId = ninchatSessionManager.ninchatState.channelId,
+                            fileName = fileName,
+                            data = buffer,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+
+    fun onChannelClosed(mActivity: NinchatChatActivity) {
+        model.chatClosed = true
+        mActivity.hideKeyBoardForce()
+    }
+
+    fun onSoftKeyboardVisibilityChanged(isVisible: Boolean = true) {
+        if (!isVisible) return
+        // push messages on top of soft keyboard
+        NinchatSessionManager.getInstance()
+            ?.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
+                override fun onMessageAdapter(adapter: NinchatMessageAdapter) {
+                    adapter.scrollToBottom(true)
+                }
+            })
     }
 
     companion object {

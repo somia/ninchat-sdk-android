@@ -473,17 +473,19 @@ class NinchatSessionManagerHelper {
 
         @JvmStatic
         fun jitsiDiscovered(params: Props) {
+            val apiServerAddress = NinchatSessionManager.getInstance()?.ninchatState?.serverAddress
+                ?: "api.ninchat.com"
+
             val jitsiRoom = params.getSafe<String>("jitsi_room")
             val jitsiToken = params.getSafe<String>("jitsi_token")
+            val jitsiServerAddress = "https://${"jitsi-www"}.${apiServerAddress.removePrefix("api.")}"
 
-            val serverPrefix = jitsiRoom?.substringBeforeLast(".")
             NinchatSessionManager.getInstance()?.context?.let { mContext ->
                 LocalBroadcastManager.getInstance(mContext)
-                    .sendBroadcast(Intent(Broadcast.WEBRTC_MESSAGE).also { mIntent ->
-                        mIntent.putExtra(Broadcast.WEBRTC_MESSAGE_TYPE, NinchatMessageTypes.WEBRTC_JITSI_SERVER_CONFIG)
+                    .sendBroadcast(Intent(Broadcast.JITSI_DISCOVERED_MESSAGE).also { mIntent ->
                         mIntent.putExtra(Broadcast.WEBRTC_MESSAGE_JITSI_ROOM, jitsiRoom)
                         mIntent.putExtra(Broadcast.WEBRTC_MESSAGE_JITSI_TOKEN, jitsiToken)
-                        mIntent.putExtra(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER_PREFIX, serverPrefix)
+                        mIntent.putExtra(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER, jitsiServerAddress)
                     })
             }
 

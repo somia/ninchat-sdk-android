@@ -2,7 +2,6 @@ package com.ninchat.sdk.ninchatvideointegrations.p2p
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -10,26 +9,28 @@ import android.content.res.Configuration
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
-import com.ninchat.sdk.networkdispatchers.NinchatSendFile
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage
 import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
+import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatVideoChatConsentDialogue
 import com.ninchat.sdk.ninchattitlebar.model.shouldShowTitlebar
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Misc.Companion.center
-import com.ninchat.sdk.utils.misc.Misc.Companion.getFileName
 import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import com.ninchat.sdk.views.NinchatWebRTCView
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
+import kotlinx.android.synthetic.main.ninchat_p2p_video_container.*
 import kotlinx.android.synthetic.main.ninchat_p2p_video_container.view.*
 import kotlinx.coroutines.launch
 import org.json.JSONException
@@ -37,46 +38,50 @@ import org.json.JSONObject
 
 class NinchatP2PIntegration(
     private val videoContainer: View,
+    private val mActivity: NinchatChatActivity,
 ) {
     private val webRTCView: NinchatWebRTCView = NinchatWebRTCView(videoContainer)
 
-    fun onConfigurationChanges(newConfig: Configuration) {
-        videoContainer.fullscreen_on_off?.apply {
-            setImageResource(
-                when (newConfig.orientation) {
-                    Configuration.ORIENTATION_LANDSCAPE -> R.drawable.ninchat_icon_video_toggle_normal
-                    else -> R.drawable.ninchat_icon_video_toggle_full
-                }
-            )
-        }
-        videoContainer.layoutParams?.apply {
-            height = when (newConfig.orientation) {
-                Configuration.ORIENTATION_LANDSCAPE -> ViewGroup.LayoutParams.MATCH_PARENT
-                else -> videoContainer.resources.getDimensionPixelSize(R.dimen.ninchat_chat_activity_video_view_height)
-            }
-        }
-        videoContainer.pip_video.layoutParams?.apply {
-            width =
-                videoContainer.resources.getDimensionPixelSize(R.dimen.ninchat_chat_activity_pip_video_width)
-            height =
-                videoContainer.resources.getDimensionPixelSize(R.dimen.ninchat_chat_activity_pip_video_height)
-        }
-
-        NinchatSessionManager.getInstance()?.getOnInitializeMessageAdapter(
-            object : NinchatAdapterCallback {
-                override fun onMessageAdapter(adapter: NinchatMessageAdapter) {
-                    adapter.scrollToBottom(true)
-                }
-            })
-
+    init {
+        renderView(activeCall = false)
     }
 
-
-    fun setLayoutParams(newHeight: Int, newWidth: Int) {
-        videoContainer.layoutParams?.apply {
-            height = newHeight.takeIf { it > 0 } ?: height
-            width = newWidth.takeIf { it > 0 } ?: width
+    private fun renderView(activeCall: Boolean = false) {
+        mActivity.ninchat_chat_root?.apply {
+            chat_message_list_and_editor.layoutParams =
+                chat_message_list_and_editor.layoutParams.let {
+                    val layoutParams = it as LinearLayout.LayoutParams
+                    layoutParams.weight = if(activeCall) 2.1f else 3f
+                    layoutParams
+                }
+            conference_or_p2p_view_container.layoutParams =
+                conference_or_p2p_view_container.layoutParams.let {
+                    val layoutParams = it as LinearLayout.LayoutParams
+                    layoutParams.weight = if(activeCall) 0.9f else 0f
+                    layoutParams
+                }
         }
+    }
+
+    fun onSoftKeyboardVisibilityChanged(isVisible: Boolean) {
+        if (!webRTCView.isInCall) {
+            return
+        }
+        mActivity.ninchat_chat_root?.apply {
+            chat_message_list_and_editor.layoutParams =
+                chat_message_list_and_editor.layoutParams.let {
+                    val layoutParams = it as LinearLayout.LayoutParams
+                    layoutParams.weight = 2.1f
+                    layoutParams
+                }
+            conference_or_p2p_view_container.layoutParams =
+                conference_or_p2p_view_container.layoutParams.let {
+                    val layoutParams = it as LinearLayout.LayoutParams
+                    layoutParams.weight = 0.9f
+                    layoutParams
+                }
+        }
+        return
     }
 
     fun mayBeHandleWebRTCMessages(intent: Intent, activity: Activity) {
@@ -85,6 +90,7 @@ class NinchatP2PIntegration(
         if (webRTCView.handleWebRTCMessage(messageType, payload)) {
             if (NinchatMessageTypes.HANG_UP == messageType) {
                 activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+                renderView(activeCall = false)
                 handleTitlebarView(true, activity)
             }
         }
@@ -135,6 +141,7 @@ class NinchatP2PIntegration(
 
 
     fun sendPickUpAnswer(answer: Boolean) {
+        renderView(activeCall = true)
         NinchatSessionManager.getInstance()?.let { sessionManager ->
             try {
                 val data = JSONObject().apply {
@@ -183,34 +190,66 @@ class NinchatP2PIntegration(
     }
 
 
-    fun onAlbumSelected(data: Intent, context: Context) {
-        NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
-            data.data?.let { uri ->
-                val fileName = getFileName(uri, context.contentResolver)
-                context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                    val buffer = ByteArray(inputStream.available())
-                    inputStream.read(buffer)
-
-                    NinchatScopeHandler.getIOScope().launch {
-                        NinchatSendFile.execute(
-                            currentSession = ninchatSessionManager.session,
-                            channelId = ninchatSessionManager.ninchatState.channelId,
-                            fileName = fileName,
-                            data = buffer,
-                        )
+    fun handleOrientationChange(
+        currentOrientation: Int,
+        pendingHangup: Boolean,
+    ) {
+        handleTitlebarView(pendingHangup = pendingHangup, activity = mActivity)
+        if (!webRTCView.isInCall) {
+            return
+        }
+        if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+            mActivity.ninchat_chat_root?.apply {
+                conference_or_p2p_view_container.layoutParams =
+                    conference_or_p2p_view_container.layoutParams.let {
+                        val layoutParams = it as LinearLayout.LayoutParams
+                        layoutParams.weight = 0.9f
+                        layoutParams
                     }
+                chat_message_list_and_editor.layoutParams =
+                    chat_message_list_and_editor.layoutParams.let {
+                        val layoutParams = it as LinearLayout.LayoutParams
+                        layoutParams.weight = 2.1f
+                        layoutParams
+                    }
+                fullscreen_on_off.apply {
+                    setImageResource(R.drawable.ninchat_icon_video_toggle_full)
+                }
+            }
+        } else if (currentOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+            mActivity.ninchat_p2p_video_view.layoutParams.apply {
+                height = LinearLayout.LayoutParams.MATCH_PARENT
+            }
+            mActivity.ninchat_chat_root?.apply {
+                conference_or_p2p_view_container.layoutParams =
+                    conference_or_p2p_view_container.layoutParams.let {
+                        val layoutParams = it as LinearLayout.LayoutParams
+                        layoutParams.weight = 3f
+                        layoutParams
+                    }
+                chat_message_list_and_editor.layoutParams =
+                    chat_message_list_and_editor.layoutParams.let {
+                        val layoutParams = it as LinearLayout.LayoutParams
+                        layoutParams.weight = 0f
+                        layoutParams
+                    }
+                fullscreen_on_off.apply {
+                    setImageResource(R.drawable.ninchat_icon_video_toggle_normal)
                 }
             }
         }
     }
 
     fun call() {
+        renderView(activeCall = true)
         webRTCView.call()
     }
 
     private fun isInCall() = webRTCView.isInCall
 
     fun hangUp() {
+        // render view
+        renderView(activeCall = false)
         webRTCView.hangUp()
     }
 
@@ -224,6 +263,10 @@ class NinchatP2PIntegration(
 
     fun toggleVideo() {
         webRTCView.toggleVideo()
+    }
+
+    fun onChannelClosed() {
+        this.hangUp()
     }
 }
 

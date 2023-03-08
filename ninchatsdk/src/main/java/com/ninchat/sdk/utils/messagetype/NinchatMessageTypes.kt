@@ -13,7 +13,6 @@ object NinchatMessageTypes {
     const val PICK_UP = "ninchat.com/rtc/pick-up"
     const val HANG_UP = "ninchat.com/rtc/hang-up"
     const val WEBRTC_SERVERS_PARSED = "ninchat.com/rtc/serversParsed"
-    const val WEBRTC_JITSI_SERVER_CONFIG = "ninchat.com/rtc/jitsiServerCOnfig"
     val WEBRTC_MESSAGE_TYPES = listOf<String>(
             ICE_CANDIDATE,
             ANSWER,
@@ -21,7 +20,6 @@ object NinchatMessageTypes {
             CALL,
             PICK_UP,
             HANG_UP,
-            WEBRTC_JITSI_SERVER_CONFIG
     )
 
     @JvmStatic

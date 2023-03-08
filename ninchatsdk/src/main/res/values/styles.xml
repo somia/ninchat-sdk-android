@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="NinchatTheme" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="NinchatTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:colorPrimary">@color/ninchat_colorPrimary</item>
         <item name="android:colorPrimaryDark">@color/ninchat_colorPrimaryDark</item>
@@ -117,7 +116,7 @@
         <item name="android:textColor">@color/ninchat_color_ui_compose_select_selected_text</item>
     </style>
 
-    <style name="NinchatTheme.Dialog" parent="android:Theme.Material.Dialog.Alert">
+    <style name="NinchatTheme.Dialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsFloating">false</item>
@@ -243,5 +242,7 @@
         <item name="android:background">@drawable/ninchat_chat_disable_button</item>
         <item name="android:textColor">@color/ninchat_color_button_primary_text</item>
     </style>
+
+
 
 </resources>

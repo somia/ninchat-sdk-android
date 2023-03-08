@@ -14,11 +14,12 @@ import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.utils.misc.Broadcast
 
-abstract class NinchatBaseActivity : Activity() {
+abstract class NinchatBaseActivity : AppCompatActivity() {
     @get:LayoutRes
     protected abstract val layoutRes: Int
 
