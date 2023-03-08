@@ -417,8 +417,13 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     }
 
+    override fun onPause() {
+        super.onPause()
+    }
+
     override fun onResume() {
         super.onResume()
+        JitsiMeetActivityDelegate.onHostResume(this)
         // Refresh the message list, just in case
         val sessionManager = NinchatSessionManager.getInstance() ?: return
         sessionManager.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
@@ -439,6 +444,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
     }
 
     override fun onDestroy() {
+        JitsiMeetActivityDelegate.onHostDestroy(this)
         onVideoHangUp(null)
         val localBroadcastManager = LocalBroadcastManager.getInstance(applicationContext)
         mBroadcastManager.unregister(localBroadcastManager)

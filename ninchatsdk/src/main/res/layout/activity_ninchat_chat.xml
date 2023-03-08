@@ -67,7 +67,8 @@
                 tools:visibility="visible" />
 
 
-            <FrameLayout
+            <LinearLayout
+                android:orientation="vertical"
                 android:id="@+id/jitsi_frame_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

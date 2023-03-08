@@ -1,6 +1,5 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi
 
-import android.content.pm.ActivityInfo
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
@@ -8,6 +7,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
+import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.LayoutChangeListener
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.NinchatGroupCallPresenter
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.OnClickListener
 import com.ninchat.sdk.utils.display.getScreenHeight
@@ -35,6 +35,9 @@ class NinchatGroupCallIntegration(
     }
     private val presenter = NinchatGroupCallPresenter(model = model)
     private val onClickListener = OnClickListener(intervalInMs = 2000)
+    private val layoutChangeListener = LayoutChangeListener() { width, height ->
+        onConfigurationChange(width, height)
+    }
 
     init {
         presenter.renderInitialView(mActivity = mActivity)
@@ -47,15 +50,12 @@ class NinchatGroupCallIntegration(
                 presenter.onClickHandler()
             }
         }
-        val params = FrameLayout.LayoutParams(
+        val params = LinearLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.MATCH_PARENT
-        )/*.apply {
-            height = mActivity.getScreenHeight()
-            width = mActivity.getScreenWidth()
-        }.apply {
-            height -= mActivity.ninchat_chat_root.ninchat_titlebar.height
-        }*/
+        ).apply {
+            // height = mActivity.getScreenHeight()
+        }
         mActivity.jitsi_frame_layout.addView(jitsiMeetView, params)
     }
 
@@ -101,7 +101,6 @@ class NinchatGroupCallIntegration(
             .setFeatureFlag("meeting-name.enabled", false)
             .setFeatureFlag("meeting-password.enabled", false)
             .setFeatureFlag("recording.enabled", false)
-            .setFeatureFlag("recording.enabled", false)
             .setFeatureFlag("server-url-change.enabled", false)
             .setFeatureFlag("filmstrip.enabled", true)
             .build()
@@ -139,7 +138,7 @@ class NinchatGroupCallIntegration(
                 hasUnreadMessage = false
             )
         }
-
+        layoutChangeListener.register(view = mActivity.jitsi_frame_layout)
     }
 
     fun onHangup() {
@@ -152,6 +151,7 @@ class NinchatGroupCallIntegration(
         presenter.renderInitialView(mActivity = mActivity)
         jitsiMeetView.dispose()
 
+        layoutChangeListener.unregister()
     }
 
     fun onSoftKeyboardVisibilityChanged(isVisible: Boolean) {
@@ -194,27 +194,16 @@ class NinchatGroupCallIntegration(
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
         }
-        // handleJitsiOrientation(currentOrientation = currentOrientation)
+        // onConfigurationChange(newHeight = layoutChangeListener.prevHeight, newWidth =  layoutChangeListener.prevWidth)
     }
 
 
     // this method needs to be refactored
-    fun handleJitsiOrientation(currentOrientation: Int) {
+    private fun onConfigurationChange(newWidth: Int, newHeight: Int) {
         if (!model.onGoingVideoCall) return
-        val isPortrait = currentOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        val layoutParams = jitsiMeetView.layoutParams.let {
-            val params = it as FrameLayout.LayoutParams
-            params.height = mActivity.getScreenWidth()
-            params.width = mActivity.getScreenHeight()
-            params
-        }
-        //mActivity.jitsi_frame_layout.updateViewLayout(jitsiMeetView, layoutParams)
-        //mActivity.jitsi_frame_layout.requestLayout()
-        jitsiMeetView.layoutParams = jitsiMeetView.layoutParams.let {
-            val params = it as FrameLayout.LayoutParams
-            params.height = mActivity.getScreenWidth() - mActivity.ninchat_chat_root.ninchat_titlebar.height
-            params.width = mActivity.getScreenHeight()
-            params
+        if (model.showChatView) return
+        jitsiMeetView.layoutParams = jitsiMeetView.layoutParams.apply {
+            height = newHeight
         }
         jitsiMeetView.requestLayout()
     }
