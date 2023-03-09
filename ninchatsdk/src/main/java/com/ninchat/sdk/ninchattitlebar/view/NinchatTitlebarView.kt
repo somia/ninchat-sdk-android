@@ -16,8 +16,12 @@ class NinchatTitlebarView {
             callback: () -> Unit,
             onToggleChat: (() -> Unit)? = null
         ) {
-            if (!inBacklogView && !shouldShowTitlebar()) return
-            if (inBacklogView && !showOverrideTitlebarView()) return
+            if(!shouldShowTitlebar()) {
+                // if we are in backlog view and titleview is overridden ( always show ) then -> show titlebar
+                if(!(inBacklogView && showOverrideTitlebarView())) {
+                    return
+                }
+            }
 
             view.ninchat_titlebar_with_placeholder.visibility = View.VISIBLE
             view.ninchat_titlebar_with_agent_info.visibility = View.GONE
@@ -39,9 +43,12 @@ class NinchatTitlebarView {
             callback: () -> Unit,
             onToggleChat: (() -> Unit)? = null
         ) {
-            if (!inBacklogView && !shouldShowTitlebar()) return
-            if (inBacklogView && !showOverrideTitlebarView()) return
-
+            if(!shouldShowTitlebar()) {
+                // if we are in backlog view and titleview is overridden ( always show ) then -> show titlebar
+                if(!(inBacklogView && showOverrideTitlebarView())) {
+                    return
+                }
+            }
             // if questionnaire name -> show questionnaire name
             if (data.hasName) {
                 view.ninchat_chat_titlebar_agent_name.text = data.name
@@ -112,10 +119,10 @@ class NinchatTitlebarView {
             //2: if no name and no avatar
             if (!titleBarInfo.hasName || (!titleBarInfo.hasName && !titleBarInfo.hasAvatar)) {
                 // show placeholder
-                showTitlebarPlaceholder(view, callback = callback, onToggleChat = onToggleChat)
+                showTitlebarPlaceholder(view, callback = callback, inBacklogView = true, onToggleChat = onToggleChat)
                 return
             }
-            showTitlebarWithAgentInfo(view = view, data = titleBarInfo, callback = callback, onToggleChat = onToggleChat)
+            showTitlebarWithAgentInfo(view = view, data = titleBarInfo, inBacklogView = true, callback = callback, onToggleChat = onToggleChat)
         }
 
         fun showTitlebarForReview(view: View, callback: () -> Unit) {
