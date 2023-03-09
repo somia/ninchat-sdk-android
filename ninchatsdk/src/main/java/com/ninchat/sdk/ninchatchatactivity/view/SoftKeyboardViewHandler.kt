@@ -26,14 +26,14 @@ class SoftKeyboardViewHandler(
         val currentOrientation = rootView.resources.configuration.orientation
         if (heightDifference > 0 && currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
             // soft keyboard is hidden
-            if(wasOpen) {
+            if (wasOpen) {
                 onHidden()
                 wasOpen = false
             }
 
         } else if (heightDifference < 0 && currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
             // softkeyboard is shown
-            if(!wasOpen) {
+            if (!wasOpen) {
                 onShow()
                 wasOpen = true
             }

@@ -174,6 +174,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 showError(R.id.ninchat_chat_error, R.string.ninchat_chat_error_no_file_permissions)
             }
         }
+        JitsiMeetActivityDelegate.onRequestPermissionsResult(requestCode, permissions, grantResults)
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
@@ -417,8 +418,13 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     }
 
+    override fun onPause() {
+        super.onPause()
+    }
+
     override fun onResume() {
         super.onResume()
+        JitsiMeetActivityDelegate.onHostResume(this)
         // Refresh the message list, just in case
         val sessionManager = NinchatSessionManager.getInstance() ?: return
         sessionManager.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
@@ -445,6 +451,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         softKeyboardViewHandler.unregister()
         presenter.writingIndicator.dispose()
         orientationManager.disable()
+        JitsiMeetActivityDelegate.onHostDestroy(this)
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
