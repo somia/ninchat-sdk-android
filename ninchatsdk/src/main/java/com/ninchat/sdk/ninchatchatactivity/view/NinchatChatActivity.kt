@@ -350,12 +350,12 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 visibility = View.VISIBLE
             }
         }
-        send_button.apply {
+        send_button.also {
             val sendButtonText = sessionManager.ninchatState.siteConfig.getSendButtonText()
             if (sendButtonText != null) {
-                text = sendButtonText
+                it.text = sendButtonText
             } else {
-                visibility = View.GONE
+                it.visibility = View.GONE
                 send_button_icon.visibility = View.VISIBLE
             }
         }
