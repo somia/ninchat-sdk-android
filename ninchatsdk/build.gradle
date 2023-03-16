@@ -92,18 +92,39 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    // implementation 'com.github.webrtc-sdk:android:104.5112.05'
     implementation 'com.airbnb.android:paris:1.7.3'
+    implementation 'com.ninchat:libwebrtc:104.0.0'
     implementation ('org.jitsi.react:jitsi-meet-sdk:7.0.1') { transitive = true }
 
 }
 
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+publishing {
+    repositories {
+        maven {
+            def deployPath = file("${project.rootDir}")
+            url "file://${deployPath.absolutePath}"
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            groupId "com.ninchat"
+            artifactId "libwebrtc"
+            version "104.0.0"
+
+            artifact("../webrtc-sdk/libwebrtc.aar")
+        }
+    }
+
+}
 
 uploadArchives {
     repositories.mavenDeployer {
         def deployPath = file("${project.rootDir}")
         repository(url: "file://${deployPath.absolutePath}")
+
         pom.project {
             groupId "com.ninchat"
             artifactId "sdk"
