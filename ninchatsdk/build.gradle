@@ -34,12 +34,19 @@ android {
         versionName calculateVersionName()
         versionCode 1
 
+        buildConfigField 'String', 'VERSION_NAME', "\"${versionName}\""
+        buildConfigField 'int', 'VERSION_CODE', "1"
+
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 
     buildTypes {
@@ -90,7 +97,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     implementation 'com.airbnb.android:paris:1.7.3'
-    implementation 'com.ninchat:libwebrtc:104.0.0'
+    // implementation 'com.ninchat:libwebrtc:104.0.0'
+    api fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 apply plugin: 'maven'
