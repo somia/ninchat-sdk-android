@@ -34,6 +34,9 @@ android {
         versionName calculateVersionName()
         versionCode 1
 
+        buildConfigField 'String', 'VERSION_NAME', "\"${versionName}\""
+        buildConfigField 'int', 'VERSION_CODE', "1"
+
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 
@@ -90,7 +93,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     implementation 'com.airbnb.android:paris:1.7.3'
-    implementation 'com.ninchat:libwebrtc:106.0.3'
+    // implementation 'com.ninchat:libwebrtc:106.0.3'
+    implementation ('org.jitsi.react:jitsi-meet-sdk:99.1.0') { transitive = true }
 }
 
 apply plugin: 'maven'
