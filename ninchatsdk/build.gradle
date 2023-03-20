@@ -90,7 +90,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     implementation 'com.airbnb.android:paris:1.7.3'
-    implementation 'com.ninchat:libwebrtc:104.0.0'
+    implementation 'com.ninchat:libwebrtc:106.0.3'
 }
 
 apply plugin: 'maven'
@@ -107,9 +107,9 @@ publishing {
         maven(MavenPublication) {
             groupId "com.ninchat"
             artifactId "libwebrtc"
-            version "104.0.0"
+            version "106.0.3"
 
-            artifact("../webrtc-sdk/libwebrtc.aar")
+            artifact("../webrtc-sdk/libwebrtc-106.0.3.aar")
         }
     }
 
