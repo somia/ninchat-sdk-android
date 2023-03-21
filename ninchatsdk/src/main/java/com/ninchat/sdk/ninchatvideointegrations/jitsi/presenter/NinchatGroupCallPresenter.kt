@@ -49,7 +49,7 @@ class NinchatGroupCallPresenter(
                 )
             }
             // set updated layout parameter
-            val (conferenceViewParams, commandViewParams) = getLayoutParams(mActivity = mActivity)
+            val (conferenceViewParams, commandViewParams, _) = getLayoutParams(mActivity = mActivity)
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
         }
@@ -85,7 +85,7 @@ class NinchatGroupCallPresenter(
 
     fun getLayoutParams(
         mActivity: NinchatChatActivity,
-    ): Pair<LinearLayout.LayoutParams, LinearLayout.LayoutParams> {
+    ): Triple<LinearLayout.LayoutParams, LinearLayout.LayoutParams, Boolean> {
         val conferenceViewWeightInLandscape = if (model.onGoingVideoCall) {
             if (model.showChatView) 1.7f else 3.0f
         } else {
@@ -132,7 +132,7 @@ class NinchatGroupCallPresenter(
             }
             params
         }
-        return Pair(conferenceView, commandView)
+        return Triple(conferenceView, commandView, isLargeScreen)
     }
 
     fun getScreenSize(mActivity: NinchatChatActivity): Int {

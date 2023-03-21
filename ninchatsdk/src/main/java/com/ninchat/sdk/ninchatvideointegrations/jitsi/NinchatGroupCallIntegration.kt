@@ -33,6 +33,7 @@ class NinchatGroupCallIntegration(
     private val presenter = NinchatGroupCallPresenter(model = model)
     private val onClickListener = OnClickListener(intervalInMs = 2000)
     private var jitsiMeetView: JitsiMeetView? = null
+
     init {
         jitsiMeetView = mActivity.jitsi_view
         presenter.renderInitialView(mActivity = mActivity)
@@ -55,7 +56,6 @@ class NinchatGroupCallIntegration(
     fun hangUp() {
         LocalBroadcastManager.getInstance(mActivity.applicationContext)
             .sendBroadcast(BroadcastIntentHelper.buildHangUpIntent())
-
         // wait for the jitsi event to update the view
         // if jitsi is not running what should we do ? -> if was not running then call onHangup manually to propagate UI updates
         if (model.onGoingVideoCall) {
@@ -103,7 +103,7 @@ class NinchatGroupCallIntegration(
             .setFeatureFlag("prejoinpage.hide-display-name.enabled", true)
             .setFeatureFlag("raise-hand.enabled", false)
             .setFeatureFlag("recording.enabled", false)
-            //.setFeatureFlag("resolution", false)
+            //.setFeatureFlag("resolution", 360)
             .setFeatureFlag("server-url-change.enabled", false)
             .setFeatureFlag("settings.enabled", true)
             .setFeatureFlag("tile-view.enabled", true)
@@ -147,7 +147,7 @@ class NinchatGroupCallIntegration(
             jitsi_frame_layout.visibility = View.VISIBLE
 
             // set updated layout parameter
-            val (conferenceViewParams, commandViewParams) = presenter.getLayoutParams(mActivity = mActivity)
+            val (conferenceViewParams, commandViewParams, _) = presenter.getLayoutParams(mActivity = mActivity)
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
 
@@ -156,6 +156,11 @@ class NinchatGroupCallIntegration(
                 mLayout.topMargin = ninchat_titlebar.height
                 mLayout.removeRule(RelativeLayout.BELOW)
                 mLayout
+            }
+
+            jitsi_view.layoutParams = jitsi_view.layoutParams.let { params ->
+                params.height = LinearLayout.LayoutParams.MATCH_PARENT
+                params
             }
 
             presenter.onNewMessage(
@@ -188,7 +193,7 @@ class NinchatGroupCallIntegration(
         model.softkeyboardVisible = isVisible
         mActivity.ninchat_chat_root?.apply {
             // set updated layout parameter
-            val (conferenceViewParams, commandViewParams) = presenter.getLayoutParams(mActivity = mActivity)
+            val (conferenceViewParams, commandViewParams, _) = presenter.getLayoutParams(mActivity = mActivity)
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
         }
@@ -197,12 +202,28 @@ class NinchatGroupCallIntegration(
 
     fun onToggleChat(mActivity: NinchatChatActivity) {
         model.showChatView = !model.showChatView
+
         mActivity.ninchat_chat_root?.apply {
             hideKeyBoardForce()
             // set updated layout parameter
-            val (conferenceViewParams, commandViewParams) = presenter.getLayoutParams(mActivity = mActivity)
+            val (conferenceViewParams, commandViewParams, isLargeScreen) = presenter.getLayoutParams(
+                mActivity = mActivity
+            )
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
+            if (!isLargeScreen) {
+                jitsi_view.layoutParams = if (model.showChatView) {
+                    jitsi_view.layoutParams.let { params ->
+                        params.height = mActivity.getScreenHeight()
+                        params
+                    }
+                } else {
+                    jitsi_view.layoutParams.let { params ->
+                        params.height = LinearLayout.LayoutParams.MATCH_PARENT
+                        params
+                    }
+                }
+            }
             if (model.showChatView) {
                 // update new message icon
                 onNewMessage(view = ninchat_titlebar)
@@ -220,10 +241,9 @@ class NinchatGroupCallIntegration(
                 if (isLargeScreen) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
 
             // set updated layout parameter
-            val (conferenceViewParams, commandViewParams) = presenter.getLayoutParams(mActivity = mActivity)
+            val (conferenceViewParams, commandViewParams, _) = presenter.getLayoutParams(mActivity = mActivity)
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
         }
-        // onConfigurationChange(newHeight = layoutChangeListener.prevHeight, newWidth =  layoutChangeListener.prevWidth)
     }
 }
