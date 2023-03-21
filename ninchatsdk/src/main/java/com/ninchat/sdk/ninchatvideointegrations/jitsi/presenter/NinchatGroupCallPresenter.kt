@@ -1,13 +1,7 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter
 
 import android.content.res.Configuration
-import android.graphics.Insets
-import android.graphics.Rect
-import android.os.Build
-import android.util.DisplayMetrics
 import android.view.View
-import android.view.WindowInsets
-import android.view.WindowMetrics
 import android.widget.LinearLayout
 import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.NinchatSessionManager
@@ -32,7 +26,12 @@ class NinchatGroupCallPresenter(
     }
 
     fun renderInitialView(mActivity: NinchatChatActivity) {
+        val isLargeScreen = getScreenSize(mActivity = mActivity) == 0
+
         mActivity.ninchat_chat_root?.apply {
+            content_view.orientation =
+                if (isLargeScreen) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
+
             ninchat_conference_view.visibility = View.VISIBLE
             ninchat_p2p_video_view.visibility = View.GONE
             jitsi_frame_layout.visibility = View.GONE
