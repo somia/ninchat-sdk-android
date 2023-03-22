@@ -59,6 +59,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             groupIntegration?.onChannelClosed()
         },
         onTransfer = {
+            onVideoHangUp(null)
             quit(it)
         },
         onP2PVideoCallInvitation = {
