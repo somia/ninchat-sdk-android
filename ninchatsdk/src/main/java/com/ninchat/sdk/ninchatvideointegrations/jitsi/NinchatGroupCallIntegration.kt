@@ -95,7 +95,7 @@ class NinchatGroupCallIntegration(
             .setFeatureFlag("speakerstats.enabled", false)
             .setFeatureFlag("kick-out.enabled", false)
             .setFeatureFlag("live-streaming.enabled", false)
-            .setFeatureFlag("meeting-name.enabled", true)
+            .setFeatureFlag("meeting-name.enabled", false)
             .setFeatureFlag("meeting-password.enabled", false)
             .setFeatureFlag("notifications.enabled", false)
             .setFeatureFlag("overflow-menu.enabled", true)
