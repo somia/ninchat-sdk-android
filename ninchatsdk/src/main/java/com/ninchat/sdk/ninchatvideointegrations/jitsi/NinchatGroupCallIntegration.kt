@@ -5,12 +5,14 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.NinchatGroupCallPresenter
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.OnClickListener
 import com.ninchat.sdk.utils.display.getScreenHeight
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
+import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlinx.android.synthetic.main.ninchat_join_end_conference.*
@@ -150,17 +152,11 @@ class NinchatGroupCallIntegration(
             val (conferenceViewParams, commandViewParams, _) = presenter.getLayoutParams(mActivity = mActivity)
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
-
-            content_view.layoutParams = content_view.layoutParams.let {
+            jitsi_frame_layout.layoutParams = jitsi_frame_layout.layoutParams.let {
                 val mLayout = it as RelativeLayout.LayoutParams
                 mLayout.topMargin = ninchat_titlebar.height
                 mLayout.removeRule(RelativeLayout.BELOW)
                 mLayout
-            }
-
-            jitsi_view.layoutParams = jitsi_view.layoutParams.let { params ->
-                params.height = LinearLayout.LayoutParams.MATCH_PARENT
-                params
             }
 
             presenter.onNewMessage(
@@ -178,15 +174,6 @@ class NinchatGroupCallIntegration(
         mActivity.hideKeyBoardForce()
         presenter.renderInitialView(mActivity = mActivity)
         jitsiMeetView?.dispose()
-
-        mActivity.ninchat_chat_root.apply {
-            content_view.layoutParams = content_view.layoutParams.let {
-                val mLayout = it as RelativeLayout.LayoutParams
-                mLayout.topMargin = 0
-                mLayout.addRule(RelativeLayout.BELOW, ninchat_titlebar.id)
-                mLayout
-            }
-        }
     }
 
     fun onSoftKeyboardVisibilityChanged(isVisible: Boolean) {
@@ -211,22 +198,15 @@ class NinchatGroupCallIntegration(
             )
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
-            if (!isLargeScreen) {
-                jitsi_view.layoutParams = if (model.showChatView) {
-                    jitsi_view.layoutParams.let { params ->
-                        params.height = mActivity.getScreenHeight()
-                        params
-                    }
-                } else {
-                    jitsi_view.layoutParams.let { params ->
-                        params.height = LinearLayout.LayoutParams.MATCH_PARENT
-                        params
-                    }
-                }
-            }
             if (model.showChatView) {
                 // update new message icon
                 onNewMessage(view = ninchat_titlebar)
+                NinchatSessionManager.getInstance()
+                    ?.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
+                        override fun onMessageAdapter(adapter: NinchatMessageAdapter) {
+                            adapter.scrollToBottom(true)
+                        }
+                    })
             }
         }
     }

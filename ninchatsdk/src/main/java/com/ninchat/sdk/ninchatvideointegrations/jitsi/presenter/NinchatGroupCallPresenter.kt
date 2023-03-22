@@ -52,6 +52,7 @@ class NinchatGroupCallPresenter(
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
         }
+        applyBackground(mActivity = mActivity)
     }
 
 
@@ -144,5 +145,23 @@ class NinchatGroupCallPresenter(
             else -> 1
         }
 
+    }
+
+    fun applyBackground(mActivity: NinchatChatActivity) {
+        NinchatSessionManager.getInstance()?.let {sessionManager ->
+            mActivity.apply {
+                if (resources.getBoolean(R.bool.ninchat_chat_background_not_tiled)) {
+                    chat_message_list_and_editor.setBackgroundResource(sessionManager.ninchatChatBackground)
+                } else {
+                    Misc.getNinchatChatBackground(
+                        applicationContext,
+                        sessionManager.ninchatChatBackground
+                    )?.let {
+                        chat_message_list_and_editor.background = it
+                    }
+                }
+            }
+
+        }
     }
 }
