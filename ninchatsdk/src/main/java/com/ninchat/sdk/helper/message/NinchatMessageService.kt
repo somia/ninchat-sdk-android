@@ -1,6 +1,7 @@
 package com.ninchat.sdk.helper.message
 
 import android.content.Intent
+import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.client.Payload
 import com.ninchat.client.Props
@@ -41,6 +42,7 @@ class NinchatMessageService {
                 val sender = params?.getSafe<String>("message_user_id")
                 val messageId = params?.getSafe<String>("message_id")
                 val senderName = params?.getSafe<String>("message_user_name")
+                val messageDeleted = params?.getSafe<Boolean>("message_deleted")
                 val timestampMs = 1000L * ((params?.getSafe<Double>("message_time") ?: 0)).toLong()
                 val builder = StringBuilder()
                 payload?.let { currentPayload ->
@@ -59,6 +61,8 @@ class NinchatMessageService {
                                         .putExtra(Broadcast.WEBRTC_MESSAGE_CONTENT, builder.toString()))
                     }
                 }
+
+                Log.e("NinchatMessageService", "handleIncomingMessageUpdate: $messageType, $sender, $messageId, $messageDeleted")
                 if (NinchatMessageTypes.UI_COMPOSE == messageType) {
                     try {
                         val messages = JSONArray(builder.toString())
@@ -140,6 +144,16 @@ class NinchatMessageService {
                     EventBus.getDefault().post(OnNewMessage())
                 }
             }
+        }
+
+        @JvmStatic
+        fun handleIncomingMessageUpdate(params: Props?, payload: Payload?) {
+            val messageType = params?.getSafe<String>("message_type")
+            val sender = params?.getSafe<String>("message_user_id")
+            val messageId = params?.getSafe<String>("message_id")
+            val messageDeleted = params?.getSafe<Boolean>("message_deleted")
+
+            Log.e("NinchatMessageService", "handleIncomingMessageUpdate: $messageType, $sender, $messageId, $messageDeleted")
         }
     }
 }

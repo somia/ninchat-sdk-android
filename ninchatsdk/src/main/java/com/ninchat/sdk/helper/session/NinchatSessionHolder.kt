@@ -127,6 +127,7 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
                 "channel_updated" -> NinchatSessionManagerHelper.channelUpdated(params)
                 "jitsi_discovered" -> NinchatSessionManagerHelper.jitsiDiscovered(params)
                 "message_received" -> NinchatMessageService.handleIncomingMessage(params, payload)
+                "message_updated" -> NinchatMessageService.handleIncomingMessageUpdate(params, payload)
                 "ice_begun" -> NinchatSessionManager.getInstance().iceBegun(params)
                 "file_found" -> NinchatSessionManagerHelper.fileFound(params)
                 "channel_member_updated", "user_updated" -> NinchatSessionManagerHelper.memberUpdated(
