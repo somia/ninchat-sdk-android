@@ -26,6 +26,7 @@ public final class NinchatMessage {
         PADDING,
         MULTICHOICE,
         CLEAR,
+        DELETED,
     }
 
     private Type type;
@@ -34,34 +35,33 @@ public final class NinchatMessage {
     private String message;
     private String fileId;
     private Date timestamp;
-    private Boolean deleted;
     private boolean isRemoteMessage = false;
     private JSONObject data;
     private List<NinchatOption> options;
 
     public NinchatMessage(final Type type, long timestamp) {
-        this(type, null, null, null, null, timestamp, false, false);
+        this(type, null, null, null, null, timestamp, false);
     }
 
-    public NinchatMessage(final Type type, final long timestamp, final boolean deleted) {
-        this(type, null, null, null, null, timestamp, true, deleted);
+    public NinchatMessage(final String sender, final String message, final boolean isRemoteMessage) {
+        this(Type.DELETED, message, null, sender, null, 0, isRemoteMessage);
     }
 
     public NinchatMessage(final Type type, final String data, long timestamp) {
-        this(type, type == Type.WRITING ? null : data, null, type == Type.WRITING ? data : null, null, timestamp, true, false);
+        this(type, type == Type.WRITING ? null : data, null, type == Type.WRITING ? data : null, null, timestamp, true);
     }
 
     public NinchatMessage(final Type type, final String sender, final String senderName, final String label, final JSONObject data, final ArrayList<NinchatOption> options, long timestamp) {
-        this(type, label, null, sender, senderName, timestamp, true, false);
+        this(type, label, null, sender, senderName, timestamp, true);
         this.data = data;
         this.options = options;
     }
 
     public NinchatMessage(final String message, final String fileId, final String sender, final String senderName, long timestamp, final boolean isRemoteMessage) {
-        this(Type.MESSAGE, message, fileId, sender, senderName, timestamp, isRemoteMessage, false);
+        this(Type.MESSAGE, message, fileId, sender, senderName, timestamp, isRemoteMessage);
     }
 
-    private NinchatMessage(final Type type, final String message, final String fileId, final String sender, final String senderName, long timestamp, final boolean isRemoteMessage, final boolean deleted) {
+    private NinchatMessage(final Type type, final String message, final String fileId, final String sender, final String senderName, long timestamp, final boolean isRemoteMessage) {
         this.type = type;
         this.message = message;
         this.fileId = fileId;
@@ -69,11 +69,15 @@ public final class NinchatMessage {
         this.senderName = senderName;
         this.timestamp = new Date(timestamp);
         this.isRemoteMessage = isRemoteMessage;
-        this.deleted = deleted;
     }
 
     public Type getType() {
         return type;
+    }
+
+    public void markDeleted(final String message) {
+        this.type = Type.DELETED;
+        this.message = message;
     }
 
     public String getFileId() {
@@ -90,12 +94,12 @@ public final class NinchatMessage {
         return sender;
     }
 
-    public Boolean isDeleted() {
-        return deleted;
-    }
-
     public Spanned getMessage() {
         return message == null ? null : Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(message);
+    }
+
+    public String getRawMessage() {
+        return message;
     }
 
     public Date getTimestamp() {

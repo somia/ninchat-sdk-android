@@ -108,7 +108,8 @@ class Broadcast {
         const val CHANNEL_JOINED = BuildConfig.LIBRARY_PACKAGE_NAME + ".channelJoined"
         const val CHANNEL_CLOSED = BuildConfig.LIBRARY_PACKAGE_NAME + ".channelClosed"
         const val WEBRTC_MESSAGE = BuildConfig.LIBRARY_PACKAGE_NAME + ".webRTCMessage"
-        const val JITSI_DISCOVERED_MESSAGE = BuildConfig.LIBRARY_PACKAGE_NAME + ".jitsiDiscoveredMessage"
+        const val JITSI_DISCOVERED_MESSAGE =
+            BuildConfig.LIBRARY_PACKAGE_NAME + ".jitsiDiscoveredMessage"
         const val WEBRTC_MESSAGE_ID = WEBRTC_MESSAGE + ".messageId"
         const val WEBRTC_MESSAGE_SENDER = WEBRTC_MESSAGE + ".sender"
         const val WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type"
