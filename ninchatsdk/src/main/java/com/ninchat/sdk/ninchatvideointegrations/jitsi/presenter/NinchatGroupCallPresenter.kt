@@ -46,6 +46,7 @@ class NinchatGroupCallPresenter(
                 conference_join_button.style(
                     if (model.chatClosed) R.style.NinchatTheme_Conference_Ended else R.style.NinchatTheme_Conference_Join
                 )
+                conference_join_button.parent.requestChildFocus(conference_join_button, conference_join_button)
             }
             // set updated layout parameter
             val (conferenceViewParams, commandViewParams, _) = getLayoutParams(mActivity = mActivity)

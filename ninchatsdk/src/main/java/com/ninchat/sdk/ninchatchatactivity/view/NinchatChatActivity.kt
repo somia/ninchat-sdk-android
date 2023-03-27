@@ -379,7 +379,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         ).apply {
             enable()
         }
-
         if (model.isGroupCall) {
             groupIntegration = NinchatGroupCallIntegration(
                 mActivity = this@NinchatChatActivity,
