@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ninchat_chat_message_agent"
+    android:paddingTop="@dimen/ninchat_chat_activity_message_title_top_margin"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 

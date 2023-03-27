@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ninchat_chat_message_user"
     android:layout_width="match_parent"
+    android:paddingTop="@dimen/ninchat_chat_activity_message_title_top_margin"
     android:layout_height="match_parent"
     android:visibility="gone"
     tools:visibility="visible">
