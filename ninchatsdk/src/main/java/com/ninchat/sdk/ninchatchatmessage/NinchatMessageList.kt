@@ -280,9 +280,18 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
         return 1L * messageIds[position].hashCode()
     }
 
+    fun getItemMuxedPosition(position: Int): Int {
+        return messageIds[position].hashCode()
+    }
+
     fun getMessage(position: Int): NinchatMessage? {
         val id = messageIds[position].first
         return messageMap[id]
+    }
+
+    fun getMessageByMuxedPosition(position: Int): NinchatMessage? {
+        val id = messageIds.firstOrNull { it.hashCode() ==  position} ?: return null
+        return messageMap[id.first]
     }
 
     private data class NinchatPendingMessage(
@@ -304,11 +313,11 @@ class NinchatMessageList(private val mAdapter: INinchatMessageList) {
         }
 
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition] == newList[newItemPosition]
+            return oldList[oldItemPosition].first == newList[newItemPosition].first && oldList[oldItemPosition].second == newList[newItemPosition].second
         }
 
         override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition] == newList[newItemPosition]
+            return oldList[oldItemPosition].first == newList[newItemPosition].first && oldList[oldItemPosition].second == newList[newItemPosition].second
         }
 
     }

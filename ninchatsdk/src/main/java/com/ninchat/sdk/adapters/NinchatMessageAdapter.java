@@ -67,6 +67,12 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
         }
 
         private void setAvatar(final ImageView avatar, final NinchatMessage ninchatMessage, final boolean hideAvatar, final boolean isDeletedMessage) {
+            // if it is a deleted message, hide the avatar
+            if (isDeletedMessage) {
+                avatar.setVisibility(View.GONE);
+                return;
+            }
+
             final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
             if (sessionManager == null) {
                 return;
@@ -83,11 +89,6 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 userAvatar = ninchatMessage.isRemoteMessage() ?
                         sessionManager.ninchatState.getSiteConfig().getAgentAvatar() :
                         sessionManager.ninchatState.getSiteConfig().getUserAvatar();
-            }
-            // if it is a deleted message, hide the avatar
-            if (isDeletedMessage) {
-                avatar.setVisibility(View.GONE);
-                return;
             }
             if (ninchatMessage.isRemoteMessage() && shouldShowTitlebar()) {
                 avatar.setVisibility(View.GONE);
@@ -160,7 +161,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             if (isContinuedMessage) {
                 itemView.findViewById(wrapperId).setPadding(0, 0, 0, 0);
             } else {
-                itemView.findViewById(headerId).setVisibility(View.VISIBLE);
+                if(!isDeletedMessage)
+                    itemView.findViewById(headerId).setVisibility(View.VISIBLE);
             }
         }
 
@@ -345,13 +347,19 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         R.id.ninchat_chat_message_user_avatar,
                         data, isContinuedMessage,
                         R.drawable.ninchat_chat_bubble_right,
-                        R.drawable.ninchat_chat_bubble_right_repeated
-                );
+                        R.drawable.ninchat_chat_bubble_right_repeated);
+            }
+            final RecyclerView recyclerView = recyclerViewWeakReference.get();
+            if (recyclerView != null) {
+                ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(true);
             }
         }
 
         public void optionToggled(final NinchatMessage message, final int position) {
             final RecyclerView recyclerView = recyclerViewWeakReference.get();
+            if (recyclerView != null) {
+                ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+            }
             message.toggleOption(position);
             if (recyclerView == null || recyclerView.getScrollState() == RecyclerView.SCROLL_STATE_IDLE) {
                 notifyItemChanged(getAdapterPosition());
@@ -445,7 +453,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     @Override
     public int getItemViewType(int position) {
-        return position;
+        return ninchatMessageList.getItemMuxedPosition(position);
     }
 
     @Override
