@@ -1,7 +1,6 @@
 package com.ninchat.sdk.activities
 
 import android.Manifest
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -10,6 +9,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
@@ -17,6 +17,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.R
+import com.ninchat.sdk.utils.display.getStatusBarHeight
 import com.ninchat.sdk.utils.misc.Broadcast
 
 abstract class NinchatBaseActivity : AppCompatActivity() {
@@ -40,6 +41,12 @@ abstract class NinchatBaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layoutRes)
+        val view = findViewById<View>(android.R.id.content)
+        view.layoutParams = view.layoutParams?.let {
+            val params = it as ViewGroup.MarginLayoutParams
+            params.topMargin = getStatusBarHeight()
+            params
+        }
         LocalBroadcastManager.getInstance(applicationContext).run {
             registerReceiver(closeActivityReceiver, IntentFilter(Broadcast.CLOSE_NINCHAT_ACTIVITY))
         }
