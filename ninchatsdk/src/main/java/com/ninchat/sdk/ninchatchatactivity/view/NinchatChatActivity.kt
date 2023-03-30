@@ -3,16 +3,10 @@ package com.ninchat.sdk.ninchatchatactivity.view
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.graphics.PixelFormat
 import android.hardware.SensorManager
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.util.Log
-import android.view.Surface
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.RelativeLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.react.modules.core.PermissionListener
@@ -46,7 +40,6 @@ import org.greenrobot.eventbus.ThreadMode
 import org.jitsi.meet.sdk.BroadcastEvent
 import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
 import org.jitsi.meet.sdk.JitsiMeetActivityInterface
-import org.jitsi.meet.sdk.JitsiMeetView
 
 class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMeetActivityInterface {
     private var p2pIntegration: NinchatP2PIntegration? = null
@@ -66,6 +59,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             groupIntegration?.onChannelClosed()
         },
         onTransfer = {
+            onVideoHangUp(null)
             quit(it)
         },
         onP2PVideoCallInvitation = {
@@ -95,7 +89,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         onJitsiConferenceEvents = { intent ->
             if (intent == null) return@NinchatChatBroadcastManager
             val event = BroadcastEvent(intent)
-            Log.e("JITSI EVENT", "${event.type}")
             when (event.type) {
                 BroadcastEvent.Type.CONFERENCE_TERMINATED, BroadcastEvent.Type.READY_TO_CLOSE -> {
                     groupIntegration?.onHangup()
@@ -386,10 +379,8 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         ).apply {
             enable()
         }
-
         if (model.isGroupCall) {
             groupIntegration = NinchatGroupCallIntegration(
-                jitsiMeetView = JitsiMeetView(this),
                 mActivity = this@NinchatChatActivity,
                 chatClosed = model.chatClosed,
             )

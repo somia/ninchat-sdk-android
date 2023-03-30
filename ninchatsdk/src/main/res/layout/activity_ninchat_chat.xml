@@ -33,6 +33,22 @@
         tools:visibility="gone" />
 
     <LinearLayout
+        android:id="@+id/jitsi_frame_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <org.jitsi.meet.sdk.JitsiMeetView
+            android:id="@+id/jitsi_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/content_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -63,16 +79,6 @@
                 layout="@layout/ninchat_join_end_conference"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone"
-                tools:visibility="visible" />
-
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:id="@+id/jitsi_frame_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/black"
                 android:visibility="gone"
                 tools:visibility="visible" />
 

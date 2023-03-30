@@ -210,6 +210,9 @@ class NinchatSiteConfig {
     fun getVideoCallRejectedText(): String =
         getTranslation("Video chat declined")
 
+    fun getMessageDeletedText(): String =
+        getTranslation("This message was deleted")
+
     fun getMOTDText(): String =
         getString("motd") ?: ""
 

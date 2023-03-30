@@ -11,6 +11,8 @@
         <item name="android:autoLink">all</item>
         <item name="android:textColorLink">@color/ninchat_color_link</item>
         <item name="android:buttonStyle">@style/NinchatTheme.Button</item>
+
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <style name="NinchatTheme.Button" parent="android:Widget.Material.Light.Button">

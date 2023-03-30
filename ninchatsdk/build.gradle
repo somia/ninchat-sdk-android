@@ -94,7 +94,7 @@ dependencies {
 
     implementation 'com.airbnb.android:paris:1.7.3'
     // implementation 'com.ninchat:libwebrtc:106.0.3'
-    implementation ('org.jitsi.react:jitsi-meet-sdk:99.1.0') { transitive = true }
+    implementation ('org.jitsi.react:jitsi-meet-sdk:0.15.0') { transitive = true }
 }
 
 apply plugin: 'maven'
