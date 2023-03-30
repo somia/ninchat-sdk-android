@@ -1,6 +1,7 @@
 package com.ninchat.sdk.adapters;
 
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.AnimationDrawable;
 
 import androidx.annotation.DrawableRes;
@@ -65,7 +66,13 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             super(itemView);
         }
 
-        private void setAvatar(final ImageView avatar, final NinchatMessage ninchatMessage, final boolean hideAvatar) {
+        private void setAvatar(final ImageView avatar, final NinchatMessage ninchatMessage, final boolean hideAvatar, final boolean isDeletedMessage) {
+            // if it is a deleted message, hide the avatar
+            if (isDeletedMessage) {
+                avatar.setVisibility(View.GONE);
+                return;
+            }
+
             final NinchatSessionManager sessionManager = NinchatSessionManager.getInstance();
             if (sessionManager == null) {
                 return;
@@ -83,13 +90,11 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         sessionManager.ninchatState.getSiteConfig().getAgentAvatar() :
                         sessionManager.ninchatState.getSiteConfig().getUserAvatar();
             }
-
             if (ninchatMessage.isRemoteMessage() && shouldShowTitlebar()) {
                 avatar.setVisibility(View.GONE);
                 return;
             }
             if (!TextUtils.isEmpty(userAvatar)) {
-
                 GlideWrapper.loadImageAsCircle(itemView.getContext(), userAvatar, avatar, ninchatMessage.isRemoteMessage() ? R.drawable.ninchat_chat_avatar_left : R.drawable.ninchat_chat_avatar_right);
             }
             final boolean showAvatars = ninchatMessage.isRemoteMessage() ?
@@ -103,7 +108,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             }
         }
 
-        private void bindMessage(final @IdRes int wrapperId, final @IdRes int headerId, final @IdRes int senderId, final @IdRes int timestampId, final @IdRes int messageView, final @IdRes int imageId, final @IdRes int playIconId, final @IdRes int avatarId, final NinchatMessage ninchatMessage, final boolean isContinuedMessage, int firstMessageBackground, final @DrawableRes int repeatedMessageBackground) {
+        private void bindMessage(final @IdRes int wrapperId, final @IdRes int headerId, final @IdRes int senderId, final @IdRes int timestampId, final @IdRes int messageView, final @IdRes int imageId, final @IdRes int playIconId, final @IdRes int avatarId, final NinchatMessage ninchatMessage, boolean isContinuedMessage, int firstMessageBackground, final @DrawableRes int repeatedMessageBackground) {
+            final Boolean isDeletedMessage = ninchatMessage.getType() == NinchatMessage.Type.DELETED;
             itemView.findViewById(wrapperId).setVisibility(View.VISIBLE);
             itemView.findViewById(headerId).setVisibility(View.GONE);
 
@@ -111,10 +117,9 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             final Boolean isAgent = senderId == R.id.ninchat_chat_message_agent_name;
             String senderNameOverride = NinchatSessionManager.getInstance().getName(isAgent);
             sender.setText(senderNameOverride != null ? senderNameOverride : ninchatMessage.getSender(isAgent));
-
             final TextView timestamp = itemView.findViewById(timestampId);
             timestamp.setText(TIMESTAMP_FORMATTER.format(ninchatMessage.getTimestamp()));
-            setAvatar(itemView.findViewById(avatarId), ninchatMessage, isContinuedMessage);
+            setAvatar(itemView.findViewById(avatarId), ninchatMessage, isContinuedMessage, isDeletedMessage);
             final TextView message = itemView.findViewById(messageView);
             message.setVisibility(View.GONE);
             final Spanned messageContent = ninchatMessage.getMessage();
@@ -129,6 +134,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 message.setVisibility(View.VISIBLE);
                 message.setAutoLinkMask(Linkify.ALL);
                 message.setText(messageContent);
+                if (isDeletedMessage)
+                    message.setTypeface(null, Typeface.ITALIC);
             } else if (file.isDownloadableFile()) {
                 message.setVisibility(View.VISIBLE);
                 message.setText(file.getFileLink());
@@ -136,7 +143,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             } else {
                 final int width = file.getWidth();
                 final int height = file.getHeight();
-                final int density = (int)itemView.getResources().getDisplayMetrics().density;
+                final int density = (int) itemView.getResources().getDisplayMetrics().density;
                 image.setVisibility(View.VISIBLE);
                 image.setBackgroundResource(isContinuedMessage ? repeatedMessageBackground : firstMessageBackground);
                 GlideWrapper.loadImage(image.getContext(), file.getThumbnailUrl(), image, R.color.ninchat_colorPrimaryDark, width * density, height * density);
@@ -154,7 +161,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             if (isContinuedMessage) {
                 itemView.findViewById(wrapperId).setPadding(0, 0, 0, 0);
             } else {
-                itemView.findViewById(headerId).setVisibility(View.VISIBLE);
+                if(!isDeletedMessage)
+                    itemView.findViewById(headerId).setVisibility(View.VISIBLE);
             }
         }
 
@@ -213,7 +221,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_agent_image).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_multichoice).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(isContinuedMessage ? View.GONE : View.VISIBLE);
-                setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
+                setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage, false);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_message).setVisibility(View.GONE);
 
                 String agentNameOverride = NinchatSessionManager.getInstance().getName(true);
@@ -242,7 +250,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 itemView.findViewById(R.id.ninchat_chat_message_agent_image).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_title).setVisibility(isContinuedMessage ? View.GONE : View.VISIBLE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent_writing).setVisibility(View.GONE);
-                setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage);
+                setAvatar(itemView.findViewById(R.id.ninchat_chat_message_agent_avatar), data, isContinuedMessage, false);
 
                 String agentNameOverride = NinchatSessionManager.getInstance().getName(true);
                 final TextView agentName = itemView.findViewById(R.id.ninchat_chat_message_agent_name);
@@ -322,7 +330,8 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                         R.id.ninchat_chat_message_agent_avatar,
                         data, isContinuedMessage,
                         R.drawable.ninchat_chat_bubble_left,
-                        R.drawable.ninchat_chat_bubble_left_repeated);
+                        R.drawable.ninchat_chat_bubble_left_repeated
+                );
             } else {
                 itemView.findViewById(R.id.ninchat_chat_message_meta_container).setVisibility(View.GONE);
                 itemView.findViewById(R.id.ninchat_chat_message_agent).setVisibility(View.GONE);
@@ -375,6 +384,10 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     public void add(final String messageId, final NinchatMessage message) {
         ninchatMessageList.add(messageId, message);
+    }
+
+    public void addDeletedMessage(final String messageId, final NinchatMessage message) {
+        ninchatMessageList.addDeletedMessage(messageId, message);
     }
 
     public String getLastMessageId(final boolean allowMeta) {
@@ -440,7 +453,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
 
     @Override
     public int getItemViewType(int position) {
-        return position;
+        return ninchatMessageList.getItemMuxedPosition(position);
     }
 
     @Override
@@ -465,7 +478,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
                 if (message != null && position - 1 >= 0) {
                     final NinchatMessage previousMessage = ninchatMessageList.getMessage(position - 1);
                     if (previousMessage != null)
-                        isContinuedMessage = message.getSenderId().equals(previousMessage.getSenderId());
+                        isContinuedMessage = message.getType() != NinchatMessage.Type.DELETED && previousMessage.getType() != NinchatMessage.Type.DELETED && message.getSenderId().equals(previousMessage.getSenderId());
                 }
             } catch (final Exception e) {
                 // Ignore
