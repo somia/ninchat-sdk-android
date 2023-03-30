@@ -1,18 +1,18 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi
 
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
-import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.LayoutChangeListener
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.NinchatGroupCallPresenter
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.OnClickListener
 import com.ninchat.sdk.utils.display.getScreenHeight
-import com.ninchat.sdk.utils.display.getScreenWidth
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
+import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlinx.android.synthetic.main.ninchat_join_end_conference.*
@@ -24,7 +24,6 @@ import org.jitsi.meet.sdk.JitsiMeetView
 import java.net.URL
 
 class NinchatGroupCallIntegration(
-    private val jitsiMeetView: JitsiMeetView,
     private val mActivity: NinchatChatActivity,
     chatClosed: Boolean = false,
 ) {
@@ -35,11 +34,10 @@ class NinchatGroupCallIntegration(
     }
     private val presenter = NinchatGroupCallPresenter(model = model)
     private val onClickListener = OnClickListener(intervalInMs = 2000)
-    private val layoutChangeListener = LayoutChangeListener() { width, height ->
-        onConfigurationChange(width, height)
-    }
+    private var jitsiMeetView: JitsiMeetView? = null
 
     init {
+        jitsiMeetView = mActivity.jitsi_view
         presenter.renderInitialView(mActivity = mActivity)
         attachHandler()
     }
@@ -50,13 +48,6 @@ class NinchatGroupCallIntegration(
                 presenter.onClickHandler()
             }
         }
-        val params = LinearLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT,
-            FrameLayout.LayoutParams.MATCH_PARENT
-        ).apply {
-            // height = mActivity.getScreenHeight()
-        }
-        mActivity.jitsi_frame_layout.addView(jitsiMeetView, params)
     }
 
     fun onChannelClosed() {
@@ -67,7 +58,6 @@ class NinchatGroupCallIntegration(
     fun hangUp() {
         LocalBroadcastManager.getInstance(mActivity.applicationContext)
             .sendBroadcast(BroadcastIntentHelper.buildHangUpIntent())
-
         // wait for the jitsi event to update the view
         // if jitsi is not running what should we do ? -> if was not running then call onHangup manually to propagate UI updates
         if (model.onGoingVideoCall) {
@@ -90,23 +80,53 @@ class NinchatGroupCallIntegration(
             .setToken(jitsiToken)
             .setServerURL(URL(jitsiServerAddress))
             //.setServerURL(URL("https://meet.jit.si"))
-            .setFeatureFlag("pip.enabled", false)
             .setFeatureFlag("add-people.enabled", false)
+            .setFeatureFlag("android.audio-focus.disabled", false)
+            .setFeatureFlag("audio-mute.enabled", true)
             .setFeatureFlag("calendar.enabled", false)
+            .setFeatureFlag("call-integration.enabled", false)
+            .setFeatureFlag("car-mode.enabled", false)
+            .setFeatureFlag("close-captions.enabled", false)
+            .setFeatureFlag("conference-timer.enabled", true)
             .setFeatureFlag("chat.enabled", false)
-            .setFeatureFlag("filmstrip.enabled", false)
+            .setFeatureFlag("filmstrip.enabled", true)
             .setFeatureFlag("invite.enabled", false)
+            .setFeatureFlag("android.screensharing.enabled", false)
+            .setFeatureFlag("speakerstats.enabled", false)
             .setFeatureFlag("kick-out.enabled", false)
             .setFeatureFlag("live-streaming.enabled", false)
             .setFeatureFlag("meeting-name.enabled", false)
             .setFeatureFlag("meeting-password.enabled", false)
+            .setFeatureFlag("notifications.enabled", false)
+            .setFeatureFlag("overflow-menu.enabled", true)
+            .setFeatureFlag("pip.enabled", false)
+            .setFeatureFlag("pip-while-screen-sharing.enabled", false)
+            .setFeatureFlag("prejoinpage.enabled", true)
+            .setFeatureFlag("prejoinpage.hide-display-name.enabled", true)
+            .setFeatureFlag("raise-hand.enabled", false)
             .setFeatureFlag("recording.enabled", false)
+            //.setFeatureFlag("resolution", 360)
             .setFeatureFlag("server-url-change.enabled", false)
-            .setFeatureFlag("filmstrip.enabled", true)
-            .setFeatureFlag("call-integration.enabled", false)
+            .setFeatureFlag("settings.enabled", true)
+            .setFeatureFlag("tile-view.enabled", true)
+            .setFeatureFlag("toolbox.alwaysVisible", false)
+            .setFeatureFlag("toolbox.enabled", true)
+            .setFeatureFlag("video-mute.enabled", true)
+            .setFeatureFlag("video-share.enabled", false)
+            .setFeatureFlag("fullscreen.enabled", false)
+            .setFeatureFlag("welcomepage.enabled", false)
+            .setFeatureFlag("help.enabled", false)
+            .setFeatureFlag("lobby-mode.enabled", false)
+            .setFeatureFlag("reactions.enabled", false)
+            .setFeatureFlag("settings.profile-section.enabled", false)
+            .setFeatureFlag("settings.conference-section-only-self-view.enabled", true)
+            .setFeatureFlag("settings.links-section.enabled", false)
+            .setFeatureFlag("settings.build-info-section.enabled", false)
+            .setFeatureFlag("settings.advanced-section.enabled", false)
+            .setFeatureFlag("security-options.enabled", false)
             .build()
 
-        jitsiMeetView.join(options)
+        jitsiMeetView?.join(options)
         onStartVideo()
     }
 
@@ -123,23 +143,27 @@ class NinchatGroupCallIntegration(
         model.softkeyboardVisible = false
         mActivity.ninchat_chat_root?.apply {
             hideKeyBoardForce()
-
             ninchat_titlebar.ninchat_titlebar_toggle_chat.visibility = View.VISIBLE
             ninchat_conference_view.visibility = View.GONE
             ninchat_p2p_video_view.visibility = View.GONE
             jitsi_frame_layout.visibility = View.VISIBLE
 
             // set updated layout parameter
-            val (conferenceViewParams, commandViewParams) = presenter.getLayoutParams(mActivity = mActivity)
+            val (conferenceViewParams, commandViewParams, _) = presenter.getLayoutParams(mActivity = mActivity)
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
+            jitsi_frame_layout.layoutParams = jitsi_frame_layout.layoutParams.let {
+                val mLayout = it as RelativeLayout.LayoutParams
+                mLayout.topMargin = ninchat_titlebar.height
+                mLayout.removeRule(RelativeLayout.BELOW)
+                mLayout
+            }
 
             presenter.onNewMessage(
                 view = ninchat_titlebar,
                 hasUnreadMessage = false
             )
         }
-        layoutChangeListener.register(view = mActivity.jitsi_frame_layout)
     }
 
     fun onHangup() {
@@ -148,18 +172,15 @@ class NinchatGroupCallIntegration(
         model.softkeyboardVisible = false
 
         mActivity.hideKeyBoardForce()
-        // mActivity.jitsi_frame_layout.removeView(jitsiMeetView)
         presenter.renderInitialView(mActivity = mActivity)
-        jitsiMeetView.dispose()
-
-        layoutChangeListener.unregister()
+        jitsiMeetView?.dispose()
     }
 
     fun onSoftKeyboardVisibilityChanged(isVisible: Boolean) {
         model.softkeyboardVisible = isVisible
         mActivity.ninchat_chat_root?.apply {
             // set updated layout parameter
-            val (conferenceViewParams, commandViewParams) = presenter.getLayoutParams(mActivity = mActivity)
+            val (conferenceViewParams, commandViewParams, _) = presenter.getLayoutParams(mActivity = mActivity)
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
         }
@@ -168,15 +189,24 @@ class NinchatGroupCallIntegration(
 
     fun onToggleChat(mActivity: NinchatChatActivity) {
         model.showChatView = !model.showChatView
+
         mActivity.ninchat_chat_root?.apply {
             hideKeyBoardForce()
             // set updated layout parameter
-            val (conferenceViewParams, commandViewParams) = presenter.getLayoutParams(mActivity = mActivity)
+            val (conferenceViewParams, commandViewParams, isLargeScreen) = presenter.getLayoutParams(
+                mActivity = mActivity
+            )
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
             if (model.showChatView) {
                 // update new message icon
                 onNewMessage(view = ninchat_titlebar)
+                NinchatSessionManager.getInstance()
+                    ?.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
+                        override fun onMessageAdapter(adapter: NinchatMessageAdapter) {
+                            adapter.scrollToBottom(true)
+                        }
+                    })
             }
         }
     }
@@ -191,21 +221,9 @@ class NinchatGroupCallIntegration(
                 if (isLargeScreen) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
 
             // set updated layout parameter
-            val (conferenceViewParams, commandViewParams) = presenter.getLayoutParams(mActivity = mActivity)
+            val (conferenceViewParams, commandViewParams, _) = presenter.getLayoutParams(mActivity = mActivity)
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
         }
-        // onConfigurationChange(newHeight = layoutChangeListener.prevHeight, newWidth =  layoutChangeListener.prevWidth)
-    }
-
-
-    // this method needs to be refactored
-    private fun onConfigurationChange(newWidth: Int, newHeight: Int) {
-        if (!model.onGoingVideoCall) return
-        if (model.showChatView) return
-        jitsiMeetView.layoutParams = jitsiMeetView.layoutParams.apply {
-            height = newHeight
-        }
-        jitsiMeetView.requestLayout()
     }
 }
