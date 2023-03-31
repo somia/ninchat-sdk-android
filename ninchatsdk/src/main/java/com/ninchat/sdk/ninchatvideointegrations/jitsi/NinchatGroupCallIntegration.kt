@@ -10,7 +10,6 @@ import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.NinchatGroupCallPresenter
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.OnClickListener
-import com.ninchat.sdk.utils.display.getScreenHeight
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
@@ -33,7 +32,7 @@ class NinchatGroupCallIntegration(
         parse()
     }
     private val presenter = NinchatGroupCallPresenter(model = model)
-    private val onClickListener = OnClickListener(intervalInMs = 2000)
+    private val joinChatHandler = OnClickListener(intervalInMs = 2000)
     private var jitsiMeetView: JitsiMeetView? = null
 
     init {
@@ -44,7 +43,7 @@ class NinchatGroupCallIntegration(
 
     private fun attachHandler() {
         mActivity.conference_join_button.setOnClickListener {
-            onClickListener.onClickListener {
+            joinChatHandler.onClickListener {
                 presenter.onClickHandler()
             }
         }
@@ -72,14 +71,14 @@ class NinchatGroupCallIntegration(
         jitsiServerAddress: String,
     ) {
         val options: JitsiMeetConferenceOptions = JitsiMeetConferenceOptions.Builder()
-            .setRoom(jitsiRoom)
+            .setRoom("pallab-98765")
             .setUserInfo(
                 JitsiMeetUserInfo().apply {
                     displayName = NinchatSessionManager.getInstance().userName
                 })
-            .setToken(jitsiToken)
-            .setServerURL(URL(jitsiServerAddress))
-            //.setServerURL(URL("https://meet.jit.si"))
+            //.setToken(jitsiToken)
+            //.setServerURL(URL(jitsiServerAddress))
+            .setServerURL(URL("https://meet.jit.si"))
             .setFeatureFlag("add-people.enabled", false)
             .setFeatureFlag("android.audio-focus.disabled", false)
             .setFeatureFlag("audio-mute.enabled", true)
@@ -185,7 +184,6 @@ class NinchatGroupCallIntegration(
             chat_message_list_and_editor.layoutParams = commandViewParams
         }
     }
-
 
     fun onToggleChat(mActivity: NinchatChatActivity) {
         model.showChatView = !model.showChatView

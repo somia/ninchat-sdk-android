@@ -82,6 +82,7 @@
                 android:visibility="gone"
                 tools:visibility="visible" />
 
+
         </RelativeLayout>
 
         <!--Chat message list and editor view group-->

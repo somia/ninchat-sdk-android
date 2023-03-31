@@ -245,6 +245,10 @@
         <item name="android:textColor">@color/ninchat_color_button_primary_text</item>
     </style>
 
+    <style name="NinchatTheme.Conference.TransparentBackground" parent="NinchatTheme">
+        <item name="android:background">@drawable/ninchat_translucent_background</item>
+    </style>
+
 
 
 </resources>
