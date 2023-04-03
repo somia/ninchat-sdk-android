@@ -34,19 +34,16 @@ abstract class NinchatBaseActivity : AppCompatActivity() {
 
     protected fun requestFileAccessPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_PERMISSION_REQUEST_CODE)
+            requestPermissions(
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                STORAGE_PERMISSION_REQUEST_CODE
+            )
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layoutRes)
-        val view = findViewById<View>(android.R.id.content)
-        view.layoutParams = view.layoutParams?.let {
-            val params = it as ViewGroup.MarginLayoutParams
-            params.topMargin = getStatusBarHeight()
-            params
-        }
         LocalBroadcastManager.getInstance(applicationContext).run {
             registerReceiver(closeActivityReceiver, IntentFilter(Broadcast.CLOSE_NINCHAT_ACTIVITY))
         }
