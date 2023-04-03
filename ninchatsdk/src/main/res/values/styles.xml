@@ -11,8 +11,6 @@
         <item name="android:autoLink">all</item>
         <item name="android:textColorLink">@color/ninchat_color_link</item>
         <item name="android:buttonStyle">@style/NinchatTheme.Button</item>
-
-        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
     <style name="NinchatTheme.Button" parent="android:Widget.Material.Light.Button">
@@ -243,6 +241,10 @@
     <style name="NinchatTheme.Conference.Ended" parent="NinchatTheme.Conference.Join">
         <item name="android:background">@drawable/ninchat_chat_disable_button</item>
         <item name="android:textColor">@color/ninchat_color_button_primary_text</item>
+    </style>
+
+    <style name="NinchatTheme.Conference.TransparentBackground" parent="NinchatTheme">
+        <item name="android:background">@drawable/ninchat_translucent_background</item>
     </style>
 
 
