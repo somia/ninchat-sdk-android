@@ -1,16 +1,18 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi
 
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.R
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.NinchatGroupCallPresenter
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.OnClickListener
-import com.ninchat.sdk.utils.display.getScreenHeight
+import com.ninchat.sdk.utils.display.getStatusBarHeight
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
@@ -152,6 +154,7 @@ class NinchatGroupCallIntegration(
             val (conferenceViewParams, commandViewParams, _) = presenter.getLayoutParams(mActivity = mActivity)
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
+
             jitsi_frame_layout.layoutParams = jitsi_frame_layout.layoutParams.let {
                 val mLayout = it as RelativeLayout.LayoutParams
                 mLayout.topMargin = ninchat_titlebar.height
@@ -173,6 +176,7 @@ class NinchatGroupCallIntegration(
 
         mActivity.hideKeyBoardForce()
         presenter.renderInitialView(mActivity = mActivity)
+
         jitsiMeetView?.dispose()
     }
 
@@ -224,6 +228,20 @@ class NinchatGroupCallIntegration(
             val (conferenceViewParams, commandViewParams, _) = presenter.getLayoutParams(mActivity = mActivity)
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
+        }
+    }
+
+    fun handleConferenceWillJoin(mActivity: NinchatChatActivity) {
+        mActivity.ninchat_chat_root?.apply {
+            layoutParams = layoutParams.let {
+                val params = it as FrameLayout.LayoutParams
+                params.topMargin = mActivity.getStatusBarHeight()
+                params
+            }
+
+            mActivity.window.statusBarColor =
+                resources.getColor(R.color.ninchat_colorPrimaryDark, mActivity.theme)
+
         }
     }
 }

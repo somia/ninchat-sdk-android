@@ -84,7 +84,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 jitsiToken = jitsiToken,
                 jitsiServerAddress = jitsiServerAddress,
             )
-
         },
         onJitsiConferenceEvents = { intent ->
             if (intent == null) return@NinchatChatBroadcastManager
@@ -92,6 +91,9 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             when (event.type) {
                 BroadcastEvent.Type.CONFERENCE_TERMINATED, BroadcastEvent.Type.READY_TO_CLOSE -> {
                     groupIntegration?.onHangup()
+                }
+                BroadcastEvent.Type.CONFERENCE_WILL_JOIN-> {
+                    groupIntegration?.handleConferenceWillJoin(mActivity = this@NinchatChatActivity)
                 }
             }
         }

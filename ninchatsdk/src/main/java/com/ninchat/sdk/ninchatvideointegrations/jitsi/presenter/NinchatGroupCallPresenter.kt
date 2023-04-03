@@ -2,6 +2,7 @@ package com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter
 
 import android.content.res.Configuration
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.airbnb.paris.extensions.style
 import com.ninchat.sdk.NinchatSessionManager
@@ -52,6 +53,11 @@ class NinchatGroupCallPresenter(
             val (conferenceViewParams, commandViewParams, _) = getLayoutParams(mActivity = mActivity)
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
+            layoutParams = layoutParams.let {
+                val params = it as FrameLayout.LayoutParams
+                params.topMargin = 0
+                params
+            }
         }
         applyBackground(mActivity = mActivity)
     }

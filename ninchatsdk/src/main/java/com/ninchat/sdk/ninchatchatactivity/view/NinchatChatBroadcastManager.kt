@@ -91,6 +91,7 @@ class NinchatChatBroadcastManager(
             IntentFilter().apply {
                 addAction(BroadcastEvent.Type.CONFERENCE_TERMINATED.action)
                 addAction(BroadcastEvent.Type.READY_TO_CLOSE.action)
+                addAction(BroadcastEvent.Type.CONFERENCE_WILL_JOIN.action)
             }
         )
     }
