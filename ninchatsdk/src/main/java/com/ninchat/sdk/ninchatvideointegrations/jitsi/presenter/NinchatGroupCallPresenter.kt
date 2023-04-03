@@ -36,6 +36,7 @@ class NinchatGroupCallPresenter(
             ninchat_p2p_video_view.visibility = View.GONE
             jitsi_frame_layout.visibility = View.GONE
             ninchat_titlebar.ninchat_titlebar_toggle_chat.visibility = View.GONE
+            ninchat_video_view_translucent_background.visibility = View.GONE
 
             ninchat_conference_view.apply {
                 conference_title.text = model.conferenceTitle

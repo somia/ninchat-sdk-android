@@ -47,6 +47,11 @@ class NinchatGroupCallIntegration(
                 presenter.onClickHandler()
             }
         }
+        mActivity.ninchat_video_view_translucent_background.setOnClickListener {
+            if(model.showChatView) {
+                onToggleChat(mActivity = mActivity)
+            }
+        }
     }
 
     fun onChannelClosed() {
@@ -71,14 +76,14 @@ class NinchatGroupCallIntegration(
         jitsiServerAddress: String,
     ) {
         val options: JitsiMeetConferenceOptions = JitsiMeetConferenceOptions.Builder()
-            .setRoom("pallab-98765")
+            .setRoom(jitsiRoom)
             .setUserInfo(
                 JitsiMeetUserInfo().apply {
                     displayName = NinchatSessionManager.getInstance().userName
                 })
-            //.setToken(jitsiToken)
-            //.setServerURL(URL(jitsiServerAddress))
-            .setServerURL(URL("https://meet.jit.si"))
+            .setToken(jitsiToken)
+            .setServerURL(URL(jitsiServerAddress))
+            //.setServerURL(URL("https://meet.jit.si"))
             .setFeatureFlag("add-people.enabled", false)
             .setFeatureFlag("android.audio-focus.disabled", false)
             .setFeatureFlag("audio-mute.enabled", true)
@@ -145,6 +150,7 @@ class NinchatGroupCallIntegration(
             ninchat_titlebar.ninchat_titlebar_toggle_chat.visibility = View.VISIBLE
             ninchat_conference_view.visibility = View.GONE
             ninchat_p2p_video_view.visibility = View.GONE
+            ninchat_video_view_translucent_background.visibility = View.GONE
             jitsi_frame_layout.visibility = View.VISIBLE
 
             // set updated layout parameter
@@ -206,6 +212,8 @@ class NinchatGroupCallIntegration(
                         }
                     })
             }
+            ninchat_video_view_translucent_background.visibility =
+                if (model.showChatView) View.VISIBLE else View.GONE
         }
     }
 
