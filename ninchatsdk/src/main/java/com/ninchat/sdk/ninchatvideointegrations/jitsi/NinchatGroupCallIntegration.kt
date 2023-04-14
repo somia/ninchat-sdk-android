@@ -96,6 +96,7 @@ class NinchatGroupCallIntegration(
             .setFeatureFlag("close-captions.enabled", false)
             .setFeatureFlag("conference-timer.enabled", true)
             .setFeatureFlag("chat.enabled", false)
+            .setFeatureFlag("participants.enabled", false)
             .setFeatureFlag("filmstrip.enabled", true)
             .setFeatureFlag("invite.enabled", false)
             .setFeatureFlag("android.screensharing.enabled", false)
