@@ -129,7 +129,6 @@ public final class NinchatSessionManager {
 
 
     public void setConfiguration(final String config) {
-        Log.v(TAG, "Got configuration: " + config);
         ninchatState.getSiteConfig().setConfigString(config, ninchatState.getPreferredEnvironments());
         Log.i(TAG, "Configuration fetched successfully!");
         final Context context = contextWeakReference.get();

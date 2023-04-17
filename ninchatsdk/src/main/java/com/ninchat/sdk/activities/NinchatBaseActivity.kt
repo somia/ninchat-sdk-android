@@ -1,7 +1,6 @@
 package com.ninchat.sdk.activities
 
 import android.Manifest
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -10,15 +9,18 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.sdk.R
+import com.ninchat.sdk.utils.display.getStatusBarHeight
 import com.ninchat.sdk.utils.misc.Broadcast
 
-abstract class NinchatBaseActivity : Activity() {
+abstract class NinchatBaseActivity : AppCompatActivity() {
     @get:LayoutRes
     protected abstract val layoutRes: Int
 
@@ -32,7 +34,10 @@ abstract class NinchatBaseActivity : Activity() {
 
     protected fun requestFileAccessPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), STORAGE_PERMISSION_REQUEST_CODE)
+            requestPermissions(
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                STORAGE_PERMISSION_REQUEST_CODE
+            )
         }
     }
 

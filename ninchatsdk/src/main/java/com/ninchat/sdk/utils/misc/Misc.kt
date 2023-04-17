@@ -1,10 +1,14 @@
 package com.ninchat.sdk.utils.misc
 
+import android.content.ContentResolver
 import android.content.Context
+import android.database.Cursor
 import android.graphics.Shader
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
+import android.provider.OpenableColumns
 import android.text.Html
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
@@ -17,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ninchat.sdk.BuildConfig
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.helper.NinchatImageGetter
+import com.ninchat.sdk.states.NinchatState
 
 class Misc {
     companion object {
@@ -69,6 +74,30 @@ class Misc {
                 }
             }
         }
+
+        @JvmStatic
+        fun getFileName(uri: Uri, mContentResolver: ContentResolver): String {
+            val cursor: Cursor = mContentResolver
+                .query(uri, null, null, null, null, null) ?: return ""
+
+            cursor.use {
+                val nameIndex: Int = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (it.moveToFirst()) {
+                    return it.getString(nameIndex)
+                } else {
+                    return ""
+                }
+            }
+        }
+
+        @JvmStatic
+        fun shouldPartChannel(state: NinchatState?): Boolean {
+            //1. there is no post audience questionnaire
+            //2. Or if user click skipped rating
+            return state?.let {
+                it.skippedReview || !it.hasQuestionnaire(false)
+            } ?: false
+        }
     }
 }
 
@@ -79,9 +108,14 @@ class Broadcast {
         const val CHANNEL_JOINED = BuildConfig.LIBRARY_PACKAGE_NAME + ".channelJoined"
         const val CHANNEL_CLOSED = BuildConfig.LIBRARY_PACKAGE_NAME + ".channelClosed"
         const val WEBRTC_MESSAGE = BuildConfig.LIBRARY_PACKAGE_NAME + ".webRTCMessage"
+        const val JITSI_DISCOVERED_MESSAGE =
+            BuildConfig.LIBRARY_PACKAGE_NAME + ".jitsiDiscoveredMessage"
         const val WEBRTC_MESSAGE_ID = WEBRTC_MESSAGE + ".messageId"
         const val WEBRTC_MESSAGE_SENDER = WEBRTC_MESSAGE + ".sender"
         const val WEBRTC_MESSAGE_TYPE = WEBRTC_MESSAGE + ".type"
+        const val WEBRTC_MESSAGE_JITSI_ROOM = WEBRTC_MESSAGE + ".jitsi.room"
+        const val WEBRTC_MESSAGE_JITSI_TOKEN = WEBRTC_MESSAGE + ".jitsi.token"
+        const val WEBRTC_MESSAGE_JITSI_SERVER = WEBRTC_MESSAGE + ".jitsi.server"
         const val WEBRTC_MESSAGE_CONTENT = WEBRTC_MESSAGE + ".content"
         const val CLOSE_NINCHAT_ACTIVITY = BuildConfig.LIBRARY_PACKAGE_NAME + ".closeActivity"
     }

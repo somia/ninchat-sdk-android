@@ -10,8 +10,18 @@ import kotlinx.android.synthetic.main.ninchat_titlebar_with_agent_info.view.*
 
 class NinchatTitlebarView {
     companion object {
-        private fun showTitlebarPlaceholder(view: View, callback: () -> Unit) {
-            if (!shouldShowTitlebar()) return
+        private fun showTitlebarPlaceholder(
+            view: View,
+            inBacklogView: Boolean = false,
+            callback: () -> Unit,
+            onToggleChat: (() -> Unit)? = null
+        ) {
+            if(!shouldShowTitlebar()) {
+                // if we are in backlog view and titleview is overridden ( always show ) then -> show titlebar
+                if(!(inBacklogView && showOverrideTitlebarView())) {
+                    return
+                }
+            }
 
             view.ninchat_titlebar_with_placeholder.visibility = View.VISIBLE
             view.ninchat_titlebar_with_agent_info.visibility = View.GONE
@@ -21,15 +31,24 @@ class NinchatTitlebarView {
                 it.setOnClickListener { callback() }
                 it.text = chatCloseText()
             }
+            view.ninchat_titlebar_toggle_chat?.let {
+                it.setOnClickListener { onToggleChat?.invoke() }
+            }
         }
 
         private fun showTitlebarWithAgentInfo(
             view: View,
+            inBacklogView: Boolean = false,
             data: NinchatTitleBarInfo,
-            callback: () -> Unit
+            callback: () -> Unit,
+            onToggleChat: (() -> Unit)? = null
         ) {
-            if (!shouldShowTitlebar()) return
-
+            if(!shouldShowTitlebar()) {
+                // if we are in backlog view and titleview is overridden ( always show ) then -> show titlebar
+                if(!(inBacklogView && showOverrideTitlebarView())) {
+                    return
+                }
+            }
             // if questionnaire name -> show questionnaire name
             if (data.hasName) {
                 view.ninchat_chat_titlebar_agent_name.text = data.name
@@ -59,6 +78,9 @@ class NinchatTitlebarView {
             view.ninchat_titlebar_chat_close?.let {
                 it.setOnClickListener { callback() }
                 it.text = chatCloseText()
+            }
+            view.ninchat_titlebar_toggle_chat?.let {
+                it.setOnClickListener { onToggleChat?.invoke() }
             }
         }
 
@@ -91,16 +113,16 @@ class NinchatTitlebarView {
             showTitlebarWithAgentInfo(view = view, data = titleBarInfo, callback = callback)
         }
 
-        fun showTitlebarForBacklog(view: View, callback: () -> Unit) {
+        fun showTitlebarForBacklog(view: View, callback: () -> Unit, onToggleChat: () -> Unit) {
             val titleBarInfo = getTitleBarInfoFromAgent() ?: return
             //1: if no name
             //2: if no name and no avatar
             if (!titleBarInfo.hasName || (!titleBarInfo.hasName && !titleBarInfo.hasAvatar)) {
                 // show placeholder
-                showTitlebarPlaceholder(view, callback = callback)
+                showTitlebarPlaceholder(view, callback = callback, inBacklogView = true, onToggleChat = onToggleChat)
                 return
             }
-            showTitlebarWithAgentInfo(view = view, data = titleBarInfo, callback = callback)
+            showTitlebarWithAgentInfo(view = view, data = titleBarInfo, inBacklogView = true, callback = callback, onToggleChat = onToggleChat)
         }
 
         fun showTitlebarForReview(view: View, callback: () -> Unit) {
