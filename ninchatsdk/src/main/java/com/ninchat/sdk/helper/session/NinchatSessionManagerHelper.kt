@@ -206,8 +206,10 @@ class NinchatSessionManagerHelper {
                     val queueName = queueAttributes?.getString("name")
                     currentSession.ninchatState.addQueue(
                         NinchatQueue(
-                            queueId, name = queueName,
-                            supportFiles = supportFiles, supportVideos = supportVideos
+                            queueId,
+                            name = queueName,
+                            supportFiles = supportFiles,
+                            supportVideos = supportVideos,
                         )
                     )
                 }
@@ -329,6 +331,10 @@ class NinchatSessionManagerHelper {
                 val isTargetAudience = params.getSafe<Props>("channel_attrs")?.getSafe<String>("requester_id") == sessionManager.ninchatState?.sessionCredentials?.userId
                 val message = params.getSafe<Props>("audience_metadata")?.getSafe<Props>("pre_answers")?.getSafe<String>("message")
                 val userName = params.getSafe<Props>("audience_metadata")?.getSafe<Props>("pre_answers")?.getSafe<String>("userName")
+                val isGroupVideoChannel = params.getSafe<Props>("channel_attrs")?.getSafe<String>("video") == "group"
+                // store whether this channel is a group video channel
+                sessionManager.ninchatState.isGroupVideoChannel = isGroupVideoChannel
+
                 if(!userName.isNullOrEmpty()) {
                     currentSession.ninchatState.userName = userName
                 }
@@ -452,6 +458,10 @@ class NinchatSessionManagerHelper {
                     return
                 }
                 val isAudienceTransfer = params.getSafe<String>("event_cause") == "audience_transfer"
+                val isGroupVideoChannel = channelAttributes?.getSafe<String>("video") == "group"
+                // store whether this channel is a group video channel
+                ninchatSessionManager.ninchatState.isGroupVideoChannel = isGroupVideoChannel
+
                 ninchatSessionManager.contextWeakReference?.get()?.let { mContext ->
                     if (!isAudienceTransfer && (closed || suspended)) {
                         LocalBroadcastManager.getInstance(mContext)
@@ -461,6 +471,24 @@ class NinchatSessionManagerHelper {
             }
         }
 
+        @JvmStatic
+        fun jitsiDiscovered(params: Props) {
+            val apiServerAddress = NinchatSessionManager.getInstance()?.ninchatState?.serverAddress
+                ?: "api.ninchat.com"
 
+            val jitsiRoom = params.getSafe<String>("jitsi_room")
+            val jitsiToken = params.getSafe<String>("jitsi_token")
+            val jitsiServerAddress = "https://${"jitsi-www"}.${apiServerAddress.removePrefix("api.")}"
+
+            NinchatSessionManager.getInstance()?.context?.let { mContext ->
+                LocalBroadcastManager.getInstance(mContext)
+                    .sendBroadcast(Intent(Broadcast.JITSI_DISCOVERED_MESSAGE).also { mIntent ->
+                        mIntent.putExtra(Broadcast.WEBRTC_MESSAGE_JITSI_ROOM, jitsiRoom)
+                        mIntent.putExtra(Broadcast.WEBRTC_MESSAGE_JITSI_TOKEN, jitsiToken)
+                        mIntent.putExtra(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER, jitsiServerAddress)
+                    })
+            }
+
+        }
     }
 }

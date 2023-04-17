@@ -210,6 +210,9 @@ class NinchatSiteConfig {
     fun getVideoCallRejectedText(): String =
         getTranslation("Video chat declined")
 
+    fun getMessageDeletedText(): String =
+        getTranslation("This message was deleted")
+
     fun getMOTDText(): String =
         getString("motd") ?: ""
 
@@ -304,6 +307,15 @@ class NinchatSiteConfig {
 
     fun getTitlebarCloseText(): String =
         getTranslation("Close")
+
+    fun getConferenceTitleText(): String =
+        getTranslation("This is a video meeting channel")
+
+    fun getConferenceButtonText(): String =
+        getTranslation("Join video meeting")
+
+    fun getConferenceDescriptionText(): String =
+        getString("videoMeetingInfoText") ?: ""
 
     internal fun getTranslation(translationKey: String = "translations", key: String): String? {
         var value: String? = null

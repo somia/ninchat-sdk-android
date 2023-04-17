@@ -5,6 +5,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.ninchat.client.Payload
 import com.ninchat.client.Props
 import com.ninchat.sdk.NinchatSessionManager
+import com.ninchat.sdk.events.OnNewMessage
 import com.ninchat.sdk.events.OnSubmitPostAudienceQuestionnaire
 import com.ninchat.sdk.helper.propsparser.getSafe
 import com.ninchat.sdk.ninchatmedia.model.NinchatFile
@@ -36,11 +37,13 @@ class NinchatMessageService {
                     return
                 }
                 val currentActionId = params?.getSafe<Long>("action_id")
-                val messageType = params?.getSafe<String>("message_type")
                 val sender = params?.getSafe<String>("message_user_id")
                 val messageId = params?.getSafe<String>("message_id")
                 val senderName = params?.getSafe<String>("message_user_name")
+                val messageDeleted = params?.getSafe<Boolean>("message_deleted") ?: false
                 val timestampMs = 1000L * ((params?.getSafe<Double>("message_time") ?: 0)).toLong()
+                val messageType =
+                    if (messageDeleted) NinchatMessageTypes.DELETED else params?.getSafe<String>("message_type")
                 val builder = StringBuilder()
                 payload?.let { currentPayload ->
                     for (i in 0 until currentPayload.length()) {
@@ -51,13 +54,29 @@ class NinchatMessageService {
                 if (webrtcMessage(messageType) && sender != ninchatSessionManager.ninchatState.userId) {
                     ninchatSessionManager.contextWeakReference?.get()?.let { mContext ->
                         LocalBroadcastManager.getInstance(mContext)
-                                .sendBroadcast(Intent(Broadcast.WEBRTC_MESSAGE)
-                                        .putExtra(Broadcast.WEBRTC_MESSAGE_ID, messageId)
-                                        .putExtra(Broadcast.WEBRTC_MESSAGE_TYPE, messageType)
-                                        .putExtra(Broadcast.WEBRTC_MESSAGE_SENDER, sender)
-                                        .putExtra(Broadcast.WEBRTC_MESSAGE_CONTENT, builder.toString()))
+                            .sendBroadcast(
+                                Intent(Broadcast.WEBRTC_MESSAGE)
+                                    .putExtra(Broadcast.WEBRTC_MESSAGE_ID, messageId)
+                                    .putExtra(Broadcast.WEBRTC_MESSAGE_TYPE, messageType)
+                                    .putExtra(Broadcast.WEBRTC_MESSAGE_SENDER, sender)
+                                    .putExtra(Broadcast.WEBRTC_MESSAGE_CONTENT, builder.toString())
+                            )
                     }
                 }
+
+                if (NinchatMessageTypes.DELETED == messageType) {
+                    ninchatSessionManager.messageAdapter?.addDeletedMessage(
+                        messageId,
+                        NinchatMessage(
+                            sender,
+                            ninchatSessionManager.ninchatState.siteConfig.getMessageDeletedText(),
+                            sender != ninchatSessionManager.ninchatState?.userId
+                        )
+                    )
+                    // A deleted message
+                    EventBus.getDefault().post(OnNewMessage())
+                }
+
                 if (NinchatMessageTypes.UI_COMPOSE == messageType) {
                     try {
                         val messages = JSONArray(builder.toString())
@@ -70,27 +89,37 @@ class NinchatMessageService {
                                 for (k in 0 until options.length()) {
                                     messageOptions.add(NinchatOption(options.getJSONObject(k)))
                                 }
-                                ninchatSessionManager.messageAdapter?.add(messageId, NinchatMessage(MULTICHOICE,
+                                ninchatSessionManager.messageAdapter?.add(
+                                    messageId, NinchatMessage(
+                                        MULTICHOICE,
                                         sender,
                                         senderName,
                                         message.getString("label"),
                                         message,
                                         messageOptions,
-                                        timestampMs))
+                                        timestampMs
+                                    )
+                                )
                             } else {
                                 simpleButtonChoice = true
                                 messageOptions.add(NinchatOption(message))
                             }
                         }
                         if (simpleButtonChoice) {
-                            ninchatSessionManager.messageAdapter?.add(messageId, NinchatMessage(MULTICHOICE,
+                            ninchatSessionManager.messageAdapter?.add(
+                                messageId, NinchatMessage(
+                                    MULTICHOICE,
                                     sender,
                                     senderName,
                                     null,
                                     null,
                                     messageOptions,
-                                    timestampMs))
+                                    timestampMs
+                                )
+                            )
                         }
+                        // A UI compose message
+                        EventBus.getDefault().post(OnNewMessage())
                     } catch (_: Exception) {
                         // pass
                     }
@@ -109,30 +138,81 @@ class NinchatMessageService {
                             val files = message.optJSONArray("files")
                             if (files != null) {
                                 files.optJSONObject(0)?.let { currentFile ->
-                                    val filename = currentFile.optJSONObject("file_attrs")?.optString("name")
-                                    val filesize = currentFile.optJSONObject("file_attrs")?.optInt("size")
+                                    val filename =
+                                        currentFile.optJSONObject("file_attrs")?.optString("name")
+                                    val filesize =
+                                        currentFile.optJSONObject("file_attrs")?.optInt("size")
                                             ?: 0
-                                    var filetype = currentFile.optJSONObject("file_attrs")?.optString("type")
+                                    var filetype =
+                                        currentFile.optJSONObject("file_attrs")?.optString("type")
                                     if (filetype == null || filetype == "application/octet-stream") {
                                         filetype = guessMimeTypeFromFileName(filename)
                                     }
                                     val fileId = currentFile.optString("file_id")
-                                    val ninchatFile = NinchatFile(messageId, fileId, filename, filesize, filetype, timestampMs, sender, senderName, sender != ninchatSessionManager.ninchatState?.userId)
+                                    val ninchatFile = NinchatFile(
+                                        messageId,
+                                        fileId,
+                                        filename,
+                                        filesize,
+                                        filetype,
+                                        timestampMs,
+                                        sender,
+                                        senderName,
+                                        sender != ninchatSessionManager.ninchatState?.userId
+                                    )
                                     ninchatSessionManager.ninchatState?.addFile(fileId, ninchatFile)
-                                    if (ninchatFile.url == null || ninchatFile.urlExpiry == null || ninchatFile.urlExpiry?.before(Date()) == true) {
+                                    if (ninchatFile.url == null || ninchatFile.urlExpiry == null || ninchatFile.urlExpiry?.before(
+                                            Date()
+                                        ) == true
+                                    ) {
                                         getIOScope().launch {
                                             NinchatDescribeFile.execute(
-                                                    currentSession = ninchatSessionManager.session,
-                                                    fileId = fileId
+                                                currentSession = ninchatSessionManager.session,
+                                                fileId = fileId
                                             )
                                         }
                                     }
                                 }
                             } else {
-                                ninchatSessionManager.messageAdapter?.add(messageId, NinchatMessage(message.getString("text"), null, sender, senderName, timestampMs, sender != ninchatSessionManager.ninchatState?.userId))
+                                ninchatSessionManager.messageAdapter?.add(
+                                    messageId,
+                                    NinchatMessage(
+                                        message.getString("text"),
+                                        null,
+                                        sender,
+                                        senderName,
+                                        timestampMs,
+                                        sender != ninchatSessionManager.ninchatState?.userId
+                                    )
+                                )
                             }
                         }
                     }
+                    // file or text message
+                    EventBus.getDefault().post(OnNewMessage())
+                }
+            }
+        }
+
+        @JvmStatic
+        fun handleIncomingMessageUpdate(params: Props?, payload: Payload?) {
+            val sender = params?.getSafe<String>("message_user_id")
+            val messageDeleted = params?.getSafe<Boolean>("message_deleted") ?: false
+            val messageType =
+                if (messageDeleted) NinchatMessageTypes.DELETED else params?.getSafe<String>("message_type")
+            val messageId = params?.getSafe<String>("message_id")
+            NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
+                if (NinchatMessageTypes.DELETED == messageType) {
+                    ninchatSessionManager.messageAdapter?.addDeletedMessage(
+                        messageId,
+                        NinchatMessage(
+                            sender,
+                            ninchatSessionManager.ninchatState.siteConfig.getMessageDeletedText(),
+                            sender != ninchatSessionManager.ninchatState?.userId
+                        )
+                    )
+                    // A deleted message
+                    EventBus.getDefault().post(OnNewMessage())
                 }
             }
         }

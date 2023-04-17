@@ -154,7 +154,7 @@ class NinchatPropsParser {
                     it.key,
                     name = queueName,
                     supportVideos = supportVideos,
-                    supportFiles = supportFiles
+                    supportFiles = supportFiles,
                 )
                 ninchatQueue.position = queuePosition
                 ninchatQueue.isClosed = queueClosed

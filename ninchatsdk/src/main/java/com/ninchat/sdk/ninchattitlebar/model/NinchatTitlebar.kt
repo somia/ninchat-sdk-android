@@ -84,3 +84,7 @@ fun shouldShowTitlebar(): Boolean {
         it.isFalse("hideTitlebar") && it.hasValue("hideTitlebar")
     } ?: false
 }
+
+fun showOverrideTitlebarView(): Boolean {
+    return NinchatSessionManager.getInstance()?.ninchatSessionHolder?.isGroupVideo() ?: false
+}

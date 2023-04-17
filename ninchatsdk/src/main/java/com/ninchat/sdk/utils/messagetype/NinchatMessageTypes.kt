@@ -6,6 +6,7 @@ object NinchatMessageTypes {
     const val UI_COMPOSE = "ninchat.com/ui/compose"
     const val UI_ACTION = "ninchat.com/ui/action"
     const val METADATA = "ninchat.com/metadata"
+    const val DELETED = "ninchat.com/deleted"
     const val ICE_CANDIDATE = "ninchat.com/rtc/ice-candidate"
     const val ANSWER = "ninchat.com/rtc/answer"
     const val OFFER = "ninchat.com/rtc/offer"
@@ -19,7 +20,7 @@ object NinchatMessageTypes {
             OFFER,
             CALL,
             PICK_UP,
-            HANG_UP
+            HANG_UP,
     )
 
     @JvmStatic
