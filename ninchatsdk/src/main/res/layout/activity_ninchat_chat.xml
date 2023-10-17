@@ -41,10 +41,11 @@
         android:visibility="gone"
         tools:visibility="gone">
 
-        <org.jitsi.meet.sdk.JitsiMeetView
+        <WebView
             android:id="@+id/jitsi_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            />
 
     </LinearLayout>
 

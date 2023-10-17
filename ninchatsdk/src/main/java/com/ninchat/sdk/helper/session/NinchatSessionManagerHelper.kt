@@ -478,7 +478,7 @@ class NinchatSessionManagerHelper {
 
             val jitsiRoom = params.getSafe<String>("jitsi_room")
             val jitsiToken = params.getSafe<String>("jitsi_token")
-            val jitsiServerAddress = "https://${"jitsi-www"}.${apiServerAddress.removePrefix("api.")}"
+            val jitsiServerAddress = "${"jitsi-www"}.${apiServerAddress.removePrefix("api.")}"
 
             NinchatSessionManager.getInstance()?.context?.let { mContext ->
                 LocalBroadcastManager.getInstance(mContext)

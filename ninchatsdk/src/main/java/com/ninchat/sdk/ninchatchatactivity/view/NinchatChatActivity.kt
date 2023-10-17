@@ -9,7 +9,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.RecyclerView
-import com.facebook.react.modules.core.PermissionListener
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.activities.NinchatBaseActivity
@@ -37,11 +36,8 @@ import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.jitsi.meet.sdk.BroadcastEvent
-import org.jitsi.meet.sdk.JitsiMeetActivityDelegate
-import org.jitsi.meet.sdk.JitsiMeetActivityInterface
 
-class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMeetActivityInterface {
+class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
     private var p2pIntegration: NinchatP2PIntegration? = null
     private var groupIntegration: NinchatGroupCallIntegration? = null
     private val model = NinchatChatModel().apply {
@@ -78,24 +74,12 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
             val jitsiServerAddress =
                 it.extras?.getString(Broadcast.WEBRTC_MESSAGE_JITSI_SERVER) ?: ""
 
-
-            groupIntegration?.startJitsi(
+            groupIntegration?.updateJitsiToken(
                 jitsiRoom = jitsiRoom,
                 jitsiToken = jitsiToken,
                 jitsiServerAddress = jitsiServerAddress,
             )
-        },
-        onJitsiConferenceEvents = { intent ->
-            if (intent == null) return@NinchatChatBroadcastManager
-            val event = BroadcastEvent(intent)
-            when (event.type) {
-                BroadcastEvent.Type.CONFERENCE_TERMINATED, BroadcastEvent.Type.READY_TO_CLOSE -> {
-                    groupIntegration?.onHangup()
-                }
-                BroadcastEvent.Type.CONFERENCE_WILL_JOIN-> {
-                    groupIntegration?.handleConferenceWillJoin(mActivity = this@NinchatChatActivity)
-                }
-            }
+            groupIntegration?.mayBeStartJitsi()
         }
     )
     private val softKeyboardViewHandler = SoftKeyboardViewHandler(
@@ -153,15 +137,27 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         grantResults: IntArray
     ) {
         if (requestCode == NinchatChatPresenter.CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE) {
-            if (p2pIntegration?.hasVideoCallPermissions() == true) {
-                p2pIntegration?.sendPickUpAnswer(true)
+            if (model.isGroupCall) {
+                if (groupIntegration?.hasVideoCallPermissions() == true) {
+                    groupIntegration?.mayBeStartJitsi()
+                } else {
+                    showError(
+                        R.id.ninchat_chat_error,
+                        R.string.ninchat_chat_error_no_video_call_permissions
+                    )
+                }
             } else {
-                p2pIntegration?.sendPickUpAnswer(false)
-                showError(
-                    R.id.ninchat_chat_error,
-                    R.string.ninchat_chat_error_no_video_call_permissions
-                )
+                if (p2pIntegration?.hasVideoCallPermissions() == true) {
+                    p2pIntegration?.sendPickUpAnswer(true)
+                } else {
+                    p2pIntegration?.sendPickUpAnswer(false)
+                    showError(
+                        R.id.ninchat_chat_error,
+                        R.string.ninchat_chat_error_no_video_call_permissions
+                    )
+                }
             }
+
         } else if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
             if (hasFileAccessPermissions()) {
                 openImagePicker(null)
@@ -169,16 +165,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
                 showError(R.id.ninchat_chat_error, R.string.ninchat_chat_error_no_file_permissions)
             }
         }
-        JitsiMeetActivityDelegate.onRequestPermissionsResult(requestCode, permissions, grantResults)
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    override fun requestPermissions(
-        permissions: Array<out String>?,
-        requestCode: Int,
-        listener: PermissionListener?
-    ) {
-        JitsiMeetActivityDelegate.requestPermissions(this, permissions, requestCode, listener)
     }
 
     fun onCloseChat(view: View?) {
@@ -417,7 +404,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
 
     override fun onResume() {
         super.onResume()
-        JitsiMeetActivityDelegate.onHostResume(this)
         // Refresh the message list, just in case
         val sessionManager = NinchatSessionManager.getInstance() ?: return
         sessionManager.getOnInitializeMessageAdapter(object : NinchatAdapterCallback {
@@ -444,7 +430,6 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager, JitsiMee
         softKeyboardViewHandler.unregister()
         presenter.writingIndicator.dispose()
         orientationManager.disable()
-        JitsiMeetActivityDelegate.onHostDestroy(this)
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }

@@ -1,29 +1,26 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.view.View
-import android.widget.FrameLayout
+import android.webkit.*
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.core.app.ActivityCompat
+import androidx.core.content.PermissionChecker
 import com.ninchat.sdk.NinchatSessionManager
-import com.ninchat.sdk.R
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
+import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.NinchatGroupCallPresenter
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.OnClickListener
-import com.ninchat.sdk.utils.display.getStatusBarHeight
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlinx.android.synthetic.main.ninchat_join_end_conference.*
 import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
-import org.jitsi.meet.sdk.BroadcastIntentHelper
-import org.jitsi.meet.sdk.JitsiMeetConferenceOptions
-import org.jitsi.meet.sdk.JitsiMeetUserInfo
-import org.jitsi.meet.sdk.JitsiMeetView
-import java.net.URL
 
 class NinchatGroupCallIntegration(
     private val mActivity: NinchatChatActivity,
@@ -36,7 +33,7 @@ class NinchatGroupCallIntegration(
     }
     private val presenter = NinchatGroupCallPresenter(model = model)
     private val joinChatHandler = OnClickListener(intervalInMs = 2000)
-    private var jitsiMeetView: JitsiMeetView? = null
+    private var jitsiMeetView: WebView? = null
 
     init {
         jitsiMeetView = mActivity.jitsi_view
@@ -51,7 +48,7 @@ class NinchatGroupCallIntegration(
             }
         }
         mActivity.ninchat_video_view_translucent_background.setOnClickListener {
-            if(model.showChatView) {
+            if (model.showChatView) {
                 onToggleChat(mActivity = mActivity)
             }
         }
@@ -63,79 +60,87 @@ class NinchatGroupCallIntegration(
     }
 
     fun hangUp() {
-        LocalBroadcastManager.getInstance(mActivity.applicationContext)
-            .sendBroadcast(BroadcastIntentHelper.buildHangUpIntent())
-        // wait for the jitsi event to update the view
-        // if jitsi is not running what should we do ? -> if was not running then call onHangup manually to propagate UI updates
-        if (model.onGoingVideoCall) {
-            return
-        }
         onHangup()
     }
 
-    fun startJitsi(
+    private fun startJitsi(
         jitsiRoom: String,
         jitsiToken: String,
         jitsiServerAddress: String,
     ) {
-        val options: JitsiMeetConferenceOptions = JitsiMeetConferenceOptions.Builder()
-            .setRoom(jitsiRoom)
-            .setUserInfo(
-                JitsiMeetUserInfo().apply {
-                    displayName = NinchatSessionManager.getInstance().userName
-                })
-            .setToken(jitsiToken)
-            .setServerURL(URL(jitsiServerAddress))
-            //.setServerURL(URL("https://meet.jit.si"))
-            .setFeatureFlag("add-people.enabled", false)
-            .setFeatureFlag("android.audio-focus.disabled", false)
-            .setFeatureFlag("audio-mute.enabled", true)
-            .setFeatureFlag("calendar.enabled", false)
-            .setFeatureFlag("call-integration.enabled", false)
-            .setFeatureFlag("car-mode.enabled", false)
-            .setFeatureFlag("close-captions.enabled", false)
-            .setFeatureFlag("conference-timer.enabled", true)
-            .setFeatureFlag("chat.enabled", false)
-            .setFeatureFlag("participants.enabled", false)
-            .setFeatureFlag("filmstrip.enabled", true)
-            .setFeatureFlag("invite.enabled", false)
-            .setFeatureFlag("android.screensharing.enabled", false)
-            .setFeatureFlag("speakerstats.enabled", false)
-            .setFeatureFlag("kick-out.enabled", false)
-            .setFeatureFlag("live-streaming.enabled", false)
-            .setFeatureFlag("meeting-name.enabled", false)
-            .setFeatureFlag("meeting-password.enabled", false)
-            .setFeatureFlag("notifications.enabled", false)
-            .setFeatureFlag("overflow-menu.enabled", true)
-            .setFeatureFlag("pip.enabled", false)
-            .setFeatureFlag("pip-while-screen-sharing.enabled", false)
-            .setFeatureFlag("prejoinpage.enabled", true)
-            .setFeatureFlag("prejoinpage.hide-display-name.enabled", true)
-            .setFeatureFlag("raise-hand.enabled", false)
-            .setFeatureFlag("recording.enabled", false)
-            //.setFeatureFlag("resolution", 360)
-            .setFeatureFlag("server-url-change.enabled", false)
-            .setFeatureFlag("settings.enabled", true)
-            .setFeatureFlag("tile-view.enabled", true)
-            .setFeatureFlag("toolbox.alwaysVisible", false)
-            .setFeatureFlag("toolbox.enabled", true)
-            .setFeatureFlag("video-mute.enabled", true)
-            .setFeatureFlag("video-share.enabled", false)
-            .setFeatureFlag("fullscreen.enabled", false)
-            .setFeatureFlag("welcomepage.enabled", false)
-            .setFeatureFlag("help.enabled", false)
-            .setFeatureFlag("lobby-mode.enabled", false)
-            .setFeatureFlag("reactions.enabled", false)
-            .setFeatureFlag("settings.profile-section.enabled", false)
-            .setFeatureFlag("settings.conference-section-only-self-view.enabled", true)
-            .setFeatureFlag("settings.links-section.enabled", false)
-            .setFeatureFlag("settings.build-info-section.enabled", false)
-            .setFeatureFlag("settings.advanced-section.enabled", false)
-            .setFeatureFlag("security-options.enabled", false)
-            .build()
 
-        jitsiMeetView?.join(options)
+        jitsiMeetView?.settings?.javaScriptEnabled = true
+        jitsiMeetView?.settings?.domStorageEnabled = true
+        jitsiMeetView?.setWebChromeClient(object : WebChromeClient() {
+            override fun onPermissionRequest(request: PermissionRequest?) {
+                request?.grant(request.resources)
+            }
+        })
+        jitsiMeetView?.addJavascriptInterface(object {
+            @JavascriptInterface
+            fun onReadyToClose() {
+                mActivity.runOnUiThread {
+                    onHangup()
+                }
+
+            }
+        }, "NinchatJitsiMeet")
+        val baseURL = "https://${jitsiServerAddress}"
+        jitsiMeetView?.loadDataWithBaseURL(
+            baseURL,
+            model.buildHTML(
+                jitsiServerAddress,
+                jitsiRoom,
+                jitsiToken,
+                NinchatSessionManager.getInstance().userName
+            ),
+            "text/html",
+            "UTF-8",
+            null,
+        )
         onStartVideo()
+    }
+
+    fun updateJitsiToken(
+        jitsiRoom: String,
+        jitsiToken: String,
+        jitsiServerAddress: String
+    ) {
+        model.updateJitsiCredentials(
+            jitsiRoom = jitsiRoom,
+            jitsiToken = jitsiToken,
+            jitsiServerAddress = jitsiServerAddress
+        )
+    }
+
+    fun mayBeStartJitsi() {
+        if (!hasVideoCallPermissions()) {
+            ActivityCompat.requestPermissions(
+                mActivity,
+                arrayOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.RECORD_AUDIO
+                ),
+                NinchatChatPresenter.CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE,
+            )
+            return
+        }
+        startJitsi(
+            jitsiRoom = model.jitsiRoom,
+            jitsiToken = model.jitsiToken,
+            jitsiServerAddress = model.jitsiServerAddress
+        )
+    }
+
+    fun hasVideoCallPermissions(): Boolean {
+        return PermissionChecker.checkCallingOrSelfPermission(
+            mActivity.applicationContext,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED &&
+                PermissionChecker.checkCallingOrSelfPermission(
+                    mActivity.applicationContext,
+                    Manifest.permission.RECORD_AUDIO
+                ) == PackageManager.PERMISSION_GRANTED
     }
 
     fun onNewMessage(view: View) {
@@ -177,14 +182,16 @@ class NinchatGroupCallIntegration(
     }
 
     fun onHangup() {
+        if(model.onGoingVideoCall) {
+            jitsiMeetView?.evaluateJavascript("api.executeCommand('hangup');", null);
+        }
         model.onGoingVideoCall = false
         model.showChatView = true
         model.softkeyboardVisible = false
 
         mActivity.hideKeyBoardForce()
         presenter.renderInitialView(mActivity = mActivity)
-
-        jitsiMeetView?.dispose()
+        jitsiMeetView?.loadUrl("about:blank")
     }
 
     fun onSoftKeyboardVisibilityChanged(isVisible: Boolean) {
@@ -236,20 +243,6 @@ class NinchatGroupCallIntegration(
             val (conferenceViewParams, commandViewParams, _) = presenter.getLayoutParams(mActivity = mActivity)
             conference_or_p2p_view_container.layoutParams = conferenceViewParams
             chat_message_list_and_editor.layoutParams = commandViewParams
-        }
-    }
-
-    fun handleConferenceWillJoin(mActivity: NinchatChatActivity) {
-        mActivity.ninchat_chat_root?.apply {
-            layoutParams = layoutParams.let {
-                val params = it as FrameLayout.LayoutParams
-                params.topMargin = mActivity.getStatusBarHeight()
-                params
-            }
-
-            mActivity.window.statusBarColor =
-                resources.getColor(R.color.ninchat_colorPrimaryDark, mActivity.theme)
-
         }
     }
 }
