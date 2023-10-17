@@ -34,8 +34,8 @@ android {
         versionName calculateVersionName()
         versionCode 1
 
-        // buildConfigField 'String', 'VERSION_NAME', "\"${versionName}\""
-        // buildConfigField 'int', 'VERSION_CODE', "1"
+        buildConfigField 'String', 'VERSION_NAME', "\"${versionName}\""
+        buildConfigField 'int', 'VERSION_CODE', "1"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
