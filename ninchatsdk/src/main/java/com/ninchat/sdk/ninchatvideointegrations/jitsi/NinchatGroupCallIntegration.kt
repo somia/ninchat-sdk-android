@@ -85,7 +85,8 @@ class NinchatGroupCallIntegration(
 
             }
         }, "NinchatJitsiMeet")
-        val displayName = NinchatSessionManager.getInstance().userName
+        val displayName = NinchatSessionManager.getInstance()?.userName ?: ""
+        val language = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getLanguagePreference()?: "en"
         /*jitsiMeetView?.loadUrl(
             baseURL,
             model.buildHTML(
@@ -98,7 +99,7 @@ class NinchatGroupCallIntegration(
             "UTF-8",
             null,
         )*/
-        jitsiMeetView?.loadUrl("https://ninchat.com/new/jitsi-meet.html?domain=$jitsiServerAddress&roomName=$jitsiRoom&jwt=$jitsiToken&lang=en&displayName=$displayName")
+        jitsiMeetView?.loadUrl("https://ninchat.com/new/jitsi-meet.html?domain=$jitsiServerAddress&roomName=$jitsiRoom&jwt=$jitsiToken&lang=$language&displayName=$displayName")
         onStartVideo()
     }
 

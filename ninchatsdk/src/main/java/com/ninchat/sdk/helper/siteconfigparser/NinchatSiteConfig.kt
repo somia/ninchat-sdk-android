@@ -317,6 +317,15 @@ class NinchatSiteConfig {
     fun getConferenceDescriptionText(): String =
         getString("videoMeetingInfoText") ?: ""
 
+    fun getLanguagePreference(): String {
+        return when (getString("language")) {
+            "fi" -> "fi"
+            "sv" -> "sv"
+            else -> "en"
+        }
+    }
+
+
     internal fun getTranslation(translationKey: String = "translations", key: String): String? {
         var value: String? = null
         siteConfig?.let { config ->
