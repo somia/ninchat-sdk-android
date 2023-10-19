@@ -85,8 +85,9 @@ class NinchatGroupCallIntegration(
 
             }
         }, "NinchatJitsiMeet")
-        val baseURL = "https://${jitsiServerAddress}"
-        jitsiMeetView?.loadDataWithBaseURL(
+        val displayName = NinchatSessionManager.getInstance()?.userName ?: ""
+        val language = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getLanguagePreference()?: "en"
+        /*jitsiMeetView?.loadUrl(
             baseURL,
             model.buildHTML(
                 jitsiServerAddress,
@@ -97,7 +98,8 @@ class NinchatGroupCallIntegration(
             "text/html",
             "UTF-8",
             null,
-        )
+        )*/
+        jitsiMeetView?.loadUrl("https://ninchat.com/new/jitsi-meet.html?domain=$jitsiServerAddress&roomName=$jitsiRoom&jwt=$jitsiToken&lang=$language&displayName=$displayName")
         onStartVideo()
     }
 
@@ -183,7 +185,7 @@ class NinchatGroupCallIntegration(
 
     fun onHangup() {
         if(model.onGoingVideoCall) {
-            jitsiMeetView?.evaluateJavascript("api.executeCommand('hangup');", null);
+            jitsiMeetView?.evaluateJavascript("hangUpConference();", null);
         }
         model.onGoingVideoCall = false
         model.showChatView = true
