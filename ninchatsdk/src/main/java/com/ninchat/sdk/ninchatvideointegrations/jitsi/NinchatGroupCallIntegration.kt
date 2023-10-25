@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlinx.android.synthetic.main.ninchat_join_end_conference.*
 import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
+import java.net.URLEncoder
 
 class NinchatGroupCallIntegration(
     private val mActivity: NinchatChatActivity,
@@ -85,8 +86,12 @@ class NinchatGroupCallIntegration(
 
             }
         }, "NinchatJitsiMeet")
-        val displayName = NinchatSessionManager.getInstance()?.userName ?: ""
-        val language = NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getLanguagePreference()?: "en"
+        val displayName = NinchatSessionManager.getInstance()?.userName?.let {
+            URLEncoder.encode(it, "UTF-8")
+        } ?: ""
+        val language =
+            NinchatSessionManager.getInstance()?.ninchatState?.siteConfig?.getLanguagePreference()
+                ?: "en"
         /*jitsiMeetView?.loadUrl(
             baseURL,
             model.buildHTML(
@@ -184,7 +189,7 @@ class NinchatGroupCallIntegration(
     }
 
     fun onHangup() {
-        if(model.onGoingVideoCall) {
+        if (model.onGoingVideoCall) {
             jitsiMeetView?.evaluateJavascript("hangUpConference();", null);
         }
         model.onGoingVideoCall = false
