@@ -3,6 +3,7 @@ package com.ninchat.sdk.models;
 import android.os.Build;
 import android.text.Html;
 import android.text.Spanned;
+import android.util.Log;
 
 import com.ninchat.sdk.NinchatSessionManager;
 
@@ -95,7 +96,7 @@ public final class NinchatMessage {
     }
 
     public Spanned getMessage() {
-        return message == null ? null : Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(message, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(message);
+        return message == null ? null : Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(message.replace("\n","<br />"), Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(message.replace("\n","<br />"));
     }
 
     public String getRawMessage() {
