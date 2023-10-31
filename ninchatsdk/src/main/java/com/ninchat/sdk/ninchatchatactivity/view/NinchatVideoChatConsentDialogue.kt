@@ -40,11 +40,11 @@ class NinchatVideoChatConsentDialogue {
                     )
                 }
                 dialog.ninchat_video_call_consent_dialog_user_name.text = user?.name ?: ""
-                dialog.ninchat_video_call_consent_dialog_description.text = user?.name ?: ""
+                dialog.ninchat_video_call_consent_dialog_description.text = sessionManager.ninchatState.siteConfig.getVideoChatDescriptionText() ?: ""
 
                 // show accept button
                 dialog.ninchat_video_call_consent_dialog_accept.let {
-                    it.text = sessionManager.ninchatState.siteConfig.getVideoCallAcceptedText()
+                    it.text = sessionManager.ninchatState.siteConfig.getVideoCallAcceptText()
                     it.setOnClickListener {
                         dialog.dismiss()
                         onAccept()
