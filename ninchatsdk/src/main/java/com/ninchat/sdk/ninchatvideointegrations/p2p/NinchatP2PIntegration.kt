@@ -141,7 +141,7 @@ class NinchatP2PIntegration(
 
 
     fun sendPickUpAnswer(answer: Boolean) {
-        renderView(activeCall = true)
+        renderView(activeCall = answer)
         NinchatSessionManager.getInstance()?.let { sessionManager ->
             try {
                 val data = JSONObject().apply {
