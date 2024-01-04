@@ -1,23 +1,15 @@
 package com.ninchat.sdk.ninchatvideointegrations.p2p
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.view.Surface
 import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import androidx.core.app.ActivityCompat.requestPermissions
-import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.R
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
 import com.ninchat.sdk.networkdispatchers.NinchatSendMessage
-import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatVideoChatConsentDialogue
 import com.ninchat.sdk.ninchattitlebar.model.shouldShowTitlebar
@@ -26,11 +18,12 @@ import com.ninchat.sdk.utils.messagetype.NinchatMessageTypes
 import com.ninchat.sdk.utils.misc.Broadcast
 import com.ninchat.sdk.utils.misc.Misc.Companion.center
 import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
+import com.ninchat.sdk.utils.permission.NinchatPermission.Companion.hasVideoCallPermissions
+import com.ninchat.sdk.utils.permission.NinchatPermission.Companion.requestAudioVideoPermissions
 import com.ninchat.sdk.utils.threadutils.NinchatScopeHandler
 import com.ninchat.sdk.views.NinchatWebRTCView
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
-import kotlinx.android.synthetic.main.ninchat_p2p_video_container.*
 import kotlinx.android.synthetic.main.ninchat_p2p_video_container.view.*
 import kotlinx.coroutines.launch
 import org.json.JSONException
@@ -51,13 +44,13 @@ class NinchatP2PIntegration(
             chat_message_list_and_editor.layoutParams =
                 chat_message_list_and_editor.layoutParams.let {
                     val layoutParams = it as LinearLayout.LayoutParams
-                    layoutParams.weight = if(activeCall) 2.1f else 3f
+                    layoutParams.weight = if (activeCall) 2.1f else 3f
                     layoutParams
                 }
             conference_or_p2p_view_container.layoutParams =
                 conference_or_p2p_view_container.layoutParams.let {
                     val layoutParams = it as LinearLayout.LayoutParams
-                    layoutParams.weight = if(activeCall) 0.9f else 0f
+                    layoutParams.weight = if (activeCall) 0.9f else 0f
                     layoutParams
                 }
         }
@@ -109,34 +102,16 @@ class NinchatP2PIntegration(
             userId = intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_SENDER) ?: "",
             messageId = intent.getStringExtra(Broadcast.WEBRTC_MESSAGE_ID) ?: "",
             onAccept = {
-                if (hasVideoCallPermissions()) {
+                if (hasVideoCallPermissions(videoContainer.context)) {
                     sendPickUpAnswer(true)
                 } else {
-                    requestPermissions(
-                        activity,
-                        arrayOf(
-                            Manifest.permission.CAMERA,
-                            Manifest.permission.RECORD_AUDIO
-                        ),
-                        NinchatChatPresenter.CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE,
-                    )
+                    requestAudioVideoPermissions(mActivity)
                 }
             },
             onReject = {
                 sendPickUpAnswer(false)
             },
         )
-    }
-
-    fun hasVideoCallPermissions(): Boolean {
-        return checkCallingOrSelfPermission(
-            videoContainer.context,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED &&
-                checkCallingOrSelfPermission(
-                    videoContainer.context,
-                    Manifest.permission.RECORD_AUDIO
-                ) == PackageManager.PERMISSION_GRANTED
     }
 
 
