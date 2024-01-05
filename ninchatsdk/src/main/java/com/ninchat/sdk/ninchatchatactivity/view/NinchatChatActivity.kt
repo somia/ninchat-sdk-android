@@ -30,6 +30,9 @@ import com.ninchat.sdk.utils.misc.Misc.Companion.getNinchatChatBackground
 import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
 import com.ninchat.sdk.utils.misc.NinchatLinearLayoutManager
 import com.ninchat.sdk.utils.misc.Parameter
+import com.ninchat.sdk.utils.permission.NinchatPermission.Companion.hasFileAccessPermissions
+import com.ninchat.sdk.utils.permission.NinchatPermission.Companion.hasVideoCallPermissions
+import com.ninchat.sdk.utils.permission.NinchatPermission.Companion.requestFileAccessPermissions
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlinx.android.synthetic.main.ninchat_titlebar.view.*
@@ -138,7 +141,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
     ) {
         if (requestCode == NinchatChatPresenter.CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE) {
             if (model.isGroupCall) {
-                if (groupIntegration?.hasVideoCallPermissions() == true) {
+                if (hasVideoCallPermissions(mContext = applicationContext)) {
                     groupIntegration?.mayBeStartJitsi()
                 } else {
                     showError(
@@ -147,7 +150,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
                     )
                 }
             } else {
-                if (p2pIntegration?.hasVideoCallPermissions() == true) {
+                if (hasVideoCallPermissions(mContext = applicationContext)) {
                     p2pIntegration?.sendPickUpAnswer(true)
                 } else {
                     p2pIntegration?.sendPickUpAnswer(false)
@@ -159,7 +162,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
             }
 
         } else if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
-            if (hasFileAccessPermissions()) {
+            if (hasFileAccessPermissions(mContext = applicationContext)) {
                 openImagePicker(null)
             } else {
                 showError(R.id.ninchat_chat_error, R.string.ninchat_chat_error_no_file_permissions)
@@ -243,10 +246,10 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
         if (model.chatClosed) {
             return
         }
-        if (hasFileAccessPermissions()) {
+        if (hasFileAccessPermissions(mContext = applicationContext)) {
             openImagePicker(view)
         } else {
-            requestFileAccessPermissions()
+            requestFileAccessPermissions(this)
         }
     }
 

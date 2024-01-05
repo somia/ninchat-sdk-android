@@ -15,6 +15,8 @@ import com.ninchat.sdk.ninchatmedia.model.NinchatMediaModel
 import com.ninchat.sdk.ninchatmedia.presenter.INinchatMediaCallback
 import com.ninchat.sdk.ninchatmedia.presenter.INinchatMediaPresenter
 import com.ninchat.sdk.ninchatmedia.presenter.NinchatMediaPresenter
+import com.ninchat.sdk.utils.permission.NinchatPermission.Companion.hasFileAccessPermissions
+import com.ninchat.sdk.utils.permission.NinchatPermission.Companion.requestFileAccessPermissions
 import kotlinx.android.synthetic.main.activity_ninchat_media.*
 
 class NinchatMediaActivity : NinchatBaseActivity(), INinchatMediaPresenter {
@@ -41,17 +43,17 @@ class NinchatMediaActivity : NinchatBaseActivity(), INinchatMediaPresenter {
     }
 
     fun onDownloadFile(view: View?) {
-        if (hasFileAccessPermissions()) {
+        if (hasFileAccessPermissions(applicationContext)) {
             ninchatMediaPresenter
                     .downloadFile(ninchat_media_download, getSystemService(DOWNLOAD_SERVICE) as DownloadManager)
         } else {
-            requestFileAccessPermissions()
+            requestFileAccessPermissions(this)
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
-            if (hasFileAccessPermissions()) {
+            if (hasFileAccessPermissions(applicationContext)) {
                 ninchatMediaPresenter
                         .downloadFile(ninchat_media_download, getSystemService(DOWNLOAD_SERVICE) as DownloadManager)
             } else {
