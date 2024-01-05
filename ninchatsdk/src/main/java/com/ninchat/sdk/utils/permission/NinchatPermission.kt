@@ -16,7 +16,6 @@ class NinchatPermission {
             val permissions = mutableListOf<String>()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
-                permissions.add(Manifest.permission.READ_MEDIA_AUDIO)
                 permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -45,7 +44,6 @@ class NinchatPermission {
             val permissions = mutableListOf<String>()
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
-                permissions.add(Manifest.permission.READ_MEDIA_AUDIO)
                 permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
