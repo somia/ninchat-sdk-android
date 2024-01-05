@@ -1,22 +1,19 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.view.View
 import android.webkit.*
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import androidx.core.app.ActivityCompat
-import androidx.core.content.PermissionChecker
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
-import com.ninchat.sdk.ninchatchatactivity.presenter.NinchatChatPresenter
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.NinchatGroupCallPresenter
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.OnClickListener
 import com.ninchat.sdk.utils.keyboard.hideKeyBoardForce
 import com.ninchat.sdk.utils.misc.NinchatAdapterCallback
+import com.ninchat.sdk.utils.permission.NinchatPermission.Companion.hasVideoCallPermissions
+import com.ninchat.sdk.utils.permission.NinchatPermission.Companion.requestAudioVideoPermissions
 import kotlinx.android.synthetic.main.activity_ninchat_chat.*
 import kotlinx.android.synthetic.main.activity_ninchat_chat.view.*
 import kotlinx.android.synthetic.main.ninchat_join_end_conference.*
@@ -121,15 +118,8 @@ class NinchatGroupCallIntegration(
     }
 
     fun mayBeStartJitsi() {
-        if (!hasVideoCallPermissions()) {
-            ActivityCompat.requestPermissions(
-                mActivity,
-                arrayOf(
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.RECORD_AUDIO
-                ),
-                NinchatChatPresenter.CAMERA_AND_AUDIO_PERMISSION_REQUEST_CODE,
-            )
+        if (!hasVideoCallPermissions(mActivity.applicationContext)) {
+            requestAudioVideoPermissions(mActivity)
             return
         }
         startJitsi(
@@ -137,17 +127,6 @@ class NinchatGroupCallIntegration(
             jitsiToken = model.jitsiToken,
             jitsiServerAddress = model.jitsiServerAddress
         )
-    }
-
-    fun hasVideoCallPermissions(): Boolean {
-        return PermissionChecker.checkCallingOrSelfPermission(
-            mActivity.applicationContext,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED &&
-                PermissionChecker.checkCallingOrSelfPermission(
-                    mActivity.applicationContext,
-                    Manifest.permission.RECORD_AUDIO
-                ) == PackageManager.PERMISSION_GRANTED
     }
 
     fun onNewMessage(view: View) {
