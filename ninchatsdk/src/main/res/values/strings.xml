@@ -36,4 +36,6 @@
     <string name="ninchat_audience_queue">dummy_value</string>
     <string name="ninchat_audience_queue_wrong">dummy_value</string>
 
+    <string name="ninchat_autolink_attributes">all</string>
+
 </resources>
