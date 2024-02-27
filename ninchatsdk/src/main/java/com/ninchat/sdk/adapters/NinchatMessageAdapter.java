@@ -130,15 +130,18 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             playIcon.setVisibility(View.GONE);
             GlideApp.with(image.getContext()).clear(image);
             image.setBackground(null);
+            final String autoLinkAttributes = itemView.getResources().getString(R.string.ninchat_autolink_attributes);
+            final Integer autoLinkMask = Misc.autoLinkMask(autoLinkAttributes);
             if (messageContent != null) {
                 message.setVisibility(View.VISIBLE);
-                message.setAutoLinkMask(Linkify.ALL);
+                message.setAutoLinkMask(autoLinkMask);
                 message.setText(messageContent);
                 if (isDeletedMessage)
                     message.setTypeface(null, Typeface.ITALIC);
             } else if (file.isDownloadableFile()) {
                 message.setVisibility(View.VISIBLE);
                 message.setText(file.getFileLink());
+
                 message.setMovementMethod(LinkMovementMethod.getInstance());
             } else {
                 final int width = file.getWidth();
@@ -161,7 +164,7 @@ public final class NinchatMessageAdapter extends RecyclerView.Adapter<NinchatMes
             if (isContinuedMessage) {
                 itemView.findViewById(wrapperId).setPadding(0, 0, 0, 0);
             } else {
-                if(!isDeletedMessage)
+                if (!isDeletedMessage)
                     itemView.findViewById(headerId).setVisibility(View.VISIBLE);
             }
         }
