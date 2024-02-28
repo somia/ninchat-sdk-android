@@ -12,6 +12,7 @@ import android.provider.OpenableColumns
 import android.text.Html
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
+import android.text.util.Linkify
 import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.TextView
@@ -97,6 +98,25 @@ class Misc {
             return state?.let {
                 it.skippedReview || !it.hasQuestionnaire(false)
             } ?: false
+        }
+
+        // WEB_URLS, EMAIL_ADDRESSES, PHONE_NUMBERS, MAP_ADDRESSES, ALL
+        @JvmStatic
+        fun autoLinkMask(stringValue: String): Int {
+            if ("none" == stringValue) return 0
+            val linkMaskMap = mapOf(
+                "web" to Linkify.WEB_URLS,
+                "email" to Linkify.EMAIL_ADDRESSES,
+                "phone" to Linkify.PHONE_NUMBERS,
+                "map" to Linkify.MAP_ADDRESSES,
+                "all" to Linkify.ALL,
+            )
+            return stringValue
+                .split('|')
+                .mapNotNull(linkMaskMap::get)
+                .reduceOrNull { acc, current ->
+                    acc or current
+                } ?: Linkify.ALL // default is all
         }
     }
 }
