@@ -18,6 +18,7 @@ import com.ninchat.sdk.ninchatquestionnaire.helper.NinchatQuestionnaireConstants
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.NinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
 import com.ninchat.sdk.ninchatqueue.presenter.NinchatQueuePresenter
+import com.ninchat.sdk.utils.misc.Misc
 import com.ninchat.sdk.utils.misc.Misc.Companion.toRichText
 
 
@@ -107,6 +108,15 @@ class NinchatActivityPresenter(
         }
     }
 
+
+    fun maybeDisposeSession() {
+        NinchatSessionManager.getInstance()?.let { ninchatSessionManager ->
+            if(ninchatSessionManager.ninchatState?.pendingSessionState == Misc.SESSION_OPENED) {
+                ninchatSessionManager.eventListenerWeakReference?.get()?.onActivityDropped();
+            }
+            ninchatSessionManager.close()
+        }
+    }
 
     var queuesUpdatedReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
