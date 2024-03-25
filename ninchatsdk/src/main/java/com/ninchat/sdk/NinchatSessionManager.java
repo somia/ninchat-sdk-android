@@ -313,6 +313,10 @@ public final class NinchatSessionManager {
     }
 
     public void close() {
+        if(ninchatState != null) {
+            ninchatState.setPendingSessionState(Misc.SESSION_CLOSING);
+        }
+
         if (ninchatSessionHolder != null) {
             ninchatSessionHolder.dispose();
         }
