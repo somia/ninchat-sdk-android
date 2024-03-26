@@ -29,7 +29,10 @@ class Misc {
         const val NEW_SESSION = 0
         const val IN_QUEUE = 2
         const val HAS_CHANNEL = 3
-        const val NONE = 4
+        const val SESSION_CLOSING = 4
+        const val SESSION_CLOSED = 5
+        const val SESSION_OPENED = 6
+        const val NONE = 7
 
         @JvmStatic
         fun center(text: String?): String {

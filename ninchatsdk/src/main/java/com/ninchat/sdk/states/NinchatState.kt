@@ -21,6 +21,7 @@ class NinchatState {
     var requestCode: Int = 0
     var queueId: String? = null
     var currentSessionState: Int = Misc.NEW_SESSION
+    var pendingSessionState = Misc.SESSION_CLOSED;
 
     var userChannels: Props? = null
     var userQueues: Props? = null
@@ -112,6 +113,7 @@ class NinchatState {
         isGroupVideoChannel = false
         queueId = null
         currentSessionState = Misc.NEW_SESSION
+        pendingSessionState = Misc.SESSION_CLOSED
         userChannels = null
         userQueues = null
         audienceMetadata?.remove()
