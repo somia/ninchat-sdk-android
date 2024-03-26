@@ -11,4 +11,5 @@ public abstract class NinchatSDKEventListener {
     public void onSessionEvent(final Props params) {}
     public void onEvent(final Props params, final Payload payload) {}
     public void onSessionError(final Exception error) {}
+    public void onActivityDropped() {}
 }

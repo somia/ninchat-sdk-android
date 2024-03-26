@@ -13,6 +13,7 @@ import com.ninchat.sdk.ninchatactivity.presenter.NinchatActivityPresenter
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.model.NinchatQuestionnaireModel
 import com.ninchat.sdk.ninchatquestionnaire.ninchatquestionnaireactivity.presenter.NinchatQuestionnairePresenter
 import com.ninchat.sdk.ninchatqueue.model.NinchatQueueModel
+import com.ninchat.sdk.utils.misc.Misc
 import kotlinx.android.synthetic.main.activity_ninchat.*
 
 class NinchatActivity : NinchatBaseActivity(), INinchatActivityPresenter {
@@ -72,11 +73,15 @@ class NinchatActivity : NinchatBaseActivity(), INinchatActivityPresenter {
     }
 
     override fun onDestroy() {
+        ninchatActivityPresenter.maybeDisposeSession()
         ninchatActivityPresenter.unSubscribeBroadcaster()
         super.onDestroy()
     }
 
     fun onCloseClick(view: View?) {
+        NinchatSessionManager.getInstance()?.ninchatState?.let { state ->
+            state.pendingSessionState = Misc.SESSION_CLOSING
+        }
         setResult(RESULT_CANCELED)
         finish()
     }

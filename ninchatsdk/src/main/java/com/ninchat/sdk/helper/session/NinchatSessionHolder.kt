@@ -72,8 +72,18 @@ class NinchatSessionHolder(ninchatState: NinchatState) {
         listener: NinchatSDKEventListener?
     ) {
         currentSession = session
-        session.setOnClose { Log.v(TAG, "onClose") }
-        session.setOnConnState { state -> Log.v(TAG, "onConnState: $state") }
+        session.setOnClose {
+            ninchatState.pendingSessionState = Misc.SESSION_CLOSED;
+            Log.v(TAG, "onClose")
+        }
+        session.setOnConnState { state ->
+            Log.v(TAG, "onConnState: $state")
+            ninchatState.pendingSessionState = when (state) {
+                "connected", "connecting" -> Misc.SESSION_OPENED
+                "disconnected" -> Misc.SESSION_CLOSED
+                else -> ninchatState.pendingSessionState
+            }
+        }
         session.setOnLog { msg -> Log.v(TAG, "onLog: $msg") }
 
         session.setOnSessionEvent { params: Props ->
