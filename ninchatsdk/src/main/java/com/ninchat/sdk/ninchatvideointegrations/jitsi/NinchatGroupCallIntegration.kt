@@ -1,11 +1,15 @@
 package com.ninchat.sdk.ninchatvideointegrations.jitsi
 
 import android.view.View
-import android.webkit.*
+import android.webkit.JavascriptInterface
+import android.webkit.PermissionRequest
+import android.webkit.WebChromeClient
+import android.webkit.WebView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import com.ninchat.sdk.NinchatSessionManager
 import com.ninchat.sdk.adapters.NinchatMessageAdapter
+import com.ninchat.sdk.managers.webrtc.VolumeController
 import com.ninchat.sdk.ninchatchatactivity.view.NinchatChatActivity
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.model.NinchatGroupCallModel
 import com.ninchat.sdk.ninchatvideointegrations.jitsi.presenter.NinchatGroupCallPresenter
@@ -32,9 +36,11 @@ class NinchatGroupCallIntegration(
     private val presenter = NinchatGroupCallPresenter(model = model)
     private val joinChatHandler = OnClickListener(intervalInMs = 2000)
     private var jitsiMeetView: WebView? = null
+    private var volumeController: VolumeController? = null
 
     init {
         jitsiMeetView = mActivity.jitsi_view
+        volumeController = VolumeController(mActivity.applicationContext)
         presenter.renderInitialView(mActivity = mActivity)
         attachHandler()
     }
@@ -69,11 +75,12 @@ class NinchatGroupCallIntegration(
 
         jitsiMeetView?.settings?.javaScriptEnabled = true
         jitsiMeetView?.settings?.domStorageEnabled = true
-        jitsiMeetView?.setWebChromeClient(object : WebChromeClient() {
+        jitsiMeetView?.settings?.mediaPlaybackRequiresUserGesture = false
+        jitsiMeetView?.webChromeClient = object : WebChromeClient() {
             override fun onPermissionRequest(request: PermissionRequest?) {
                 request?.grant(request.resources)
             }
-        })
+        }
         jitsiMeetView?.addJavascriptInterface(object {
             @JavascriptInterface
             fun onReadyToClose() {
@@ -137,6 +144,7 @@ class NinchatGroupCallIntegration(
     }
 
     private fun onStartVideo() {
+        volumeController?.setVolume()
         model.onGoingVideoCall = true
         model.showChatView = false
         model.softkeyboardVisible = false
@@ -168,6 +176,7 @@ class NinchatGroupCallIntegration(
     }
 
     fun onHangup() {
+        volumeController?.resetVolume()
         if (model.onGoingVideoCall) {
             jitsiMeetView?.evaluateJavascript("hangUpConference();", null);
         }
