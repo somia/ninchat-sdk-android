@@ -76,7 +76,6 @@ class NinchatGroupCallIntegration(
         jitsiMeetView?.settings?.javaScriptEnabled = true
         jitsiMeetView?.settings?.domStorageEnabled = true
         jitsiMeetView?.settings?.mediaPlaybackRequiresUserGesture = false
-        jitsiMeetView?.settings?.mediaPlaybackRequiresUserGesture = false
         jitsiMeetView?.webChromeClient = object : WebChromeClient() {
             override fun onPermissionRequest(request: PermissionRequest?) {
                 request?.grant(request.resources)
