@@ -168,4 +168,8 @@ open class NinchatQuestionnaireListPresenter(
     open fun getByMuskedPosition(index: Int): JSONObject {
         TODO("implement me")
     }
+
+    open fun getUnmaskedPosition(position: Int): Int {
+        return position
+    }
 }
