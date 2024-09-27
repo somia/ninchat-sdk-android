@@ -105,4 +105,8 @@ class NinchatFormListPresenter(
     override fun getByMuskedPosition(index: Int): JSONObject = model.answerList.takeLast(model.selectedElement.lastOrNull()?.second
             ?: 0).getOrNull(index) ?: JSONObject()
 
+    override fun getUnmaskedPosition(position: Int): Int {
+        return ((position + (model.selectedElement.lastOrNull()?.second ?: 1)) % model.answerList.size)
+    }
+
 }
