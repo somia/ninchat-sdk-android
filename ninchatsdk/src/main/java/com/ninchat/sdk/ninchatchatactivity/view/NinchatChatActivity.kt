@@ -102,7 +102,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
         },
     )
 
-    lateinit var orientationManager: OrientationManager
+    var orientationManager: OrientationManager? = null
 
     override fun onOrientationChange(orientation: Int) {
         // if user manually toggle to full screen then don't change orientation
@@ -432,7 +432,7 @@ class NinchatChatActivity : NinchatBaseActivity(), IOrientationManager {
         mBroadcastManager.unregister(localBroadcastManager)
         softKeyboardViewHandler.unregister()
         presenter.writingIndicator.dispose()
-        orientationManager.disable()
+        orientationManager?.disable()
         EventBus.getDefault().unregister(this)
         super.onDestroy()
     }
