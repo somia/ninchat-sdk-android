@@ -265,5 +265,8 @@ class NinchatQuestionnaireListAdapter(
         presenter.showNext(onNextQuestionnaire)
     }
 
-    fun isLastElement(position: Int): Boolean = position + 2 >= presenter.size()
+    fun isLastElement(position: Int): Boolean {
+        val positionInView = presenter.getUnmaskedPosition(position)
+        return positionInView + 2 >= presenter.size()
+    }
 }
